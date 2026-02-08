@@ -40,7 +40,7 @@ export function ModalBudget({ budget, isOpen, onClose, onSave }: ModalBudgetProp
       <div className="space-y-6">
           {/* Origem do Orçamento */}
           <div>
-            <label className="block text-sm font-medium mb-2">Origem do Orçamento *</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Origem do Orçamento *</label>
             <div className="grid grid-cols-3 gap-3">
               {(Object.entries(BUDGET_ORIGINS) as [BudgetOrigin, typeof BUDGET_ORIGINS[BudgetOrigin]][]).map(([key, config]) => (
                 <button
@@ -59,7 +59,7 @@ export function ModalBudget({ budget, isOpen, onClose, onSave }: ModalBudgetProp
                 >
                   <div className="text-3xl mb-2">{config.icon}</div>
                   <div 
-                    className="font-semibold"
+                    className="font-semibold text-gray-500"
                     style={{ color: formData.origin === key ? config.color : undefined }}
                   >
                     {config.label}
@@ -71,7 +71,7 @@ export function ModalBudget({ budget, isOpen, onClose, onSave }: ModalBudgetProp
 
           {/* Tipo */}
           <div>
-            <label className="block text-sm font-medium mb-2">Tipo *</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Tipo *</label>
             <div className="grid grid-cols-2 gap-3">
               <button
                 type="button"
@@ -109,7 +109,7 @@ export function ModalBudget({ budget, isOpen, onClose, onSave }: ModalBudgetProp
 
           {/* Descrição */}
           <div>
-            <label className="block text-sm font-medium mb-2">Descrição *</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Descrição *</label>
             <input
               type="text"
               required
@@ -123,7 +123,7 @@ export function ModalBudget({ budget, isOpen, onClose, onSave }: ModalBudgetProp
           {/* Valor e Data */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium mb-2">Valor (R$) *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Valor (R$) *</label>
               <input
                 type="number"
                 required
@@ -137,7 +137,7 @@ export function ModalBudget({ budget, isOpen, onClose, onSave }: ModalBudgetProp
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">Data *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Data *</label>
               <input
                 type="date"
                 required
