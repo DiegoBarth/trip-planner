@@ -111,6 +111,23 @@ export const PERIODS = {
    'full-day': { label: 'Dia todo', icon: '🌍', hours: '00:00-23:59' }
 }
 
+export const RESERVATION_STATUS = {
+   'not-needed': { label: 'Não precisa', icon: '✓' },
+   pending: { label: 'Pendente', icon: '⏳' },
+   confirmed: { label: 'Confirmada', icon: '✅' },
+   cancelled: { label: 'Cancelada', icon: '❌' }
+}
+
+export const WEEK_DAYS = {
+   Sunday: { label: 'Domingo', short: 'Dom' },
+   Monday: { label: 'Segunda', short: 'Seg' },
+   Tuesday: { label: 'Terça', short: 'Ter' },
+   Wednesday: { label: 'Quarta', short: 'Qua' },
+   Thursday: { label: 'Quinta', short: 'Qui' },
+   Friday: { label: 'Sexta', short: 'Sex' },
+   Saturday: { label: 'Sábado', short: 'Sáb' }
+}
+
 export const BUDGET_CATEGORIES = [
    'Acomodação',
    'Transporte',

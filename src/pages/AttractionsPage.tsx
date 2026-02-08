@@ -1,23 +1,59 @@
 import { useNavigate } from 'react-router-dom'
 import { Layout } from '@/components/layout/Layout'
 import { AttractionsList } from '@/components/attraction/AttractionsList'
+import { useAttraction } from '@/hooks/useAttraction'
+import { useToast } from '@/contexts/toast'
 import type { Attraction } from '@/types/Attraction'
-
-// Mock data
-const mockAttractions: Attraction[] = []
 
 export function AttractionsPage() {
   const navigate = useNavigate()
-  const handleCreate = (data: Omit<Attraction, 'id'>) => {
-    console.log('Criar atração:', data)
+  const { attractions, isLoading, createAttraction, updateAttraction, deleteAttraction } = useAttraction()
+  const { success, error } = useToast()
+
+  const handleCreate = async (data: Omit<Attraction, 'id'>) => {
+    try {
+      await createAttraction(data as any)
+      success('Atração criada com sucesso!')
+    } catch (err) {
+      error('Erro ao criar atração')
+      console.error(err)
+    }
   }
 
-  const handleUpdate = (attraction: Attraction) => {
-    console.log('Atualizar atração:', attraction)
+  const handleUpdate = async (attraction: Attraction) => {
+    try {
+      await updateAttraction({ ...attraction, id: attraction.id } as any)
+      success('Atração atualizada com sucesso!')
+    } catch (err) {
+      error('Erro ao atualizar atração')
+      console.error(err)
+    }
   }
 
-  const handleToggleVisited = (id: number) => {
-    console.log('Toggle visitado:', id)
+  const handleDelete = async (id: number) => {
+    try {
+      await deleteAttraction(id)
+      success('Atração excluída com sucesso!')
+    } catch (err) {
+      error('Erro ao excluir atração')
+      console.error(err)
+    }
+  }
+
+  const handleToggleVisited = async (id: number) => {
+    const attraction = attractions.find(a => a.id === id)
+    if (attraction) {
+      try {
+        await updateAttraction({ 
+          ...attraction, 
+          visited: !attraction.visited 
+        } as any)
+        success(attraction.visited ? 'Marcado como não visitado' : 'Marcado como visitado')
+      } catch (err) {
+        error('Erro ao atualizar atração')
+        console.error(err)
+      }
+    }
   }
 
   return (
@@ -27,9 +63,11 @@ export function AttractionsPage() {
       headerClassName="bg-gradient-to-r from-green-600 to-teal-600 text-white"
     >
       <AttractionsList
-        attractions={mockAttractions}
+        attractions={attractions}
+        isLoading={isLoading}
         onCreate={handleCreate}
         onUpdate={handleUpdate}
+        onDelete={handleDelete}
         onToggleVisited={handleToggleVisited}
       />
     </Layout>
