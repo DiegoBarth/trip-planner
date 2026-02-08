@@ -8,7 +8,7 @@ import { COUNTRIES, ATTRACTION_TYPES } from '@/config/constants'
 interface AttractionsListProps {
   attractions: Attraction[]
   onUpdate: (attraction: Attraction) => void
-  onCreate: (attraction: Omit<Attraction, 'id' | 'createdAt' | 'updatedAt'>) => void
+  onCreate: (attraction: Omit<Attraction, 'id'>) => void
   onToggleVisited: (id: string) => void
 }
 
@@ -24,7 +24,7 @@ export function AttractionsList({ attractions, onUpdate, onCreate, onToggleVisit
     search: ''
   })
 
-  // Filtrar atrações
+  // Filter attractions
   const filteredAttractions = attractions.filter(attraction => {
     if (filters.country !== 'all' && attraction.country !== filters.country) return false
     if (filters.city && !attraction.city.toLowerCase().includes(filters.city.toLowerCase())) return false
@@ -67,13 +67,11 @@ export function AttractionsList({ attractions, onUpdate, onCreate, onToggleVisit
     setIsModalOpen(false)
   }
 
-  const handleSave = (data: Omit<Attraction, 'id' | 'createdAt' | 'updatedAt'>) => {
+  const handleSave = (data: Omit<Attraction, 'id'>) => {
     if (editingAttraction) {
       onUpdate({
         ...data,
-        id: editingAttraction.id,
-        createdAt: editingAttraction.createdAt,
-        updatedAt: new Date().toISOString()
+        id: editingAttraction.id
       } as Attraction)
     } else {
       onCreate(data)
@@ -194,7 +192,7 @@ export function AttractionsList({ attractions, onUpdate, onCreate, onToggleVisit
         </div>
       </header>
 
-      {/* Lista de atrações agrupadas por dia */}
+      {/* Attractions list grouped by day */}
       <main className="max-w-6xl mx-auto p-4 space-y-8">
         {Object.keys(groupedByDay).length === 0 ? (
           <div className="text-center py-12 text-gray-500">

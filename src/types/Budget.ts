@@ -5,22 +5,21 @@ export interface Budget {
    origin: BudgetOrigin
    description: string
    amount: number
-   type: 'income' | 'adjustment'
    date: string
 }
 
 export interface BudgetSummary {
-   diego: {
+   Diego: {
       total: number
       spent: number
       remaining: number
    }
-   pamela: {
+   Pamela: {
       total: number
       spent: number
       remaining: number
    }
-   couple: {
+   Casal: {
       total: number
       spent: number
       remaining: number

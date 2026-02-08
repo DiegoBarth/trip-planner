@@ -1,181 +1,163 @@
-import { useState } from 'react'
+import { useEffect } from 'react'
+import { useForm, Controller } from 'react-hook-form'
 import type { Budget } from '@/types/Budget'
 import type { BudgetOrigin } from '@/types/Attraction'
 import { BUDGET_ORIGINS } from '@/config/constants'
 import { ModalBase } from '@/components/ui/ModalBase'
+import { currencyToNumber, formatCurrencyInput } from '@/utils/formatters'
 
 interface ModalBudgetProps {
-  budget?: Budget
-  isOpen: boolean
-  onClose: () => void
-  onSave: (budget: Omit<Budget, 'id' | 'createdAt' | 'updatedAt'>) => void
+   budget?: Budget
+   isOpen: boolean
+   onClose: () => void
+   onSave: (budget: Budget) => void
+}
+
+type BudgetFormData = Omit<Budget, 'amount' | 'id'> & {
+   amount: string | number
+   id?: string
+}
+
+const defaultValues: BudgetFormData = {
+   origin: 'Diego' as BudgetOrigin,
+   description: '',
+   amount: '' as string | number,
+   date: new Date().toISOString().split('T')[0]
 }
 
 export function ModalBudget({ budget, isOpen, onClose, onSave }: ModalBudgetProps) {
-  const [formData, setFormData] = useState<Partial<Budget>>({
-    origin: budget?.origin || 'diego',
-    description: budget?.description || '',
-    amount: budget?.amount || 0,
-    type: budget?.type || 'income',
-    date: budget?.date || new Date().toISOString().split('T')[0]
-  })
+   const { control, register, handleSubmit, reset, setValue, watch } = useForm<BudgetFormData>({
+      defaultValues
+   })
 
-  const handleChange = (field: keyof Budget, value: any) => {
-    setFormData(prev => ({ ...prev, [field]: value }))
-  }
+   const selectedOrigin = watch('origin')
 
-  const handleSubmit = () => {
-    onSave(formData as Omit<Budget, 'id' | 'createdAt' | 'updatedAt'>)
-  }
+   useEffect(() => {
+      if (isOpen) {
+         if (budget) {
+            // Convert number to currency format for editing
+            const amountInCents = Math.round(budget.amount * 100)
+            reset({
+               origin: budget.origin,
+               description: budget.description,
+               amount: formatCurrencyInput(amountInCents.toString()),
+               date: budget.date
+            })
+         } else {
+            reset(defaultValues)
+         }
+      }
+   }, [isOpen, budget, reset])
 
-  return (
-    <ModalBase
-      isOpen={isOpen}
-      onClose={onClose}
-      title={budget ? 'Editar Orçamento' : 'Novo Orçamento'}
-      type={budget ? 'edit' : 'create'}
-      onSave={handleSubmit}
-      size="md"
-    >
-      <div className="space-y-6">
-          {/* Origem do Orçamento */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Origem do Orçamento *</label>
-            <div className="grid grid-cols-3 gap-3">
-              {(Object.entries(BUDGET_ORIGINS) as [BudgetOrigin, typeof BUDGET_ORIGINS[BudgetOrigin]][]).map(([key, config]) => (
-                <button
-                  key={key}
-                  type="button"
-                  onClick={() => handleChange('origin', key)}
-                  className={`p-4 rounded-lg border-2 transition-all ${
-                    formData.origin === key
-                      ? 'border-current shadow-md'
-                      : 'border-gray-200 hover:border-gray-300'
-                  }`}
-                  style={{
-                    borderColor: formData.origin === key ? config.color : undefined,
-                    backgroundColor: formData.origin === key ? `${config.color}10` : undefined
-                  }}
-                >
-                  <div className="text-3xl mb-2">{config.icon}</div>
-                  <div 
-                    className="font-semibold text-gray-500"
-                    style={{ color: formData.origin === key ? config.color : undefined }}
-                  >
-                    {config.label}
-                  </div>
-                </button>
-              ))}
-            </div>
-          </div>
+   const handleSalvar = (values: BudgetFormData) => {
+      // Convert formatted value back to number before saving
+      const budgetData: Budget = {
+         ...values,
+         id: budget?.id || '',
+         amount: typeof values.amount === 'string' ? currencyToNumber(values.amount) : values.amount
+      }
+      
+      onSave(budgetData)
+      reset(defaultValues)
+      onClose()
+   }
 
-          {/* Tipo */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Tipo *</label>
-            <div className="grid grid-cols-2 gap-3">
-              <button
-                type="button"
-                onClick={() => handleChange('type', 'income')}
-                className={`p-4 rounded-lg border-2 transition-all ${
-                  formData.type === 'income'
-                    ? 'border-green-500 bg-green-50 shadow-md'
-                    : 'border-gray-200 hover:border-gray-300'
-                }`}
-              >
-                <div className="text-3xl mb-2">💰</div>
-                <div className={`font-semibold ${formData.type === 'income' ? 'text-green-700' : 'text-gray-700'}`}>
-                  Receita
-                </div>
-                <p className="text-xs text-gray-500 mt-1">Adicionar dinheiro</p>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => handleChange('type', 'adjustment')}
-                className={`p-4 rounded-lg border-2 transition-all ${
-                  formData.type === 'adjustment'
-                    ? 'border-blue-500 bg-blue-50 shadow-md'
-                    : 'border-gray-200 hover:border-gray-300'
-                }`}
-              >
-                <div className="text-3xl mb-2">⚖️</div>
-                <div className={`font-semibold ${formData.type === 'adjustment' ? 'text-blue-700' : 'text-gray-700'}`}>
-                  Ajuste
-                </div>
-                <p className="text-xs text-gray-500 mt-1">Correção de saldo</p>
-              </button>
-            </div>
-          </div>
-
-          {/* Descrição */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Descrição *</label>
-            <input
-              type="text"
-              required
-              value={formData.description}
-              onChange={(e) => handleChange('description', e.target.value)}
-              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
-              placeholder="Ex: Orçamento inicial da viagem"
-            />
-          </div>
-
-          {/* Valor e Data */}
-          <div className="grid grid-cols-2 gap-4">
+   return (
+      <ModalBase
+         isOpen={isOpen}
+         onClose={onClose}
+         title={budget ? 'Editar Orçamento' : 'Novo Orçamento'}
+         type={budget ? 'edit' : 'create'}
+         onSave={handleSubmit(handleSalvar)}
+         size="md"
+      >
+         <div className="space-y-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Valor (R$) *</label>
-              <input
-                type="number"
-                required
-                min="0"
-                step="0.01"
-                value={formData.amount}
-                onChange={(e) => handleChange('amount', Number(e.target.value))}
-                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                placeholder="0,00"
-              />
+               <label className="block text-sm font-medium text-gray-700 mb-2">Origem do Orçamento *</label>
+               <div className="grid grid-cols-3 gap-3">
+                  {(Object.entries(BUDGET_ORIGINS) as [BudgetOrigin, typeof BUDGET_ORIGINS[BudgetOrigin]][]).map(([key, config]) => (
+                     <button
+                        key={key}
+                        type="button"
+                        onClick={() => setValue('origin', key)}
+                        className={`p-4 rounded-lg border-2 transition-all ${selectedOrigin === key
+                           ? 'border-current shadow-md'
+                           : 'border-gray-200 hover:border-gray-300'
+                           }`}
+                        style={{
+                           borderColor: selectedOrigin === key ? config.color : undefined,
+                           backgroundColor: selectedOrigin === key ? `${config.color}10` : undefined
+                        }}
+                     >
+                        <div className="text-3xl mb-2">{config.icon}</div>
+                        <div
+                           className="font-semibold text-gray-500"
+                           style={{ color: selectedOrigin === key ? config.color : undefined }}
+                        >
+                           {config.label}
+                        </div>
+                     </button>
+                  ))}
+               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Data *</label>
-              <input
-                type="date"
-                required
-                value={formData.date}
-                onChange={(e) => handleChange('date', e.target.value)}
-                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
-              />
+               <label htmlFor="budget-description" className="block text-sm font-medium text-gray-700 mb-2">
+                  Descrição *
+               </label>
+               <input
+                  id="budget-description"
+                  type="text"
+                  required
+                  aria-required="true"
+                  autoComplete="off"
+                  className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none placeholder:text-gray-400 text-gray-900"
+                  placeholder="Ex: Orçamento inicial da viagem"
+                  {...register('description')}
+               />
             </div>
-          </div>
 
-          {/* Preview */}
-          {formData.amount && formData.amount > 0 && (
-            <div className="bg-gray-50 rounded-lg p-4 border-2 border-dashed border-gray-300">
-              <p className="text-sm text-gray-600 mb-2">Preview:</p>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <span className="text-2xl">
-                    {BUDGET_ORIGINS[formData.origin as BudgetOrigin].icon}
-                  </span>
-                  <div>
-                    <p className="font-semibold">{formData.description || 'Sem descrição'}</p>
-                    <p className="text-sm text-gray-500">
-                      {BUDGET_ORIGINS[formData.origin as BudgetOrigin].label} • 
-                      {formData.type === 'income' ? ' Receita' : ' Ajuste'}
-                    </p>
-                  </div>
-                </div>
-                <p 
-                  className="text-2xl font-bold"
-                  style={{ color: BUDGET_ORIGINS[formData.origin as BudgetOrigin].color }}
-                >
-                  {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(formData.amount)}
-                </p>
-              </div>
+            <div className="grid grid-cols-2 gap-4">
+               <div>
+                  <label htmlFor="budget-amount" className="block text-sm font-medium text-gray-700 mb-2">
+                     Valor (R$) *
+                  </label>
+                  <Controller
+                     name="amount"
+                     control={control}
+                     render={({ field }) => (
+                        <input
+                           id="budget-amount"
+                           type="text"
+                           required
+                           aria-required="true"
+                           aria-label="Valor do or\u00e7amento em reais"
+                           autoComplete="off"
+                           className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none placeholder:text-gray-400 text-gray-900"
+                           placeholder="0,00"
+                           value={field.value}
+                           onChange={e => field.onChange(formatCurrencyInput(e.target.value))}
+                        />
+                     )}
+                  />
+               </div>
+
+               <div>
+                  <label htmlFor="budget-date" className="block text-sm font-medium text-gray-700 mb-2">
+                     Data *
+                  </label>
+                  <input
+                     id="budget-date"
+                     type="date"
+                     required
+                     aria-required="true"
+                     className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-gray-900"
+                     {...register('date')}
+                  />
+               </div>
             </div>
-          )}
 
-      </div>
-    </ModalBase>
-  )
+         </div>
+      </ModalBase>
+   )
 }

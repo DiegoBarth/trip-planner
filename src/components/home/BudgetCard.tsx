@@ -3,7 +3,7 @@ import { BUDGET_ORIGINS } from '@/config/constants'
 import { formatCurrency } from '@/utils/formatters'
 
 interface BudgetCardProps {
-  origin: 'diego' | 'pamela' | 'couple'
+  origin: 'Diego' | 'Pamela' | 'Casal'
   total: number
   spent: number
   remaining: number

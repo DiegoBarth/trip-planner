@@ -2,18 +2,21 @@ import { useState } from 'react'
 import { Plus } from 'lucide-react'
 import { BudgetItemCard } from './BudgetItemCard'
 import { ModalBudget } from './ModalBudget'
+import { Skeleton } from '@/components/ui/Skeleton'
 import type { Budget } from '@/types/Budget'
 import type { BudgetOrigin } from '@/types/Attraction'
+import type { CreateBudgetPayload, UpdateBudgetPayload } from '@/api/budget'
 import { BUDGET_ORIGINS } from '@/config/constants'
 
 interface BudgetListProps {
   budgets: Budget[]
-  onUpdate: (budget: Budget) => void
-  onCreate: (budget: Omit<Budget, 'id' | 'createdAt' | 'updatedAt'>) => void
-  onDelete: (id: string) => void
+  isLoading: boolean
+  onUpdate: (payload: UpdateBudgetPayload) => Promise<Budget>
+  onCreate: (payload: CreateBudgetPayload) => Promise<Budget>
+  onDelete: (id: string) => Promise<void>
 }
 
-export function BudgetList({ budgets, onUpdate, onCreate, onDelete }: BudgetListProps) {
+export function BudgetList({ budgets, isLoading, onUpdate, onCreate, onDelete }: BudgetListProps) {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingBudget, setEditingBudget] = useState<Budget | undefined>()
 
@@ -41,16 +44,36 @@ export function BudgetList({ budgets, onUpdate, onCreate, onDelete }: BudgetList
     setIsModalOpen(false)
   }
 
-  const handleSave = (data: Omit<Budget, 'id' | 'createdAt' | 'updatedAt'>) => {
-    if (editingBudget) {
-      onUpdate({
-        ...data,
-        id: editingBudget.id
-      } as Budget)
-    } else {
-      onCreate(data)
+  const handleSave = async (data: Omit<Budget, 'id'>) => {
+    try {
+      if (editingBudget) {
+        await onUpdate({
+          id: editingBudget.id,
+          ...data
+        })
+      } else {
+        await onCreate(data)
+      }
+      handleCloseModal()
+    } catch (error) {
+      console.error('Error saving budget:', error)
     }
-    handleCloseModal()
+  }
+
+  if (isLoading) {
+    return (
+      <div className="p-6">
+        <div className="flex items-center justify-between mb-6">
+          <Skeleton className="h-8 w-48" />
+          <Skeleton className="h-10 w-40" />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {[...Array(6)].map((_, i) => (
+            <Skeleton key={i} className="h-40 w-full" />
+          ))}
+        </div>
+      </div>
+    )
   }
 
   return (

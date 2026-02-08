@@ -87,7 +87,7 @@ export async function apiPost<T>(
    body: Record<string, unknown>
 ): Promise<T> {
    try {
-      const action = typeof body.acao === 'string' ? body.acao : 'POST';
+      const action = typeof body.action === 'string' ? body.action : 'POST';
       enforcePostRateLimit(action);
 
       const res = await fetchWithTimeout(API_URL, {

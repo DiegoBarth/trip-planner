@@ -42,9 +42,9 @@ export const TOAST_DEFAULT_DURATION_MS = 3000;
 /** Comprimento do id gerado para toasts. */
 export const TOAST_ID_LENGTH = 9;
 
-// Taxas de conversão de moeda (atualize conforme necessário)
+// Currency conversion rates (update as needed)
 export const CURRENCY_RATES = {
-   JPY_BRL: 0.033, // 1 iene japonês = R$ 0.033
+   JPY_BRL: 0.033, // 1 Japanese Yen = R$ 0.033
    KRW_BRL: 0.0038, // 1 won coreano = R$ 0.0038
    BRL_BRL: 1.0 // Real brasileiro
 }
@@ -86,9 +86,9 @@ export const EXPENSE_CATEGORIES = {
 }
 
 export const BUDGET_ORIGINS = {
-   diego: { label: 'Diego', icon: '👨', color: '#3b82f6' },
-   pamela: { label: 'Pamela', icon: '👩', color: '#ec4899' },
-   couple: { label: 'Casal', icon: '💑', color: '#8b5cf6' }
+   Diego: { label: 'Diego', icon: '👨', color: '#3b82f6' },
+   Pamela: { label: 'Pamela', icon: '👩', color: '#ec4899' },
+   Casal: { label: 'Casal', icon: '💑', color: '#8b5cf6' }
 }
 
 export const PERIODS = {

@@ -1,6 +1,6 @@
 import { MapPin, Clock, Banknote, CheckCircle2 } from 'lucide-react'
 import type { Attraction } from '@/types/Attraction'
-import { ATTRACTION_TYPES, BUDGET_ORIGINS } from '@/config/constants'
+import { ATTRACTION_TYPES } from '@/config/constants'
 import { formatCurrency, formatTime, formatDuration } from '@/utils/formatters'
 
 interface AttractionCardProps {
@@ -11,15 +11,18 @@ interface AttractionCardProps {
 
 export function AttractionCard({ attraction, onCheckVisited, onClick }: AttractionCardProps) {
   const attractionType = ATTRACTION_TYPES[attraction.type]
-  const budgetOrigin = BUDGET_ORIGINS[attraction.budgetOrigin]
+  
+  if (!attractionType) {
+    console.error(`Invalid attraction type: ${attraction.type}`)
+    return null
+  }
 
   return (
     <div
-      className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-all cursor-pointer border-l-4"
-      style={{ borderLeftColor: budgetOrigin.color }}
+      className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-all cursor-pointer border-l-4 border-l-blue-500"
       onClick={onClick}
     >
-      {/* Imagem ou placeholder */}
+      {/* Image or placeholder */}
       {attraction.imageUrl ? (
         <div className="h-32 bg-cover bg-center" style={{ backgroundImage: `url(${attraction.imageUrl})` }} />
       ) : (
@@ -29,7 +32,7 @@ export function AttractionCard({ attraction, onCheckVisited, onClick }: Attracti
       )}
 
       <div className="p-4">
-        {/* Cabeçalho */}
+        {/* Header */}
         <div className="flex items-start justify-between mb-2">
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-1">
@@ -42,7 +45,7 @@ export function AttractionCard({ attraction, onCheckVisited, onClick }: Attracti
             </div>
           </div>
           
-          {/* Checkbox de visitado */}
+          {/* Visited checkbox */}
           <button
             onClick={(e) => {
               e.stopPropagation()
@@ -58,9 +61,9 @@ export function AttractionCard({ attraction, onCheckVisited, onClick }: Attracti
           </button>
         </div>
 
-        {/* Informações */}
-        <div className="space-y-2 mt-3">
-          {/* Horário */}
+        {/* Information */}
+        <div className="space-y-2">
+          {/* Schedule */}
           {attraction.openingTime && (
             <div className="flex items-center gap-2 text-sm text-gray-700">
               <Clock className="w-4 h-4 text-blue-500" />
@@ -71,10 +74,10 @@ export function AttractionCard({ attraction, onCheckVisited, onClick }: Attracti
             </div>
           )}
 
-          {/* Valor */}
+          {/* Value */}
           <div className="flex items-center gap-2 text-sm">
-            <Banknote className="w-4 h-4" style={{ color: budgetOrigin.color }} />
-            <span className="font-semibold" style={{ color: budgetOrigin.color }}>
+            <Banknote className="w-4 h-4 text-green-600" />
+            <span className="font-semibold text-green-600">
               {formatCurrency(attraction.couplePrice, attraction.currency)}
             </span>
             <span className="text-gray-500">

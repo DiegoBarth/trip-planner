@@ -10,7 +10,7 @@ interface ExpensesPageProps {
 const mockExpenses: Expense[] = []
 
 export function ExpensesPage({ onBack }: ExpensesPageProps) {
-  const handleCreate = (data: Omit<Expense, 'id' | 'createdAt' | 'updatedAt'>) => {
+  const handleCreate = (data: Omit<Expense, 'id'>) => {
     console.log('Criar gasto:', data)
   }
 

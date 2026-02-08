@@ -11,7 +11,7 @@ export type AttractionType =
   | 'entertainment'
   | 'other'
 
-export type BudgetOrigin = 'diego' | 'pamela' | 'couple'
+export type BudgetOrigin = 'Diego' | 'Pamela' | 'Casal'
 
 export type Period = 'morning' | 'afternoon' | 'evening' | 'night' | 'full-day'
 
@@ -45,7 +45,6 @@ export interface Attraction {
   couplePrice: number
   currency: Currency
   priceInBRL: number
-  budgetOrigin: BudgetOrigin
   
   // Links and Info
   ticketLink?: string
@@ -53,9 +52,6 @@ export interface Attraction {
   duration?: number
   notes?: string
   imageUrl?: string
-  
-  createdAt: string
-  updatedAt: string
 }
 
 export interface AttractionFilters {

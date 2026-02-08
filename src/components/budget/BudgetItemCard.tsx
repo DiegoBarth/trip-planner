@@ -11,7 +11,6 @@ interface BudgetItemCardProps {
 
 export function BudgetItemCard({ budget, onEdit, onDelete }: BudgetItemCardProps) {
   const originConfig = BUDGET_ORIGINS[budget.origin]
-  const isIncome = budget.type === 'income'
 
   return (
     <div 
@@ -41,18 +40,11 @@ export function BudgetItemCard({ budget, onEdit, onDelete }: BudgetItemCardProps
               >
                 {originConfig.label}
               </span>
-              <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-                isIncome 
-                  ? 'bg-green-100 text-green-700' 
-                  : 'bg-blue-100 text-blue-700'
-              }`}>
-                {isIncome ? '💰 Receita' : '⚖️ Ajuste'}
-              </span>
             </div>
           </div>
         </div>
 
-        {/* Ações */}
+        {/* Actions */}
         <div className="flex gap-1">
           <button
             onClick={() => onEdit?.(budget)}

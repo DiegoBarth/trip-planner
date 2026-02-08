@@ -10,7 +10,7 @@ interface ModalExpenseProps {
   expense?: Expense
   isOpen: boolean
   onClose: () => void
-  onSave: (expense: Omit<Expense, 'id' | 'createdAt' | 'updatedAt'>) => void
+  onSave: (expense: Omit<Expense, 'id'>) => void
 }
 
 export function ModalExpense({ expense, isOpen, onClose, onSave }: ModalExpenseProps) {
@@ -20,7 +20,7 @@ export function ModalExpense({ expense, isOpen, onClose, onSave }: ModalExpenseP
     amount: expense?.amount || 0,
     currency: expense?.currency || 'BRL',
     amountInBRL: expense?.amountInBRL || 0,
-    budgetOrigin: expense?.budgetOrigin || 'couple',
+    budgetOrigin: expense?.budgetOrigin || 'Casal',
     date: expense?.date || new Date().toISOString().split('T')[0],
     country: expense?.country,
     attractionId: expense?.attractionId,
@@ -44,7 +44,7 @@ export function ModalExpense({ expense, isOpen, onClose, onSave }: ModalExpenseP
   }
 
   const handleSubmit = () => {
-    onSave(formData as Omit<Expense, 'id' | 'createdAt' | 'updatedAt'>)
+    onSave(formData as Omit<Expense, 'id'>)
   }
 
   return (

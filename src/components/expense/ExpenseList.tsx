@@ -7,7 +7,7 @@ import type { Expense } from '@/types/Expense'
 interface ExpenseListProps {
   expenses: Expense[]
   onUpdate: (expense: Expense) => void
-  onCreate: (expense: Omit<Expense, 'id' | 'createdAt' | 'updatedAt'>) => void
+  onCreate: (expense: Omit<Expense, 'id'>) => void
   onDelete: (id: string) => void
 }
 
@@ -40,13 +40,11 @@ export function ExpenseList({ expenses, onUpdate, onCreate, onDelete }: ExpenseL
     setIsModalOpen(false)
   }
 
-  const handleSave = (data: Omit<Expense, 'id' | 'createdAt' | 'updatedAt'>) => {
+  const handleSave = (data: Omit<Expense, 'id'>) => {
     if (editingExpense) {
       onUpdate({
         ...data,
-        id: editingExpense.id,
-        createdAt: editingExpense.createdAt,
-        updatedAt: new Date().toISOString()
+        id: editingExpense.id
       } as Expense)
     } else {
       onCreate(data)

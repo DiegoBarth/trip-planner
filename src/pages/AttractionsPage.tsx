@@ -10,7 +10,7 @@ interface AttractionsPageProps {
 const mockAttractions: Attraction[] = []
 
 export function AttractionsPage({ onBack }: AttractionsPageProps) {
-  const handleCreate = (data: Omit<Attraction, 'id' | 'createdAt' | 'updatedAt'>) => {
+  const handleCreate = (data: Omit<Attraction, 'id'>) => {
     console.log('Criar atração:', data)
   }
 

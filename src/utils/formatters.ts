@@ -8,6 +8,31 @@ export function convertToBRL(amount: number, currency: Currency): number {
    return amount * rate
 }
 
+// Format value while typing
+export function formatCurrencyInput(value: string): string {
+   // Remove all non-digit characters
+   const numbers = value.replace(/\D/g, '')
+   if (!numbers) return ''
+
+   // Convert to number and divide by 100 (cents)
+   const amount = Number(numbers) / 100
+
+   // Format as Brazilian currency
+   return amount.toLocaleString('pt-BR', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+      style: 'currency',
+      currency: 'BRL'
+   })
+}
+
+// Convert formatted value back to number
+export function currencyToNumber(value: string): number {
+   if (!value) return 0
+   return Number(value.replace(/\./g, '').replace(',', '.'))
+}
+
+
 export function formatCurrency(amount: number, currency: Currency = 'BRL'): string {
    const symbols: Record<Currency, string> = {
       BRL: 'R$',

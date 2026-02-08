@@ -21,8 +21,6 @@ export interface Expense {
   attractionId?: string
   notes?: string
   receiptUrl?: string
-  createdAt: string
-  updatedAt: string
 }
 
 export interface ExpenseFilters {

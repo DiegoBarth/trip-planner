@@ -11,9 +11,9 @@ interface HomePageProps {
 
 // Mock data
 const mockBudgetSummary = {
-  diego: { total: 5000, spent: 1200, remaining: 3800 },
-  pamela: { total: 5000, spent: 900, remaining: 4100 },
-  couple: { total: 5000, spent: 2100, remaining: 2900 }
+  Diego: { total: 5000, spent: 1200, remaining: 3800 },
+  Pamela: { total: 5000, spent: 900, remaining: 4100 },
+  Casal: { total: 5000, spent: 2100, remaining: 2900 }
 }
 
 const mockAttractions = [
@@ -33,11 +33,8 @@ const mockAttractions = [
     couplePrice: 500,
     currency: 'JPY' as const,
     priceInBRL: 16.5,
-    budgetOrigin: 'couple' as const,
     openingTime: '09:00',
     duration: 120,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
   },
   {
     id: '2',
@@ -55,11 +52,8 @@ const mockAttractions = [
     couplePrice: 2100,
     currency: 'JPY' as const,
     priceInBRL: 69.3,
-    budgetOrigin: 'diego' as const,
     openingTime: '14:00',
     duration: 180,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
   }
 ]
 
@@ -67,8 +61,8 @@ export function HomePage({ onNavigate }: HomePageProps = {}) {
   const [selectedCountry, setSelectedCountry] = useState<Country | 'all'>('all')
   const [selectedDay, setSelectedDay] = useState<number | 'all'>('all')
 
-  const totalBudget = mockBudgetSummary.diego.total + mockBudgetSummary.pamela.total + mockBudgetSummary.couple.total
-  const totalSpent = mockBudgetSummary.diego.spent + mockBudgetSummary.pamela.spent + mockBudgetSummary.couple.spent
+  const totalBudget = mockBudgetSummary.Diego.total + mockBudgetSummary.Pamela.total + mockBudgetSummary.Casal.total
+  const totalSpent = mockBudgetSummary.Diego.spent + mockBudgetSummary.Pamela.spent + mockBudgetSummary.Casal.spent
   const totalRemaining = totalBudget - totalSpent
 
   return (
@@ -130,9 +124,9 @@ export function HomePage({ onNavigate }: HomePageProps = {}) {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <BudgetCard origin="diego" {...mockBudgetSummary.diego} />
-            <BudgetCard origin="pamela" {...mockBudgetSummary.pamela} />
-            <BudgetCard origin="couple" {...mockBudgetSummary.couple} />
+            <BudgetCard origin="Diego" {...mockBudgetSummary.Diego} />
+            <BudgetCard origin="Pamela" {...mockBudgetSummary.Pamela} />
+            <BudgetCard origin="Casal" {...mockBudgetSummary.Casal} />
           </div>
         </section>
 
