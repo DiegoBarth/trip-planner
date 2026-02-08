@@ -5,12 +5,13 @@ import { ModalAttraction } from './ModalAttraction'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { SkeletonList } from '@/components/ui/SkeletonList'
 import type { Attraction } from '@/types/Attraction'
+import { formatDate } from '@/utils/formatters'
 
 interface AttractionsListProps {
   attractions: Attraction[]
   isLoading?: boolean
-  onUpdate: (attraction: Attraction) => void
-  onCreate: (attraction: Omit<Attraction, 'id'>) => void
+  onUpdate: (attraction: Attraction) => Promise<void>
+  onCreate: (attraction: Omit<Attraction, 'id'>) => Promise<void>
   onDelete: (id: number) => void
   onToggleVisited: (id: number) => void
 }
@@ -43,15 +44,16 @@ export function AttractionsList({ attractions, isLoading, onUpdate, onCreate, on
     setIsModalOpen(false)
   }
 
-  const handleSave = (data: Omit<Attraction, 'id'>) => {
+  const handleSave = async (data: Omit<Attraction, 'id'>) => {
     if (editingAttraction) {
-      onUpdate({
+      await onUpdate({
         ...data,
         id: editingAttraction.id
       } as Attraction)
     } else {
-      onCreate(data)
+      await onCreate(data)
     }
+    handleCloseModal()
   }
 
   return (
@@ -94,11 +96,7 @@ export function AttractionsList({ attractions, isLoading, onUpdate, onCreate, on
                     </h3>
                     {dayAttractions[0]?.date && (
                       <span className="text-sm text-gray-500">
-                        {new Date(dayAttractions[0].date).toLocaleDateString('pt-BR', {
-                          weekday: 'long',
-                          day: '2-digit',
-                          month: 'long'
-                        })}
+                        {formatDate(dayAttractions[0].date)}
                       </span>
                     )}
                     <span className="text-sm text-gray-400">

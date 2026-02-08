@@ -38,7 +38,7 @@ export function AttractionCard({ attraction, onCheckVisited, onDelete, onClick }
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-1">
               <span className="text-sm font-medium text-gray-500">#{attraction.order}</span>
-              <h3 className="font-bold text-lg leading-tight">{attraction.name}</h3>
+              <h3 className="font-bold text-lg leading-tight text-gray-900">{attraction.name}</h3>
             </div>
             <div className="flex items-center gap-1 text-sm text-gray-600">
               <MapPin className="w-4 h-4" />
