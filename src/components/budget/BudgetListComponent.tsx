@@ -3,6 +3,7 @@ import { Plus } from 'lucide-react'
 import { BudgetItemCard } from './BudgetItemCard'
 import { ModalBudget } from './ModalBudget'
 import { Skeleton } from '@/components/ui/Skeleton'
+import { EmptyState } from '@/components/ui/EmptyState'
 import type { Budget } from '@/types/Budget'
 import type { BudgetOrigin } from '@/types/Attraction'
 import type { CreateBudgetPayload, UpdateBudgetPayload } from '@/api/budget'
@@ -96,11 +97,11 @@ export function BudgetList({ budgets, isLoading, onUpdate, onCreate, onDelete }:
 
       <div className="space-y-8">
         {Object.keys(groupedByOrigin).length === 0 ? (
-          <div className="text-center py-12 text-gray-500 bg-white rounded-xl border-2 border-dashed">
-            <div className="text-6xl mb-4">💵</div>
-            <p className="text-lg font-medium">Nenhum orçamento encontrado</p>
-            <p className="text-sm">Comece adicionando seu primeiro orçamento!</p>
-          </div>
+          <EmptyState
+            icon="💵"
+            title="Nenhum orçamento encontrado"
+            description="Comece adicionando seu primeiro orçamento!"
+          />
         ) : (
           Object.entries(groupedByOrigin).map(([origin, originBudgets]) => {
             const config = BUDGET_ORIGINS[origin as BudgetOrigin]

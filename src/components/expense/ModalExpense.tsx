@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useEffect, useRef } from 'react'
+import { useForm, Controller } from 'react-hook-form'
 import type { Expense, ExpenseCategory } from '@/types/Expense'
 import type { BudgetOrigin, Currency } from '@/types/Attraction'
-import { EXPENSE_CATEGORIES, BUDGET_ORIGINS, COUNTRIES } from '@/config/constants'
-import { convertToBRL } from '@/utils/formatters'
+import { EXPENSE_CATEGORIES, BUDGET_ORIGINS, COUNTRIES, getCategoryFromLabel, getBudgetOriginFromLabel } from '@/config/constants'
+import { convertToBRL, convertCurrency, formatCurrencyInputByCurrency, currencyToNumber, dateToInputFormat } from '@/utils/formatters'
 import { ModalBase } from '@/components/ui/ModalBase'
 import { CustomSelect } from '@/components/ui/CustomSelect'
 
@@ -13,38 +14,156 @@ interface ModalExpenseProps {
   onSave: (expense: Omit<Expense, 'id'>) => void
 }
 
+interface ExpenseFormData {
+  category: ExpenseCategory
+  description: string
+  amount: string | number
+  currency: Currency
+  amountInBRL: number
+  budgetOrigin: BudgetOrigin
+  date: string
+  country?: 'japan' | 'south-korea'
+  notes: string
+  receiptUrl: string
+}
+
 export function ModalExpense({ expense, isOpen, onClose, onSave }: ModalExpenseProps) {
-  const [formData, setFormData] = useState<Partial<Expense>>({
-    category: expense?.category || 'food',
-    description: expense?.description || '',
-    amount: expense?.amount || 0,
-    currency: expense?.currency || 'BRL',
-    amountInBRL: expense?.amountInBRL || 0,
-    budgetOrigin: expense?.budgetOrigin || 'Casal',
-    date: expense?.date || new Date().toISOString().split('T')[0],
-    country: expense?.country,
-    attractionId: expense?.attractionId,
-    notes: expense?.notes || '',
-    receiptUrl: expense?.receiptUrl || ''
+  const { register, control, handleSubmit, watch, setValue, reset } = useForm<ExpenseFormData>({
+    defaultValues: {
+      category: 'food',
+      description: '',
+      amount: '',
+      currency: 'BRL',
+      amountInBRL: 0,
+      budgetOrigin: 'Casal',
+      date: new Date().toISOString().split('T')[0],
+      country: undefined,
+      notes: '',
+      receiptUrl: ''
+    }
   })
 
-  const handleChange = (field: keyof Expense, value: any) => {
-    setFormData(prev => {
-      const updated = { ...prev, [field]: value }
-      
-      // Auto-calculate BRL amount when amount or currency changes
-      if (field === 'amount' || field === 'currency') {
-        const amount = field === 'amount' ? value : updated.amount || 0
-        const currency = field === 'currency' ? value : updated.currency || 'BRL'
-        updated.amountInBRL = convertToBRL(amount, currency as Currency)
+  const formData = watch()
+  const previousCurrency = useRef<Currency>(formData.currency)
+
+  // Reset form when modal opens or expense changes
+  useEffect(() => {
+    if (isOpen) {
+      if (expense) {
+        // Handle category coming as label from backend
+        const categoryKey = EXPENSE_CATEGORIES[expense.category as keyof typeof EXPENSE_CATEGORIES]
+          ? expense.category
+          : getCategoryFromLabel(expense.category as string)
+        
+        // Handle budget origin coming as label from backend
+        const budgetOriginKey = BUDGET_ORIGINS[expense.budgetOrigin as keyof typeof BUDGET_ORIGINS]
+          ? expense.budgetOrigin
+          : getBudgetOriginFromLabel(expense.budgetOrigin as string)
+        
+        // Format amount based on currency
+        let formattedAmount: string
+        if (expense.currency === 'BRL') {
+          // For BRL, multiply by 100 to get cents for the formatter
+          const cents = Math.round(expense.amount * 100).toString()
+          formattedAmount = formatCurrencyInputByCurrency(cents, expense.currency)
+        } else {
+          // For JPY and KRW, use the amount directly
+          formattedAmount = formatCurrencyInputByCurrency(expense.amount.toString(), expense.currency)
+        }
+        
+        reset({
+          category: categoryKey as ExpenseCategory,
+          description: expense.description,
+          amount: formattedAmount,
+          currency: expense.currency,
+          amountInBRL: expense.amountInBRL,
+          budgetOrigin: budgetOriginKey as BudgetOrigin,
+          date: dateToInputFormat(expense.date),
+          country: expense.country,
+          notes: expense.notes || '',
+          receiptUrl: expense.receiptUrl || ''
+        })
+        
+        // Set previous currency to avoid unwanted conversion
+        previousCurrency.current = expense.currency
+      } else {
+        reset({
+          category: 'food',
+          description: '',
+          amount: '',
+          currency: 'BRL',
+          amountInBRL: 0,
+          budgetOrigin: 'Casal',
+          date: new Date().toISOString().split('T')[0],
+          country: undefined,
+          notes: '',
+          receiptUrl: ''
+        })
+        
+        // Reset previous currency
+        previousCurrency.current = 'BRL'
       }
+    }
+  }, [isOpen, expense, reset])
 
-      return updated
+  // Auto-select currency when country changes
+  useEffect(() => {
+    if (formData.country) {
+      const countryConfig = COUNTRIES[formData.country]
+      if (countryConfig?.currency) {
+        setValue('currency', countryConfig.currency)
+      }
+    }
+  }, [formData.country, setValue])
+
+  // Convert amount when currency changes
+  useEffect(() => {
+    if (previousCurrency.current !== formData.currency && formData.amount) {
+      const currentAmount = typeof formData.amount === 'string' 
+        ? currencyToNumber(formData.amount, previousCurrency.current) 
+        : formData.amount
+      
+      if (currentAmount > 0) {
+        const convertedAmount = convertCurrency(currentAmount, previousCurrency.current, formData.currency)
+        
+        // Format properly for each currency type
+        let formattedAmount: string
+        if (formData.currency === 'BRL') {
+          // For BRL, multiply by 100 to get cents, then format
+          const cents = Math.round(convertedAmount * 100).toString()
+          formattedAmount = formatCurrencyInputByCurrency(cents, formData.currency)
+        } else {
+          // For JPY and KRW, round to integer
+          const rounded = Math.round(convertedAmount).toString()
+          formattedAmount = formatCurrencyInputByCurrency(rounded, formData.currency)
+        }
+        
+        setValue('amount', formattedAmount)
+      }
+      
+      previousCurrency.current = formData.currency
+    }
+  }, [formData.currency, formData.amount, setValue])
+
+  // Auto-calculate BRL amount when amount or currency changes
+  useEffect(() => {
+    const amount = typeof formData.amount === 'string' 
+      ? currencyToNumber(formData.amount, formData.currency) 
+      : formData.amount
+    const amountInBRL = convertToBRL(amount, formData.currency)
+    setValue('amountInBRL', amountInBRL)
+  }, [formData.amount, formData.currency, setValue])
+
+  const onSubmit = (values: ExpenseFormData) => {
+    const amount = typeof values.amount === 'string' 
+      ? currencyToNumber(values.amount, values.currency) 
+      : values.amount
+
+    onSave({
+      ...values,
+      amount,
+      amountInBRL: values.amountInBRL
     })
-  }
-
-  const handleSubmit = () => {
-    onSave(formData as Omit<Expense, 'id'>)
   }
 
   return (
@@ -53,19 +172,19 @@ export function ModalExpense({ expense, isOpen, onClose, onSave }: ModalExpenseP
       onClose={onClose}
       title={expense ? 'Editar Gasto' : 'Novo Gasto'}
       type={expense ? 'edit' : 'create'}
-      onSave={handleSubmit}
+      onSave={handleSubmit(onSubmit)}
       size="lg"
     >
       <div className="space-y-6">
           {/* Category */}
           <div>
-            <label className="block text-sm font-medium mb-2">Categoria *</label>
+            <label htmlFor="expense-category" className="block text-sm font-medium text-gray-700 mb-2">Categoria *</label>
             <div className="grid grid-cols-3 gap-3">
               {(Object.entries(EXPENSE_CATEGORIES) as [ExpenseCategory, typeof EXPENSE_CATEGORIES[ExpenseCategory]][]).map(([key, config]) => (
                 <button
                   key={key}
                   type="button"
-                  onClick={() => handleChange('category', key)}
+                  onClick={() => setValue('category', key)}
                   className={`p-4 rounded-lg border-2 transition-all ${
                     formData.category === key
                       ? 'border-red-500 bg-red-50 shadow-md'
@@ -83,35 +202,80 @@ export function ModalExpense({ expense, isOpen, onClose, onSave }: ModalExpenseP
 
           {/* Description */}
           <div>
-            <label className="block text-sm font-medium mb-2">Descrição *</label>
+            <label htmlFor="expense-description" className="block text-sm font-medium text-gray-700 mb-2">Descrição *</label>
             <input
+              id="expense-description"
               type="text"
               required
-              value={formData.description}
-              onChange={(e) => handleChange('description', e.target.value)}
-              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-red-500 focus:outline-none"
+              autoComplete="off"
+              {...register('description', { required: true })}
+              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-red-500 focus:outline-none placeholder:text-gray-400 text-gray-900"
               placeholder="Ex: Almoço no restaurante"
             />
+          </div>
+
+          {/* Date and Country */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label htmlFor="expense-date" className="block text-sm font-medium text-gray-700 mb-2">Data *</label>
+              <input
+                id="expense-date"
+                type="date"
+                required
+                {...register('date', { required: true })}
+                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-red-500 focus:outline-none text-gray-900"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="expense-country" className="block text-sm font-medium text-gray-700 mb-2">País</label>
+              <CustomSelect
+                value={formData.country ? `${COUNTRIES[formData.country].flag} ${COUNTRIES[formData.country].name}` : ''}
+                onChange={(val) => {
+                  if (!val) {
+                    setValue('country', undefined)
+                    return
+                  }
+                  const countryKey = Object.entries(COUNTRIES).find(([_, c]) => `${c.flag} ${c.name}` === val)?.[0] as 'japan' | 'south-korea' | undefined
+                  if (countryKey) setValue('country', countryKey)
+                }}
+                options={['', ...Object.entries(COUNTRIES).map(([_, country]) => `${country.flag} ${country.name}`)].filter(Boolean)}
+                placeholder="Selecione o país"
+              />
+            </div>
           </div>
 
           {/* Amount and Currency */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium mb-2">Valor *</label>
-              <input
-                type="number"
-                required
-                min="0"
-                step="0.01"
-                value={formData.amount}
-                onChange={(e) => handleChange('amount', Number(e.target.value))}
-                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-red-500 focus:outline-none"
-                placeholder="0,00"
+              <label htmlFor="expense-amount" className="block text-sm font-medium text-gray-700 mb-2">Valor *</label>
+              <Controller
+                name="amount"
+                control={control}
+                rules={{ required: true }}
+                render={({ field }) => (
+                  <input
+                    id="expense-amount"
+                    type="text"
+                    required
+                    autoComplete="off"
+                    value={typeof field.value === 'number' 
+                      ? formatCurrencyInputByCurrency(field.value.toString(), formData.currency)
+                      : field.value
+                    }
+                    onChange={(e) => {
+                      const formatted = formatCurrencyInputByCurrency(e.target.value, formData.currency)
+                      field.onChange(formatted)
+                    }}
+                    className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-red-500 focus:outline-none placeholder:text-gray-400 text-gray-900"
+                    placeholder={formData.currency === 'BRL' ? 'R$ 0,00' : formData.currency === 'JPY' ? '¥ 0' : '₩ 0'}
+                  />
+                )}
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">Moeda *</label>
+              <label htmlFor="expense-currency" className="block text-sm font-medium text-gray-700 mb-2">Moeda *</label>
               <CustomSelect
                 value={formData.currency === 'BRL' ? 'R$ Real (BRL)' : formData.currency === 'JPY' ? '¥ Iene (JPY)' : '₩ Won (KRW)'}
                 onChange={(val) => {
@@ -120,7 +284,7 @@ export function ModalExpense({ expense, isOpen, onClose, onSave }: ModalExpenseP
                     '¥ Iene (JPY)': 'JPY',
                     '₩ Won (KRW)': 'KRW'
                   }
-                  handleChange('currency', currencyMap[val])
+                  setValue('currency', currencyMap[val])
                 }}
                 options={['R$ Real (BRL)', '¥ Iene (JPY)', '₩ Won (KRW)']}
               />
@@ -128,7 +292,11 @@ export function ModalExpense({ expense, isOpen, onClose, onSave }: ModalExpenseP
           </div>
 
           {/* Converted amount preview */}
-          {formData.currency !== 'BRL' && formData.amount && formData.amount > 0 && (
+          {formData.currency !== 'BRL' && formData.amount && (
+            typeof formData.amount === 'string' 
+              ? currencyToNumber(formData.amount, formData.currency) > 0
+              : formData.amount > 0
+          ) && (
             <div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
               <span className="text-sm text-blue-700">Valor em reais: </span>
               <span className="font-bold text-blue-900">
@@ -139,13 +307,13 @@ export function ModalExpense({ expense, isOpen, onClose, onSave }: ModalExpenseP
 
           {/* Budget Origin */}
           <div>
-            <label className="block text-sm font-medium mb-2">Origem do Pagamento *</label>
+            <label htmlFor="expense-budget-origin" className="block text-sm font-medium text-gray-700 mb-2">Origem do Pagamento *</label>
             <div className="grid grid-cols-3 gap-3">
               {(Object.entries(BUDGET_ORIGINS) as [BudgetOrigin, typeof BUDGET_ORIGINS[BudgetOrigin]][]).map(([key, config]) => (
                 <button
                   key={key}
                   type="button"
-                  onClick={() => handleChange('budgetOrigin', key)}
+                  onClick={() => setValue('budgetOrigin', key)}
                   className={`p-4 rounded-lg border-2 transition-all ${
                     formData.budgetOrigin === key
                       ? 'border-current shadow-md'
@@ -158,7 +326,7 @@ export function ModalExpense({ expense, isOpen, onClose, onSave }: ModalExpenseP
                 >
                   <div className="text-2xl mb-1">{config.icon}</div>
                   <div 
-                    className="font-semibold text-sm"
+                    className="font-semibold text-gray-500"
                     style={{ color: formData.budgetOrigin === key ? config.color : undefined }}
                   >
                     {config.label}
@@ -168,79 +336,17 @@ export function ModalExpense({ expense, isOpen, onClose, onSave }: ModalExpenseP
             </div>
           </div>
 
-          {/* Date and Country */}
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium mb-2">Data *</label>
-              <input
-                type="date"
-                required
-                value={formData.date}
-                onChange={(e) => handleChange('date', e.target.value)}
-                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-red-500 focus:outline-none"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-2">País</label>
-              <CustomSelect
-                value={formData.country ? `${COUNTRIES[formData.country].flag} ${COUNTRIES[formData.country].name}` : ''}
-                onChange={(val) => {
-                  if (!val) {
-                    handleChange('country', undefined)
-                    return
-                  }
-                  const countryKey = Object.entries(COUNTRIES).find(([_, c]) => `${c.flag} ${c.name}` === val)?.[0]
-                  if (countryKey) handleChange('country', countryKey)
-                }}
-                options={['', ...Object.entries(COUNTRIES).map(([_, country]) => `${country.flag} ${country.name}`)].filter(Boolean)}
-                placeholder="Selecione o país"
-              />
-            </div>
-          </div>
-
           {/* Notes */}
           <div>
-            <label className="block text-sm font-medium mb-2">Observações</label>
+            <label htmlFor="expense-notes" className="block text-sm font-medium text-gray-700 mb-2">Observações</label>
             <textarea
-              value={formData.notes}
-              onChange={(e) => handleChange('notes', e.target.value)}
+              id="expense-notes"
+              {...register('notes')}
               rows={3}
-              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-red-500 focus:outline-none"
+              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-red-500 focus:outline-none placeholder:text-gray-400 text-gray-900"
               placeholder="Anotações adicionais sobre este gasto..."
             />
           </div>
-
-          {/* Preview */}
-          {formData.amount && formData.amount > 0 && (
-            <div className="bg-gray-50 rounded-lg p-4 border-2 border-dashed border-gray-300">
-              <p className="text-sm text-gray-600 mb-2">Preview:</p>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <span className="text-3xl">
-                    {EXPENSE_CATEGORIES[formData.category as ExpenseCategory].icon}
-                  </span>
-                  <div>
-                    <p className="font-semibold">{formData.description || 'Sem descrição'}</p>
-                    <p className="text-sm text-gray-500">
-                      {EXPENSE_CATEGORIES[formData.category as ExpenseCategory].label} • 
-                      {BUDGET_ORIGINS[formData.budgetOrigin as BudgetOrigin].icon} {BUDGET_ORIGINS[formData.budgetOrigin as BudgetOrigin].label}
-                    </p>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <p className="text-2xl font-bold text-red-600">
-                    {formData.currency === 'BRL' ? '¥' : formData.currency === 'JPY' ? '¥' : '₩'} {formData.amount.toLocaleString('pt-BR')}
-                  </p>
-                  {formData.currency !== 'BRL' && (
-                    <p className="text-sm text-gray-500">
-                      {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(formData.amountInBRL || 0)}
-                    </p>
-                  )}
-                </div>
-              </div>
-            </div>
-          )}
 
       </div>
     </ModalBase>

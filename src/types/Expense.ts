@@ -18,7 +18,6 @@ export interface Expense {
   budgetOrigin: BudgetOrigin
   date: string
   country?: 'japan' | 'south-korea'
-  attractionId?: number
   notes?: string
   receiptUrl?: string
 }
@@ -28,5 +27,4 @@ export interface ExpenseFilters {
   budgetOrigin?: BudgetOrigin
   startDate?: string
   endDate?: string
-  attractionId?: string
 }

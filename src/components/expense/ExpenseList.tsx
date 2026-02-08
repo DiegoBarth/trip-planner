@@ -2,16 +2,20 @@ import { useState } from 'react'
 import { Plus } from 'lucide-react'
 import { ExpenseCard } from './ExpenseCard'
 import { ModalExpense } from './ModalExpense'
+import { EmptyState } from '@/components/ui/EmptyState'
+import { SkeletonList } from '@/components/ui/SkeletonList'
 import type { Expense } from '@/types/Expense'
+import { formatDate } from '@/utils/formatters'
 
 interface ExpenseListProps {
   expenses: Expense[]
   onUpdate: (expense: Expense) => void
   onCreate: (expense: Omit<Expense, 'id'>) => void
   onDelete: (id: number) => void
+  isLoading?: boolean
 }
 
-export function ExpenseList({ expenses, onUpdate, onCreate, onDelete }: ExpenseListProps) {
+export function ExpenseList({ expenses, onUpdate, onCreate, onDelete, isLoading = false }: ExpenseListProps) {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingExpense, setEditingExpense] = useState<Expense | undefined>()
 
@@ -49,6 +53,12 @@ export function ExpenseList({ expenses, onUpdate, onCreate, onDelete }: ExpenseL
     } else {
       onCreate(data)
     }
+    handleCloseModal()
+  }
+
+  // Show loading skeleton
+  if (isLoading) {
+    return <SkeletonList />
   }
 
   return (
@@ -67,11 +77,11 @@ export function ExpenseList({ expenses, onUpdate, onCreate, onDelete }: ExpenseL
       {/* Expense list grouped by date */}
       <div className="space-y-8">
         {sortedDates.length === 0 ? (
-          <div className="text-center py-12 text-gray-500">
-            <div className="text-6xl mb-4">🧾</div>
-            <p className="text-lg">Nenhum gasto encontrado</p>
-            <p className="text-sm">Comece registrando seu primeiro gasto!</p>
-          </div>
+          <EmptyState
+            icon="🧾"
+            title="Nenhum gasto encontrado"
+            description="Comece registrando seu primeiro gasto!"
+          />
         ) : (
           sortedDates.map(date => {
             const dateExpenses = groupedByDate[date]
@@ -82,12 +92,7 @@ export function ExpenseList({ expenses, onUpdate, onCreate, onDelete }: ExpenseL
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-3">
                     <h2 className="text-xl font-bold">
-                      {new Date(date).toLocaleDateString('pt-BR', {
-                        weekday: 'long',
-                        day: '2-digit',
-                        month: 'long',
-                        year: 'numeric'
-                      })}
+                     {formatDate(date)}
                     </h2>
                     <span className="text-sm text-gray-400">
                       {dateExpenses.length} {dateExpenses.length === 1 ? 'gasto' : 'gastos'}
@@ -108,7 +113,6 @@ export function ExpenseList({ expenses, onUpdate, onCreate, onDelete }: ExpenseL
                       expense={expense}
                       onEdit={() => handleOpenModal(expense)}
                       onDelete={onDelete}
-                      onViewAttraction={(id) => console.log('View attraction:', id)}
                     />
                   ))}
                 </div>

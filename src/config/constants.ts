@@ -85,10 +85,22 @@ export const EXPENSE_CATEGORIES = {
    other: { label: 'Outros', icon: '💰' }
 }
 
+// Helper to get category key from label
+export function getCategoryFromLabel(label: string): keyof typeof EXPENSE_CATEGORIES {
+   const entry = Object.entries(EXPENSE_CATEGORIES).find(([_, config]) => config.label === label)
+   return (entry?.[0] as keyof typeof EXPENSE_CATEGORIES) || 'other'
+}
+
 export const BUDGET_ORIGINS = {
    Diego: { label: 'Diego', icon: '👨', color: '#3b82f6' },
    Pamela: { label: 'Pamela', icon: '👩', color: '#ec4899' },
    Casal: { label: 'Casal', icon: '💑', color: '#8b5cf6' }
+}
+
+// Helper to get budget origin key from label
+export function getBudgetOriginFromLabel(label: string): keyof typeof BUDGET_ORIGINS {
+   const entry = Object.entries(BUDGET_ORIGINS).find(([_, config]) => config.label === label)
+   return (entry?.[0] as keyof typeof BUDGET_ORIGINS) || 'Casal'
 }
 
 export const PERIODS = {

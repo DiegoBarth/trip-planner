@@ -1,7 +1,8 @@
 import { useState } from 'react'
-import { Plus, MapPin, DollarSign, BarChart3 } from 'lucide-react'
+import { Plus, DollarSign, BarChart3 } from 'lucide-react'
 import { BudgetCard } from '@/components/home/BudgetCard'
 import { AttractionCard } from '@/components/attraction/AttractionCard'
+import { EmptyState } from '@/components/ui/EmptyState'
 import type { Country } from '@/types/Attraction'
 import { COUNTRIES } from '@/config/constants'
 
@@ -147,10 +148,11 @@ export function HomePage({ onNavigate }: HomePageProps = {}) {
           </div>
 
           {mockAttractions.length === 0 && (
-            <div className="text-center py-12 text-gray-500">
-              <MapPin className="w-16 h-16 mx-auto mb-4 opacity-50" />
-              <p>Nenhuma atração encontrada para os filtros selecionados</p>
-            </div>
+            <EmptyState
+              icon="🗺️"
+              title="Nenhuma atração encontrada"
+              description="Para os filtros selecionados"
+            />
           )}
         </section>
 

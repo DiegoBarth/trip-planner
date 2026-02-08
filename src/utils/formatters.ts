@@ -8,7 +8,21 @@ export function convertToBRL(amount: number, currency: Currency): number {
    return amount * rate
 }
 
-// Format value while typing
+// Convert amount from one currency to another
+export function convertCurrency(amount: number, fromCurrency: Currency, toCurrency: Currency): number {
+   if (fromCurrency === toCurrency) return amount
+   
+   // Convert to BRL first
+   const amountInBRL = convertToBRL(amount, fromCurrency)
+   
+   // Convert from BRL to target currency
+   if (toCurrency === 'BRL') return amountInBRL
+   
+   const rate = CURRENCY_RATES[`${toCurrency}_BRL` as keyof typeof CURRENCY_RATES]
+   return amountInBRL / rate
+}
+
+// Format value while typing - BRL (with decimals)
 export function formatCurrencyInput(value: string): string {
    // Remove all non-digit characters
    const numbers = value.replace(/\D/g, '')
@@ -26,16 +40,57 @@ export function formatCurrencyInput(value: string): string {
    })
 }
 
+// Format value while typing - JPY (no decimals)
+export function formatCurrencyInputJPY(value: string): string {
+   // Remove all non-digit characters
+   const numbers = value.replace(/\D/g, '')
+   if (!numbers) return ''
+
+   // Convert to number (no division, JPY has no decimals)
+   const amount = Number(numbers)
+
+   // Format as Japanese Yen
+   return `¥ ${amount.toLocaleString('pt-BR')}`
+}
+
+// Format value while typing - KRW (no decimals)
+export function formatCurrencyInputKRW(value: string): string {
+   // Remove all non-digit characters
+   const numbers = value.replace(/\D/g, '')
+   if (!numbers) return ''
+
+   // Convert to number (no division, KRW has no decimals)
+   const amount = Number(numbers)
+
+   // Format as Korean Won
+   return `₩ ${amount.toLocaleString('pt-BR')}`
+}
+
+// Dispatcher: Format value while typing based on currency
+export function formatCurrencyInputByCurrency(value: string, currency: Currency): string {
+   switch (currency) {
+      case 'BRL':
+         return formatCurrencyInput(value)
+      case 'JPY':
+         return formatCurrencyInputJPY(value)
+      case 'KRW':
+         return formatCurrencyInputKRW(value)
+      default:
+         return value
+   }
+}
+
 // Convert formatted value back to number
-export function currencyToNumber(value: string): number {
+export function currencyToNumber(value: string, currency: Currency = 'BRL'): number {
    if (!value) return 0
 
-   // Remove currency symbol, spaces, and thousand separators (dots)
+   // Remove currency symbols, spaces, and thousand separators (dots)
    // Keep only digits and comma (decimal separator)
-   const cleanValue = value.replace(/[R$\s.]/g, '')
+   const cleanValue = value.replace(/[R$¥₩\s.]/g, '')
 
-   // Replace comma with dot for decimal conversion
-   const numericValue = cleanValue.replace(',', '.')
+   // For BRL, replace comma with dot for decimal conversion
+   // For JPY and KRW, there are no decimals
+   const numericValue = currency === 'BRL' ? cleanValue.replace(',', '.') : cleanValue
 
    const result = Number(numericValue)
 

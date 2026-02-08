@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Plus, Filter, Search } from 'lucide-react'
 import { AttractionCard } from './AttractionCard'
 import { ModalAttraction } from './ModalAttraction'
+import { EmptyState } from '@/components/ui/EmptyState'
 import type { Attraction, Country, AttractionType } from '@/types/Attraction'
 import { COUNTRIES, ATTRACTION_TYPES } from '@/config/constants'
 
@@ -195,11 +196,11 @@ export function AttractionsList({ attractions, onUpdate, onCreate, onToggleVisit
       {/* Attractions list grouped by day */}
       <main className="max-w-6xl mx-auto p-4 space-y-8">
         {Object.keys(groupedByDay).length === 0 ? (
-          <div className="text-center py-12 text-gray-500">
-            <div className="text-6xl mb-4">🗺️</div>
-            <p className="text-lg">Nenhuma atração encontrada</p>
-            <p className="text-sm">Comece adicionando sua primeira atração!</p>
-          </div>
+          <EmptyState
+            icon="🗺️"
+            title="Nenhuma atração encontrada"
+            description="Comece adicionando sua primeira atração!"
+          />
         ) : (
           Object.entries(groupedByDay)
             .sort(([a], [b]) => Number(a) - Number(b))

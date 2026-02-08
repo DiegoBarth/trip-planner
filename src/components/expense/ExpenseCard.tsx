@@ -1,20 +1,28 @@
-import { Trash2, Edit2, Calendar, Banknote, Tag } from 'lucide-react'
+import { Trash2, Edit2, Calendar, Banknote } from 'lucide-react'
 import type { Expense } from '@/types/Expense'
-import { EXPENSE_CATEGORIES, BUDGET_ORIGINS, COUNTRIES } from '@/config/constants'
+import { EXPENSE_CATEGORIES, BUDGET_ORIGINS, COUNTRIES, getCategoryFromLabel, getBudgetOriginFromLabel } from '@/config/constants'
 import { formatCurrency, formatDate } from '@/utils/formatters'
 
 interface ExpenseCardProps {
   expense: Expense
   onEdit?: (expense: Expense) => void
   onDelete?: (id: number) => void
-  onViewAttraction?: (attractionId: number) => void
 }
 
-export function ExpenseCard({ expense, onEdit, onDelete, onViewAttraction }: ExpenseCardProps) {
-  const categoryConfig = EXPENSE_CATEGORIES[expense.category]
-  const originConfig = BUDGET_ORIGINS[expense.budgetOrigin]
+export function ExpenseCard({ expense, onEdit, onDelete }: ExpenseCardProps) {
+  // Handle both category key and label from backend
+  const categoryKey = EXPENSE_CATEGORIES[expense.category as keyof typeof EXPENSE_CATEGORIES] 
+    ? expense.category 
+    : getCategoryFromLabel(expense.category as string)
+  
+  // Handle both budget origin key and label from backend
+  const budgetOriginKey = BUDGET_ORIGINS[expense.budgetOrigin as keyof typeof BUDGET_ORIGINS]
+    ? expense.budgetOrigin
+    : getBudgetOriginFromLabel(expense.budgetOrigin as string)
+  
+  const categoryConfig = EXPENSE_CATEGORIES[categoryKey as keyof typeof EXPENSE_CATEGORIES]
+  const originConfig = BUDGET_ORIGINS[budgetOriginKey as keyof typeof BUDGET_ORIGINS]
   const countryConfig = expense.country ? COUNTRIES[expense.country] : null
-
   return (
     <div 
       className="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-all border-l-4"
@@ -72,17 +80,6 @@ export function ExpenseCard({ expense, onEdit, onDelete, onViewAttraction }: Exp
           </button>
         </div>
       </div>
-
-      {/* Linked Attraction */}
-      {expense.attractionId && (
-        <button
-          onClick={() => onViewAttraction?.(expense.attractionId!)}
-          className="w-full mb-3 px-3 py-2 bg-purple-50 text-purple-700 rounded-lg text-sm hover:bg-purple-100 transition-colors flex items-center gap-2"
-        >
-          <Tag className="w-4 h-4" />
-          Vinculado a uma atração
-        </button>
-      )}
 
       {/* Amount and Date */}
       <div className="flex items-center justify-between pt-3 border-t">
