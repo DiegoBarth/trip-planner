@@ -36,7 +36,7 @@ export function useBudget() {
 
    // Delete budget mutation
    const deleteMutation = useMutation({
-      mutationFn: (id: string) => deleteBudget(id),
+      mutationFn: (id: number) => deleteBudget(id),
       onSuccess: () => {
          queryClient.invalidateQueries({ queryKey: BUDGET_QUERY_KEY })
       },

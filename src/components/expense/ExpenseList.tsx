@@ -8,7 +8,7 @@ interface ExpenseListProps {
   expenses: Expense[]
   onUpdate: (expense: Expense) => void
   onCreate: (expense: Omit<Expense, 'id'>) => void
-  onDelete: (id: string) => void
+  onDelete: (id: number) => void
 }
 
 export function ExpenseList({ expenses, onUpdate, onCreate, onDelete }: ExpenseListProps) {

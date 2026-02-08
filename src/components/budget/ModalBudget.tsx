@@ -4,18 +4,18 @@ import type { Budget } from '@/types/Budget'
 import type { BudgetOrigin } from '@/types/Attraction'
 import { BUDGET_ORIGINS } from '@/config/constants'
 import { ModalBase } from '@/components/ui/ModalBase'
-import { currencyToNumber, formatCurrencyInput } from '@/utils/formatters'
+import { currencyToNumber, formatCurrencyInput, dateToInputFormat } from '@/utils/formatters'
 
 interface ModalBudgetProps {
    budget?: Budget
    isOpen: boolean
    onClose: () => void
-   onSave: (budget: Budget) => void
+   onSave: (budget: Omit<Budget, 'id'>) => void
 }
 
 type BudgetFormData = Omit<Budget, 'amount' | 'id'> & {
    amount: string | number
-   id?: string
+   id?:  number
 }
 
 const defaultValues: BudgetFormData = {
@@ -35,27 +35,33 @@ export function ModalBudget({ budget, isOpen, onClose, onSave }: ModalBudgetProp
    useEffect(() => {
       if (isOpen) {
          if (budget) {
-            // Convert number to currency format for editing
             const amountInCents = Math.round(budget.amount * 100)
-            reset({
+            const formValues = {
                origin: budget.origin,
                description: budget.description,
                amount: formatCurrencyInput(amountInCents.toString()),
-               date: budget.date
-            })
+               date: dateToInputFormat(budget.date)
+            }
+            console.log('Editing budget - resetting form with:', formValues)
+            reset(formValues)
          } else {
             reset(defaultValues)
          }
       }
    }, [isOpen, budget, reset])
 
-   const handleSalvar = (values: BudgetFormData) => {
+   const handleSave = (values: BudgetFormData) => {
       // Convert formatted value back to number before saving
-      const budgetData: Budget = {
-         ...values,
-         id: budget?.id || '',
-         amount: typeof values.amount === 'string' ? currencyToNumber(values.amount) : values.amount
+      const amount = typeof values.amount === 'string' ? currencyToNumber(values.amount) : values.amount
+      
+      const budgetData: Omit<Budget, 'id'> = {
+         origin: values.origin,
+         description: values.description,
+         amount: amount || 0,
+         date: values.date
       }
+      
+      console.log('Amount conversion:', { original: values.amount, converted: amount, final: budgetData })
       
       onSave(budgetData)
       reset(defaultValues)
@@ -68,7 +74,7 @@ export function ModalBudget({ budget, isOpen, onClose, onSave }: ModalBudgetProp
          onClose={onClose}
          title={budget ? 'Editar Orçamento' : 'Novo Orçamento'}
          type={budget ? 'edit' : 'create'}
-         onSave={handleSubmit(handleSalvar)}
+         onSave={handleSubmit(handleSave)}
          size="md"
       >
          <div className="space-y-6">

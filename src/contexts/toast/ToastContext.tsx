@@ -1,9 +1,9 @@
 import React, { createContext, useContext, useState, useCallback } from 'react';
-import { TOAST_DEFAULT_DURATION_MS, TOAST_ID_LENGTH } from '@/config/constants';
+import { TOAST_DEFAULT_DURATION_MS } from '@/config/constants';
 import ToastContainer from '@/contexts/toast/ToastContainer';
 
 interface Toast {
-   id: string;
+   id: number;
    message: string;
    type: 'success' | 'error' | 'info' | 'warning';
    duration?: number;
@@ -12,7 +12,7 @@ interface Toast {
 interface ToastContextType {
    toasts: Toast[];
    add: (message: string, type: Toast['type'], duration?: number) => void;
-   remove: (id: string) => void;
+   remove: (id: number) => void;
    clear: () => void;
 }
 
@@ -26,7 +26,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
       type: Toast['type'],
       duration: number = TOAST_DEFAULT_DURATION_MS
    ) => {
-      const id = Math.random().toString(36).substr(2, TOAST_ID_LENGTH);
+      const id = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
       const newToast: Toast = { id, message, type, duration };
 
       setToasts(prev => [...prev, newToast]);
@@ -38,7 +38,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
       }
    }, []);
 
-   const remove = useCallback((id: string) => {
+   const remove = useCallback((id: number) => {
       setToasts(prev => prev.filter(toast => toast.id !== id));
    }, []);
 

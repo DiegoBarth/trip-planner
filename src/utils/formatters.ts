@@ -29,7 +29,17 @@ export function formatCurrencyInput(value: string): string {
 // Convert formatted value back to number
 export function currencyToNumber(value: string): number {
    if (!value) return 0
-   return Number(value.replace(/\./g, '').replace(',', '.'))
+
+   // Remove currency symbol, spaces, and thousand separators (dots)
+   // Keep only digits and comma (decimal separator)
+   const cleanValue = value.replace(/[R$\s.]/g, '')
+
+   // Replace comma with dot for decimal conversion
+   const numericValue = cleanValue.replace(',', '.')
+
+   const result = Number(numericValue)
+
+   return isNaN(result) ? 0 : result
 }
 
 
@@ -46,11 +56,35 @@ export function formatCurrency(amount: number, currency: Currency = 'BRL'): stri
    })}`
 }
 export function formatDate(date: string): string {
-   return new Date(date).toLocaleDateString('pt-BR')
+   if (!date) return ''
+
+   // If already in DD/MM/YYYY format, return as is
+   if (date.includes('/')) {
+      return date
+   }
+
+   // If ISO format (YYYY-MM-DD or YYYY-MM-DDTHH:mm:ss), convert to DD/MM/YYYY
+   const dateOnly = date.split('T')[0]
+   const [year, month, day] = dateOnly.split('-')
+   return `${day}/${month}/${year}`
 }
 
 export function formatWeekday(date: string): string {
    return new Date(date).toLocaleDateString('pt-BR', { weekday: 'long' })
+}
+
+// Convert date to YYYY-MM-DD format for input[type="date"]
+export function dateToInputFormat(date: string): string {
+   if (!date) return ''
+
+   // Check if date is in DD/MM/YYYY format
+   if (date.includes('/')) {
+      const [day, month, year] = date.split('/')
+      return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
+   }
+
+   // If ISO format (YYYY-MM-DD or YYYY-MM-DDTHH:mm:ss), extract date only
+   return date.split('T')[0]
 }
 
 export function formatTime(time: string): string {

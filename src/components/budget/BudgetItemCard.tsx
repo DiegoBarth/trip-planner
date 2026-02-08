@@ -6,7 +6,7 @@ import { formatCurrency, formatDate } from '@/utils/formatters'
 interface BudgetItemCardProps {
   budget: Budget
   onEdit?: (budget: Budget) => void
-  onDelete?: (id: string) => void
+  onDelete?: (id: number) => void
 }
 
 export function BudgetItemCard({ budget, onEdit, onDelete }: BudgetItemCardProps) {

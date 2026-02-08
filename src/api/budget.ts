@@ -15,7 +15,7 @@ export interface CreateBudgetPayload {
 }
 
 export interface UpdateBudgetPayload extends CreateBudgetPayload {
-   id: string
+   id: number
 }
 
 /**
@@ -24,7 +24,7 @@ export interface UpdateBudgetPayload extends CreateBudgetPayload {
 export async function createBudget(payload: CreateBudgetPayload): Promise<Budget> {
    const response = await apiPost<ApiResponse<Budget>>({
       action: 'createBudget',
-      ...payload
+      data: payload
    })
 
    if (!response.success || !response.data) {
@@ -40,7 +40,7 @@ export async function createBudget(payload: CreateBudgetPayload): Promise<Budget
 export async function updateBudget(payload: UpdateBudgetPayload): Promise<Budget> {
    const response = await apiPost<ApiResponse<Budget>>({
       action: 'updateBudget',
-      ...payload
+      data: payload
    })
 
    if (!response.success || !response.data) {
@@ -53,7 +53,7 @@ export async function updateBudget(payload: UpdateBudgetPayload): Promise<Budget
 /**
  * Delete a budget entry by ID
  */
-export async function deleteBudget(id: string): Promise<void> {
+export async function deleteBudget(id: number): Promise<void> {
    const response = await apiPost<ApiResponse<null>>({
       action: 'deleteBudget',
       id

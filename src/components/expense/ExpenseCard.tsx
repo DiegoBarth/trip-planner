@@ -6,8 +6,8 @@ import { formatCurrency, formatDate } from '@/utils/formatters'
 interface ExpenseCardProps {
   expense: Expense
   onEdit?: (expense: Expense) => void
-  onDelete?: (id: string) => void
-  onViewAttraction?: (attractionId: string) => void
+  onDelete?: (id: number) => void
+  onViewAttraction?: (attractionId: number) => void
 }
 
 export function ExpenseCard({ expense, onEdit, onDelete, onViewAttraction }: ExpenseCardProps) {

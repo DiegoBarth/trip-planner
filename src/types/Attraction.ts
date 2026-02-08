@@ -18,7 +18,7 @@ export type Period = 'morning' | 'afternoon' | 'evening' | 'night' | 'full-day'
 export type ReservationStatus = 'not-needed' | 'pending' | 'confirmed' | 'cancelled'
 
 export interface Attraction {
-  id: string
+  id: number
   name: string
   country: Country
   city: string

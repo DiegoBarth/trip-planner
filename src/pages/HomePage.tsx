@@ -18,7 +18,7 @@ const mockBudgetSummary = {
 
 const mockAttractions = [
   {
-    id: '1',
+    id: 1,
     name: 'Templo Senso-ji',
     country: 'japan' as Country,
     city: 'Tóquio',
@@ -37,7 +37,7 @@ const mockAttractions = [
     duration: 120,
   },
   {
-    id: '2',
+    id: 2,
     name: 'Tokyo Skytree',
     country: 'japan' as Country,
     city: 'Tóquio',

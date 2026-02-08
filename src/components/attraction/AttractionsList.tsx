@@ -9,7 +9,7 @@ interface AttractionsListProps {
   attractions: Attraction[]
   onUpdate: (attraction: Attraction) => void
   onCreate: (attraction: Omit<Attraction, 'id'>) => void
-  onToggleVisited: (id: string) => void
+  onToggleVisited: (id: number) => void
 }
 
 export function AttractionsList({ attractions, onUpdate, onCreate, onToggleVisited }: AttractionsListProps) {

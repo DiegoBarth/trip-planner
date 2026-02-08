@@ -3,7 +3,7 @@ import { ToastItem } from '@/contexts/toast/ToastItem';
 
 interface ToastContainerProps {
    toasts: Toast[];
-   onRemove: (id: string) => void;
+   onRemove: (id: number) => void;
 }
 
 export default function ToastContainer({ toasts, onRemove }: ToastContainerProps) {

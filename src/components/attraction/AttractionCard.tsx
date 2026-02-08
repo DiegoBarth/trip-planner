@@ -5,7 +5,7 @@ import { formatCurrency, formatTime, formatDuration } from '@/utils/formatters'
 
 interface AttractionCardProps {
   attraction: Attraction
-  onCheckVisited?: (id: string) => void
+  onCheckVisited?: (id: number) => void
   onClick?: () => void
 }
 

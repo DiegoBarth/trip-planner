@@ -1,7 +1,7 @@
 import type { BudgetOrigin } from './Attraction'
 
 export interface Budget {
-   id: string
+   id: number
    origin: BudgetOrigin
    description: string
    amount: number

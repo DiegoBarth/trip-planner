@@ -18,7 +18,7 @@ export function ExpensesPage({ onBack }: ExpensesPageProps) {
     console.log('Atualizar gasto:', expense)
   }
 
-  const handleDelete = (id: string) => {
+  const handleDelete = (id: number) => {
     console.log('Deletar gasto:', id)
   }
 

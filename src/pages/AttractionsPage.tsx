@@ -18,7 +18,7 @@ export function AttractionsPage({ onBack }: AttractionsPageProps) {
     console.log('Atualizar atração:', attraction)
   }
 
-  const handleToggleVisited = (id: string) => {
+  const handleToggleVisited = (id: number) => {
     console.log('Toggle visitado:', id)
   }
 

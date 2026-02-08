@@ -13,7 +13,7 @@ interface BudgetListProps {
   isLoading: boolean
   onUpdate: (payload: UpdateBudgetPayload) => Promise<Budget>
   onCreate: (payload: CreateBudgetPayload) => Promise<Budget>
-  onDelete: (id: string) => Promise<void>
+  onDelete: (id: number) => Promise<void>
 }
 
 export function BudgetList({ budgets, isLoading, onUpdate, onCreate, onDelete }: BudgetListProps) {

@@ -9,7 +9,7 @@ export type ExpenseCategory =
   | 'other'
 
 export interface Expense {
-  id: string
+  id: number
   description: string
   amount: number
   currency: Currency
@@ -18,7 +18,7 @@ export interface Expense {
   budgetOrigin: BudgetOrigin
   date: string
   country?: 'japan' | 'south-korea'
-  attractionId?: string
+  attractionId?: number
   notes?: string
   receiptUrl?: string
 }
