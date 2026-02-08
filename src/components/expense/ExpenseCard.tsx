@@ -1,4 +1,4 @@
-import { Trash2, Edit2, Calendar, Banknote } from 'lucide-react'
+import { Trash2, Edit2, Calendar } from 'lucide-react'
 import type { Expense } from '@/types/Expense'
 import { EXPENSE_CATEGORIES, BUDGET_ORIGINS, COUNTRIES, getCategoryFromLabel, getBudgetOriginFromLabel } from '@/config/constants'
 import { formatCurrency, formatDate } from '@/utils/formatters'
@@ -23,6 +23,7 @@ export function ExpenseCard({ expense, onEdit, onDelete }: ExpenseCardProps) {
   const categoryConfig = EXPENSE_CATEGORIES[categoryKey as keyof typeof EXPENSE_CATEGORIES]
   const originConfig = BUDGET_ORIGINS[budgetOriginKey as keyof typeof BUDGET_ORIGINS]
   const countryConfig = expense.country ? COUNTRIES[expense.country] : null
+
   return (
     <div 
       className="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-all border-l-4"
@@ -31,7 +32,8 @@ export function ExpenseCard({ expense, onEdit, onDelete }: ExpenseCardProps) {
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-3 flex-1">
           <div 
-            className="w-12 h-12 rounded-full flex items-center justify-center text-2xl bg-gray-100"
+            className="w-12 h-12 rounded-full flex items-center justify-center text-2xl"
+            style={{ backgroundColor: `${originConfig.color}20` }}
           >
             {categoryConfig.icon}
           </div>
@@ -81,6 +83,13 @@ export function ExpenseCard({ expense, onEdit, onDelete }: ExpenseCardProps) {
         </div>
       </div>
 
+      {/* Notes */}
+      {expense.notes && (
+        <p className="text-sm text-gray-600 italic mb-3 line-clamp-2">
+          💭 {expense.notes}
+        </p>
+      )}
+
       {/* Amount and Date */}
       <div className="flex items-center justify-between pt-3 border-t">
         <div className="flex items-center gap-2 text-sm text-gray-600">
@@ -90,7 +99,6 @@ export function ExpenseCard({ expense, onEdit, onDelete }: ExpenseCardProps) {
 
         <div className="text-right">
           <div className="flex items-center gap-2 justify-end">
-            <Banknote className="w-4 h-4 text-red-600" />
             <span className="text-xl font-bold text-red-600">
               {formatCurrency(expense.amount, expense.currency)}
             </span>
@@ -102,15 +110,6 @@ export function ExpenseCard({ expense, onEdit, onDelete }: ExpenseCardProps) {
           )}
         </div>
       </div>
-
-      {/* Notes */}
-      {expense.notes && (
-        <div className="mt-3 pt-3 border-t">
-          <p className="text-sm text-gray-600 italic line-clamp-2">
-            💭 {expense.notes}
-          </p>
-        </div>
-      )}
     </div>
   )
 }

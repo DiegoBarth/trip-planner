@@ -62,9 +62,14 @@ export function ExpenseList({ expenses, onUpdate, onCreate, onDelete, isLoading 
   }
 
   return (
-    <div className="space-y-6">
-      {/* Add button */}
-      <div className="flex justify-end">
+    <div className="p-6">
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-xl font-semibold text-gray-900">
+          Todos os Gastos
+          <span className="text-sm font-normal text-gray-500 ml-2">
+            ({expenses.length})
+          </span>
+        </h2>
         <button
           onClick={() => handleOpenModal()}
           className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors shadow-sm"
@@ -74,7 +79,6 @@ export function ExpenseList({ expenses, onUpdate, onCreate, onDelete, isLoading 
         </button>
       </div>
 
-      {/* Expense list grouped by date */}
       <div className="space-y-8">
         {sortedDates.length === 0 ? (
           <EmptyState
@@ -85,25 +89,20 @@ export function ExpenseList({ expenses, onUpdate, onCreate, onDelete, isLoading 
         ) : (
           sortedDates.map(date => {
             const dateExpenses = groupedByDate[date]
-            const dateTotal = dateExpenses.reduce((sum, exp) => sum + exp.amountInBRL, 0)
+            
+            // Format date
+            const formattedDate = formatDate(date)
             
             return (
               <section key={date}>
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <h2 className="text-xl font-bold">
-                     {formatDate(date)}
-                    </h2>
-                    <span className="text-sm text-gray-400">
-                      {dateExpenses.length} {dateExpenses.length === 1 ? 'gasto' : 'gastos'}
-                    </span>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-sm text-gray-500">Total do dia</p>
-                    <p className="text-xl font-bold text-red-600">
-                      {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(dateTotal)}
-                    </p>
-                  </div>
+                <div className="flex items-center gap-3 mb-4">
+                  <span className="text-2xl">📅</span>
+                  <h3 className="text-xl font-bold text-gray-900 capitalize">
+                    {formattedDate}
+                  </h3>
+                  <span className="text-sm text-gray-400">
+                    {dateExpenses.length} {dateExpenses.length === 1 ? 'gasto' : 'gastos'}
+                  </span>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -122,7 +121,6 @@ export function ExpenseList({ expenses, onUpdate, onCreate, onDelete, isLoading 
         )}
       </div>
 
-      {/* Modal */}
       <ModalExpense
         expense={editingExpense}
         isOpen={isModalOpen}
