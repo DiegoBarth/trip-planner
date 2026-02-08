@@ -1,15 +1,13 @@
+import { useNavigate } from 'react-router-dom'
 import { Layout } from '@/components/layout/Layout'
 import { AttractionsList } from '@/components/attraction/AttractionsList'
 import type { Attraction } from '@/types/Attraction'
 
-interface AttractionsPageProps {
-  onBack: () => void
-}
-
 // Mock data
 const mockAttractions: Attraction[] = []
 
-export function AttractionsPage({ onBack }: AttractionsPageProps) {
+export function AttractionsPage() {
+  const navigate = useNavigate()
   const handleCreate = (data: Omit<Attraction, 'id'>) => {
     console.log('Criar atração:', data)
   }
@@ -25,7 +23,7 @@ export function AttractionsPage({ onBack }: AttractionsPageProps) {
   return (
     <Layout
       title="🗺️ Atrações"
-      onBack={onBack}
+      onBack={() => navigate('/')}
       headerClassName="bg-gradient-to-r from-green-600 to-teal-600 text-white"
     >
       <AttractionsList

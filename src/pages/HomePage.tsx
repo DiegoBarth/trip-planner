@@ -1,14 +1,11 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { Plus, DollarSign, BarChart3 } from 'lucide-react'
 import { BudgetCard } from '@/components/home/BudgetCard'
 import { AttractionCard } from '@/components/attraction/AttractionCard'
 import { EmptyState } from '@/components/ui/EmptyState'
 import type { Country } from '@/types/Attraction'
 import { COUNTRIES } from '@/config/constants'
-
-interface HomePageProps {
-  onNavigate?: (page: 'budget' | 'expenses' | 'attractions' | 'dashboard') => void
-}
 
 // Mock data
 const mockBudgetSummary = {
@@ -58,7 +55,7 @@ const mockAttractions = [
   }
 ]
 
-export function HomePage({ onNavigate }: HomePageProps = {}) {
+export function HomePage() {
   const [selectedCountry, setSelectedCountry] = useState<Country | 'all'>('all')
   const [selectedDay, setSelectedDay] = useState<number | 'all'>('all')
 
@@ -158,37 +155,37 @@ export function HomePage({ onNavigate }: HomePageProps = {}) {
 
         <section className="sticky bottom-6">
           <div className="bg-white rounded-xl shadow-lg p-4 flex justify-around items-center border-2 border-gray-200">
-            <button 
-              onClick={() => onNavigate?.('budget')}
+            <Link 
+              to="/budgets"
               className="flex flex-col items-center gap-1 p-3 hover:bg-blue-50 rounded-lg transition-colors"
             >
               <DollarSign className="w-6 h-6 text-blue-600" />
               <span className="text-xs font-medium">Orçamento</span>
-            </button>
+            </Link>
 
-            <button 
-              onClick={() => onNavigate?.('expenses')}
+            <Link 
+              to="/expenses"
               className="flex flex-col items-center gap-1 p-3 hover:bg-red-50 rounded-lg transition-colors"
             >
               <DollarSign className="w-6 h-6 text-red-600" />
               <span className="text-xs font-medium">Gasto</span>
-            </button>
+            </Link>
 
-            <button 
-              onClick={() => onNavigate?.('attractions')}
+            <Link 
+              to="/attractions"
               className="flex flex-col items-center gap-1 p-3 hover:bg-purple-50 rounded-lg transition-colors"
             >
               <Plus className="w-6 h-6 text-purple-600" />
               <span className="text-xs font-medium">Atração</span>
-            </button>
+            </Link>
 
-            <button 
-              onClick={() => onNavigate?.('dashboard')}
+            <Link 
+              to="/dashboard"
               className="flex flex-col items-center gap-1 p-3 hover:bg-green-50 rounded-lg transition-colors"
             >
               <BarChart3 className="w-6 h-6 text-green-600" />
               <span className="text-xs font-medium">Dashboard</span>
-            </button>
+            </Link>
           </div>
         </section>
       </main>

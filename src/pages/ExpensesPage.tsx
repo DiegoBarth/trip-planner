@@ -1,14 +1,12 @@
+import { useNavigate } from 'react-router-dom'
 import { Layout } from '@/components/layout/Layout'
 import { ExpenseList } from '@/components/expense/ExpenseList'
 import { useExpense } from '@/hooks/useExpense'
 import { useToast } from '@/contexts/toast'
 import type { Expense } from '@/types/Expense'
 
-interface ExpensesPageProps {
-  onBack: () => void
-}
-
-export function ExpensesPage({ onBack }: ExpensesPageProps) {
+export function ExpensesPage() {
+  const navigate = useNavigate()
   const { expenses, isLoading, createExpense, updateExpense, deleteExpense } = useExpense()
   const toast = useToast()
 
@@ -45,7 +43,7 @@ export function ExpensesPage({ onBack }: ExpensesPageProps) {
   return (
     <Layout
       title="💸 Gastos"
-      onBack={onBack}
+      onBack={() => navigate('/')}
       headerClassName="bg-gradient-to-r from-red-600 to-orange-600 text-white"
     >
       <ExpenseList

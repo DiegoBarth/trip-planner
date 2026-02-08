@@ -1,12 +1,10 @@
+import { useNavigate } from 'react-router-dom'
 import { Layout } from '@/components/layout/Layout'
 import { BudgetList } from '@/components/budget/BudgetListComponent'
 import { useBudget } from '@/hooks/useBudget'
 
-interface BudgetPageProps {
-  onBack: () => void
-}
-
-export function BudgetPage({ onBack }: BudgetPageProps) {
+export function BudgetPage() {
+  const navigate = useNavigate()
   const {
     budgets,
     isLoading,
@@ -18,7 +16,7 @@ export function BudgetPage({ onBack }: BudgetPageProps) {
   return (
     <Layout
       title="💰 Orçamento"
-      onBack={onBack}
+      onBack={() => navigate('/')}
       headerClassName="bg-gradient-to-r from-blue-600 to-purple-600 text-white"
     >
       <BudgetList

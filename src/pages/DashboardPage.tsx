@@ -1,14 +1,13 @@
+import { useNavigate } from 'react-router-dom'
 import { Layout } from '@/components/layout/Layout'
 
-interface DashboardPageProps {
-  onBack: () => void
-}
+export function DashboardPage() {
+  const navigate = useNavigate()
 
-export function DashboardPage({ onBack }: DashboardPageProps) {
   return (
     <Layout
       title="📊 Dashboard"
-      onBack={onBack}
+      onBack={() => navigate('/')}
       headerClassName="bg-gradient-to-r from-green-600 to-emerald-600 text-white"
     >
       <div className="p-6">
