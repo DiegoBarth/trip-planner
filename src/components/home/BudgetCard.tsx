@@ -1,9 +1,10 @@
 import { Wallet, TrendingDown, TrendingUp } from 'lucide-react'
 import { BUDGET_ORIGINS } from '@/config/constants'
 import { formatCurrency } from '@/utils/formatters'
+import type { BudgetOrigin } from '@/types/Attraction'
 
 interface BudgetCardProps {
-  origin: 'Diego' | 'Pamela' | 'Casal'
+  origin: BudgetOrigin
   total: number
   spent: number
   remaining: number

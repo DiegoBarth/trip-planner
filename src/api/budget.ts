@@ -1,5 +1,5 @@
 import { apiGet, apiPost } from './client'
-import type { Budget } from '@/types/Budget'
+import type { Budget, BudgetSummary } from '@/types/Budget'
 
 interface ApiResponse<T> {
    success: boolean
@@ -74,6 +74,21 @@ export async function getBudgets(): Promise<Budget[]> {
 
    if (!response.success || !response.data) {
       throw new Error(response.message || 'Failed to fetch budgets')
+   }
+
+   return response.data
+}
+
+/**
+ * Get the budget summary
+ */
+export async function getBudgetSummary(): Promise<BudgetSummary> {
+   const response = await apiGet<ApiResponse<BudgetSummary>>({
+      action: 'getBudgetSummary'
+   })
+
+   if (!response.success || !response.data) {
+      throw new Error(response.message || 'Failed to fetch balance')
    }
 
    return response.data

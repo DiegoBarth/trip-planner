@@ -1,18 +1,11 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Plus, DollarSign, BarChart3 } from 'lucide-react'
-import { BudgetCard } from '@/components/home/BudgetCard'
 import { AttractionCard } from '@/components/attraction/AttractionCard'
 import { EmptyState } from '@/components/ui/EmptyState'
 import type { Country } from '@/types/Attraction'
 import { COUNTRIES } from '@/config/constants'
-
-// Mock data
-const mockBudgetSummary = {
-  Diego: { total: 5000, spent: 1200, remaining: 3800 },
-  Pamela: { total: 5000, spent: 900, remaining: 4100 },
-  Casal: { total: 5000, spent: 2100, remaining: 2900 }
-}
+import { BudgetSummary } from '@/components/home/BudgetSummary'
 
 const mockAttractions = [
   {
@@ -59,10 +52,6 @@ export function HomePage() {
   const [selectedCountry, setSelectedCountry] = useState<Country | 'all'>('all')
   const [selectedDay, setSelectedDay] = useState<number | 'all'>('all')
 
-  const totalBudget = mockBudgetSummary.Diego.total + mockBudgetSummary.Pamela.total + mockBudgetSummary.Casal.total
-  const totalSpent = mockBudgetSummary.Diego.spent + mockBudgetSummary.Pamela.spent + mockBudgetSummary.Casal.spent
-  const totalRemaining = totalBudget - totalSpent
-
   return (
     <div className="min-h-screen bg-gray-50">
       <header className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6 shadow-lg">
@@ -106,26 +95,7 @@ export function HomePage() {
 
       <main className="max-w-6xl mx-auto p-6 space-y-8">
         <section>
-          <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
-            💰 Resumo Financeiro
-          </h2>
-          
-          <div className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-xl p-6 shadow-lg mb-6">
-            <h3 className="text-lg mb-2 opacity-90">Saldo Total</h3>
-            <p className="text-4xl font-bold mb-4">
-              {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(totalRemaining)}
-            </p>
-            <div className="flex justify-between text-sm opacity-90">
-              <span>Total: {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(totalBudget)}</span>
-              <span>Gasto: {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(totalSpent)}</span>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <BudgetCard origin="Diego" {...mockBudgetSummary.Diego} />
-            <BudgetCard origin="Pamela" {...mockBudgetSummary.Pamela} />
-            <BudgetCard origin="Casal" {...mockBudgetSummary.Casal} />
-          </div>
+            <BudgetSummary />
         </section>
 
         <section>

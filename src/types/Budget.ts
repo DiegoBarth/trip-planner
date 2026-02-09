@@ -1,32 +1,28 @@
 import type { BudgetOrigin } from './Attraction'
 
+/**
+ * Single budget entry
+ */
 export interface Budget {
    id: number
    origin: BudgetOrigin
    description: string
    amount: number
-   date: string
+   date: string // ISO string (YYYY-MM-DD)
 }
 
-export interface BudgetSummary {
-   Diego: {
-      total: number
-      spent: number
-      remaining: number
-   }
-   Pamela: {
-      total: number
-      spent: number
-      remaining: number
-   }
-   Casal: {
-      total: number
-      spent: number
-      remaining: number
-   }
-   grandTotal: {
-      total: number
-      spent: number
-      remaining: number
-   }
+/**
+ * Base structure for any budget/balance totals
+ */
+export interface Totals {
+   totalBudget: number
+   totalSpent: number
+   remainingBalance: number
+}
+
+/**
+ * Summary of budgets grouped by origin/person
+ */
+export interface BudgetSummary extends Totals {
+   byOrigin: Record<string, Totals>
 }

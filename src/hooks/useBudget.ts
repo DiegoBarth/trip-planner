@@ -1,15 +1,23 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { createBudget, updateBudget, deleteBudget, getBudgets } from '@/api/budget'
+import { createBudget, updateBudget, deleteBudget, getBudgets, getBudgetSummary } from '@/api/budget'
 import { QUERY_STALE_TIME_MS } from '@/config/constants'
 import type { CreateBudgetPayload, UpdateBudgetPayload } from '@/api/budget'
+import type { BudgetSummary } from '@/types/Budget'
 
 const BUDGET_QUERY_KEY = ['budgets']
+const BUDGET_SUMMARY_QUERY_KEY = ['budget_summary']
 
 /**
  * Hook to manage budget operations
  */
 export function useBudget() {
    const queryClient = useQueryClient()
+
+   const { data: budgetSummary } = useQuery<BudgetSummary>({
+      queryKey: BUDGET_SUMMARY_QUERY_KEY,
+      queryFn: getBudgetSummary,
+      staleTime: QUERY_STALE_TIME_MS,
+   })
 
    // Fetch all budgets
    const { data: budgets = [], isLoading, error } = useQuery({
@@ -44,6 +52,7 @@ export function useBudget() {
 
    return {
       budgets,
+      budgetSummary,
       isLoading,
       error,
       createBudget: createMutation.mutateAsync,
