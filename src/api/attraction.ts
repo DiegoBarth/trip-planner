@@ -27,7 +27,7 @@ export interface CreateAttractionPayload {
    isOpen?: boolean
    openingTime?: string
    closingTime?: string
-   closedDays?: string[]
+   closedDays?: string
    ticketLink?: string
    location?: string
    duration?: number

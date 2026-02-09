@@ -33,7 +33,7 @@ interface AttractionFormData {
    isOpen?: boolean
    openingTime: string
    closingTime: string
-   closedDays: string[]
+   closedDays: string
    ticketLink: string
    location: string
    duration: number
@@ -63,7 +63,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
          isOpen: undefined,
          openingTime: '',
          closingTime: '',
-         closedDays: [],
+         closedDays: '',
          ticketLink: '',
          location: '',
          duration: 0,
@@ -95,7 +95,8 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
             reset({
                ...attraction,
                couplePrice: formattedPrice,
-               date: formattedData
+               date: formattedData,
+               closedDays: attraction.closedDays || ''
             })
             previousCurrency.current = attraction.currency
          } else {
@@ -119,7 +120,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
                isOpen: undefined,
                openingTime: '',
                closingTime: '',
-               closedDays: [],
+               closedDays: '',
                ticketLink: '',
                location: '',
                duration: 0,
@@ -429,19 +430,39 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
                      <label className="block text-sm font-bold text-gray-900 mb-2">
                         Dias Fechados
                      </label>
-                     <div className="flex flex-wrap gap-2">
-                        {Object.entries(WEEK_DAYS).map(([key, day]) => (
-                           <label key={key} className="flex items-center gap-1.5 px-3 py-2 bg-gray-50 hover:bg-gray-100 border-2 border-gray-300 rounded-lg cursor-pointer transition-colors">
-                              <input
-                                 type="checkbox"
-                                 value={key}
-                                 {...register('closedDays')}
-                                 className="w-4 h-4 text-green-600 rounded"
-                              />
-                              <span className="text-sm font-medium text-gray-900">{day.short}</span>
-                           </label>
-                        ))}
-                     </div>
+                     <Controller
+                        name="closedDays"
+                        control={control}
+                        render={({ field }) => {
+                           const closedDaysArray = field.value ? field.value.split(',').map(d => d.trim()).filter(Boolean) : []
+                           return (
+                              <div className="flex flex-wrap gap-2">
+                                 {Object.entries(WEEK_DAYS).map(([key, day]) => {
+                                    const isChecked = closedDaysArray.includes(key)
+                                    return (
+                                       <label key={key} className="flex items-center gap-1.5 px-3 py-2 bg-gray-50 hover:bg-gray-100 border-2 border-gray-300 rounded-lg cursor-pointer transition-colors">
+                                          <input
+                                             type="checkbox"
+                                             checked={isChecked}
+                                             onChange={(e) => {
+                                                if (e.target.checked) {
+                                                   const newArray = [...closedDaysArray, key]
+                                                   field.onChange(newArray.join(','))
+                                                } else {
+                                                   const newArray = closedDaysArray.filter(v => v !== key)
+                                                   field.onChange(newArray.join(','))
+                                                }
+                                             }}
+                                             className="w-4 h-4 text-green-600 rounded"
+                                          />
+                                          <span className="text-sm font-medium text-gray-900">{day.short}</span>
+                                       </label>
+                                    )
+                                 })}
+                              </div>
+                           )
+                        }}
+                     />
                   </div>
                </div>
             </section>

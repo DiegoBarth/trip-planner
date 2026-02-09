@@ -34,7 +34,7 @@ export interface Attraction {
   isOpen?: boolean
   openingTime?: string
   closingTime?: string
-  closedDays?: string[]
+  closedDays?: string
   
   // Status
   visited: boolean

@@ -1,4 +1,4 @@
-import { MapPin, Clock, Banknote, CheckCircle2, Trash2, Map } from 'lucide-react'
+import { MapPin, Clock, Banknote, CheckCircle2, Trash2, Map, AlertTriangle } from 'lucide-react'
 import type { Attraction } from '@/types/Attraction'
 import { ATTRACTION_TYPES, PERIODS } from '@/config/constants'
 import { formatCurrency, formatTime, formatDuration } from '@/utils/formatters'
@@ -18,13 +18,20 @@ export function AttractionCard({ attraction, onCheckVisited, onDelete, onClick }
       return null
    }
 
+   // Check if the attraction is closed on the visit day
+   const isClosedOnVisitDay = attraction.closedDays && attraction.dayOfWeek && 
+      attraction.closedDays.split(',').map(d => d.trim()).includes(attraction.dayOfWeek)
+
    return (
       <div
          className={`
     relative rounded-lg shadow-md overflow-hidden transition-all cursor-pointer border-l-4
+    active:scale-[1.02] active:shadow-xl
     ${attraction.visited
                ? 'bg-gray-100 opacity-80 grayscale'
-               : 'bg-white hover:shadow-lg border-l-blue-500'
+               : isClosedOnVisitDay
+                  ? 'bg-red-50 hover:shadow-lg border-l-red-500'
+                  : 'bg-white hover:shadow-lg border-l-blue-500'
             }
   `}
          onClick={onClick}
@@ -120,6 +127,12 @@ export function AttractionCard({ attraction, onCheckVisited, onDelete, onClick }
 
                {/* Tags */}
                <div className="flex flex-wrap gap-2 mt-2">
+                  {isClosedOnVisitDay && (
+                     <span className="px-2 py-1 bg-red-100 text-red-700 text-xs rounded-full font-bold flex items-center gap-1">
+                        <AlertTriangle className="w-3 h-3" />
+                        Fechado neste dia
+                     </span>
+                  )}
                   <span className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full">
                      {attractionType.label}
                   </span>
