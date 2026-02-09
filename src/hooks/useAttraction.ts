@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { createAttraction, updateAttraction, deleteAttraction, getAttractions } from '@/api/attraction'
 import { QUERY_STALE_TIME_MS } from '@/config/constants'
 import type { CreateAttractionPayload, UpdateAttractionPayload } from '@/api/attraction'
+import { dateToInputFormat } from '@/utils/formatters'
 
 const ATTRACTION_QUERY_KEY = ['attractions']
 
@@ -42,6 +43,18 @@ export function useAttraction() {
       },
    })
 
+   const toggleVisited = async (id: number) => {
+      const attraction = attractions.find(a => a.id === id)
+      if (!attraction) return
+
+      attraction.date = dateToInputFormat(attraction.date)
+
+      await updateMutation.mutateAsync({
+         ...attraction,
+         visited: !attraction.visited
+      })
+   }
+
    return {
       attractions,
       isLoading,
@@ -49,6 +62,7 @@ export function useAttraction() {
       createAttraction: createMutation.mutateAsync,
       updateAttraction: updateMutation.mutateAsync,
       deleteAttraction: deleteMutation.mutateAsync,
+      toggleVisited,
       isCreating: createMutation.isPending,
       isUpdating: updateMutation.isPending,
       isDeleting: deleteMutation.isPending,

@@ -1,52 +1,10 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Plus, DollarSign, BarChart3 } from 'lucide-react'
-import { AttractionCard } from '@/components/attraction/AttractionCard'
-import { EmptyState } from '@/components/ui/EmptyState'
 import type { Country } from '@/types/Attraction'
 import { COUNTRIES } from '@/config/constants'
 import { BudgetSummary } from '@/components/home/BudgetSummary'
-
-const mockAttractions = [
-  {
-    id: 1,
-    name: 'Templo Senso-ji',
-    country: 'japan' as Country,
-    city: 'Tóquio',
-    region: 'Asakusa',
-    day: 3,
-    date: '2026-04-15',
-    dayOfWeek: 'Quarta-feira',
-    type: 'temple' as const,
-    order: 1,
-    visited: false,
-    needsReservation: false,
-    couplePrice: 500,
-    currency: 'JPY' as const,
-    priceInBRL: 16.5,
-    openingTime: '09:00',
-    duration: 120,
-  },
-  {
-    id: 2,
-    name: 'Tokyo Skytree',
-    country: 'japan' as Country,
-    city: 'Tóquio',
-    region: 'Sumida',
-    day: 3,
-    date: '2026-04-15',
-    dayOfWeek: 'Quarta-feira',
-    type: 'viewpoint' as const,
-    order: 2,
-    visited: false,
-    needsReservation: true,
-    couplePrice: 2100,
-    currency: 'JPY' as const,
-    priceInBRL: 69.3,
-    openingTime: '14:00',
-    duration: 180,
-  }
-]
+import { NextAttractions } from '@/components/home/NextAttractions'
 
 export function HomePage() {
   const [selectedCountry, setSelectedCountry] = useState<Country | 'all'>('all')
@@ -99,28 +57,7 @@ export function HomePage() {
         </section>
 
         <section>
-          <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
-            🗓️ Próximas Atrações {selectedDay !== 'all' && `(Dia ${selectedDay})`}
-          </h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {mockAttractions.map(attraction => (
-              <AttractionCard
-                key={attraction.id}
-                attraction={attraction}
-                onCheckVisited={(id) => console.log('Marcar visitado:', id)}
-                onClick={() => console.log('Abrir detalhes:', attraction.id)}
-              />
-            ))}
-          </div>
-
-          {mockAttractions.length === 0 && (
-            <EmptyState
-              icon="🗺️"
-              title="Nenhuma atração encontrada"
-              description="Para os filtros selecionados"
-            />
-          )}
+          <NextAttractions />
         </section>
 
         <section className="sticky bottom-6">

@@ -20,9 +20,16 @@ export function AttractionCard({ attraction, onCheckVisited, onDelete, onClick }
 
    return (
       <div
-         className="relative bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-all cursor-pointer border-l-4 border-l-blue-500"
+         className={`
+    relative rounded-lg shadow-md overflow-hidden transition-all cursor-pointer border-l-4
+    ${attraction.visited
+               ? 'bg-gray-100 opacity-80 grayscale'
+               : 'bg-white hover:shadow-lg border-l-blue-500'
+            }
+  `}
          onClick={onClick}
       >
+
          {/* Image or placeholder */}
          {attraction.imageUrl ? (
             <div className="h-32 bg-cover bg-center" style={{ backgroundImage: `url(${attraction.imageUrl})` }} />
@@ -94,15 +101,22 @@ export function AttractionCard({ attraction, onCheckVisited, onDelete, onClick }
                </div>
 
                {/* Value */}
-               <div className="flex items-center gap-2 text-sm">
-                  <Banknote className="w-4 h-4 text-green-600" />
-                  <span className="font-semibold text-green-600">
-                     {formatCurrency(attraction.couplePrice, attraction.currency)}
-                  </span>
-                  <span className="text-gray-500">
-                     ({formatCurrency(attraction.priceInBRL)})
-                  </span>
-               </div>
+               {attraction.couplePrice ? (
+                  <div className="flex items-center gap-2 text-sm">
+                     <Banknote className="w-4 h-4 text-green-600" />
+                     <span className="font-semibold text-green-600">
+                        {formatCurrency(attraction.couplePrice, attraction.currency)}
+                     </span>
+                     <span className="text-gray-500">
+                        ({formatCurrency(attraction.priceInBRL)})
+                     </span>
+                  </div>
+               ) : (
+                  <div className="flex items-center gap-2 text-sm">
+                     <Banknote className="w-4 h-4 text-green-600" />
+                     <span className="font-semibold text-green-600">Gratuito</span>
+                  </div>
+               )}
 
                {/* Tags */}
                <div className="flex flex-wrap gap-2 mt-2">
