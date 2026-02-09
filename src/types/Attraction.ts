@@ -1,4 +1,4 @@
-export type Country = 'japan' | 'south-korea'
+export type Country = 'japan' | 'south-korea' | 'all'
 export type Currency = 'JPY' | 'KRW' | 'BRL'
 export type AttractionType = 
   | 'temple' 

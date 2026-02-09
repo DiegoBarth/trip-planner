@@ -4,9 +4,12 @@ import { AttractionsList } from '@/components/attraction/AttractionsList'
 import { useAttraction } from '@/hooks/useAttraction'
 import { useToast } from '@/contexts/toast'
 import type { Attraction } from '@/types/Attraction'
+import { useCountry } from '@/contexts/CountryContext'
 
 export function AttractionsPage() {
    const navigate = useNavigate()
+   const { country } = useCountry()
+
    const {
       attractions,
       isLoading,
@@ -14,7 +17,7 @@ export function AttractionsPage() {
       updateAttraction,
       deleteAttraction,
       toggleVisited
-   } = useAttraction()
+   } = useAttraction(country)
 
    const { success, error } = useToast()
 

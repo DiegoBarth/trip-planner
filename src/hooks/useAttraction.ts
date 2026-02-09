@@ -3,19 +3,20 @@ import { createAttraction, updateAttraction, deleteAttraction, getAttractions } 
 import { QUERY_STALE_TIME_MS } from '@/config/constants'
 import type { CreateAttractionPayload, UpdateAttractionPayload } from '@/api/attraction'
 import { dateToInputFormat } from '@/utils/formatters'
+import type { Attraction, Country } from '@/types/Attraction'
 
-const ATTRACTION_QUERY_KEY = ['attractions']
 
 /**
  * Hook to manage attraction operations
  */
-export function useAttraction() {
+export function useAttraction(country: Country) {
+   const ATTRACTION_QUERY_KEY = ['attractions', country]
    const queryClient = useQueryClient()
 
    // Fetch all attractions
-   const { data: attractions = [], isLoading, error } = useQuery({
+   const { data, isLoading, error } = useQuery<Attraction[]>({
       queryKey: ATTRACTION_QUERY_KEY,
-      queryFn: getAttractions,
+      queryFn: () => getAttractions(country),
       staleTime: QUERY_STALE_TIME_MS,
    })
 
@@ -44,6 +45,8 @@ export function useAttraction() {
    })
 
    const toggleVisited = async (id: number) => {
+      if (!attractions) return;
+
       const attraction = attractions.find(a => a.id === id)
       if (!attraction) return
 
@@ -54,6 +57,8 @@ export function useAttraction() {
          visited: !attraction.visited
       })
    }
+
+   const attractions = data ?? [];
 
    return {
       attractions,

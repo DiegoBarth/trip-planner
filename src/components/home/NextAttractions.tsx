@@ -4,9 +4,11 @@ import { useAttraction } from '@/hooks/useAttraction'
 import { SkeletonList } from '@/components/ui/SkeletonList'
 import { getNextAttractions } from '@/utils/getNextAttractions'
 import { useToast } from '@/contexts/toast'
+import { useCountry } from '@/contexts/CountryContext'
 
 export function NextAttractions() {
-   const { attractions, isLoading, toggleVisited } = useAttraction()
+   const { country } = useCountry()
+   const { attractions, isLoading, toggleVisited } = useAttraction(country)
    const { success, error } = useToast()
 
    const nextAttractions = useMemo(

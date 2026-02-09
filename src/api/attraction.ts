@@ -1,5 +1,5 @@
 import { apiGet, apiPost } from './client'
-import type { Attraction } from '@/types/Attraction'
+import type { Attraction, Country } from '@/types/Attraction'
 
 interface ApiResponse<T> {
    success: boolean
@@ -88,13 +88,14 @@ export async function deleteAttraction(id: number): Promise<void> {
 /**
  * Get all attractions
  */
-export async function getAttractions(): Promise<Attraction[]> {
+export async function getAttractions(country: Country): Promise<Attraction[]> {
    const response = await apiGet<ApiResponse<Attraction[]>>({
-      action: 'getAttractions'
+      action: 'getAttractions',
+      country
    })
 
    if (!response.success || !response.data) {
-      throw new Error(response.message || 'Failed to fetch attractions')
+      return []
    }
 
    return response.data

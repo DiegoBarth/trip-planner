@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import type { Attraction, Country, AttractionType, Currency, Period, ReservationStatus } from '@/types/Attraction'
 import { COUNTRIES, ATTRACTION_TYPES, PERIODS, RESERVATION_STATUS, WEEK_DAYS } from '@/config/constants'
-import { convertToBRL, formatCurrencyInputByCurrency, currencyToNumber, convertCurrency } from '@/utils/formatters'
+import { convertToBRL, formatCurrencyInputByCurrency, currencyToNumber, convertCurrency, dateToInputFormat } from '@/utils/formatters'
 import { ModalBase } from '@/components/ui/ModalBase'
 import { CustomSelect } from '@/components/ui/CustomSelect'
 
@@ -90,9 +90,12 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
                formattedPrice = formatCurrencyInputByCurrency(attraction.couplePrice.toString(), attraction.currency)
             }
 
+            const formattedData = dateToInputFormat(attraction.date)
+
             reset({
                ...attraction,
-               couplePrice: formattedPrice
+               couplePrice: formattedPrice,
+               date: formattedData
             })
             previousCurrency.current = attraction.currency
          } else {
@@ -131,13 +134,13 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
    // Convert and reformat couplePrice when currency changes
    useEffect(() => {
       if (previousCurrency.current !== formData.currency && formData.couplePrice) {
-         const currentAmount = typeof formData.couplePrice === 'string' 
-            ? currencyToNumber(formData.couplePrice, previousCurrency.current as Currency) 
+         const currentAmount = typeof formData.couplePrice === 'string'
+            ? currencyToNumber(formData.couplePrice, previousCurrency.current as Currency)
             : (formData.couplePrice as number)
 
          if (currentAmount > 0) {
             const convertedAmount = convertCurrency(currentAmount, previousCurrency.current as Currency, formData.currency as Currency)
-            
+
             // Format properly for each currency type
             let formattedAmount: string
             if (formData.currency === 'BRL') {
@@ -163,7 +166,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
    const getAvailableCurrencies = (): { label: string; value: Currency }[] => {
       const country = formData.country as Country
       const brl = { label: 'R$ Real (BRL)', value: 'BRL' as Currency }
-      
+
       if (country === 'japan') {
          return [{ label: '¥ Iene (JPY)', value: 'JPY' }, brl]
       } else if (country === 'south-korea') {
@@ -182,7 +185,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
    const handleCouplerPriceChange = (value: string) => {
       const formatted = formatCurrencyInputByCurrency(value, formData.currency as Currency)
       setValue('couplePrice', formatted)
-      
+
       // Auto-calculate BRL price
       const price = currencyToNumber(formatted, formData.currency as Currency)
       setValue('priceInBRL', convertToBRL(price, formData.currency as Currency))
@@ -190,7 +193,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
 
    const onSubmit = (values: AttractionFormData) => {
       // Convert formatted couplePrice back to number
-      const couplePrice = typeof values.couplePrice === 'string' 
+      const couplePrice = typeof values.couplePrice === 'string'
          ? currencyToNumber(values.couplePrice as string, values.currency as Currency)
          : (values.couplePrice as number)
 
