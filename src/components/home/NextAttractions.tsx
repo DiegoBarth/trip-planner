@@ -15,8 +15,6 @@ export function NextAttractions() {
       () => getNextAttractions(attractions),
       [attractions]
    )
-   console.log(attractions)
-   console.log(nextAttractions)
 
    const handleToggleVisited = async (id: number) => {
       try {
