@@ -10,11 +10,13 @@ export function NextAttractions() {
    const { country } = useCountry()
    const { attractions, isLoading, toggleVisited } = useAttraction(country)
    const { success, error } = useToast()
-
+   
    const nextAttractions = useMemo(
       () => getNextAttractions(attractions),
       [attractions]
    )
+   console.log(attractions)
+   console.log(nextAttractions)
 
    const handleToggleVisited = async (id: number) => {
       try {

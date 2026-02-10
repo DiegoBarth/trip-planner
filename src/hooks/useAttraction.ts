@@ -20,6 +20,11 @@ export function useAttraction(country: Country) {
       staleTime: QUERY_STALE_TIME_MS,
    })
 
+   // Helper to invalidate attractions cache
+   const invalidateAttractionsCache = () => {
+      queryClient.invalidateQueries({ queryKey: ATTRACTION_QUERY_KEY })
+   }
+
    // Create attraction mutation
    const createMutation = useMutation({
       mutationFn: (payload: CreateAttractionPayload) => createAttraction(payload),
@@ -71,5 +76,6 @@ export function useAttraction(country: Country) {
       isCreating: createMutation.isPending,
       isUpdating: updateMutation.isPending,
       isDeleting: deleteMutation.isPending,
+      invalidateAttractionsCache,
    }
 }

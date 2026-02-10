@@ -15,6 +15,8 @@ export function getNextAttractions(attractions: Attraction[]): Attraction[] {
       }))
       .filter(a => a.parsedDate >= today)
 
+      console.log('Future Attractions:', attractions)
+
    if (futureAttractions.length === 0) return []
 
    futureAttractions.sort(

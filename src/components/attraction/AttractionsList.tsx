@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Plus } from 'lucide-react'
+import { Plus, GripVertical } from 'lucide-react'
 import { AttractionsGrid } from './AttractionsGrid'
 import { ModalAttraction } from './ModalAttraction'
 import { SkeletonList } from '@/components/ui/SkeletonList'
@@ -12,6 +12,7 @@ interface AttractionsListProps {
    onCreate: (attraction: Omit<Attraction, 'id'>) => Promise<void>
    onDelete: (id: number) => void
    onToggleVisited: (id: number) => void
+   onBulkUpdate?: (attractions: Attraction[]) => Promise<void>
 }
 
 export function AttractionsList({
@@ -20,11 +21,13 @@ export function AttractionsList({
    onUpdate,
    onCreate,
    onDelete,
-   onToggleVisited
+   onToggleVisited,
+   onBulkUpdate
 }: AttractionsListProps) {
    const [isModalOpen, setIsModalOpen] = useState(false)
    const [editingAttraction, setEditingAttraction] =
       useState<Attraction | undefined>()
+   const [isDragEnabled, setIsDragEnabled] = useState(false)
 
    const handleSave = async (data: Omit<Attraction, 'id'>) => {
       if (editingAttraction) {
@@ -34,6 +37,20 @@ export function AttractionsList({
       }
       setIsModalOpen(false)
       setEditingAttraction(undefined)
+   }
+
+   const handleReorder = async (reorderedAttractions: Attraction[]) => {
+      if (!onBulkUpdate) return
+
+      // Find which attractions changed
+      const changedAttractions = reorderedAttractions.filter(updated => {
+         const original = attractions.find(a => a.id === updated.id)
+         return original && (original.day !== updated.day || original.order !== updated.order)
+      })
+
+      if (changedAttractions.length > 0) {
+         await onBulkUpdate(changedAttractions)
+      }
    }
 
    return (
@@ -46,13 +63,30 @@ export function AttractionsList({
                </span>
             </h2>
 
-            <button
-               onClick={() => setIsModalOpen(true)}
-               className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors shadow-sm"
-            >
-               <Plus className="w-5 h-5" />
-               Nova Atração
-            </button>
+            <div className="flex items-center gap-3">
+               {onBulkUpdate && (
+                  <button
+                     onClick={() => setIsDragEnabled(!isDragEnabled)}
+                     className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors shadow-sm ${
+                        isDragEnabled
+                           ? 'bg-blue-600 text-white hover:bg-blue-700'
+                           : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                     }`}
+                     title={isDragEnabled ? 'Desabilitar reordenação' : 'Habilitar reordenação'}
+                  >
+                     <GripVertical className="w-5 h-5" />
+                     {isDragEnabled ? 'Reordenação ativa' : 'Reordenar'}
+                  </button>
+               )}
+
+               <button
+                  onClick={() => setIsModalOpen(true)}
+                  className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors shadow-sm"
+               >
+                  <Plus className="w-5 h-5" />
+                  Nova Atração
+               </button>
+            </div>
          </div>
 
          {isLoading ? (
@@ -69,6 +103,8 @@ export function AttractionsList({
                }}
                emptyTitle="Nenhuma atração encontrada"
                emptyDescription="Comece adicionando sua primeira atração!"
+               enableDragDrop={isDragEnabled}
+               onReorder={handleReorder}
             />
          )}
 

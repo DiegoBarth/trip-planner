@@ -100,3 +100,19 @@ export async function getAttractions(country: Country): Promise<Attraction[]> {
 
    return response.data
 }
+
+/**
+ * Bulk update multiple attractions in a single request
+ */
+export async function bulkUpdateAttractions(payload: UpdateAttractionPayload[]): Promise<Attraction[]> {
+   const response = await apiPost<ApiResponse<Attraction[]>>({
+      action: 'bulkUpdateAttractions',
+      data: payload
+   })
+
+   if (!response.success || !response.data) {
+      throw new Error(response.message || 'Failed to bulk update attractions')
+   }
+
+   return response.data
+}
