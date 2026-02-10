@@ -1,6 +1,7 @@
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useState, useMemo } from 'react'
 import type { ReactNode } from 'react'
 import type { Country } from '@/types/Attraction'
+import { useAttraction } from '@/hooks/useAttraction'
 
 type DayFilter = number | 'all'
 type CountryFilter = Country | 'all'
@@ -10,6 +11,7 @@ interface CountryContextType {
    setCountry: (country: CountryFilter) => void
    day: DayFilter
    setDay: (day: DayFilter) => void
+   availableDays: number[]
 }
 
 /**
@@ -32,7 +34,8 @@ export const CountryContext = createContext<CountryContextType>({
    country: 'all',
    setCountry: () => { },
    day: 'all',
-   setDay: () => { }
+   setDay: () => { },
+   availableDays: []
 })
 
 export function CountryProvider({ children }: { children: ReactNode }) {
@@ -40,6 +43,25 @@ export function CountryProvider({ children }: { children: ReactNode }) {
 
    const [country, setCountry] = useState<CountryFilter>(initialFilter.country)
    const [day, setDay] = useState<DayFilter>(initialFilter.day)
+
+   const { attractions } = useAttraction(country)
+
+   const availableDays = useMemo(() => {
+      const attractionsToConsider = country === 'all'
+         ? attractions
+         : attractions.filter(attr => attr.country === country)
+
+      const uniqueDays = new Set<number>()
+      attractionsToConsider.forEach(attr => {
+         if (attr.day) uniqueDays.add(attr.day)
+      })
+
+      return Array.from(uniqueDays).sort((a, b) => a - b)
+   }, [attractions, country])
+
+   useEffect(() => {
+      setDay('all')
+   }, [country])
 
    useEffect(() => {
       sessionStorage.setItem(
@@ -54,7 +76,8 @@ export function CountryProvider({ children }: { children: ReactNode }) {
             country,
             setCountry,
             day,
-            setDay
+            setDay,
+            availableDays
          }}
       >
          {children}
