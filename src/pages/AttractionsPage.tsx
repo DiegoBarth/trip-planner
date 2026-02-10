@@ -10,10 +10,9 @@ import { dateToInputFormat } from '@/utils/formatters'
 
 export function AttractionsPage() {
    const navigate = useNavigate()
-   const { country } = useCountry()
+   const { country, attractions } = useCountry()
 
    const {
-      attractions,
       isLoading,
       createAttraction,
       updateAttraction,
@@ -72,7 +71,7 @@ export function AttractionsPage() {
          }))
 
          await bulkUpdateAttractions(formattedAttractions as any)
-         
+
          success('Atrações reordenadas com sucesso!')
       } catch (err) {
          error('Erro ao reordenar atrações')

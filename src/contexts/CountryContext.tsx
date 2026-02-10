@@ -1,7 +1,11 @@
 import { createContext, useContext, useEffect, useState, useMemo } from 'react'
 import type { ReactNode } from 'react'
-import type { Country } from '@/types/Attraction'
+import { useBudget } from '@/hooks/useBudget'
+import { useExpense } from '@/hooks/useExpense'
 import { useAttraction } from '@/hooks/useAttraction'
+import type { Budget, BudgetSummary } from '@/types/Budget'
+import type { Expense } from '@/types/Expense'
+import type { Attraction, Country } from '@/types/Attraction'
 
 type DayFilter = number | 'all'
 type CountryFilter = Country | 'all'
@@ -11,6 +15,10 @@ interface CountryContextType {
    setCountry: (country: CountryFilter) => void
    day: DayFilter
    setDay: (day: DayFilter) => void
+   budgets: Budget[]
+   budgetSummary: BudgetSummary
+   expenses: Expense[]
+   attractions: Attraction[]
    availableDays: number[]
 }
 
@@ -32,6 +40,15 @@ export const CountryContext = createContext<CountryContextType>({
    setCountry: () => { },
    day: 'all',
    setDay: () => { },
+   budgets: [],
+   budgetSummary: {
+      totalBudget: 0,
+      totalSpent: 0,
+      remainingBalance: 0,
+      byOrigin: {}
+   },
+   expenses: [],
+   attractions: [],
    availableDays: []
 })
 
@@ -41,6 +58,16 @@ export function CountryProvider({ children }: { children: ReactNode }) {
    const [country, setCountry] = useState<CountryFilter>(initialFilter.country)
    const [day, setDay] = useState<DayFilter>(initialFilter.day)
 
+   const { budgets, budgetSummary: rawBudgetSummary } = useBudget()
+
+   const budgetSummary: BudgetSummary = rawBudgetSummary ?? {
+      totalBudget: 0,
+      totalSpent: 0,
+      remainingBalance: 0,
+      byOrigin: {}
+   }
+
+   const { expenses } = useExpense(country)
    const { attractions } = useAttraction(country)
 
    const availableDays = useMemo(() => {
@@ -74,6 +101,10 @@ export function CountryProvider({ children }: { children: ReactNode }) {
             setCountry,
             day,
             setDay,
+            budgets,
+            budgetSummary,
+            expenses,
+            attractions,
             availableDays
          }}
       >
