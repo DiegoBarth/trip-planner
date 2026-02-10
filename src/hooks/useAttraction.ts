@@ -1,9 +1,11 @@
+import { useMemo } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { createAttraction, updateAttraction, deleteAttraction, getAttractions } from '@/api/attraction'
 import { QUERY_STALE_TIME_MS } from '@/config/constants'
 import type { CreateAttractionPayload, UpdateAttractionPayload } from '@/api/attraction'
 import { dateToInputFormat } from '@/utils/formatters'
 import type { Attraction, Country } from '@/types/Attraction'
+import { applyAutoDays, normalizeOrderByDate } from '@/utils/attractionDayUtils'
 import {
    updateAttractionCacheOnCreate,
    updateAttractionCacheOnUpdate,
@@ -23,6 +25,12 @@ export function useAttraction(country: Country) {
       queryFn: () => getAttractions(country),
       staleTime: QUERY_STALE_TIME_MS,
    })
+
+   const rawAttractions = data ?? []
+   const attractions = useMemo(
+      () => normalizeOrderByDate(applyAutoDays(rawAttractions)),
+      [rawAttractions]
+   )
 
    // Create mutation
    const createMutation = useMutation({
@@ -49,8 +57,6 @@ export function useAttraction(country: Country) {
          updateAttractionCacheOnDelete(queryClient, country, deletedId)
       }
    })
-
-   const attractions = data ?? [];
 
    const toggleVisited = async (id: number) => {
       const attraction = attractions.find(a => a.id === id)

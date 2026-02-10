@@ -1,9 +1,11 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Plus, GripVertical } from 'lucide-react'
 import { AttractionsGrid } from './AttractionsGrid'
 import { ModalAttraction } from './ModalAttraction'
 import { SkeletonList } from '@/components/ui/SkeletonList'
 import type { Attraction } from '@/types/Attraction'
+import { getAutoDayForDate, getNextOrderForDate } from '@/utils/attractionDayUtils'
+import { dateToInputFormat } from '@/utils/formatters'
 
 interface AttractionsListProps {
    attractions: Attraction[]
@@ -28,12 +30,46 @@ export function AttractionsList({
    const [editingAttraction, setEditingAttraction] =
       useState<Attraction | undefined>()
    const [isDragEnabled, setIsDragEnabled] = useState(false)
+   const [isMobile, setIsMobile] = useState(() => {
+      if (typeof window !== 'undefined') {
+         return window.innerWidth <= 768
+      }
+      return false
+   })
 
-   const handleSave = async (data: Omit<Attraction, 'id'>) => {
+   useEffect(() => {
+      const checkMobile = () => {
+         setIsMobile(window.innerWidth <= 768)
+      }
+      
+      checkMobile()
+      window.addEventListener('resize', checkMobile)
+      return () => window.removeEventListener('resize', checkMobile)
+   }, [])
+
+   const handleSave = async (data: Omit<Attraction, 'id' | 'day' | 'order'>) => {
+      const autoDay = getAutoDayForDate(
+         attractions,
+         data.country,
+         data.date,
+         editingAttraction?.id
+      )
+
+      const isSameGroup = editingAttraction
+         ? editingAttraction.country === data.country
+            && dateToInputFormat(editingAttraction.date) === dateToInputFormat(data.date)
+         : false
+
+      const order = isSameGroup
+         ? editingAttraction?.order ?? 1
+         : getNextOrderForDate(attractions, data.country, data.date, editingAttraction?.id)
+
+      const payload = { ...data, day: autoDay, order }
+
       if (editingAttraction) {
-         await onUpdate({ ...data, id: editingAttraction.id } as Attraction)
+         await onUpdate({ ...payload, id: editingAttraction.id } as Attraction)
       } else {
-         await onCreate(data)
+         await onCreate(payload as Omit<Attraction, 'id'>)
       }
       setIsModalOpen(false)
       setEditingAttraction(undefined)
@@ -64,7 +100,7 @@ export function AttractionsList({
             </h2>
 
             <div className="flex items-center gap-3">
-               {onBulkUpdate && (
+               {onBulkUpdate && !isMobile && (
                   <button
                      onClick={() => setIsDragEnabled(!isDragEnabled)}
                      className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors shadow-sm ${
@@ -103,7 +139,7 @@ export function AttractionsList({
                }}
                emptyTitle="Nenhuma atração encontrada"
                emptyDescription="Comece adicionando sua primeira atração!"
-               enableDragDrop={isDragEnabled}
+               enableDragDrop={isMobile ? true : isDragEnabled}
                onReorder={handleReorder}
             />
          )}
@@ -111,7 +147,10 @@ export function AttractionsList({
          <ModalAttraction
             attraction={editingAttraction}
             isOpen={isModalOpen}
-            onClose={() => setIsModalOpen(false)}
+            onClose={() => {
+               setIsModalOpen(false)
+               setEditingAttraction(undefined)
+            }}
             onSave={handleSave}
          />
       </div>

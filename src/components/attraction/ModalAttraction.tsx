@@ -10,7 +10,7 @@ interface ModalAttractionProps {
    attraction?: Attraction
    isOpen: boolean
    onClose: () => void
-   onSave: (attraction: Omit<Attraction, 'id'>) => void
+   onSave: (attraction: Omit<Attraction, 'id' | 'day' | 'order'>) => void
 }
 
 interface AttractionFormData {
@@ -18,11 +18,9 @@ interface AttractionFormData {
    country: Country
    city: string
    region: string
-   day: number
    date: string
    dayOfWeek: string
    type: AttractionType
-   order: number
    visited: boolean
    needsReservation: boolean
    reservationStatus?: string
@@ -48,11 +46,9 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
          country: 'japan',
          city: '',
          region: '',
-         day: 1,
          date: '',
          dayOfWeek: '',
          type: 'other',
-         order: 1,
          visited: false,
          needsReservation: false,
          reservationStatus: undefined,
@@ -92,8 +88,10 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
 
             const formattedData = dateToInputFormat(attraction.date)
 
+            const { id: _, day: __, ...rest } = attraction
+
             reset({
-               ...attraction,
+               ...rest,
                couplePrice: formattedPrice,
                date: formattedData,
                closedDays: attraction.closedDays || ''
@@ -105,11 +103,9 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
                country: 'japan',
                city: '',
                region: '',
-               day: 1,
                date: '',
                dayOfWeek: '',
                type: 'other',
-               order: 1,
                visited: false,
                needsReservation: false,
                reservationStatus: undefined,
@@ -201,7 +197,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
       onSave({
          ...values,
          couplePrice
-      } as Omit<Attraction, 'id'>)
+      } as Omit<Attraction, 'id' | 'day' | 'order'>)
    }
 
    return (
@@ -317,19 +313,6 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
                      <label className="block text-sm font-bold text-gray-900 mb-2">
-                        Dia da Viagem *
-                     </label>
-                     <input
-                        type="number"
-                        required
-                        min="1"
-                        {...register('day', { required: true, valueAsNumber: true })}
-                        className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 focus:outline-none transition-colors placeholder-gray-500 text-gray-900"
-                     />
-                  </div>
-
-                  <div>
-                     <label className="block text-sm font-bold text-gray-900 mb-2">
                         Data *
                      </label>
                      <Controller
@@ -351,19 +334,6 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
                               className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 focus:outline-none transition-colors placeholder-gray-500 text-gray-900"
                            />
                         )}
-                     />
-                  </div>
-
-                  <div>
-                     <label className="block text-sm font-bold text-gray-900 mb-2">
-                        Ordem no Dia *
-                     </label>
-                     <input
-                        type="number"
-                        required
-                        min="1"
-                        {...register('order', { required: true, valueAsNumber: true })}
-                        className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 focus:outline-none transition-colors placeholder-gray-500 text-gray-900"
                      />
                   </div>
 

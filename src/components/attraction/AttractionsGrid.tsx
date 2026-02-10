@@ -6,7 +6,7 @@ import { AttractionCard } from './AttractionCard'
 import { DroppableDay } from './DroppableDay'
 import { EmptyState } from '@/components/ui/EmptyState'
 import type { Attraction } from '@/types/Attraction'
-import { formatDate } from '@/utils/formatters'
+import { dateToInputFormat, formatDate } from '@/utils/formatters'
 import { COUNTRIES } from '@/config/constants'
 
 type GroupMode = 'country' | 'none'
@@ -45,7 +45,7 @@ export function AttractionsGrid({
    const sensors = useSensors(
       useSensor(TouchSensor, {
          activationConstraint: {
-            delay: 200,
+            delay: 1000,
             tolerance: 5,
          },
       }),
@@ -73,11 +73,18 @@ export function AttractionsGrid({
       
       if (!activeAttraction || !overAttraction) return
 
-      // Only reorder within the same day
-      if (activeAttraction.day !== overAttraction.day) return
+      const activeDateKey = dateToInputFormat(activeAttraction.date)
+      const overDateKey = dateToInputFormat(overAttraction.date)
 
-      // Get attractions for this day
-      const dayAttractions = displayAttractions.filter(a => a.day === activeAttraction.day)
+      // Only reorder within the same country and date
+      if (activeAttraction.country !== overAttraction.country) return
+      if (!activeDateKey || activeDateKey !== overDateKey) return
+
+      // Get attractions for this country/date
+      const dayAttractions = displayAttractions.filter(a =>
+         a.country === activeAttraction.country
+         && dateToInputFormat(a.date) === activeDateKey
+      )
                                         .sort((a, b) => a.order - b.order)
       
       const oldIndex = dayAttractions.findIndex(a => a.id === activeId)
@@ -88,16 +95,15 @@ export function AttractionsGrid({
       
       // Update order values and merge back
       const updatedAttractions = displayAttractions.map(attr => {
-         if (attr.day !== activeAttraction.day) return attr
+         if (attr.country !== activeAttraction.country) return attr
+         if (dateToInputFormat(attr.date) !== activeDateKey) return attr
          
          const newPosition = reorderedDay.findIndex(a => a.id === attr.id)
          return { ...attr, order: newPosition + 1 }
       })
 
-      // 🎯 Atualizar a UI imediatamente (otimistic update)
       setDisplayAttractions(updatedAttractions)
 
-      // Fazer a requisição em background
       onReorder(updatedAttractions)
    }
 
@@ -111,10 +117,18 @@ export function AttractionsGrid({
       )
    }
 
-   /**
-    * 🔹 HOME — sem agrupamento por país
-    */
    if (groupBy === 'none') {
+      const getDayGroupSortKey = (dayAttractions: Attraction[], day: number): number => {
+         const dateKeys = dayAttractions
+            .map(attraction => dateToInputFormat(attraction.date))
+            .filter(Boolean)
+            .sort()
+
+         if (dateKeys.length === 0) return day
+
+         return new Date(`${dateKeys[0]}T12:00:00`).getTime()
+      }
+
       const dayGroups = Object.entries(
          displayAttractions.reduce((acc, attraction) => {
             const day = attraction.day
@@ -122,14 +136,20 @@ export function AttractionsGrid({
             acc[day].push(attraction)
             return acc
          }, {} as Record<number, Attraction[]>)
-      ).sort(([a], [b]) => Number(a) - Number(b))
+      )
+         .map(([day, dayAttractions]) => ({
+            day,
+            dayAttractions,
+            sortKey: getDayGroupSortKey(dayAttractions, Number(day))
+         }))
+         .sort((a, b) => a.sortKey - b.sortKey)
 
       // Sort attractions within each day by order
-      dayGroups.forEach(([_, dayAttractions]) => {
+      dayGroups.forEach(({ dayAttractions }) => {
          dayAttractions.sort((a, b) => a.order - b.order)
       })
 
-      const content = dayGroups.map(([day, dayAttractions]) => (
+      const content = dayGroups.map(({ day, dayAttractions }) => (
          <section key={day}>
             <div className="flex items-center gap-3 mb-4">
                <span className="text-2xl">📅</span>
@@ -181,9 +201,6 @@ export function AttractionsGrid({
       )
    }
 
-   /**
-    * 🔹 TELA DE ATRAÇÕES — agrupado por país → dia
-    */
    const groupedByCountry = displayAttractions.reduce((acc, attraction) => {
       const country = attraction.country ?? 'outros'
       const day = attraction.day
@@ -195,13 +212,40 @@ export function AttractionsGrid({
       return acc
    }, {} as Record<string, Record<number, Attraction[]>>)
 
+   const countryEarliestDate = (country: string): number => {
+      const attractionsByDay = groupedByCountry[country]
+      if (!attractionsByDay) return Number.POSITIVE_INFINITY
+
+      const dates: string[] = []
+
+      Object.values(attractionsByDay).forEach(dayAttractions => {
+         dayAttractions.forEach(attraction => {
+            if (!attraction.date) return
+            dates.push(dateToInputFormat(attraction.date))
+         })
+      })
+
+      if (dates.length === 0) return Number.POSITIVE_INFINITY
+
+      const earliestKey = dates.sort()[0]
+      return new Date(`${earliestKey}T12:00:00`).getTime()
+   }
+
    Object.values(groupedByCountry).forEach(days => {
       Object.keys(days).forEach(day => {
          days[Number(day)].sort((a, b) => a.order - b.order)
       })
    })
 
-   const countryContent = Object.entries(groupedByCountry).map(([country, days]) => (
+   const countryContent = Object.entries(groupedByCountry)
+      .sort(([countryA], [countryB]) => {
+         const earliestA = countryEarliestDate(countryA)
+         const earliestB = countryEarliestDate(countryB)
+
+         if (earliestA === earliestB) return countryA.localeCompare(countryB)
+         return earliestA - earliestB
+      })
+      .map(([country, days]) => (
       <section key={country} className="space-y-6">
          {/* Country header */}
          <div className="flex items-center gap-3">
