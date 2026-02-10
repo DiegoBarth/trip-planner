@@ -63,7 +63,7 @@ export function CountryProvider({ children }: { children: ReactNode }) {
    const { budgets, budgetSummary: rawBudgetSummary } = useBudget()
    const { expenses } = useExpense(country)
    const { attractions } = useAttraction(country)
-   const dashboardData = useDashboard(country)
+   const dashboardData = useDashboard({ budgets, expenses, attractions })
 
    const budgetSummary: BudgetSummary = rawBudgetSummary ?? {
       totalBudget: 0,

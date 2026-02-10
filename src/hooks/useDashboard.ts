@@ -1,8 +1,3 @@
-import { useQueryClient } from '@tanstack/react-query'
-import type { Country } from '@/types/Attraction'
-import type { Budget } from '@/types/Budget'
-import type { Expense } from '@/types/Expense'
-import type { Attraction } from '@/types/Attraction'
 import {
    selectTotalSpent,
    selectExpensesByCategory,
@@ -10,23 +5,17 @@ import {
    selectAttractionStatus,
    calculateDaysOfTrip
 } from '@/selectors/dashboardSelectors'
+import type { Budget } from '@/types/Budget'
+import type { Expense } from '@/types/Expense'
+import type { Attraction } from '@/types/Attraction'
 import type { UseDashboardResult } from '@/types/Dashboard'
 
-
-export function useDashboard(country: Country): UseDashboardResult {
-   const queryClient = useQueryClient()
-
-   const expenses =
-      queryClient.getQueryData<Expense[]>(['expenses', country]) ?? []
-
-   const budgets =
-      queryClient.getQueryData<Budget[]>(['budgets']) ?? []
-
-   const attractions =
-      queryClient.getQueryData<Attraction[]>(['attractions', country]) ?? []
-
+export function useDashboard({ budgets, expenses, attractions }: {
+   budgets: Budget[]
+   expenses: Expense[]
+   attractions: Attraction[]
+}): UseDashboardResult {
    const daysOfTrip = calculateDaysOfTrip(attractions)
-
    const attractionStatus = selectAttractionStatus(attractions)
 
    const visitedPercentage =

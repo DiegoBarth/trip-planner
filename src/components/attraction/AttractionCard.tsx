@@ -18,26 +18,25 @@ export function AttractionCard({ attraction, onCheckVisited, onDelete, onClick }
       return null
    }
 
-   // Check if the attraction is closed on the visit day
-   const isClosedOnVisitDay = attraction.closedDays && attraction.dayOfWeek && 
+   const isClosedOnVisitDay =
+      attraction.closedDays &&
+      attraction.dayOfWeek &&
       attraction.closedDays.split(',').map(d => d.trim()).includes(attraction.dayOfWeek)
 
    return (
       <div
          className={`
-    relative rounded-lg shadow-md overflow-hidden transition-all cursor-pointer border-l-4
-    active:scale-[1.02] active:shadow-xl
-    ${attraction.visited
-               ? 'bg-gray-100 opacity-80 grayscale'
-               : isClosedOnVisitDay
-                  ? 'bg-red-50 hover:shadow-lg border-l-red-500'
-                  : 'bg-white hover:shadow-lg border-l-blue-500'
+        relative rounded-lg shadow-md overflow-hidden transition-all cursor-pointer border-l-4
+        active:scale-[1.02] active:shadow-xl
+        ${isClosedOnVisitDay
+               ? 'bg-red-50 hover:shadow-lg border-l-red-500'
+               : 'bg-white hover:shadow-lg border-l-blue-500'
             }
-  `}
+        ${attraction.visited ? 'scale-[0.97]' : ''}
+      `}
          onClick={onClick}
       >
 
-         {/* Image or placeholder */}
          {attraction.imageUrl ? (
             <div className="h-32 bg-cover bg-center" style={{ backgroundImage: `url(${attraction.imageUrl})` }} />
          ) : (
@@ -47,7 +46,6 @@ export function AttractionCard({ attraction, onCheckVisited, onDelete, onClick }
          )}
 
          <div className="p-4">
-            {/* Header */}
             <div className="flex items-start justify-between mb-2">
                <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
@@ -60,9 +58,7 @@ export function AttractionCard({ attraction, onCheckVisited, onDelete, onClick }
                   </div>
                </div>
 
-               {/* Action buttons */}
                <div className="flex gap-1">
-                  {/* Delete button */}
                   {onDelete && (
                      <button
                         onClick={(e) => {
@@ -75,7 +71,6 @@ export function AttractionCard({ attraction, onCheckVisited, onDelete, onClick }
                      </button>
                   )}
 
-                  {/* Visited checkbox */}
                   <button
                      onClick={(e) => {
                         e.stopPropagation()
@@ -91,9 +86,7 @@ export function AttractionCard({ attraction, onCheckVisited, onDelete, onClick }
                </div>
             </div>
 
-            {/* Information */}
             <div className="space-y-2">
-               {/* Schedule */}
                <div className="flex items-center gap-2 text-sm text-gray-700">
                   <Clock className="w-4 h-4 text-blue-500" />
                   <span>
@@ -107,7 +100,6 @@ export function AttractionCard({ attraction, onCheckVisited, onDelete, onClick }
                   )}
                </div>
 
-               {/* Value */}
                {attraction.couplePrice ? (
                   <div className="flex items-center gap-2 text-sm">
                      <Banknote className="w-4 h-4 text-green-600" />
@@ -125,7 +117,6 @@ export function AttractionCard({ attraction, onCheckVisited, onDelete, onClick }
                   </div>
                )}
 
-               {/* Tags */}
                <div className="flex flex-wrap gap-2 mt-2">
                   {isClosedOnVisitDay && (
                      <span className="px-2 py-1 bg-red-100 text-red-700 text-xs rounded-full font-bold flex items-center gap-1">
@@ -149,6 +140,7 @@ export function AttractionCard({ attraction, onCheckVisited, onDelete, onClick }
                </div>
             </div>
          </div>
+
          {attraction.location && (
             <a
                href={attraction.location}
