@@ -1,44 +1,88 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { createExpense, updateExpense, deleteExpense, getExpenses } from '@/api/expense'
+import {
+   createExpense,
+   updateExpense,
+   deleteExpense,
+   getExpenses,
+} from '@/api/expense'
 import { QUERY_STALE_TIME_MS } from '@/config/constants'
-import type { CreateExpensePayload, UpdateExpensePayload } from '@/api/expense'
+import type {
+   CreateExpensePayload,
+   UpdateExpensePayload,
+} from '@/api/expense'
 import type { Country } from '@/types/Attraction'
+import type { Expense } from '@/types/Expense'
+import {
+   updateExpenseCacheOnCreate,
+   updateExpenseCacheOnUpdate,
+   updateExpenseCacheOnDelete,
+} from '@/services/expenseCacheService'
+import {
+   updateSummaryAfterExpenseCreate,
+   updateSummaryAfterExpenseUpdate,
+   updateSummaryAfterExpenseDelete,
+} from '@/services/expenseBudgetSummaryCacheService'
 
 /**
  * Hook to manage expense operations
  */
 export function useExpense(country: Country) {
-   const EXPENSE_QUERY_KEY = ['expenses', country]
    const queryClient = useQueryClient()
+   const EXPENSE_QUERY_KEY = ['expenses', country]
 
-   // Fetch all expenses
+   // Fetch expenses
    const { data: expenses = [], isLoading, error } = useQuery({
       queryKey: EXPENSE_QUERY_KEY,
       queryFn: () => getExpenses(country),
       staleTime: QUERY_STALE_TIME_MS,
    })
 
-   // Create expense mutation
+   // Create expense
    const createMutation = useMutation({
-      mutationFn: (payload: CreateExpensePayload) => createExpense(payload),
-      onSuccess: () => {
-         queryClient.invalidateQueries({ queryKey: EXPENSE_QUERY_KEY })
+      mutationFn: (payload: CreateExpensePayload) =>
+         createExpense(payload),
+      onSuccess: newExpense => {
+         updateExpenseCacheOnCreate(queryClient, country, newExpense)
+         updateSummaryAfterExpenseCreate(queryClient, newExpense)
       },
    })
 
-   // Update expense mutation
+   // Update expense
    const updateMutation = useMutation({
-      mutationFn: (payload: UpdateExpensePayload) => updateExpense(payload),
-      onSuccess: () => {
-         queryClient.invalidateQueries({ queryKey: EXPENSE_QUERY_KEY })
+      mutationFn: (payload: UpdateExpensePayload) =>
+         updateExpense(payload),
+
+      onSuccess: updatedExpense => {
+         const previousExpenses =
+            queryClient.getQueryData<Expense[]>(EXPENSE_QUERY_KEY)
+
+         const previousExpense = previousExpenses?.find(
+            e => e.id === updatedExpense.id
+         )
+
+         if (!previousExpense) return
+
+         updateExpenseCacheOnUpdate(queryClient, country, previousExpense, updatedExpense)
+         updateSummaryAfterExpenseUpdate(queryClient, previousExpense, updatedExpense)
       },
    })
 
-   // Delete expense mutation
+   // Delete expense
    const deleteMutation = useMutation({
       mutationFn: (id: number) => deleteExpense(id),
-      onSuccess: () => {
-         queryClient.invalidateQueries({ queryKey: EXPENSE_QUERY_KEY })
+
+      onSuccess: (_, deletedId) => {
+         const previousExpenses =
+            queryClient.getQueryData<Expense[]>(EXPENSE_QUERY_KEY)
+
+         const deletedExpense = previousExpenses?.find(
+            e => e.id === deletedId
+         )
+
+         if (!deletedExpense) return
+
+         updateExpenseCacheOnDelete(queryClient, country, deletedId)
+         updateSummaryAfterExpenseDelete(queryClient, deletedExpense)
       },
    })
 

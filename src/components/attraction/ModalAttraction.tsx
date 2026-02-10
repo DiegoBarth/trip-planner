@@ -476,7 +476,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
                      <label className="block text-sm font-bold text-gray-900 mb-2">
-                        Valor Casal *
+                        Valor Casal
                      </label>
                      <Controller
                         name="couplePrice"
@@ -485,7 +485,6 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
                         render={({ field }) => (
                            <input
                               type="text"
-                              required
                               value={typeof field.value === 'string' ? field.value : ''}
                               onChange={(e) => {
                                  field.onChange(e.target.value)
@@ -500,12 +499,11 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
 
                   <div>
                      <label className="block text-sm font-bold text-gray-900 mb-2">
-                        Moeda *
+                        Moeda
                      </label>
                      <Controller
                         name="currency"
                         control={control}
-                        rules={{ required: true }}
                         render={({ field }) => (
                            <CustomSelect
                               value={availableCurrencies.find(c => c.value === formData.currency)?.label || ''}

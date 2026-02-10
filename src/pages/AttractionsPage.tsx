@@ -18,8 +18,7 @@ export function AttractionsPage() {
       createAttraction,
       updateAttraction,
       deleteAttraction,
-      toggleVisited,
-      invalidateAttractionsCache
+      toggleVisited
    } = useAttraction(country)
 
    const { success, error } = useToast()
@@ -73,9 +72,6 @@ export function AttractionsPage() {
          }))
 
          await bulkUpdateAttractions(formattedAttractions as any)
-         
-         // Invalidar o cache para recarregar as atrações com a nova ordem
-         invalidateAttractionsCache()
          
          success('Atrações reordenadas com sucesso!')
       } catch (err) {

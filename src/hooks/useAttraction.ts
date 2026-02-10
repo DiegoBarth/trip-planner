@@ -4,7 +4,11 @@ import { QUERY_STALE_TIME_MS } from '@/config/constants'
 import type { CreateAttractionPayload, UpdateAttractionPayload } from '@/api/attraction'
 import { dateToInputFormat } from '@/utils/formatters'
 import type { Attraction, Country } from '@/types/Attraction'
-
+import {
+   updateAttractionCacheOnCreate,
+   updateAttractionCacheOnUpdate,
+   updateAttractionCacheOnDelete
+} from '@/services/attractionCacheService'
 
 /**
  * Hook to manage attraction operations
@@ -20,50 +24,44 @@ export function useAttraction(country: Country) {
       staleTime: QUERY_STALE_TIME_MS,
    })
 
-   // Helper to invalidate attractions cache
-   const invalidateAttractionsCache = () => {
-      queryClient.invalidateQueries({ queryKey: ATTRACTION_QUERY_KEY })
-   }
-
-   // Create attraction mutation
+   // Create mutation
    const createMutation = useMutation({
       mutationFn: (payload: CreateAttractionPayload) => createAttraction(payload),
-      onSuccess: () => {
-         queryClient.invalidateQueries({ queryKey: ATTRACTION_QUERY_KEY })
-      },
+      onSuccess: newAttraction => {
+         updateAttractionCacheOnCreate(queryClient, country, newAttraction)
+      }
    })
 
-   // Update attraction mutation
+   // Update mutation
    const updateMutation = useMutation({
       mutationFn: (payload: UpdateAttractionPayload) => updateAttraction(payload),
-      onSuccess: () => {
-         queryClient.invalidateQueries({ queryKey: ATTRACTION_QUERY_KEY })
-      },
+      onSuccess: updatedAttraction => {
+         const previous = attractions.find(a => a.id === updatedAttraction.id)
+         if (!previous) return
+         updateAttractionCacheOnUpdate(queryClient, country, previous, updatedAttraction)
+      }
    })
 
-   // Delete attraction mutation
+   // Delete mutation
    const deleteMutation = useMutation({
       mutationFn: (id: number) => deleteAttraction(id),
-      onSuccess: () => {
-         queryClient.invalidateQueries({ queryKey: ATTRACTION_QUERY_KEY })
-      },
+      onSuccess: (_, deletedId) => {
+         updateAttractionCacheOnDelete(queryClient, country, deletedId)
+      }
    })
 
-   const toggleVisited = async (id: number) => {
-      if (!attractions) return;
+   const attractions = data ?? [];
 
+   const toggleVisited = async (id: number) => {
       const attraction = attractions.find(a => a.id === id)
       if (!attraction) return
 
-      attraction.date = dateToInputFormat(attraction.date)
-
       await updateMutation.mutateAsync({
          ...attraction,
+         date: dateToInputFormat(attraction.date),
          visited: !attraction.visited
       })
    }
-
-   const attractions = data ?? [];
 
    return {
       attractions,
@@ -75,7 +73,6 @@ export function useAttraction(country: Country) {
       toggleVisited,
       isCreating: createMutation.isPending,
       isUpdating: updateMutation.isPending,
-      isDeleting: deleteMutation.isPending,
-      invalidateAttractionsCache,
+      isDeleting: deleteMutation.isPending
    }
 }

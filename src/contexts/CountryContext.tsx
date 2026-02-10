@@ -14,9 +14,6 @@ interface CountryContextType {
    availableDays: number[]
 }
 
-/**
- * Recupera o filtro salvo ou usa valores default
- */
 function getInitialFilter(): {
    country: CountryFilter
    day: DayFilter
