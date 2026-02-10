@@ -1,17 +1,17 @@
-import { useNavigate } from 'react-router-dom';
-import { Layout } from '@/components/layout/Layout';
-import { useDashboard } from '@/hooks/useDashboard';
-import { formatCurrency } from '@/utils/formatters';
-import { DashboardCard } from '@/components/dashboard/DashboardCard';
-import { AttractionStatusCards } from '@/components/dashboard/AttractionStatusCards';
-import { ExpensesByCategoryChart } from '@/components/dashboard/ExpensesByCategoryChart';
-import { BudgetByOriginChart } from '@/components/dashboard/BudgetByOriginChart';
+import { useNavigate } from 'react-router-dom'
+import { Layout } from '@/components/layout/Layout'
+import { useCountry } from '@/contexts/CountryContext'
+import { formatCurrency } from '@/utils/formatters'
+import { DashboardCard } from '@/components/dashboard/DashboardCard'
+import { AttractionStatusCards } from '@/components/dashboard/AttractionStatusCards'
+import { ExpensesByCategoryChart } from '@/components/dashboard/ExpensesByCategoryChart'
+import { BudgetByOriginChart } from '@/components/dashboard/BudgetByOriginChart'
 
 export function DashboardPage() {
-   const navigate = useNavigate();
-   const dashboard = useDashboard('all');
+   const navigate = useNavigate()
+   const { dashboard, isReady } = useCountry()
 
-   if (!dashboard.isReady || !dashboard.stats) {
+   if(!isReady) {
       return (
          <Layout
             title="📊 Dashboard"
@@ -26,7 +26,7 @@ export function DashboardPage() {
       );
    }
 
-   const { stats } = dashboard;
+   const stats = dashboard
 
    return (
       <Layout
@@ -35,8 +35,6 @@ export function DashboardPage() {
          headerClassName="bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg"
       >
          <div className="max-w-7xl mx-auto p-4 md:p-8 space-y-8 bg-gray-50 min-h-screen">
-
-            {/* Section: Top Cards (KPIs) */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                <DashboardCard
                   label="Total Gasto"
@@ -45,21 +43,18 @@ export function DashboardPage() {
                   icon="💸"
                   colorClass="bg-red-500 text-red-600"
                />
-
                <DashboardCard
                   label="Saldo Restante"
                   value={formatCurrency(stats.remaining)}
                   icon="💰"
                   colorClass="bg-emerald-500 text-emerald-600"
                />
-
                <DashboardCard
                   label="Duração da Viagem"
                   value={`${stats.daysOfTrip} Dias`}
                   icon="🗓️"
                   colorClass="bg-blue-500 text-blue-600"
                />
-
                <DashboardCard
                   label="Atrações Pendentes"
                   value={stats.attractionStatus.pendingReservation.toString()}
@@ -68,24 +63,19 @@ export function DashboardPage() {
                   colorClass="bg-amber-500 text-amber-600"
                />
             </div>
-
-            {/* Section: Charts Area */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                <ExpensesByCategoryChart data={stats.expensesByCategory} />
                <BudgetByOriginChart data={stats.budgetByOrigin} />
             </div>
-
-            {/* Section: Bottom Details */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                <div className="lg:col-span-2">
                   <AttractionStatusCards status={stats.attractionStatus} />
                </div>
-
                <div className="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl p-6 text-white shadow-lg flex flex-col justify-between">
                   <div>
                      <h3 className="font-bold text-lg mb-2">Próxima Parada?</h3>
                      <p className="text-indigo-100 text-sm">
-                        Você tem {stats.attractionStatus.total - stats.attractionStatus.visited} atrações restantes no seu roteiro. Aproveite cada momento!
+                        Você tem {stats.attractionStatus.total - stats.attractionStatus.visited} atrações restantes no seu roteiro.
                      </p>
                   </div>
                   <button
@@ -96,8 +86,7 @@ export function DashboardPage() {
                   </button>
                </div>
             </div>
-
          </div>
       </Layout>
-   );
+   )
 }

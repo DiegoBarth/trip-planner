@@ -10,10 +10,9 @@ import { dateToInputFormat } from '@/utils/formatters'
 
 export function AttractionsPage() {
    const navigate = useNavigate()
-   const { country, attractions } = useCountry()
+   const { country, attractions, isReady } = useCountry()
 
    const {
-      isLoading,
       createAttraction,
       updateAttraction,
       deleteAttraction,
@@ -87,7 +86,7 @@ export function AttractionsPage() {
       >
          <AttractionsList
             attractions={attractions}
-            isLoading={isLoading}
+            isLoading={!isReady}
             onCreate={handleCreate}
             onUpdate={handleUpdate}
             onDelete={handleDelete}

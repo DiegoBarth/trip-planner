@@ -8,8 +8,8 @@ import type { Expense } from '@/types/Expense'
 
 export function ExpensesPage() {
    const navigate = useNavigate()
-   const { country, expenses } = useCountry()
-   const { isLoading, createExpense, updateExpense, deleteExpense } = useExpense(country)
+   const { country, expenses, isReady } = useCountry()
+   const { createExpense, updateExpense, deleteExpense } = useExpense(country)
    const toast = useToast()
 
    const handleCreate = async (data: Omit<Expense, 'id'>) => {
@@ -53,7 +53,7 @@ export function ExpensesPage() {
             onCreate={handleCreate}
             onUpdate={handleUpdate}
             onDelete={handleDelete}
-            isLoading={isLoading}
+            isLoading={!isReady}
          />
       </Layout>
    )

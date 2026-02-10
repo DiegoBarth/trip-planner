@@ -1,4 +1,4 @@
-import { useQueryClient, useIsFetching } from '@tanstack/react-query'
+import { useQueryClient } from '@tanstack/react-query'
 import type { Country } from '@/types/Attraction'
 import type { Budget } from '@/types/Budget'
 import type { Expense } from '@/types/Expense'
@@ -15,7 +15,6 @@ import type { UseDashboardResult } from '@/types/Dashboard'
 
 export function useDashboard(country: Country): UseDashboardResult {
    const queryClient = useQueryClient()
-   const isFetching = useIsFetching()
 
    const expenses =
       queryClient.getQueryData<Expense[]>(['expenses', country]) ?? []
@@ -28,10 +27,6 @@ export function useDashboard(country: Country): UseDashboardResult {
 
    const daysOfTrip = calculateDaysOfTrip(attractions)
 
-   if (isFetching > 0) {
-      return { isReady: false }
-   }
-
    const attractionStatus = selectAttractionStatus(attractions)
 
    const visitedPercentage =
@@ -43,7 +38,6 @@ export function useDashboard(country: Country): UseDashboardResult {
    const totalSpent = selectTotalSpent(expenses)
 
    return {
-      isReady: true,
       stats: {
          totalSpent: selectTotalSpent(expenses),
          expensesByCategory: selectExpensesByCategory(expenses),

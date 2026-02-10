@@ -7,13 +7,12 @@ import { useCountry } from '@/contexts/CountryContext'
 export function BudgetPage() {
    const navigate = useNavigate()
    const {
-      isLoading,
       createBudget,
       updateBudget,
       deleteBudget,
    } = useBudget()
 
-   const { budgets } = useCountry()
+   const { budgets, isReady } = useCountry()
 
    return (
       <Layout
@@ -23,7 +22,7 @@ export function BudgetPage() {
       >
          <BudgetList
             budgets={budgets}
-            isLoading={isLoading}
+            isLoading={!isReady}
             onCreate={createBudget}
             onUpdate={updateBudget}
             onDelete={deleteBudget}

@@ -33,6 +33,5 @@ export interface DashboardStats {
 }
 
 export interface UseDashboardResult {
-   isReady: boolean
    stats?: DashboardStats
 }
