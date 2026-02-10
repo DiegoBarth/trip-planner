@@ -1,6 +1,6 @@
 import { Trash2, Edit2, Calendar } from 'lucide-react'
 import type { Expense } from '@/types/Expense'
-import { EXPENSE_CATEGORIES, BUDGET_ORIGINS, COUNTRIES, getCategoryFromLabel, getBudgetOriginFromLabel } from '@/config/constants'
+import { EXPENSE_CATEGORIES, BUDGET_ORIGINS, getCategoryFromLabel, getBudgetOriginFromLabel } from '@/config/constants'
 import { formatCurrency, formatDate } from '@/utils/formatters'
 
 interface ExpenseCardProps {
@@ -22,7 +22,6 @@ export function ExpenseCard({ expense, onEdit, onDelete }: ExpenseCardProps) {
   
   const categoryConfig = EXPENSE_CATEGORIES[categoryKey as keyof typeof EXPENSE_CATEGORIES]
   const originConfig = BUDGET_ORIGINS[budgetOriginKey as keyof typeof BUDGET_ORIGINS]
-  const countryConfig = expense.country ? COUNTRIES[expense.country] : null
 
   return (
     <div 
@@ -55,11 +54,6 @@ export function ExpenseCard({ expense, onEdit, onDelete }: ExpenseCardProps) {
               <span className="text-xs px-2 py-0.5 rounded-full font-medium bg-gray-100 text-gray-700">
                 {categoryConfig.icon} {categoryConfig.label}
               </span>
-              {countryConfig && (
-                <span className="text-xs px-2 py-0.5 rounded-full font-medium bg-blue-100 text-blue-700">
-                  {countryConfig.flag} {countryConfig.name}
-                </span>
-              )}
             </div>
           </div>
         </div>

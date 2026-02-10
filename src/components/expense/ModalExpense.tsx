@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import type { Expense, ExpenseCategory } from '@/types/Expense'
-import type { BudgetOrigin, Currency } from '@/types/Attraction'
+import type { BudgetOrigin, Currency, Country } from '@/types/Attraction'
 import { EXPENSE_CATEGORIES, BUDGET_ORIGINS, COUNTRIES, getCategoryFromLabel, getBudgetOriginFromLabel } from '@/config/constants'
 import { convertToBRL, convertCurrency, formatCurrencyInputByCurrency, currencyToNumber, dateToInputFormat } from '@/utils/formatters'
 import { ModalBase } from '@/components/ui/ModalBase'
@@ -22,9 +22,19 @@ interface ExpenseFormData {
   amountInBRL: number
   budgetOrigin: BudgetOrigin
   date: string
-  country?: 'japan' | 'south-korea'
+  country?: Country
   notes: string
   receiptUrl: string
+}
+
+// Helper to get country from currency
+function getCountryFromCurrency(currency: Currency): Country | undefined {
+  if (currency === 'BRL') return 'all'
+  
+  const entry = Object.entries(COUNTRIES).find(
+    ([_, config]) => config.currency === currency
+  )
+  return entry?.[0] as Country | undefined
 }
 
 export function ModalExpense({ expense, isOpen, onClose, onSave }: ModalExpenseProps) {
@@ -37,7 +47,7 @@ export function ModalExpense({ expense, isOpen, onClose, onSave }: ModalExpenseP
       amountInBRL: 0,
       budgetOrigin: 'Casal',
       date: new Date().toISOString().split('T')[0],
-      country: undefined,
+      country: 'all',
       notes: '',
       receiptUrl: ''
     }
@@ -45,10 +55,14 @@ export function ModalExpense({ expense, isOpen, onClose, onSave }: ModalExpenseP
 
   const formData = watch()
   const previousCurrency = useRef<Currency>(formData.currency)
+  const previousCountry = useRef<typeof formData.country>(formData.country)
+  const isInitialMount = useRef(true)
 
   // Reset form when modal opens or expense changes
   useEffect(() => {
     if (isOpen) {
+      isInitialMount.current = true
+      
       if (expense) {
         // Handle category coming as label from backend
         const categoryKey = EXPENSE_CATEGORIES[expense.category as keyof typeof EXPENSE_CATEGORIES]
@@ -79,13 +93,14 @@ export function ModalExpense({ expense, isOpen, onClose, onSave }: ModalExpenseP
           amountInBRL: expense.amountInBRL,
           budgetOrigin: budgetOriginKey as BudgetOrigin,
           date: dateToInputFormat(expense.date),
-          country: expense.country,
+          country: expense.country ?? (expense.currency === 'BRL' ? 'all' : undefined),
           notes: expense.notes || '',
           receiptUrl: expense.receiptUrl || ''
         })
         
         // Set previous currency to avoid unwanted conversion
         previousCurrency.current = expense.currency
+        previousCountry.current = expense.country ?? (expense.currency === 'BRL' ? 'all' : undefined)
       } else {
         reset({
           category: 'food',
@@ -95,26 +110,47 @@ export function ModalExpense({ expense, isOpen, onClose, onSave }: ModalExpenseP
           amountInBRL: 0,
           budgetOrigin: 'Casal',
           date: new Date().toISOString().split('T')[0],
-          country: undefined,
+          country: 'all',
           notes: '',
           receiptUrl: ''
         })
         
         // Reset previous currency
         previousCurrency.current = 'BRL'
+        previousCountry.current = 'all'
       }
     }
   }, [isOpen, expense, reset])
 
-  // Auto-select currency when country changes
+  // Sync currency and country bidirectionally
   useEffect(() => {
-    if (formData.country) {
+    if (isInitialMount.current) {
+      isInitialMount.current = false
+      return
+    }
+    
+    const countryChanged = previousCountry.current !== formData.country
+    const currencyChanged = previousCurrency.current !== formData.currency
+    
+    // If country changed, update currency
+    if (countryChanged && formData.country) {
       const countryConfig = COUNTRIES[formData.country]
-      if (countryConfig?.currency) {
+      if (countryConfig?.currency && formData.currency !== countryConfig.currency) {
         setValue('currency', countryConfig.currency)
+        // Don't update previousCurrency here - let the conversion effect handle it
       }
     }
-  }, [formData.country, setValue])
+    // If currency changed (but country didn't), update country
+    else if (currencyChanged && !countryChanged) {
+      const expectedCountry = getCountryFromCurrency(formData.currency)
+      if (formData.country !== expectedCountry) {
+        setValue('country', expectedCountry)
+      }
+    }
+    
+    // Update country ref
+    previousCountry.current = formData.country
+  }, [formData.country, formData.currency, setValue])
 
   // Convert amount when currency changes
   useEffect(() => {
@@ -140,9 +176,10 @@ export function ModalExpense({ expense, isOpen, onClose, onSave }: ModalExpenseP
         
         setValue('amount', formattedAmount)
       }
-      
-      previousCurrency.current = formData.currency
     }
+    
+    // Always update previousCurrency
+    previousCurrency.current = formData.currency
   }, [formData.currency, formData.amount, setValue])
 
   // Auto-calculate BRL amount when amount or currency changes
@@ -162,7 +199,8 @@ export function ModalExpense({ expense, isOpen, onClose, onSave }: ModalExpenseP
     onSave({
       ...values,
       amount,
-      amountInBRL: values.amountInBRL
+      amountInBRL: values.amountInBRL,
+      country: values.country
     })
   }
 
@@ -236,10 +274,12 @@ export function ModalExpense({ expense, isOpen, onClose, onSave }: ModalExpenseP
                     setValue('country', undefined)
                     return
                   }
-                  const countryKey = Object.entries(COUNTRIES).find(([_, c]) => `${c.flag} ${c.name}` === val)?.[0] as 'japan' | 'south-korea' | undefined
+                  const countryKey = Object.entries(COUNTRIES).find(([_, c]) => `${c.flag} ${c.name}` === val)?.[0] as Country | undefined
                   if (countryKey) setValue('country', countryKey)
                 }}
-                options={['', ...Object.entries(COUNTRIES).map(([_, country]) => `${country.flag} ${country.name}`)].filter(Boolean)}
+                options={['', ...Object.entries(COUNTRIES)
+                  .map(([_, country]) => `${country.flag} ${country.name}`)
+                ].filter(Boolean)}
                 placeholder="Selecione o país"
               />
             </div>

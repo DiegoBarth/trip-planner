@@ -51,7 +51,7 @@ export const CURRENCY_RATES = {
 
 export const COUNTRIES = {
    all: {
-      name: 'Todos os países',
+      name: 'Geral',
       flag: '🌍',
       currency: 'BRL' as const,
       cities: []

@@ -3,11 +3,14 @@ import { Layout } from '@/components/layout/Layout'
 import { ExpenseList } from '@/components/expense/ExpenseList'
 import { useExpense } from '@/hooks/useExpense'
 import { useToast } from '@/contexts/toast'
+import { useCountry } from '@/contexts/CountryContext'
 import type { Expense } from '@/types/Expense'
 
 export function ExpensesPage() {
   const navigate = useNavigate()
-  const { expenses, isLoading, createExpense, updateExpense, deleteExpense } = useExpense()
+  const { country } = useCountry()
+
+  const { expenses, isLoading, createExpense, updateExpense, deleteExpense } = useExpense(country)
   const toast = useToast()
 
   const handleCreate = async (data: Omit<Expense, 'id'>) => {

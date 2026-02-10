@@ -17,7 +17,7 @@ export interface Expense {
   category: ExpenseCategory
   budgetOrigin: BudgetOrigin
   date: string
-  country?: 'japan' | 'south-korea'
+  country?: 'japan' | 'south-korea' | 'all'
   notes?: string
   receiptUrl?: string
 }

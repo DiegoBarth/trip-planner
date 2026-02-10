@@ -1,5 +1,6 @@
 import { apiGet, apiPost } from './client'
 import type { Expense } from '@/types/Expense'
+import type { Country } from '@/types/Attraction'
 
 interface ApiResponse<T> {
    success: boolean
@@ -15,7 +16,7 @@ export interface CreateExpensePayload {
    amountInBRL: number
    budgetOrigin: Expense['budgetOrigin']
    date: string
-   country?: Expense['country']
+   country?: Country
    notes?: string
    receiptUrl?: string
 }
@@ -73,13 +74,14 @@ export async function deleteExpense(id: number): Promise<void> {
 /**
  * Get all expenses
  */
-export async function getExpenses(): Promise<Expense[]> {
+export async function getExpenses(country: Country): Promise<Expense[]> {
    const response = await apiGet<ApiResponse<Expense[]>>({
-      action: 'getExpenses'
+      action: 'getExpenses',
+      country
    })
 
    if (!response.success || !response.data) {
-      throw new Error(response.message || 'Failed to fetch expenses')
+      return []
    }
 
    return response.data

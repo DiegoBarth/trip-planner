@@ -2,19 +2,19 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { createExpense, updateExpense, deleteExpense, getExpenses } from '@/api/expense'
 import { QUERY_STALE_TIME_MS } from '@/config/constants'
 import type { CreateExpensePayload, UpdateExpensePayload } from '@/api/expense'
-
-const EXPENSE_QUERY_KEY = ['expenses']
+import type { Country } from '@/types/Attraction'
 
 /**
  * Hook to manage expense operations
  */
-export function useExpense() {
+export function useExpense(country: Country) {
+   const EXPENSE_QUERY_KEY = ['expenses', country]
    const queryClient = useQueryClient()
 
    // Fetch all expenses
    const { data: expenses = [], isLoading, error } = useQuery({
       queryKey: EXPENSE_QUERY_KEY,
-      queryFn: getExpenses,
+      queryFn: () => getExpenses(country),
       staleTime: QUERY_STALE_TIME_MS,
    })
 
