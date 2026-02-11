@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { createAttraction, updateAttraction, deleteAttraction, getAttractions } from '@/api/attraction'
+import { createAttraction, updateAttraction, deleteAttraction, getAttractions, bulkUpdateAttractions } from '@/api/attraction'
 import { QUERY_STALE_TIME_MS } from '@/config/constants'
 import type { CreateAttractionPayload, UpdateAttractionPayload } from '@/api/attraction'
 import { dateToInputFormat } from '@/utils/formatters'
@@ -58,8 +58,16 @@ export function useAttraction(country: Country) {
       }
    })
 
+   // Helper function to get fresh attractions from cache
+   const getFreshAttractions = (): Attraction[] => {
+      const cachedData = queryClient.getQueryData<Attraction[]>(ATTRACTION_QUERY_KEY)
+      const rawData = cachedData ?? rawAttractions
+      return normalizeOrderByDate(applyAutoDays(rawData))
+   }
+
    const toggleVisited = async (id: number) => {
-      const attraction = attractions.find(a => a.id === id)
+      const freshAttractions = getFreshAttractions()
+      const attraction = freshAttractions.find(a => a.id === id)
       if (!attraction) return
 
       await updateMutation.mutateAsync({
@@ -67,6 +75,24 @@ export function useAttraction(country: Country) {
          date: dateToInputFormat(attraction.date),
          visited: !attraction.visited
       })
+   }
+
+   const bulkUpdate = async (attractionsToUpdate: Attraction[]) => {
+      if (attractionsToUpdate.length === 0) return
+
+      const payload: UpdateAttractionPayload[] = attractionsToUpdate.map(attr => ({
+         ...attr,
+         date: dateToInputFormat(attr.date)
+      }))
+
+      const updated = await bulkUpdateAttractions(payload)
+      
+      queryClient.setQueryData<Attraction[]>(ATTRACTION_QUERY_KEY, (old = []) => {
+         const updatedMap = new Map(updated.map(a => [a.id, a]))
+         return old.map(a => updatedMap.get(a.id) ?? a)
+      })
+
+      return updated
    }
 
    return {
@@ -77,6 +103,7 @@ export function useAttraction(country: Country) {
       updateAttraction: updateMutation.mutateAsync,
       deleteAttraction: deleteMutation.mutateAsync,
       toggleVisited,
+      bulkUpdate,
       isCreating: createMutation.isPending,
       isUpdating: updateMutation.isPending,
       isDeleting: deleteMutation.isPending

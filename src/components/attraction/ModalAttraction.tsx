@@ -159,24 +159,46 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
       }
    }, [formData.currency, formData.couplePrice, setValue])
 
-   // Get available currencies based on selected country
-   const getAvailableCurrencies = (): { label: string; value: Currency }[] => {
-      const country = formData.country as Country
-      const brl = { label: 'R$ Real (BRL)', value: 'BRL' as Currency }
-
-      if (country === 'japan') {
-         return [{ label: '¥ Iene (JPY)', value: 'JPY' }, brl]
-      } else if (country === 'south-korea') {
-         return [{ label: '₩ Won (KRW)', value: 'KRW' }, brl]
+   // Auto-select 'pending' when needsReservation is checked
+   useEffect(() => {
+      if (formData.needsReservation && !formData.reservationStatus) {
+         setValue('reservationStatus', 'pending')
       }
-      return [brl]
-   }
+   }, [formData.needsReservation, formData.reservationStatus, setValue])
 
-   const availableCurrencies = getAvailableCurrencies()
+   // All currencies are always available
+   const availableCurrencies = [
+      { label: '¥ Iene (JPY)', value: 'JPY' as Currency },
+      { label: '₩ Won (KRW)', value: 'KRW' as Currency },
+      { label: 'R$ Real (BRL)', value: 'BRL' as Currency }
+   ]
 
    // Update currency when country changes
    const handleCountryChange = (country: Country) => {
       setValue('country', country)
+      
+      // Auto-select default currency based on country
+      if (country === 'japan') {
+         setValue('currency', 'JPY')
+      } else if (country === 'south-korea') {
+         setValue('currency', 'KRW')
+      } else if (country === 'all') {
+         setValue('currency', 'BRL')
+      }
+   }
+
+   // Update country when currency changes
+   const handleCurrencyChange = (currency: Currency) => {
+      setValue('currency', currency)
+      
+      // Auto-update country based on currency
+      if (currency === 'JPY') {
+         setValue('country', 'japan')
+      } else if (currency === 'KRW') {
+         setValue('country', 'south-korea')
+      } else if (currency === 'BRL') {
+         setValue('country', 'all')
+      }
    }
 
    const handleCouplerPriceChange = (value: string) => {
@@ -479,7 +501,10 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
                               value={availableCurrencies.find(c => c.value === formData.currency)?.label || ''}
                               onChange={(val) => {
                                  const currency = availableCurrencies.find(c => c.label === val)?.value
-                                 if (currency) field.onChange(currency)
+                                 if (currency) {
+                                    field.onChange(currency)
+                                    handleCurrencyChange(currency)
+                                 }
                               }}
                               options={availableCurrencies.map(c => c.label)}
                            />
@@ -541,10 +566,14 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
                                        field.onChange(undefined)
                                        return
                                     }
-                                    const statusKey = Object.entries(RESERVATION_STATUS).find(([_, s]) => `${s.icon} ${s.label}` === val)?.[0]
+                                    const statusKey = Object.entries(RESERVATION_STATUS)
+                                       .filter(([key]) => key !== 'not-needed')
+                                       .find(([_, s]) => `${s.icon} ${s.label}` === val)?.[0]
                                     if (statusKey) field.onChange(statusKey as ReservationStatus)
                                  }}
-                                 options={['', ...Object.entries(RESERVATION_STATUS).map(([_, status]) => `${status.icon} ${status.label}`)].filter(Boolean)}
+                                 options={Object.entries(RESERVATION_STATUS)
+                                    .filter(([key]) => key !== 'not-needed')
+                                    .map(([_, status]) => `${status.icon} ${status.label}`)}
                                  placeholder="Selecione o status"
                               />
                            )}

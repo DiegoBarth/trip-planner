@@ -1,6 +1,6 @@
 import { MapPin, Clock, Banknote, CheckCircle2, Trash2, Map, AlertTriangle } from 'lucide-react'
 import type { Attraction } from '@/types/Attraction'
-import { ATTRACTION_TYPES, PERIODS } from '@/config/constants'
+import { ATTRACTION_TYPES, PERIODS, RESERVATION_STATUS } from '@/config/constants'
 import { formatCurrency, formatTime, formatDuration } from '@/utils/formatters'
 
 interface AttractionCardProps {
@@ -127,9 +127,15 @@ export function AttractionCard({ attraction, onCheckVisited, onDelete, onClick }
                   <span className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full">
                      {attractionType.label}
                   </span>
-                  {attraction.needsReservation && (
-                     <span className="px-2 py-1 bg-orange-100 text-orange-700 text-xs rounded-full">
-                        Reserva necessária
+                  {attraction.needsReservation && attraction.reservationStatus && (
+                     <span className={`px-2 py-1 text-xs rounded-full flex items-center gap-1 ${
+                        attraction.reservationStatus === 'confirmed' ? 'bg-green-100 text-green-700' :
+                        attraction.reservationStatus === 'pending' ? 'bg-orange-100 text-orange-700' :
+                        attraction.reservationStatus === 'cancelled' ? 'bg-red-100 text-red-700' :
+                        'bg-gray-100 text-gray-700'
+                     }`}>
+                        <span>{RESERVATION_STATUS[attraction.reservationStatus].icon}</span>
+                        <span>{RESERVATION_STATUS[attraction.reservationStatus].label}</span>
                      </span>
                   )}
                   {attraction.idealPeriod && (

@@ -3,10 +3,8 @@ import { Layout } from '@/components/layout/Layout'
 import { AttractionsList } from '@/components/attraction/AttractionsList'
 import { useAttraction } from '@/hooks/useAttraction'
 import { useToast } from '@/contexts/toast'
-import { bulkUpdateAttractions } from '@/api/attraction'
 import type { Attraction } from '@/types/Attraction'
 import { useCountry } from '@/contexts/CountryContext'
-import { dateToInputFormat } from '@/utils/formatters'
 
 export function AttractionsPage() {
    const navigate = useNavigate()
@@ -16,7 +14,8 @@ export function AttractionsPage() {
       createAttraction,
       updateAttraction,
       deleteAttraction,
-      toggleVisited
+      toggleVisited,
+      bulkUpdate
    } = useAttraction(country)
 
    const { success, error } = useToast()
@@ -63,13 +62,7 @@ export function AttractionsPage() {
 
    const handleBulkUpdate = async (attractions: Attraction[]) => {
       try {
-         // Preparar os dados formatando as datas e enviando tudo em uma única requisição
-         const formattedAttractions = attractions.map(attr => ({
-            ...attr,
-            date: dateToInputFormat(attr.date)
-         }))
-
-         await bulkUpdateAttractions(formattedAttractions as any)
+         await bulkUpdate(attractions)
 
          success('Atrações reordenadas com sucesso!')
       } catch (err) {
