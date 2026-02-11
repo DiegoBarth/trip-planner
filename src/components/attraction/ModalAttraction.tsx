@@ -5,6 +5,7 @@ import { COUNTRIES, ATTRACTION_TYPES, PERIODS, RESERVATION_STATUS, WEEK_DAYS } f
 import { convertToBRL, formatCurrencyInputByCurrency, currencyToNumber, convertCurrency, dateToInputFormat } from '@/utils/formatters'
 import { ModalBase } from '@/components/ui/ModalBase'
 import { CustomSelect } from '@/components/ui/CustomSelect'
+import { useCurrency } from '@/hooks/useCurrency'
 
 interface ModalAttractionProps {
    attraction?: Attraction
@@ -70,6 +71,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
 
    const formData = watch()
    const previousCurrency = useRef<Currency>(formData.currency)
+   const { rates } = useCurrency()
 
    // Reset form when modal opens or attraction changes
    useEffect(() => {
@@ -136,7 +138,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
             : (formData.couplePrice as number)
 
          if (currentAmount > 0) {
-            const convertedAmount = convertCurrency(currentAmount, previousCurrency.current as Currency, formData.currency as Currency)
+            const convertedAmount = convertCurrency(currentAmount, previousCurrency.current as Currency, formData.currency as Currency, rates)
 
             // Format properly for each currency type
             let formattedAmount: string
@@ -152,7 +154,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
 
             // Update both couplePrice and priceInBRL
             setValue('couplePrice', formattedAmount)
-            setValue('priceInBRL', convertToBRL(convertedAmount, formData.currency as Currency))
+            setValue('priceInBRL', convertToBRL(convertedAmount, formData.currency as Currency, rates))
          }
 
          previousCurrency.current = formData.currency as Currency
@@ -207,7 +209,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
 
       // Auto-calculate BRL price
       const price = currencyToNumber(formatted, formData.currency as Currency)
-      setValue('priceInBRL', convertToBRL(price, formData.currency as Currency))
+      setValue('priceInBRL', convertToBRL(price, formData.currency as Currency, rates))
    }
 
    const onSubmit = (values: AttractionFormData) => {

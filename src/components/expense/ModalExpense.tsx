@@ -6,6 +6,7 @@ import { EXPENSE_CATEGORIES, BUDGET_ORIGINS, COUNTRIES, getCategoryFromLabel, ge
 import { convertToBRL, convertCurrency, formatCurrencyInputByCurrency, currencyToNumber, dateToInputFormat } from '@/utils/formatters'
 import { ModalBase } from '@/components/ui/ModalBase'
 import { CustomSelect } from '@/components/ui/CustomSelect'
+import { useCurrency } from '@/hooks/useCurrency'
 
 interface ModalExpenseProps {
    expense?: Expense
@@ -57,6 +58,7 @@ export function ModalExpense({ expense, isOpen, onClose, onSave }: ModalExpenseP
    const previousCurrency = useRef<Currency>(formData.currency)
    const previousCountry = useRef<typeof formData.country>(formData.country)
    const isInitialMount = useRef(true)
+   const { rates } = useCurrency()
 
    // Reset form when modal opens or expense changes
    useEffect(() => {
@@ -160,7 +162,7 @@ export function ModalExpense({ expense, isOpen, onClose, onSave }: ModalExpenseP
             : formData.amount
 
          if (currentAmount > 0) {
-            const convertedAmount = convertCurrency(currentAmount, previousCurrency.current, formData.currency)
+            const convertedAmount = convertCurrency(currentAmount, previousCurrency.current, formData.currency, rates)
 
             // Format properly for each currency type
             let formattedAmount: string
@@ -187,7 +189,7 @@ export function ModalExpense({ expense, isOpen, onClose, onSave }: ModalExpenseP
       const amount = typeof formData.amount === 'string'
          ? currencyToNumber(formData.amount, formData.currency)
          : formData.amount
-      const amountInBRL = convertToBRL(amount, formData.currency)
+      const amountInBRL = convertToBRL(amount, formData.currency, rates)
       setValue('amountInBRL', amountInBRL)
    }, [formData.amount, formData.currency, setValue])
 
@@ -224,8 +226,8 @@ export function ModalExpense({ expense, isOpen, onClose, onSave }: ModalExpenseP
                         type="button"
                         onClick={() => setValue('category', key)}
                         className={`p-4 rounded-lg border-2 transition-all ${formData.category === key
-                              ? 'border-red-500 bg-red-50 shadow-md'
-                              : 'border-gray-200 hover:border-gray-300'
+                           ? 'border-red-500 bg-red-50 shadow-md'
+                           : 'border-gray-200 hover:border-gray-300'
                            }`}
                      >
                         <div className="text-3xl mb-2">{config.icon}</div>
@@ -354,8 +356,8 @@ export function ModalExpense({ expense, isOpen, onClose, onSave }: ModalExpenseP
                         type="button"
                         onClick={() => setValue('budgetOrigin', key)}
                         className={`p-4 rounded-lg border-2 transition-all ${formData.budgetOrigin === key
-                              ? 'border-current shadow-md'
-                              : 'border-gray-200 hover:border-gray-300'
+                           ? 'border-current shadow-md'
+                           : 'border-gray-200 hover:border-gray-300'
                            }`}
                         style={{
                            borderColor: formData.budgetOrigin === key ? config.color : undefined,

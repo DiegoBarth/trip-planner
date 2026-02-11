@@ -1,14 +1,16 @@
-import { createContext, useContext, useEffect, useState, useMemo } from 'react'
 import type { ReactNode } from 'react'
+import { createContext, useContext, useEffect, useState, useMemo } from 'react'
+import { useIsFetching } from '@tanstack/react-query'
 import { useBudget } from '@/hooks/useBudget'
 import { useExpense } from '@/hooks/useExpense'
 import { useAttraction } from '@/hooks/useAttraction'
 import { useDashboard } from '@/hooks/useDashboard'
+import { useCurrency } from '@/hooks/useCurrency'
+import type { CurrencyRates } from '@/types/Currency'
 import type { Budget, BudgetSummary } from '@/types/Budget'
 import type { Expense } from '@/types/Expense'
 import type { Attraction, Country } from '@/types/Attraction'
 import type { DashboardStats } from '@/types/Dashboard'
-import { useIsFetching } from '@tanstack/react-query'
 
 type DayFilter = number | 'all'
 type CountryFilter = Country | 'all'
@@ -19,6 +21,7 @@ interface CountryContextType {
    setCountry: (country: CountryFilter) => void
    day: DayFilter
    setDay: (day: DayFilter) => void
+   rates:  CurrencyRates | null
    budgets: Budget[]
    budgetSummary: BudgetSummary
    expenses: Expense[]
@@ -39,6 +42,7 @@ export const CountryContext = createContext<CountryContextType>({
    setCountry: () => { },
    day: 'all',
    setDay: () => { },
+   rates: null,
    budgets: [],
    budgetSummary: { totalBudget: 0, totalSpent: 0, remainingBalance: 0, byOrigin: {} },
    expenses: [],
@@ -63,6 +67,8 @@ export function CountryProvider({ children }: { children: ReactNode }) {
    const { budgets, budgetSummary: rawBudgetSummary } = useBudget()
    const { expenses } = useExpense(country)
    const { attractions } = useAttraction(country)
+   const { rates } = useCurrency()
+
    const dashboardData = useDashboard({ budgets, expenses, attractions })
 
    const budgetSummary: BudgetSummary = rawBudgetSummary ?? {
@@ -106,6 +112,7 @@ export function CountryProvider({ children }: { children: ReactNode }) {
             setCountry,
             day,
             setDay,
+            rates,
             budgets,
             budgetSummary,
             expenses,

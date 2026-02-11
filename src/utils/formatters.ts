@@ -1,24 +1,31 @@
-import { CURRENCY_RATES } from "@/config/constants"
 import type { Currency } from "@/types/Attraction"
+import type { CurrencyRates } from "@/types/Currency"
 
-export function convertToBRL(amount: number, currency: Currency): number {
+export function convertToBRL(amount: number, currency: Currency, rates?: CurrencyRates | null): number {
    if (currency === 'BRL') return amount
+   if (!rates) return amount
 
-   const rate = CURRENCY_RATES[`${currency}_BRL` as keyof typeof CURRENCY_RATES]
+   const rateKey = `${currency}_BRL` as keyof CurrencyRates
+   const rate = rates[rateKey]
+
+   if (!rate) return amount
+
    return amount * rate
 }
 
-// Convert amount from one currency to another
-export function convertCurrency(amount: number, fromCurrency: Currency, toCurrency: Currency): number {
+export function convertCurrency(amount: number, fromCurrency: Currency, toCurrency: Currency, rates?: CurrencyRates | null): number {
    if (fromCurrency === toCurrency) return amount
-   
-   // Convert to BRL first
-   const amountInBRL = convertToBRL(amount, fromCurrency)
-   
-   // Convert from BRL to target currency
+   if (!rates) return amount
+
+   const amountInBRL = convertToBRL(amount, fromCurrency, rates)
+
    if (toCurrency === 'BRL') return amountInBRL
-   
-   const rate = CURRENCY_RATES[`${toCurrency}_BRL` as keyof typeof CURRENCY_RATES]
+
+   const rateKey = `${toCurrency}_BRL` as keyof CurrencyRates
+   const rate = rates[rateKey]
+
+   if (!rate) return amount
+
    return amountInBRL / rate
 }
 
@@ -97,48 +104,40 @@ export function currencyToNumber(value: string, currency: Currency = 'BRL'): num
    return isNaN(result) ? 0 : result
 }
 
-
 export function formatCurrency(amount: number, currency: Currency = 'BRL'): string {
-   const symbols: Record<Currency, string> = {
-      BRL: 'R$',
-      JPY: '¥',
-      KRW: '₩'
-   }
-
-   return `${symbols[currency]} ${amount.toLocaleString('pt-BR', {
+   return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency,
       minimumFractionDigits: currency === 'BRL' ? 2 : 0,
       maximumFractionDigits: currency === 'BRL' ? 2 : 0
-   })}`
+   }).format(amount)
 }
+
 export function formatDate(date: string): string {
    if (!date) return ''
 
-   // If already in DD/MM/YYYY format, return as is
-   if (date.includes('/')) {
-      return date
-   }
+   if (date.includes('/')) return date
 
-   // If ISO format (YYYY-MM-DD or YYYY-MM-DDTHH:mm:ss), convert to DD/MM/YYYY
    const dateOnly = date.split('T')[0]
    const [year, month, day] = dateOnly.split('-')
+
    return `${day}/${month}/${year}`
 }
 
 export function formatWeekday(date: string): string {
-   return new Date(date).toLocaleDateString('pt-BR', { weekday: 'long' })
+   return new Date(date).toLocaleDateString('pt-BR', {
+      weekday: 'long'
+   })
 }
 
-// Convert date to YYYY-MM-DD format for input[type="date"]
 export function dateToInputFormat(date: string): string {
    if (!date) return ''
 
-   // Check if date is in DD/MM/YYYY format
    if (date.includes('/')) {
       const [day, month, year] = date.split('/')
       return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
    }
 
-   // If ISO format (YYYY-MM-DD or YYYY-MM-DDTHH:mm:ss), extract date only
    return date.split('T')[0]
 }
 
@@ -152,5 +151,6 @@ export function formatDuration(minutes: number): string {
 
    if (hours === 0) return `${mins}min`
    if (mins === 0) return `${hours}h`
+
    return `${hours}h ${mins}min`
 }

@@ -42,13 +42,6 @@ export const TOAST_DEFAULT_DURATION_MS = 3000;
 /** Comprimento do id gerado para toasts. */
 export const TOAST_ID_LENGTH = 9;
 
-// Currency conversion rates (update as needed)
-export const CURRENCY_RATES = {
-   JPY_BRL: 0.033, // 1 Japanese Yen = R$ 0.033
-   KRW_BRL: 0.0038, // 1 won coreano = R$ 0.0038
-   BRL_BRL: 1.0 // Real brasileiro
-}
-
 export const COUNTRIES = {
    all: {
       name: 'Geral',
@@ -71,23 +64,25 @@ export const COUNTRIES = {
 }
 
 export const ATTRACTION_TYPES = {
-   temple: { label: 'Templo', icon: '⛩️' },
-   museum: { label: 'Museu', icon: '🏛️' },
-   park: { label: 'Parque', icon: '🌳' },
-   shopping: { label: 'Shopping', icon: '🛍️' },
-   restaurant: { label: 'Restaurante', icon: '🍜' },
-   viewpoint: { label: 'Mirante', icon: '🗼' },
    cultural: { label: 'Cultural', icon: '🎭' },
    entertainment: { label: 'Entretenimento', icon: '🎢' },
+   viewpoint: { label: 'Mirante', icon: '🗼' },
+   museum: { label: 'Museu', icon: '🏛️' },
+   park: { label: 'Parque', icon: '🌳' },
+   restaurant: { label: 'Restaurante', icon: '🍜' },
+   shopping: { label: 'Shopping', icon: '🛍️' },
+   temple: { label: 'Templo', icon: '⛩️' },
    other: { label: 'Outro', icon: '📍' }
 }
 
 export const EXPENSE_CATEGORIES = {
-   accommodation: { label: 'Hospedagem', icon: '🏨' },
-   transport: { label: 'Transporte', icon: '🚄' },
    food: { label: 'Alimentação', icon: '🍱' },
    attraction: { label: 'Atração', icon: '🎫' },
    shopping: { label: 'Compras', icon: '🛒' },
+   cosmetics: { label: 'Cosméticos', icon: '✨' },
+   electronics: { label: 'Eletrônicos', icon: '📱' },
+   accommodation: { label: 'Hospedagem', icon: '🏨' },
+   transport: { label: 'Transporte', icon: '🚄' },
    other: { label: 'Outros', icon: '💰' }
 }
 
