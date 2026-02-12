@@ -48,6 +48,9 @@ export function MapView() {
 
          <div className="flex-1">
             <MapContainer
+               className="h-full w-full"
+               zoom={13}
+               scrollWheelZoom={true}
             >
                <TileLayer
                   attribution="© OpenStreetMap"
