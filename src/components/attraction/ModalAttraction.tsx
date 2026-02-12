@@ -6,7 +6,7 @@ import { convertToBRL, formatCurrencyInputByCurrency, currencyToNumber, convertC
 import { ModalBase } from '@/components/ui/ModalBase'
 import { CustomSelect } from '@/components/ui/CustomSelect'
 import { useCurrency } from '@/hooks/useCurrency'
-
+import { LocationField } from './LocationField'
 interface ModalAttractionProps {
    attraction?: Attraction
    isOpen: boolean
@@ -38,6 +38,8 @@ interface AttractionFormData {
    duration: number
    notes: string
    imageUrl: string
+   lat?: number
+   lng?: number
 }
 
 export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAttractionProps) {
@@ -65,7 +67,9 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
          location: '',
          duration: 0,
          notes: '',
-         imageUrl: ''
+         imageUrl: '',
+         lat: 0,
+         lng: 0
       }
    })
 
@@ -178,7 +182,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
    // Update currency when country changes
    const handleCountryChange = (country: Country) => {
       setValue('country', country)
-      
+
       // Auto-select default currency based on country
       if (country === 'japan') {
          setValue('currency', 'JPY')
@@ -192,7 +196,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
    // Update country when currency changes
    const handleCurrencyChange = (currency: Currency) => {
       setValue('currency', currency)
-      
+
       // Auto-update country based on currency
       if (currency === 'JPY') {
          setValue('country', 'japan')
@@ -325,6 +329,15 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
                         )}
                      />
                   </div>
+                  <LocationField
+                     control={control}
+                     register={register}
+                     setValue={setValue}
+                     nameValue={formData.name}
+                     cityValue={formData.city}
+                     countryValue={formData.country}
+                  />
+
                </div>
             </section>
 
@@ -593,18 +606,6 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
                            {...register('ticketLink')}
                            className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 focus:outline-none transition-colors placeholder-gray-500 text-gray-900"
                            placeholder="https://..."
-                        />
-                     </div>
-
-                     <div>
-                        <label className="block text-sm font-bold text-gray-900 mb-2">
-                           Localização (Google Maps)
-                        </label>
-                        <input
-                           type="url"
-                           {...register('location')}
-                           className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 focus:outline-none transition-colors placeholder-gray-500 text-gray-900"
-                           placeholder="https://maps.google.com/..."
                         />
                      </div>
 

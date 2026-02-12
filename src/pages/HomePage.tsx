@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { Plus, DollarSign, BarChart3 } from 'lucide-react'
+import { Plus, DollarSign, MapIcon, BarChart3 } from 'lucide-react'
 import { BudgetSummary } from '@/components/home/BudgetSummary'
 import { NextAttractions } from '@/components/home/NextAttractions'
 import { CountryFilter } from '@/components/home/CountryFilter'
@@ -44,6 +44,14 @@ export function HomePage() {
                   >
                      <Plus className="w-6 h-6 text-purple-600" />
                      <span className="text-xs font-medium">Atração</span>
+                  </Link>
+
+                  <Link
+                     to="/map"
+                     className="flex flex-col items-center gap-1 p-3 hover:bg-purple-50 rounded-lg transition-colors"
+                  >
+                     <MapIcon className="w-6 h-6 text-gray-600" />
+                     <span className="text-xs font-medium">Mapa</span>
                   </Link>
 
                   <Link

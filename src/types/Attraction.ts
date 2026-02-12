@@ -52,6 +52,8 @@ export interface Attraction {
    duration?: number
    notes?: string
    imageUrl?: string
+   lat?: number
+   lng?: number
 }
 
 export interface AttractionFilters {

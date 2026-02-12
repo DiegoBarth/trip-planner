@@ -42,7 +42,6 @@ export function ModalBudget({ budget, isOpen, onClose, onSave }: ModalBudgetProp
                amount: formatCurrencyInput(amountInCents.toString()),
                date: dateToInputFormat(budget.date)
             }
-            console.log('Editing budget - resetting form with:', formValues)
             reset(formValues)
          } else {
             reset(defaultValues)
@@ -60,8 +59,6 @@ export function ModalBudget({ budget, isOpen, onClose, onSave }: ModalBudgetProp
          amount: amount || 0,
          date: values.date
       }
-      
-      console.log('Amount conversion:', { original: values.amount, converted: amount, final: budgetData })
       
       onSave(budgetData)
       reset(defaultValues)
