@@ -6,11 +6,13 @@ import { useExpense } from '@/hooks/useExpense'
 import { useAttraction } from '@/hooks/useAttraction'
 import { useDashboard } from '@/hooks/useDashboard'
 import { useCurrency } from '@/hooks/useCurrency'
+import { useAccommodation } from '@/hooks/useAccommodation'
 import type { CurrencyRates } from '@/types/Currency'
 import type { Budget, BudgetSummary } from '@/types/Budget'
 import type { Expense } from '@/types/Expense'
 import type { Attraction, Country } from '@/types/Attraction'
 import type { DashboardStats } from '@/types/Dashboard'
+import type { Accommodation } from '@/types/Accommodation'
 
 type DayFilter = number | 'all'
 type CountryFilter = Country | 'all'
@@ -21,13 +23,14 @@ interface CountryContextType {
    setCountry: (country: CountryFilter) => void
    day: DayFilter
    setDay: (day: DayFilter) => void
-   rates:  CurrencyRates | null
+   rates: CurrencyRates | null
    budgets: Budget[]
    budgetSummary: BudgetSummary
    expenses: Expense[]
    attractions: Attraction[]
    dashboard: DashboardStats
    availableDays: number[]
+   accommodations: Accommodation[]
 }
 
 function getInitialFilter(): { country: CountryFilter; day: DayFilter } {
@@ -56,7 +59,8 @@ export const CountryContext = createContext<CountryContextType>({
       budgetByOrigin: [],
       attractionStatus: { total: 0, visited: 0, pendingReservation: 0, visitedPercentage: 0 },
    },
-   availableDays: []
+   availableDays: [],
+   accommodations: []
 })
 
 export function CountryProvider({ children }: { children: ReactNode }) {
@@ -68,6 +72,7 @@ export function CountryProvider({ children }: { children: ReactNode }) {
    const { expenses } = useExpense(country)
    const { attractions } = useAttraction(country)
    const { rates } = useCurrency()
+   const { accommodations } = useAccommodation()
 
    const dashboardData = useDashboard({ budgets, expenses, attractions })
 
@@ -118,7 +123,8 @@ export function CountryProvider({ children }: { children: ReactNode }) {
             expenses,
             attractions,
             dashboard,
-            availableDays
+            availableDays,
+            accommodations
          }}
       >
          {children}

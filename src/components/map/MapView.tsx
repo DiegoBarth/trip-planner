@@ -15,7 +15,7 @@ function getColorForDay(day: number) {
 }
 
 export function MapView() {
-   const { attractions, country, day, isReady } = useCountry()
+   const { attractions, accommodations, country, day, isReady } = useCountry()
 
    // 🔹 Filtra e já garante lat/lng obrigatórios
    const filtered = useMemo(() => {
@@ -37,7 +37,7 @@ export function MapView() {
       return grouped
    }, [filtered])
 
-   const { routes, distances } = useOSRMRoutes(groupedByDay)
+   const { routes, distances } = useOSRMRoutes(groupedByDay, accommodations)
 
    if (!isReady) return <div className="p-6">Loading...</div>
    if (!filtered.length) return <div className="p-6">No attractions found.</div>
@@ -62,6 +62,7 @@ export function MapView() {
                <MapRoutes
                   groupedByDay={groupedByDay}
                   routes={routes}
+                  accommodations={accommodations}
                   getColor={getColorForDay}
                />
             </MapContainer>

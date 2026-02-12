@@ -2,8 +2,9 @@ import { useEffect, useState } from 'react'
 import type { Attraction } from '@/types/Attraction'
 import { fetchOSRMRoute } from '@/services/osrmService'
 import { isMappableAttraction } from '@/utils/typeGuards'
+import type { Accommodation } from '@/types/Accommodation'
 
-export function useOSRMRoutes(groupedByDay: Record<number, Attraction[]>) {
+export function useOSRMRoutes(groupedByDay: Record<number, Attraction[]>, accommodations: Accommodation[]) {
    const [routes, setRoutes] = useState<Record<number, [number, number][]>>({})
    const [distances, setDistances] = useState<Record<number, number>>({})
 
@@ -17,9 +18,22 @@ export function useOSRMRoutes(groupedByDay: Record<number, Attraction[]>) {
 
             if (validPoints.length < 2) continue
 
-            const result = await fetchOSRMRoute(
-               validPoints.map(p => ({ lat: p.lat, lng: p.lng }))
-            )
+            let routePoints = validPoints.map(p => ({
+               lat: p.lat,
+               lng: p.lng
+            }))
+
+            if (accommodations.length > 0) {
+               const stay = accommodations[0]
+
+               routePoints = [
+                  { lat: stay.lat, lng: stay.lng },
+                  ...routePoints,
+                  { lat: stay.lat, lng: stay.lng }
+               ]
+            }
+
+            const result = await fetchOSRMRoute(routePoints)
 
             if (result) {
                newRoutes[Number(dayNum)] = result.path
