@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react'
 
 type Theme = 'light' | 'dark'
 
@@ -7,27 +7,45 @@ interface ThemeContextType {
    toggleTheme: () => void
 }
 
-const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
+export const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
+
+function applyTheme(next: Theme) {
+   const root = document.documentElement
+   const metaTheme = document.querySelector('meta[name="theme-color"]')
+   if (next === 'dark') {
+      root.classList.add('dark')
+      root.setAttribute('data-theme', 'dark')
+      if (metaTheme) metaTheme.setAttribute('content', '#111827')
+   } else {
+      root.classList.remove('dark')
+      root.setAttribute('data-theme', 'light')
+      if (metaTheme) metaTheme.setAttribute('content', '#ef4444')
+   }
+   try {
+      localStorage.setItem('theme', next)
+   } catch (_) {}
+}
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
    const [theme, setTheme] = useState<Theme>(() => {
+      if (typeof window === 'undefined') return 'light'
       const saved = localStorage.getItem('theme')
-      return (saved as Theme) || 'light'
+      if (saved === 'dark' || saved === 'light') return saved
+      return 'light'
    })
 
+   const themeRef = useRef(theme)
+   themeRef.current = theme
+
    useEffect(() => {
-      const root = document.documentElement
-      if (theme === 'dark') {
-         root.classList.add('dark')
-      } else {
-         root.classList.remove('dark')
-      }
-      localStorage.setItem('theme', theme)
+      applyTheme(theme)
    }, [theme])
 
-   const toggleTheme = () => {
-      setTheme(prev => prev === 'light' ? 'dark' : 'light')
-   }
+   const toggleTheme = useCallback(() => {
+      const next: Theme = themeRef.current === 'light' ? 'dark' : 'light'
+      applyTheme(next)
+      setTheme(next)
+   }, [])
 
    return (
       <ThemeContext.Provider value={{ theme, toggleTheme }}>

@@ -14,9 +14,9 @@ const capitalize = (s?: string) => {
 
 export function ExpensesByCategoryChart({ data }: { data: ExpenseByCategory[] }) {
    return (
-      <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-300">
-         <h3 className="text-gray-700 font-bold text-lg mb-6 flex items-center gap-2">
-            <span className="p-2 bg-emerald-100 text-emerald-600 rounded-lg text-sm">📊</span>
+      <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md transition-shadow duration-300">
+         <h3 className="text-gray-700 dark:text-gray-200 font-bold text-lg mb-6 flex items-center gap-2">
+            <span className="p-2 bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 rounded-lg text-sm">📊</span>
             Gastos por Categoria
          </h3>
 

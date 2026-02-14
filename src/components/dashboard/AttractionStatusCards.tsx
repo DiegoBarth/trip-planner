@@ -4,15 +4,15 @@ export function AttractionStatusCards({ status }: { status: AttractionStats }) {
    const progress = status.visitedPercentage
 
    return (
-      <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+      <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
          <div className="flex justify-between mb-4">
-            <h3 className="font-bold text-gray-700 text-lg">🎢 Progresso da Viagem</h3>
-            <span className="text-purple-600 font-semibold">
+            <h3 className="font-bold text-gray-700 dark:text-gray-200 text-lg">🎢 Progresso da Viagem</h3>
+            <span className="text-purple-600 dark:text-purple-400 font-semibold">
                {Math.round(progress)}%
             </span>
          </div>
 
-         <div className="w-full bg-gray-100 rounded-full h-4 mb-6">
+         <div className="w-full bg-gray-100 dark:bg-gray-700 rounded-full h-4 mb-6">
             <div
                className="bg-gradient-to-r from-purple-500 to-indigo-500 h-4 rounded-full transition-all"
                style={{ width: `${progress}%` }}
@@ -21,16 +21,16 @@ export function AttractionStatusCards({ status }: { status: AttractionStats }) {
 
          <div className="grid grid-cols-3 text-center gap-4">
             <div>
-               <p className="text-xs text-gray-400">Total</p>
-               <p className="font-bold">{status.total}</p>
+               <p className="text-xs text-gray-400 dark:text-gray-500">Total</p>
+               <p className="font-bold text-gray-900 dark:text-gray-100">{status.total}</p>
             </div>
             <div>
-               <p className="text-xs text-emerald-500">Visitados</p>
-               <p className="font-bold">{status.visited}</p>
+               <p className="text-xs text-emerald-500 dark:text-emerald-400">Visitados</p>
+               <p className="font-bold text-gray-900 dark:text-gray-100">{status.visited}</p>
             </div>
             <div>
-               <p className="text-xs text-amber-500">Pendentes</p>
-               <p className="font-bold">{status.pendingReservation}</p>
+               <p className="text-xs text-amber-500 dark:text-amber-400">Pendentes</p>
+               <p className="font-bold text-gray-900 dark:text-gray-100">{status.pendingReservation}</p>
             </div>
          </div>
       </div>

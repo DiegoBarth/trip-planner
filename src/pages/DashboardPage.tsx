@@ -13,7 +13,7 @@ export function DashboardPage() {
 
    if(!isReady) {
       return (
-         <div className="min-h-screen bg-gray-50 pb-20 md:pb-6">
+         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-20 md:pb-6">
             <PageHeader
                title="Dashboard"
                subtitle="Resumo da sua viagem"
@@ -29,7 +29,7 @@ export function DashboardPage() {
    const stats = dashboard
 
    return (
-      <div className="min-h-screen bg-gray-50 pb-20 md:pb-6">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-20 md:pb-6">
          <PageHeader
             title="Dashboard"
             subtitle="Resumo completo da sua viagem"

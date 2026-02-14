@@ -2,6 +2,7 @@ import { ArrowLeft } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { type ReactNode } from 'react'
 import { cn } from '@/lib/utils'
+import { ThemeToggle } from './ThemeToggle'
 
 interface PageHeaderProps {
   title: string
@@ -49,11 +50,10 @@ export function PageHeader({
             )}
           </div>
           
-          {action && (
-            <div className="flex-shrink-0">
-              {action}
-            </div>
-          )}
+          <div className="flex items-center gap-2 flex-shrink-0">
+            {action}
+            <ThemeToggle />
+          </div>
         </div>
       </div>
     </header>

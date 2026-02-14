@@ -59,9 +59,9 @@ export function Timeline({ attractions, onToggleVisited }: TimelineProps) {
   if (!timeline) {
     return (
       <div className="text-center py-12">
-        <Calendar className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-        <p className="text-gray-600">Nenhuma atração para mostrar na timeline</p>
-        <p className="text-sm text-gray-500 mt-1">
+        <Calendar className="w-12 h-12 text-gray-400 dark:text-gray-500 mx-auto mb-3" />
+        <p className="text-gray-600 dark:text-gray-400">Nenhuma atração para mostrar na timeline</p>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
           Adicione atrações com coordenadas para visualizar o roteiro
         </p>
       </div>
@@ -132,10 +132,9 @@ export function Timeline({ attractions, onToggleVisited }: TimelineProps) {
         </div>
       </div>
 
-      {/* Timeline */}
+      {/* Timeline - linha contínua à esquerda */}
       <div className="relative pl-3 md:pl-6">
-        {/* Vertical line background */}
-        <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-gradient-to-b from-blue-400 via-blue-300 to-blue-400" />
+        <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-gray-200 dark:bg-gray-700 rounded-full" aria-hidden />
 
         {timeline.attractions.map((attraction, index) => {
           // Segment is BEFORE the attraction (except for the first one)

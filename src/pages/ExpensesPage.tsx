@@ -46,7 +46,7 @@ export function ExpensesPage() {
    }
 
    return (
-      <div className="min-h-screen bg-gray-50 pb-20 md:pb-6">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-20 md:pb-6">
          <PageHeader
             title="Gastos"
             subtitle="Registre e acompanhe seus gastos"

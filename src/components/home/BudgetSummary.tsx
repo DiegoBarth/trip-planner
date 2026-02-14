@@ -15,8 +15,8 @@ export function BudgetSummary() {
    return (
       <div>
          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-               <Wallet className="w-5 h-5 text-gray-600" />
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+               <Wallet className="w-5 h-5 text-gray-600 dark:text-gray-400" />
                Resumo Financeiro
             </h2>
          </div>

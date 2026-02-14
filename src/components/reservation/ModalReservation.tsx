@@ -157,7 +157,7 @@ export function ModalReservation({ reservation, isOpen, onClose, onSave }: Modal
             {/* Type and Status */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                <div>
-                  <label className="block text-sm font-bold text-gray-900 mb-1.5">
+                  <label className="block text-sm font-bold text-gray-900 dark:text-gray-100 mb-1.5">
                      Tipo *
                   </label>
                   <CustomSelect
@@ -171,7 +171,7 @@ export function ModalReservation({ reservation, isOpen, onClose, onSave }: Modal
                </div>
 
                <div>
-                  <label className="block text-sm font-bold text-gray-900 mb-1.5">
+                  <label className="block text-sm font-bold text-gray-900 dark:text-gray-100 mb-1.5">
                      Status *
                   </label>
                   <CustomSelect
@@ -187,7 +187,7 @@ export function ModalReservation({ reservation, isOpen, onClose, onSave }: Modal
 
             {/* Title */}
             <div>
-               <label className="block text-sm font-bold text-gray-900 mb-1.5">
+               <label className="block text-sm font-bold text-gray-900 dark:text-gray-100 mb-1.5">
                   Título *
                </label>
                <input
@@ -195,90 +195,90 @@ export function ModalReservation({ reservation, isOpen, onClose, onSave }: Modal
                   required
                   autoComplete="off"
                   {...register('title', { required: true })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none placeholder:text-gray-400 text-gray-900"
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none placeholder:text-gray-400 dark:placeholder:text-gray-500 text-gray-900 dark:text-gray-100"
                   placeholder="Ex: Voo São Paulo → Tóquio"
                />
             </div>
 
             {/* Description */}
             <div>
-               <label className="block text-sm font-bold text-gray-900 mb-1.5">
+               <label className="block text-sm font-bold text-gray-900 dark:text-gray-100 mb-1.5">
                   Descrição
                </label>
                <input
                   type="text"
                   autoComplete="off"
                   {...register('description')}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none placeholder:text-gray-400 text-gray-900"
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none placeholder:text-gray-400 dark:placeholder:text-gray-500 text-gray-900 dark:text-gray-100"
                   placeholder="Detalhes adicionais..."
                />
             </div>
 
             {/* Dates and Time Section */}
-            <div className="pt-4 border-t border-gray-200">
-               <h3 className="text-sm font-bold text-gray-900 mb-2.5">📅 Datas e Horário</h3>
+            <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+               <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100 mb-2.5">📅 Datas e Horário</h3>
                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                   <div>
-                     <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
                         Data
                      </label>
                      <input
                         type="date"
                         {...register('date')}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none text-gray-900"
+                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none text-gray-900 dark:text-gray-100"
                      />
                   </div>
 
                   <div>
-                     <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
                         Data Fim
                      </label>
                      <input
                         type="date"
                         {...register('endDate')}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none text-gray-900"
+                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none text-gray-900 dark:text-gray-100"
                      />
                   </div>
 
                   <div>
-                     <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
                         Horário
                      </label>
                      <input
                         type="time"
                         {...register('time')}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none text-gray-900"
+                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none text-gray-900 dark:text-gray-100"
                      />
                   </div>
                </div>
             </div>
 
             {/* Provider and Code Section */}
-            <div className="pt-4 border-t border-gray-200">
-               <h3 className="text-sm font-bold text-gray-900 mb-2.5">🏢 Provedor e Confirmação</h3>
+            <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+               <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100 mb-2.5">🏢 Provedor e Confirmação</h3>
                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <div>
-                     <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
                         Provedor
                      </label>
                      <input
                         type="text"
                         autoComplete="off"
                         {...register('provider')}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none placeholder:text-gray-400 text-gray-900"
+                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none placeholder:text-gray-400 dark:placeholder:text-gray-500 text-gray-900 dark:text-gray-100"
                         placeholder="Ex: LATAM, Booki..."
                      />
                   </div>
 
                   <div>
-                     <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
                         Código
                      </label>
                      <input
                         type="text"
                         autoComplete="off"
                         {...register('confirmationCode')}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none placeholder:text-gray-400 text-gray-900 font-mono uppercase"
+                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none placeholder:text-gray-400 dark:placeholder:text-gray-500 text-gray-900 dark:text-gray-100 font-mono uppercase"
                         placeholder="ABC123"
                      />
                   </div>
@@ -286,25 +286,25 @@ export function ModalReservation({ reservation, isOpen, onClose, onSave }: Modal
             </div>
 
             {/* Location Section */}
-            <div className="pt-4 border-t border-gray-200">
-               <h3 className="text-sm font-bold text-gray-900 mb-2.5">📍 Localização</h3>
+            <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+               <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100 mb-2.5">📍 Localização</h3>
                <div className="space-y-4">
                   <div>
-                     <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
                         Local
                      </label>
                      <input
                         type="text"
                         autoComplete="off"
                         {...register('location')}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none placeholder:text-gray-400 text-gray-900"
+                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none placeholder:text-gray-400 dark:placeholder:text-gray-500 text-gray-900 dark:text-gray-100"
                         placeholder="Ex: Aeroporto de Narita"
                      />
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
                            País
                         </label>
                         <CustomSelect
@@ -325,7 +325,7 @@ export function ModalReservation({ reservation, isOpen, onClose, onSave }: Modal
                      </div>
 
                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
                            Vincular Atração <span className="text-xs text-gray-500">(opcional)</span>
                         </label>
                         <Controller
@@ -353,25 +353,25 @@ export function ModalReservation({ reservation, isOpen, onClose, onSave }: Modal
             </div>
 
             {/* Links Section */}
-            <div className="pt-4 border-t border-gray-200">
-               <h3 className="text-sm font-bold text-gray-900 mb-2.5">🔗 Links</h3>
+            <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+               <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100 mb-2.5">🔗 Links</h3>
                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
                      Link da Reserva
                   </label>
                   <input
                      type="url"
                      autoComplete="off"
                      {...register('bookingUrl')}
-                     className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none placeholder:text-gray-400 text-gray-900"
+                     className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none placeholder:text-gray-400 dark:placeholder:text-gray-500 text-gray-900 dark:text-gray-100"
                      placeholder="https://booking.com/..."
                   />
                </div>
             </div>
 
             {/* Document Section */}
-            <div className="pt-4 border-t border-gray-200">
-               <h3 className="text-sm font-bold text-gray-900 mb-2.5">📄 Documento</h3>
+            <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+               <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100 mb-2.5">📄 Documento</h3>
                <div className="space-y-4">
                   <FileUpload
                      label="Comprovante ou documento"
@@ -385,10 +385,10 @@ export function ModalReservation({ reservation, isOpen, onClose, onSave }: Modal
                   
                   <div className="relative">
                      <div className="absolute inset-0 flex items-center">
-                        <div className="w-full border-t border-gray-200"></div>
+                        <div className="w-full border-t border-gray-200 dark:border-gray-700"></div>
                      </div>
                      <div className="relative flex justify-center text-xs">
-                        <span className="px-2 bg-white text-gray-500">ou cole um link</span>
+                        <span className="px-2 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400">ou cole um link</span>
                      </div>
                   </div>
 
@@ -397,21 +397,21 @@ export function ModalReservation({ reservation, isOpen, onClose, onSave }: Modal
                      autoComplete="off"
                      value={formData.documentUrl}
                      onChange={(e) => setValue('documentUrl', e.target.value)}
-                     className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none placeholder:text-gray-400 text-gray-900 text-sm"
+                     className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none placeholder:text-gray-400 dark:placeholder:text-gray-500 text-gray-900 dark:text-gray-100 text-sm"
                      placeholder="https://drive.google.com/..."
                   />
                </div>
             </div>
 
             {/* Notes */}
-            <div className="pt-4 border-t border-gray-200">
-               <label className="block text-sm font-bold text-gray-900 mb-1.5">
+            <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+               <label className="block text-sm font-bold text-gray-900 dark:text-gray-100 mb-1.5">
                   📝 Observações
                </label>
                <textarea
                   {...register('notes')}
                   rows={3}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none placeholder:text-gray-400 text-gray-900 resize-none"
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none placeholder:text-gray-400 dark:placeholder:text-gray-500 text-gray-900 dark:text-gray-100 resize-none"
                   placeholder="Informações adicionais importantes..."
                />
             </div>

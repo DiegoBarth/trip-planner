@@ -102,29 +102,29 @@ export function ReservationList({
       {/* Resumo - identidade da tela de reservas */}
       <div className="flex items-center justify-between gap-4 mb-5 flex-wrap">
         <div className="flex items-center gap-2">
-          <h2 className="text-lg font-semibold text-gray-900">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
             Reservas & Documentos
           </h2>
-          <span className="text-sm text-gray-500 font-medium">
+          <span className="text-sm text-gray-500 dark:text-gray-400 font-medium">
             {stats.total} {stats.total === 1 ? 'item' : 'itens'}
           </span>
         </div>
       </div>
 
       {stats.total > 0 && (
-        <div className="mb-6 p-4 rounded-2xl bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-100">
+        <div className="mb-6 p-4 rounded-2xl bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/30 dark:to-purple-900/30 border border-indigo-100 dark:border-indigo-800">
           <div className="flex items-center gap-3 mb-3">
             <div className="w-10 h-10 rounded-xl bg-indigo-100 flex items-center justify-center">
               <FileCheck className="w-5 h-5 text-indigo-600" />
             </div>
             <div>
-              <p className="text-sm font-medium text-gray-600">Status</p>
-              <p className="text-xs text-gray-500">Resumo das reservas</p>
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Status</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Resumo das reservas</p>
             </div>
           </div>
           <div className="flex flex-wrap gap-2">
-            <span className="px-3 py-1.5 rounded-lg bg-white border border-gray-200 text-sm font-medium text-gray-700 shadow-sm">
-              Total <span className="font-bold text-gray-900">{stats.total}</span>
+            <span className="px-3 py-1.5 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300 shadow-sm">
+              Total <span className="font-bold text-gray-900 dark:text-gray-100">{stats.total}</span>
             </span>
             <span className="px-3 py-1.5 rounded-lg bg-green-100 text-green-800 text-sm font-medium">
               Confirmado <span className="font-bold">{stats.confirmed}</span>
@@ -150,12 +150,12 @@ export function ReservationList({
           <>
             {groupedReservations.preTripItems.length > 0 && (
               <section className="space-y-3">
-                <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white border border-indigo-200 shadow-sm w-fit">
+                <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white dark:bg-gray-800 border border-indigo-200 dark:border-indigo-800 shadow-sm w-fit">
                   <div className="w-2 h-2 rounded-full bg-indigo-500" />
-                  <h3 className="text-base font-semibold text-gray-900">
+                  <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">
                     Pré-Viagem
                   </h3>
-                  <span className="text-sm text-gray-500">
+                  <span className="text-sm text-gray-500 dark:text-gray-400">
                     {groupedReservations.preTripItems.length} {groupedReservations.preTripItems.length === 1 ? 'item' : 'itens'}
                   </span>
                 </div>
@@ -176,12 +176,12 @@ export function ReservationList({
               .sort(([dateA], [dateB]) => new Date(dateA).getTime() - new Date(dateB).getTime())
               .map(([date, items]) => (
                 <section key={date} className="space-y-3">
-                  <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white border border-gray-200 shadow-sm w-fit mb-3">
+                  <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm w-fit mb-3">
                     <span className="text-lg" aria-hidden>📅</span>
-                    <span className="text-base font-semibold text-gray-900">
+                    <span className="text-base font-semibold text-gray-900 dark:text-gray-100">
                       {formatDate(date)}
                     </span>
-                    <span className="text-sm text-gray-400">
+                    <span className="text-sm text-gray-400 dark:text-gray-500">
                       · {items.length} {items.length === 1 ? 'reserva' : 'reservas'}
                     </span>
                   </div>

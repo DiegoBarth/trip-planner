@@ -37,8 +37,8 @@ export function ChecklistCard({ item, onEdit, onDelete, onTogglePacked }: Checkl
 
   return (
     <div
-      className={`group bg-white rounded-2xl shadow-md overflow-hidden border-l-4 transition-all hover:shadow-lg ${
-        item.isPacked ? 'bg-emerald-50/50 border-emerald-400' : ''
+      className={`group bg-white dark:bg-gray-800 rounded-2xl shadow-md overflow-hidden border-l-4 transition-all hover:shadow-lg ${
+        item.isPacked ? 'bg-emerald-50/50 dark:bg-emerald-900/30 border-emerald-400' : ''
       } ${isDeleting ? 'opacity-50 pointer-events-none' : ''}`}
       style={!item.isPacked ? { borderLeftColor: color } : undefined}
     >
@@ -91,7 +91,7 @@ export function ChecklistCard({ item, onEdit, onDelete, onTogglePacked }: Checkl
         {/* Linha 2: título + ações (título trunca; botões sempre à direita na mesma linha) */}
         <div className="flex items-center gap-2 mt-2 min-w-0">
           <h3
-            className={`font-semibold text-gray-900 truncate min-w-0 flex-1 ${item.isPacked ? 'text-gray-500 line-through' : ''}`}
+            className={`font-semibold text-gray-900 dark:text-gray-100 truncate min-w-0 flex-1 ${item.isPacked ? 'text-gray-500 dark:text-gray-400 line-through' : ''}`}
             title={item.description}
           >
             {item.description}
@@ -117,7 +117,7 @@ export function ChecklistCard({ item, onEdit, onDelete, onTogglePacked }: Checkl
         </div>
 
         {(item.quantity && item.quantity > 1) || item.notes ? (
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2 pt-2 border-t border-gray-100 text-sm text-gray-600">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2 pt-2 border-t border-gray-100 dark:border-gray-700 text-sm text-gray-600 dark:text-gray-400">
             {item.quantity && item.quantity > 1 && (
               <div className="flex items-center gap-1.5">
                 <Package className="w-3.5 h-3.5 text-gray-400" />

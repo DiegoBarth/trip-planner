@@ -93,14 +93,14 @@ export function TimelinePage() {
 
   if (!isReady) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
       </div>
     )
   }
 
    return (
-      <div className="min-h-screen bg-gray-50 pb-20 md:pb-6">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-20 md:pb-6">
          <PageHeader
             title="Timeline do Roteiro"
             subtitle={`${dayLabel} - Visualize seu dia com rotas e clima`}
@@ -135,12 +135,12 @@ export function TimelinePage() {
         )}
 
         {timelineAttractions.length === 0 ? (
-          <div className="bg-white rounded-xl shadow-md p-12 text-center">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-12 text-center">
             <Calendar className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-xl font-bold text-gray-900 mb-2">
+            <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">
               {day === 'all' ? 'Nenhuma atração futura' : `Nenhuma atração para o Dia ${day}`}
             </h3>
-            <p className="text-gray-600 mb-4">
+            <p className="text-gray-600 dark:text-gray-400 mb-4">
               {day === 'all' 
                 ? 'Não há atrações futuras planejadas com coordenadas'
                 : 'Adicione coordenadas (lat/lng) às suas atrações para visualizar a timeline'
@@ -154,7 +154,7 @@ export function TimelinePage() {
             </Link>
           </div>
         ) : (
-          <div className="bg-white rounded-xl shadow-md p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
             <Timeline 
               attractions={timelineAttractions}
               onToggleVisited={handleToggleVisited}

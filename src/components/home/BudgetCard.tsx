@@ -15,36 +15,36 @@ export function BudgetCard({ origin, total, spent, remaining }: BudgetCardProps)
 
   return (
     <div
-      className="bg-white rounded-2xl shadow-md overflow-hidden border-l-4 transition-shadow hover:shadow-lg"
+      className="bg-white dark:bg-gray-800 rounded-2xl shadow-md overflow-hidden border-l-4 transition-shadow hover:shadow-lg"
       style={{ borderLeftColor: config.color }}
     >
       <div className="p-4">
         <div className="flex items-center gap-2 mb-4">
           <span className="text-2xl" aria-hidden>{config.icon}</span>
-          <span className="font-semibold text-gray-900">{config.label}</span>
+          <span className="font-semibold text-gray-900 dark:text-gray-100">{config.label}</span>
         </div>
 
         <div className="space-y-3">
           <div className="flex justify-between items-baseline">
-            <span className="text-xs text-gray-500 uppercase tracking-wide">Total</span>
-            <span className="font-bold text-lg text-gray-900">{formatCurrency(total)}</span>
+            <span className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">Total</span>
+            <span className="font-bold text-lg text-gray-900 dark:text-gray-100">{formatCurrency(total)}</span>
           </div>
           <div className="flex justify-between items-baseline text-sm">
-            <span className="text-gray-500">Gasto</span>
+            <span className="text-gray-500 dark:text-gray-400">Gasto</span>
             <span className="font-semibold text-red-600">{formatCurrency(spent)}</span>
           </div>
           <div className="flex justify-between items-baseline text-sm">
-            <span className="text-gray-500">Restante</span>
+            <span className="text-gray-500 dark:text-gray-400">Restante</span>
             <span className="font-semibold text-emerald-600">{formatCurrency(remaining)}</span>
           </div>
         </div>
 
-        <div className="mt-4 pt-3 border-t border-gray-100">
+        <div className="mt-4 pt-3 border-t border-gray-100 dark:border-gray-700">
           <div className="flex justify-between items-center">
-            <span className="text-xs text-gray-400">Utilizado</span>
-            <span className="text-xs font-medium text-gray-600">{percentSpent.toFixed(1)}%</span>
+            <span className="text-xs text-gray-400 dark:text-gray-500">Utilizado</span>
+            <span className="text-xs font-medium text-gray-600 dark:text-gray-400">{percentSpent.toFixed(1)}%</span>
           </div>
-          <div className="mt-1.5 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+          <div className="mt-1.5 h-1.5 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
             <div
               className="h-full rounded-full transition-all duration-300"
               style={{ width: `${Math.min(percentSpent, 100)}%`, backgroundColor: config.color }}

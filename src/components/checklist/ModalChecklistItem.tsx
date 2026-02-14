@@ -79,7 +79,7 @@ export function ModalChecklistItem({ item, isOpen, onClose, onSave }: ModalCheck
          <div className="space-y-4">
             {/* Category */}
             <div>
-               <label htmlFor="checklist-category" className="block text-sm font-medium text-gray-700 mb-1.5">
+               <label htmlFor="checklist-category" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
                   Categoria *
                </label>
                <div className="grid grid-cols-3 md:grid-cols-4 gap-2">
@@ -90,12 +90,12 @@ export function ModalChecklistItem({ item, isOpen, onClose, onSave }: ModalCheck
                         onClick={() => setValue('category', key)}
                         className={`p-3 rounded-lg border-2 transition-all ${
                            formData.category === key
-                              ? 'border-blue-500 bg-blue-50 shadow-md'
-                              : 'border-gray-200 hover:border-gray-300'
+                              ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/40 shadow-md'
+                              : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
                         }`}
                      >
                         <div className="text-2xl mb-1">{config.icon}</div>
-                        <div className={`font-medium text-xs ${formData.category === key ? 'text-blue-700' : 'text-gray-700'}`}>
+                        <div className={`font-medium text-xs ${formData.category === key ? 'text-blue-700 dark:text-blue-300' : 'text-gray-700 dark:text-gray-300'}`}>
                            {config.label}
                         </div>
                      </button>
@@ -105,7 +105,7 @@ export function ModalChecklistItem({ item, isOpen, onClose, onSave }: ModalCheck
 
             {/* Description */}
             <div>
-               <label htmlFor="checklist-description" className="block text-sm font-medium text-gray-700 mb-1.5">
+               <label htmlFor="checklist-description" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
                   Descrição *
                </label>
                <input
@@ -114,14 +114,14 @@ export function ModalChecklistItem({ item, isOpen, onClose, onSave }: ModalCheck
                   required
                   autoComplete="off"
                   {...register('description', { required: true })}
-                  className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none placeholder:text-gray-400 text-gray-900"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                   placeholder="Ex: Passaporte, Adaptador de tomada, etc."
                />
             </div>
 
             {/* Quantity */}
             <div>
-               <label htmlFor="checklist-quantity" className="block text-sm font-medium text-gray-700 mb-1.5">
+               <label htmlFor="checklist-quantity" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
                   Quantidade
                </label>
                <input
@@ -129,9 +129,9 @@ export function ModalChecklistItem({ item, isOpen, onClose, onSave }: ModalCheck
                   type="number"
                   min="1"
                   {...register('quantity')}
-                  className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-gray-900"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                />
-               <p className="text-xs text-gray-500 mt-1">
+               <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                   Deixe em 1 se for um item único
                </p>
             </div>
@@ -142,23 +142,23 @@ export function ModalChecklistItem({ item, isOpen, onClose, onSave }: ModalCheck
                   id="checklist-packed"
                   type="checkbox"
                   {...register('isPacked')}
-                  className="w-5 h-5 rounded border-gray-300 text-green-600 focus:ring-green-500"
+                  className="w-5 h-5 rounded border-gray-300 dark:border-gray-600 text-green-600 focus:ring-green-500 bg-white dark:bg-gray-700"
                />
-               <label htmlFor="checklist-packed" className="text-sm font-medium text-gray-700">
+               <label htmlFor="checklist-packed" className="text-sm font-medium text-gray-700 dark:text-gray-300">
                   Item já está empacotado
                </label>
             </div>
 
             {/* Notes */}
             <div>
-               <label htmlFor="checklist-notes" className="block text-sm font-medium text-gray-700 mb-1.5">
+               <label htmlFor="checklist-notes" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
                   Observações
                </label>
                <textarea
                   id="checklist-notes"
                   {...register('notes')}
                   rows={3}
-                  className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none placeholder:text-gray-400 text-gray-900"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                   placeholder="Detalhes adicionais sobre este item..."
                />
             </div>

@@ -218,7 +218,7 @@ export function ModalExpense({ expense, isOpen, onClose, onSave }: ModalExpenseP
          <div className="space-y-4">
             {/* Category */}
             <div>
-               <label htmlFor="expense-category" className="block text-sm font-medium text-gray-700 mb-1.5">Categoria *</label>
+               <label htmlFor="expense-category" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Categoria *</label>
                <div className="grid grid-cols-3 gap-3">
                   {(Object.entries(EXPENSE_CATEGORIES) as [ExpenseCategory, typeof EXPENSE_CATEGORIES[ExpenseCategory]][]).map(([key, config]) => (
                      <button
@@ -226,12 +226,12 @@ export function ModalExpense({ expense, isOpen, onClose, onSave }: ModalExpenseP
                         type="button"
                         onClick={() => setValue('category', key)}
                         className={`p-4 rounded-lg border-2 transition-all ${formData.category === key
-                           ? 'border-red-500 bg-red-50 shadow-md'
-                           : 'border-gray-200 hover:border-gray-300'
+                           ? 'border-red-500 bg-red-50 dark:bg-red-900/40 shadow-md'
+                           : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
                            }`}
                      >
                         <div className="text-2xl mb-1">{config.icon}</div>
-                        <div className={`font-semibold text-sm ${formData.category === key ? 'text-red-700' : 'text-gray-700'}`}>
+                        <div className={`font-semibold text-sm ${formData.category === key ? 'text-red-700 dark:text-red-300' : 'text-gray-700 dark:text-gray-300'}`}>
                            {config.label}
                         </div>
                      </button>
@@ -241,14 +241,14 @@ export function ModalExpense({ expense, isOpen, onClose, onSave }: ModalExpenseP
 
             {/* Description */}
             <div>
-               <label htmlFor="expense-description" className="block text-sm font-medium text-gray-700 mb-1.5">Descrição *</label>
+               <label htmlFor="expense-description" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Descrição *</label>
                <input
                   id="expense-description"
                   type="text"
                   required
                   autoComplete="off"
                   {...register('description', { required: true })}
-                  className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-red-500 focus:outline-none placeholder:text-gray-400 text-gray-900"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-red-500 focus:outline-none placeholder:text-gray-400 dark:placeholder:text-gray-500 text-gray-900 dark:text-gray-100"
                   placeholder="Ex: Almoço no restaurante"
                />
             </div>
@@ -256,18 +256,18 @@ export function ModalExpense({ expense, isOpen, onClose, onSave }: ModalExpenseP
             {/* Date and Country */}
             <div className="grid grid-cols-2 gap-3">
                <div>
-                  <label htmlFor="expense-date" className="block text-sm font-medium text-gray-700 mb-1.5">Data *</label>
+                  <label htmlFor="expense-date" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Data *</label>
                   <input
                      id="expense-date"
                      type="date"
                      required
                      {...register('date', { required: true })}
-                     className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-red-500 focus:outline-none text-gray-900"
+                     className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-red-500 focus:outline-none text-gray-900 dark:text-gray-100"
                   />
                </div>
 
                <div>
-                  <label htmlFor="expense-country" className="block text-sm font-medium text-gray-700 mb-1.5">País *</label>
+                  <label htmlFor="expense-country" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">País *</label>
                   <CustomSelect
                      value={formData.country ? `${COUNTRIES[formData.country].flag} ${COUNTRIES[formData.country].name}` : ''}
                      onChange={(val) => {
@@ -289,7 +289,7 @@ export function ModalExpense({ expense, isOpen, onClose, onSave }: ModalExpenseP
             {/* Amount and Currency */}
             <div className="grid grid-cols-2 gap-3">
                <div>
-                  <label htmlFor="expense-amount" className="block text-sm font-medium text-gray-700 mb-1.5">Valor *</label>
+                  <label htmlFor="expense-amount" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Valor *</label>
                   <Controller
                      name="amount"
                      control={control}
@@ -308,7 +308,7 @@ export function ModalExpense({ expense, isOpen, onClose, onSave }: ModalExpenseP
                               const formatted = formatCurrencyInputByCurrency(e.target.value, formData.currency)
                               field.onChange(formatted)
                            }}
-                           className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-red-500 focus:outline-none placeholder:text-gray-400 text-gray-900"
+                           className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-red-500 focus:outline-none placeholder:text-gray-400 dark:placeholder:text-gray-500 text-gray-900 dark:text-gray-100"
                            placeholder={formData.currency === 'BRL' ? 'R$ 0,00' : formData.currency === 'JPY' ? '¥ 0' : '₩ 0'}
                         />
                      )}
@@ -316,7 +316,7 @@ export function ModalExpense({ expense, isOpen, onClose, onSave }: ModalExpenseP
                </div>
 
                <div>
-                  <label htmlFor="expense-currency" className="block text-sm font-medium text-gray-700 mb-1.5">Moeda *</label>
+                  <label htmlFor="expense-currency" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Moeda *</label>
                   <CustomSelect
                      value={formData.currency === 'BRL' ? 'R$ Real (BRL)' : formData.currency === 'JPY' ? '¥ Iene (JPY)' : '₩ Won (KRW)'}
                      onChange={(val) => {
@@ -348,7 +348,7 @@ export function ModalExpense({ expense, isOpen, onClose, onSave }: ModalExpenseP
 
             {/* Budget Origin */}
             <div>
-               <label htmlFor="expense-budget-origin" className="block text-sm font-medium text-gray-700 mb-1.5">Origem do Pagamento *</label>
+               <label htmlFor="expense-budget-origin" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Origem do Pagamento *</label>
                <div className="grid grid-cols-3 gap-3">
                   {(Object.entries(BUDGET_ORIGINS) as [BudgetOrigin, typeof BUDGET_ORIGINS[BudgetOrigin]][]).map(([key, config]) => (
                      <button
@@ -378,12 +378,12 @@ export function ModalExpense({ expense, isOpen, onClose, onSave }: ModalExpenseP
 
             {/* Notes */}
             <div>
-               <label htmlFor="expense-notes" className="block text-sm font-medium text-gray-700 mb-1.5">Observações</label>
+               <label htmlFor="expense-notes" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Observações</label>
                <textarea
                   id="expense-notes"
                   {...register('notes')}
                   rows={3}
-                  className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-red-500 focus:outline-none placeholder:text-gray-400 text-gray-900"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-red-500 focus:outline-none placeholder:text-gray-400 dark:placeholder:text-gray-500 text-gray-900 dark:text-gray-100"
                   placeholder="Anotações adicionais sobre este gasto..."
                />
             </div>

@@ -83,14 +83,14 @@ export function ModalBase({
          <div
             ref={trapRef}
             className={cn(
-               'relative w-full max-h-[50vh] bg-white rounded-t-2xl md:rounded-2xl flex flex-col shadow-2xl',
+               'relative w-full max-h-[50vh] bg-white dark:bg-gray-800 rounded-t-2xl md:rounded-2xl flex flex-col shadow-2xl',
                sizeClasses[size]
             )}
          >
             {/* Header */}
             {title && (
-               <div className="flex items-center justify-between px-4 py-3 md:px-6 md:py-4 border-b border-gray-200 flex-shrink-0">
-                  <h2 id="modal-title" className="text-lg md:text-xl font-semibold text-gray-900">
+               <div className="flex items-center justify-between px-4 py-3 md:px-6 md:py-4 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
+                  <h2 id="modal-title" className="text-lg md:text-xl font-semibold text-gray-900 dark:text-gray-100">
                      {title}
                   </h2>
                   <button
@@ -98,7 +98,7 @@ export function ModalBase({
                      disabled={loading}
                      aria-label="Fechar modal"
                      className={cn(
-                        'p-2 rounded-lg text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors',
+                        'p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors',
                         loading && 'opacity-50 cursor-not-allowed'
                      )}
                   >
@@ -113,13 +113,13 @@ export function ModalBase({
             </div>
 
             {/* Footer */}
-            <div className="flex gap-3 px-4 py-3 md:px-6 md:py-4 border-t border-gray-200 bg-gray-50/50 flex-shrink-0">
+            <div className="flex gap-3 px-4 py-3 md:px-6 md:py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/80 flex-shrink-0">
                <button
                   onClick={onClose}
                   disabled={loading}
                   aria-label="Cancelar e fechar modal"
                   className={cn(
-                     'flex-1 px-4 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-all',
+                     'flex-1 px-4 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition-all',
                      loading && 'opacity-50 cursor-not-allowed'
                   )}
                >

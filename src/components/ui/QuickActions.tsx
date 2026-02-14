@@ -59,12 +59,13 @@ export function QuickActions() {
               'flex flex-col items-center justify-center gap-3 p-4 rounded-2xl',
               'transition-all duration-200 active:scale-95',
               action.bgColor,
-              action.hoverColor
+              action.hoverColor,
+              'dark:bg-gray-800 dark:border dark:border-gray-700'
             )}
           >
             <div className={cn(
               'w-12 h-12 rounded-full flex items-center justify-center',
-              'bg-white shadow-sm',
+              'bg-white dark:bg-gray-700 shadow-sm',
               action.color
             )}>
               <Icon className="w-6 h-6" />

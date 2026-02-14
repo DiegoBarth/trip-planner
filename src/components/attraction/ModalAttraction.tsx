@@ -243,26 +243,26 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
          <div className="space-y-4">
             {/* Basic Information */}
             <section>
-               <h3 className="font-bold text-base mb-2.5 pb-2 border-b-2 border-gray-200 flex items-center gap-2">
+               <h3 className="font-bold text-base mb-2.5 pb-2 border-b-2 border-gray-200 dark:border-gray-700 flex items-center gap-2">
                   <span>📍</span>
                   <span>Informações Básicas</span>
                </h3>
                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <div className="md:col-span-2">
-                     <label className="block text-sm font-bold text-gray-900 mb-1.5">
+                     <label className="block text-sm font-bold text-gray-900 dark:text-gray-100 mb-1.5">
                         Nome da Atração *
                      </label>
                      <input
                         type="text"
                         required
                         {...register('name', { required: true })}
-                        className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 focus:outline-none transition-colors placeholder-gray-500 text-gray-900"
+                        className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-green-500 focus:border-green-500 focus:outline-none transition-colors placeholder-gray-500 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
                         placeholder="Ex: Templo Senso-ji"
                      />
                   </div>
 
                   <div>
-                     <label className="block text-sm font-bold text-gray-900 mb-1.5">
+                     <label className="block text-sm font-bold text-gray-900 dark:text-gray-100 mb-1.5">
                         País *
                      </label>
                      <Controller
@@ -287,32 +287,32 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
                   </div>
 
                   <div>
-                     <label className="block text-sm font-bold text-gray-900 mb-1.5">
+                     <label className="block text-sm font-bold text-gray-900 dark:text-gray-100 mb-1.5">
                         Cidade *
                      </label>
                      <input
                         type="text"
                         required
                         {...register('city', { required: true })}
-                        className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 focus:outline-none transition-colors placeholder-gray-500 text-gray-900"
+                        className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-green-500 focus:border-green-500 focus:outline-none transition-colors placeholder-gray-500 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
                         placeholder="Ex: Tóquio"
                      />
                   </div>
 
                   <div>
-                     <label className="block text-sm font-bold text-gray-900 mb-1.5">
+                     <label className="block text-sm font-bold text-gray-900 dark:text-gray-100 mb-1.5">
                         Região/Bairro
                      </label>
                      <input
                         type="text"
                         {...register('region')}
-                        className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 focus:outline-none transition-colors placeholder-gray-500 text-gray-900"
+                        className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-green-500 focus:border-green-500 focus:outline-none transition-colors placeholder-gray-500 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
                         placeholder="Ex: Asakusa"
                      />
                   </div>
 
                   <div>
-                     <label className="block text-sm font-bold text-gray-900 mb-1.5">
+                     <label className="block text-sm font-bold text-gray-900 dark:text-gray-100 mb-1.5">
                         Tipo *
                      </label>
                      <Controller
@@ -346,13 +346,13 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
 
             {/* Date and Time */}
             <section>
-               <h3 className="font-bold text-base mb-2.5 pb-2 border-b-2 border-gray-200 flex items-center gap-2">
+               <h3 className="font-bold text-base mb-2.5 pb-2 border-b-2 border-gray-200 dark:border-gray-700 flex items-center gap-2">
                   <span>📅</span>
                   <span>Data e Horário</span>
                </h3>
                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                   <div>
-                     <label className="block text-sm font-bold text-gray-900 mb-1.5">
+                     <label className="block text-sm font-bold text-gray-900 dark:text-gray-100 mb-1.5">
                         Data *
                      </label>
                      <Controller
@@ -371,14 +371,14 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
                                  const date = new Date(e.target.value + 'T12:00:00')
                                  setValue('dayOfWeek', date.toLocaleDateString('en-US', { weekday: 'long' }))
                               }}
-                              className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 focus:outline-none transition-colors placeholder-gray-500 text-gray-900"
+                              className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-green-500 focus:border-green-500 focus:outline-none transition-colors placeholder-gray-500 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
                            />
                         )}
                      />
                   </div>
 
                   <div>
-                     <label className="block text-sm font-bold text-gray-900 mb-1.5">
+                     <label className="block text-sm font-bold text-gray-900 dark:text-gray-100 mb-1.5">
                         Período Ideal
                      </label>
                      <Controller
@@ -403,41 +403,41 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
                   </div>
 
                   <div>
-                     <label className="block text-sm font-bold text-gray-900 mb-1.5">
+                     <label className="block text-sm font-bold text-gray-900 dark:text-gray-100 mb-1.5">
                         Hora Abertura
                      </label>
                      <input
                         type="time"
                         {...register('openingTime')}
-                        className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 focus:outline-none transition-colors placeholder-gray-500 text-gray-900"
+                        className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-green-500 focus:border-green-500 focus:outline-none transition-colors placeholder-gray-500 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
                      />
                   </div>
 
                   <div>
-                     <label className="block text-sm font-bold text-gray-900 mb-1.5">
+                     <label className="block text-sm font-bold text-gray-900 dark:text-gray-100 mb-1.5">
                         Hora Fechamento
                      </label>
                      <input
                         type="time"
                         {...register('closingTime')}
-                        className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 focus:outline-none transition-colors placeholder-gray-500 text-gray-900"
+                        className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-green-500 focus:border-green-500 focus:outline-none transition-colors placeholder-gray-500 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
                      />
                   </div>
 
                   <div>
-                     <label className="block text-sm font-bold text-gray-900 mb-1.5">
+                     <label className="block text-sm font-bold text-gray-900 dark:text-gray-100 mb-1.5">
                         Duração (min)
                      </label>
                      <input
                         type="number"
                         min="0"
                         {...register('duration', { valueAsNumber: true })}
-                        className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 focus:outline-none transition-colors placeholder-gray-500 text-gray-900"
+                        className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-green-500 focus:border-green-500 focus:outline-none transition-colors placeholder-gray-500 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
                      />
                   </div>
 
                   <div className="md:col-span-2">
-                     <label className="block text-sm font-bold text-gray-900 mb-1.5">
+                     <label className="block text-sm font-bold text-gray-900 dark:text-gray-100 mb-1.5">
                         Dias Fechados
                      </label>
                      <Controller
@@ -450,7 +450,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
                                  {Object.entries(WEEK_DAYS).map(([key, day]) => {
                                     const isChecked = closedDaysArray.includes(key)
                                     return (
-                                       <label key={key} className="flex items-center gap-1.5 px-3 py-2 bg-gray-50 hover:bg-gray-100 border-2 border-gray-300 rounded-lg cursor-pointer transition-colors">
+                                       <label key={key} className="flex items-center gap-1.5 px-3 py-2 bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 border-2 border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer transition-colors">
                                           <input
                                              type="checkbox"
                                              checked={isChecked}
@@ -465,7 +465,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
                                              }}
                                              className="w-4 h-4 text-green-600 rounded"
                                           />
-                                          <span className="text-sm font-medium text-gray-900">{day.short}</span>
+                                          <span className="text-sm font-medium text-gray-900 dark:text-gray-100">{day.short}</span>
                                        </label>
                                     )
                                  })}
@@ -479,13 +479,13 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
 
             {/* Valores */}
             <section>
-               <h3 className="font-bold text-base mb-2.5 pb-2 border-b-2 border-gray-200 flex items-center gap-2">
+               <h3 className="font-bold text-base mb-2.5 pb-2 border-b-2 border-gray-200 dark:border-gray-700 flex items-center gap-2">
                   <span>💰</span>
                   <span>Valores</span>
                </h3>
                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                   <div>
-                     <label className="block text-sm font-bold text-gray-900 mb-1.5">
+                     <label className="block text-sm font-bold text-gray-900 dark:text-gray-100 mb-1.5">
                         Valor Casal
                      </label>
                      <Controller
@@ -500,7 +500,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
                                  field.onChange(e.target.value)
                                  handleCouplerPriceChange(e.target.value)
                               }}
-                              className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 focus:outline-none transition-colors placeholder-gray-500 text-gray-900"
+                              className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-green-500 focus:border-green-500 focus:outline-none transition-colors placeholder-gray-500 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
                               placeholder={formData.currency === 'BRL' ? 'R$ 0,00' : formData.currency === 'JPY' ? '¥ 0' : '₩ 0'}
                            />
                         )}
@@ -508,7 +508,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
                   </div>
 
                   <div>
-                     <label className="block text-sm font-bold text-gray-900 mb-1.5">
+                     <label className="block text-sm font-bold text-gray-900 dark:text-gray-100 mb-1.5">
                         Moeda
                      </label>
                      <Controller
@@ -532,7 +532,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
 
                   {formData.currency !== 'BRL' && (
                      <div className="md:col-span-3 bg-green-50 border-2 border-green-200 p-4 rounded-lg">
-                        <span className="text-sm font-bold text-gray-900">Valor em Reais: </span>
+                        <span className="text-sm font-bold text-gray-900 dark:text-gray-100">Valor em Reais: </span>
                         <span className="font-bold text-lg text-green-700">
                            {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(formData.priceInBRL || 0)}
                         </span>
@@ -543,7 +543,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
 
             {/* Status e Links */}
             <section>
-               <h3 className="font-bold text-base mb-2.5 pb-2 border-b-2 border-gray-200 flex items-center gap-2">
+               <h3 className="font-bold text-base mb-2.5 pb-2 border-b-2 border-gray-200 dark:border-gray-700 flex items-center gap-2">
                   <span>🔗</span>
                   <span>Links e Status</span>
                </h3>
@@ -571,7 +571,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
                   {formData.needsReservation && (
                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                         <div>
-                           <label className="block text-sm font-bold text-gray-900 mb-1.5">
+                           <label className="block text-sm font-bold text-gray-900 dark:text-gray-100 mb-1.5">
                               Status da Reserva
                            </label>
                            <Controller
@@ -600,7 +600,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
                         </div>
 
                         <div>
-                           <label className="block text-sm font-bold text-gray-900 mb-1.5">
+                           <label className="block text-sm font-bold text-gray-900 dark:text-gray-100 mb-1.5">
                               Vincular Reserva
                               <span className="text-xs font-normal text-gray-500 ml-2">(opcional)</span>
                            </label>
@@ -630,38 +630,38 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                      {!formData.reservationId && (
                         <div>
-                           <label className="block text-sm font-bold text-gray-900 mb-1.5">
+                           <label className="block text-sm font-bold text-gray-900 dark:text-gray-100 mb-1.5">
                               Link Ingresso/Reserva
                            </label>
                            <input
                               type="url"
                               {...register('ticketLink')}
-                              className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 focus:outline-none transition-colors placeholder-gray-500 text-gray-900"
+                              className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-green-500 focus:border-green-500 focus:outline-none transition-colors placeholder-gray-500 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
                               placeholder="https://..."
                            />
                         </div>
                      )}
 
                      <div className="md:col-span-2">
-                        <label className="block text-sm font-bold text-gray-900 mb-1.5">
+                        <label className="block text-sm font-bold text-gray-900 dark:text-gray-100 mb-1.5">
                            URL da Imagem
                         </label>
                         <input
                            type="url"
                            {...register('imageUrl')}
-                           className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 focus:outline-none transition-colors placeholder-gray-500 text-gray-900"
+                           className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-green-500 focus:border-green-500 focus:outline-none transition-colors placeholder-gray-500 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
                            placeholder="https://..."
                         />
                      </div>
 
                      <div className="md:col-span-2">
-                        <label className="block text-sm font-bold text-gray-900 mb-1.5">
+                        <label className="block text-sm font-bold text-gray-900 dark:text-gray-100 mb-1.5">
                            Observações
                         </label>
                         <textarea
                            {...register('notes')}
                            rows={3}
-                           className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 focus:outline-none transition-colors resize-none placeholder-gray-500 text-gray-900"
+                           className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-green-500 focus:border-green-500 focus:outline-none transition-colors resize-none placeholder-gray-500 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
                            placeholder="Anotações adicionais..."
                         />
                      </div>

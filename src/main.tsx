@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router-dom'
 import { ToastProvider } from '@/contexts/toast'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { CountryProvider } from './contexts/CountryContext.tsx'
+import { ThemeProvider } from './contexts/ThemeContext.tsx'
 import App from './App.tsx'
 import './index.css'
 import 'leaflet/dist/leaflet.css'
@@ -21,11 +22,13 @@ createRoot(document.getElementById('root')!).render(
    <StrictMode>
       <BrowserRouter basename="/trip-planner/">
          <QueryClientProvider client={queryClient}>
-            <CountryProvider>
-               <ToastProvider>
-                  <App />
-               </ToastProvider>
-            </CountryProvider>
+            <ThemeProvider>
+               <CountryProvider>
+                  <ToastProvider>
+                     <App />
+                  </ToastProvider>
+               </CountryProvider>
+            </ThemeProvider>
          </QueryClientProvider>
       </BrowserRouter>
    </StrictMode>,

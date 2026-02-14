@@ -152,20 +152,20 @@ export function CustomSelect({
             aria-controls={isOpen ? listboxId : undefined}
             aria-activedescendant={isOpen && highlightedIndex >= 0 ? `${listboxId}-option-${highlightedIndex}` : undefined}
             className={cn(
-               'flex h-10 w-full items-center justify-between rounded-lg border bg-white px-3 py-2 text-sm transition-all',
-               'border-gray-300 hover:border-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20',
+               'flex h-10 w-full items-center justify-between rounded-lg border bg-white dark:bg-gray-700 px-3 py-2 text-sm transition-all',
+               'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20',
                'outline-none'
             )}
          >
             <span className={cn(
                'truncate',
-               value ? 'text-gray-900' : 'text-gray-500'
+               value ? 'text-gray-900 dark:text-gray-100' : 'text-gray-500 dark:text-gray-400'
             )}>
                {value || placeholder}
             </span>
             <ChevronDown 
                className={cn(
-                  'h-4 w-4 text-gray-400 transition-transform flex-shrink-0 ml-2',
+                  'h-4 w-4 text-gray-400 dark:text-gray-500 transition-transform flex-shrink-0 ml-2',
                   isOpen && 'rotate-180'
                )} 
                aria-hidden="true" 
@@ -182,7 +182,7 @@ export function CustomSelect({
                   transform: 'translateY(-100%) translateY(-4px)',
                   zIndex: 10000
                }}
-               className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-xl"
+               className="overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-xl"
             >
                <div
                   id={listboxId}
@@ -208,9 +208,9 @@ export function CustomSelect({
                            onMouseEnter={() => setHighlightedIndex(index)}
                            className={cn(
                               'flex cursor-pointer items-center justify-between rounded-md px-3 py-2 text-sm transition-colors',
-                              isHighlighted && 'bg-gray-100',
-                              !isHighlighted && 'hover:bg-gray-50',
-                              isSelected ? 'font-semibold text-gray-900' : 'text-gray-700'
+                              isHighlighted && 'bg-gray-100 dark:bg-gray-700',
+                              !isHighlighted && 'hover:bg-gray-50 dark:hover:bg-gray-700',
+                              isSelected ? 'font-semibold text-gray-900 dark:text-gray-100' : 'text-gray-700 dark:text-gray-300'
                            )}
                         >
                            <span className="truncate">{option}</span>

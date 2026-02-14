@@ -37,7 +37,7 @@ export function ReservationCard({ reservation, onEdit, onDelete }: ReservationCa
 
   return (
     <div
-      className={`relative bg-white rounded-2xl shadow-md overflow-hidden transition-all hover:shadow-lg ${
+      className={`relative bg-white dark:bg-gray-800 rounded-2xl shadow-md overflow-hidden transition-all hover:shadow-lg ${
         isDeleting ? 'opacity-50 pointer-events-none' : ''
       }`}
     >
@@ -87,7 +87,7 @@ export function ReservationCard({ reservation, onEdit, onDelete }: ReservationCa
           </div>
         </div>
         {/* Linha 2: título em uma linha (rolagem horizontal se muito longo) */}
-        <h3 className="font-bold text-gray-900 text-lg overflow-x-auto whitespace-nowrap mb-3 pr-1" title={reservation.title}>
+        <h3 className="font-bold text-gray-900 dark:text-gray-100 text-lg overflow-x-auto whitespace-nowrap mb-3 pr-1" title={reservation.title}>
           {reservation.title}
         </h3>
 
@@ -99,19 +99,19 @@ export function ReservationCard({ reservation, onEdit, onDelete }: ReservationCa
 
         <div className="space-y-1.5 mb-3">
           {reservation.date && (
-            <div className="flex items-center gap-2 text-sm text-gray-600">
+            <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
               <Calendar className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
               <span>{formatDateRange()}</span>
             </div>
           )}
           {reservation.time && (
-            <div className="flex items-center gap-2 text-sm text-gray-600">
+            <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
               <Clock className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
               <span>{reservation.time}</span>
             </div>
           )}
           {reservation.location && (
-            <div className="flex items-center gap-2 text-sm text-gray-600">
+            <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
               <MapPin className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
               <span className="line-clamp-1">{reservation.location}</span>
             </div>

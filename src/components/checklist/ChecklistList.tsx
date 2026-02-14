@@ -176,12 +176,12 @@ export function ChecklistList({
                      return (
                         <section key={category} className="space-y-4">
                            {/* Header da categoria em pill */}
-                           <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white border border-gray-200 shadow-sm w-fit">
+                           <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm w-fit">
                               <span className="text-xl">{categoryConfig?.icon ?? '📦'}</span>
-                              <h3 className="text-base font-semibold text-gray-900">
+                              <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">
                                  {categoryConfig?.label ?? category}
                               </h3>
-                              <span className="text-sm text-gray-500">
+                              <span className="text-sm text-gray-500 dark:text-gray-400">
                                  {packedCount}/{totalCount}
                               </span>
                               {packedCount === totalCount && totalCount > 0 && (

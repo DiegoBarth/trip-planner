@@ -3,16 +3,17 @@ import { NextDaySummary } from '@/components/home/NextDaySummary'
 import { TodaysPendencies } from '@/components/home/TodaysPendencies'
 import { CountryFilter } from '@/components/home/CountryFilter'
 import { QuickActions } from '@/components/ui/QuickActions'
+import { ThemeToggle } from '@/components/ui/ThemeToggle'
 import { Sparkles } from 'lucide-react'
 
 export function HomePage() {
    return (
-      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white pb-20 md:pb-6">
+      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 pb-20 md:pb-6">
          {/* Hero Header */}
          <header className="bg-gradient-to-br from-blue-600 via-purple-600 to-pink-500 text-white">
             <div className="max-w-6xl mx-auto px-4 pt-6 pb-8">
                <div className="flex items-start justify-between mb-6">
-                  <div>
+                  <div className="flex-1 min-w-0">
                      <div className="flex items-center gap-2 mb-2">
                         <Sparkles className="w-5 h-5" />
                         <span className="text-sm font-medium opacity-90">Sua Viagem</span>
@@ -24,6 +25,7 @@ export function HomePage() {
                         Planeje cada momento da sua aventura
                      </p>
                   </div>
+                  <ThemeToggle />
                </div>
                
                <CountryFilter />
@@ -44,7 +46,7 @@ export function HomePage() {
 
             {/* Quick Actions */}
             <section>
-               <h2 className="text-lg font-semibold text-gray-900 mb-4">
+               <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
                   Navegação Rápida
                </h2>
                <QuickActions />
