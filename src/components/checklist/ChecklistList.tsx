@@ -1,11 +1,12 @@
 import { useState, useMemo } from 'react'
-import { Plus, ListChecks } from 'lucide-react'
+import { Plus, ListChecks, FileDown } from 'lucide-react'
 import { ChecklistCard } from './ChecklistCard'
 import { ModalChecklistItem } from './ModalChecklistItem'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { SkeletonList } from '@/components/ui/SkeletonList'
 import type { ChecklistItem } from '@/types/ChecklistItem'
 import { CHECKLIST_CATEGORIES } from '@/config/constants'
+import { exportChecklistToPDF } from '@/utils/exportChecklistToPDF'
 
 interface ChecklistListProps {
   items: ChecklistItem[]
@@ -27,7 +28,7 @@ export function ChecklistList({
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingItem, setEditingItem] = useState<ChecklistItem | undefined>()
 
-  // Group by category
+  // Group by category and sort
   const groupedByCategory = useMemo(() => {
     const grouped = items.reduce((acc, item) => {
       const category = item.category
@@ -38,14 +39,9 @@ export function ChecklistList({
       return acc
     }, {} as Record<string, ChecklistItem[]>)
 
-    // Sort items within each category (unpacked first, then by description)
+    // Sort items within each category by description (alphabetically)
     Object.values(grouped).forEach(categoryItems => {
-      categoryItems.sort((a, b) => {
-        if (a.isPacked !== b.isPacked) {
-          return a.isPacked ? 1 : -1
-        }
-        return a.description.localeCompare(b.description)
-      })
+      categoryItems.sort((a, b) => a.description.localeCompare(b.description, 'pt-BR'))
     })
 
     return grouped
@@ -82,6 +78,10 @@ export function ChecklistList({
     handleCloseModal()
   }
 
+  const handleExportPDF = () => {
+    exportChecklistToPDF({ items })
+  }
+
   // Show loading skeleton
   if (isLoading) {
     return <SkeletonList />
@@ -101,13 +101,25 @@ export function ChecklistList({
               {stats.total} {stats.total === 1 ? 'item' : 'itens'} no total
             </p>
           </div>
-          <button
-            onClick={() => handleOpenModal()}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
-          >
-            <Plus className="w-5 h-5" />
-            Novo Item
-          </button>
+          <div className="flex gap-2">
+            {stats.total > 0 && (
+              <button
+                onClick={handleExportPDF}
+                className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors shadow-sm"
+                title="Exportar para PDF"
+              >
+                <FileDown className="w-5 h-5" />
+                Exportar PDF
+              </button>
+            )}
+            <button
+              onClick={() => handleOpenModal()}
+              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
+            >
+              <Plus className="w-5 h-5" />
+              Novo Item
+            </button>
+          </div>
         </div>
 
         {/* Progress bar */}
@@ -146,9 +158,10 @@ export function ChecklistList({
         ) : (
           Object.entries(groupedByCategory)
             .sort(([keyA], [keyB]) => {
-              // Sort categories by their order in CHECKLIST_CATEGORIES
-              const order = Object.keys(CHECKLIST_CATEGORIES)
-              return order.indexOf(keyA) - order.indexOf(keyB)
+              // Sort categories alphabetically by label
+              const labelA = CHECKLIST_CATEGORIES[keyA as keyof typeof CHECKLIST_CATEGORIES]?.label || keyA
+              const labelB = CHECKLIST_CATEGORIES[keyB as keyof typeof CHECKLIST_CATEGORIES]?.label || keyB
+              return labelA.localeCompare(labelB, 'pt-BR')
             })
             .map(([category, categoryItems]) => {
               const categoryConfig = CHECKLIST_CATEGORIES[category as keyof typeof CHECKLIST_CATEGORIES]
