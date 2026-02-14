@@ -1,10 +1,11 @@
 import { useState, useMemo } from 'react'
-import { Ticket } from 'lucide-react'
+import { FileCheck } from 'lucide-react'
 import { ReservationCard } from './ReservationCard'
 import { ModalReservation } from './ModalReservation'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { SkeletonList } from '@/components/ui/SkeletonList'
 import type { Reservation } from '@/types/Reservation'
+import { formatDate } from '@/utils/formatters'
 
 interface ReservationListProps {
   reservations: Reservation[]
@@ -24,12 +25,6 @@ export function ReservationList({
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingReservation, setEditingReservation] = useState<Reservation | undefined>()
 
-  /**
-   * Sort reservations by:
-   * 1. Items without date go to "Pre-trip" section
-   * 2. Items with date are sorted chronologically
-   * 3. Within same date, sort by type priority (document > insurance > flight > accommodation > transport-pass > activity > other)
-   */
   const sortedReservations = useMemo(() => {
     const typePriority: Record<Reservation['type'], number> = {
       'document': 1,
@@ -42,29 +37,18 @@ export function ReservationList({
     }
 
     return [...reservations].sort((a, b) => {
-      // Items without date go first (pre-trip section)
       if (!a.date && b.date) return -1
       if (a.date && !b.date) return 1
       if (!a.date && !b.date) {
         return typePriority[a.type] - typePriority[b.type]
       }
-
-      // Sort by date
       const dateA = new Date(a.date!).getTime()
       const dateB = new Date(b.date!).getTime()
-
-      if (dateA !== dateB) {
-        return dateA - dateB
-      }
-
-      // Same date: sort by type priority
+      if (dateA !== dateB) return dateA - dateB
       return typePriority[a.type] - typePriority[b.type]
     })
   }, [reservations])
 
-  /**
-   * Group reservations into sections
-   */
   const groupedReservations = useMemo(() => {
     const preTripItems: Reservation[] = []
     const dateGrouped: Record<string, Reservation[]> = {}
@@ -74,24 +58,20 @@ export function ReservationList({
         preTripItems.push(reservation)
       } else {
         const dateKey = reservation.date
-        if (!dateGrouped[dateKey]) {
-          dateGrouped[dateKey] = []
-        }
+        if (!dateGrouped[dateKey]) dateGrouped[dateKey] = []
         dateGrouped[dateKey].push(reservation)
       }
     })
-
     return { preTripItems, dateGrouped }
   }, [sortedReservations])
 
-  // Calculate statistics
   const stats = useMemo(() => {
-    const total = reservations.length
-    const confirmed = reservations.filter(r => r.status === 'confirmed').length
-    const pending = reservations.filter(r => r.status === 'pending').length
-    const completed = reservations.filter(r => r.status === 'completed').length
-
-    return { total, confirmed, pending, completed }
+    return {
+      total: reservations.length,
+      confirmed: reservations.filter(r => r.status === 'confirmed').length,
+      pending: reservations.filter(r => r.status === 'pending').length,
+      completed: reservations.filter(r => r.status === 'completed').length
+    }
   }, [reservations])
 
   const handleOpenModal = (reservation?: Reservation) => {
@@ -106,76 +86,60 @@ export function ReservationList({
 
   const handleSave = (data: Omit<Reservation, 'id'>) => {
     if (editingReservation) {
-      onUpdate({
-        ...data,
-        id: editingReservation.id
-      } as Reservation)
+      onUpdate({ ...data, id: editingReservation.id } as Reservation)
     } else {
       onCreate(data)
     }
     handleCloseModal()
   }
 
-  const formatSectionDate = (dateStr: string) => {
-    try {
-      const date = new Date(dateStr)
-      return date.toLocaleDateString('pt-BR', {
-        weekday: 'long',
-        day: '2-digit',
-        month: 'long',
-        year: 'numeric'
-      })
-    } catch {
-      return dateStr
-    }
-  }
-
-  // Show loading skeleton
   if (isLoading) {
     return <SkeletonList />
   }
 
   return (
     <div>
-      {/* Header with stats */}
-      <div className="mb-6">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h2 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
-              <Ticket className="w-6 h-6" />
-              Reservas & Documentos
-            </h2>
-            <p className="text-sm text-gray-500 mt-1">
-              {stats.total} {stats.total === 1 ? 'item' : 'itens'} no total
-            </p>
-          </div>
+      {/* Resumo - identidade da tela de reservas */}
+      <div className="flex items-center justify-between gap-4 mb-5 flex-wrap">
+        <div className="flex items-center gap-2">
+          <h2 className="text-lg font-semibold text-gray-900">
+            Reservas & Documentos
+          </h2>
+          <span className="text-sm text-gray-500 font-medium">
+            {stats.total} {stats.total === 1 ? 'item' : 'itens'}
+          </span>
         </div>
-
-        {/* Statistics */}
-        {stats.total > 0 && (
-          <div className="grid grid-cols-4 gap-4">
-            <div className="bg-white rounded-lg border-2 border-gray-200 p-4">
-              <div className="text-sm font-medium text-gray-500">Total</div>
-              <div className="text-2xl font-bold text-gray-900">{stats.total}</div>
-            </div>
-            <div className="bg-green-50 rounded-lg border-2 border-green-200 p-4">
-              <div className="text-sm font-medium text-green-700">Confirmados</div>
-              <div className="text-2xl font-bold text-green-900">{stats.confirmed}</div>
-            </div>
-            <div className="bg-amber-50 rounded-lg border-2 border-amber-200 p-4">
-              <div className="text-sm font-medium text-amber-700">Pendentes</div>
-              <div className="text-2xl font-bold text-amber-900">{stats.pending}</div>
-            </div>
-            <div className="bg-gray-50 rounded-lg border-2 border-gray-200 p-4">
-              <div className="text-sm font-medium text-gray-500">Concluídos</div>
-              <div className="text-2xl font-bold text-gray-700">{stats.completed}</div>
-            </div>
-          </div>
-        )}
       </div>
 
-      {/* Reservations by section */}
-      <div className="space-y-8">
+      {stats.total > 0 && (
+        <div className="mb-6 p-4 rounded-2xl bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-100">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-10 h-10 rounded-xl bg-indigo-100 flex items-center justify-center">
+              <FileCheck className="w-5 h-5 text-indigo-600" />
+            </div>
+            <div>
+              <p className="text-sm font-medium text-gray-600">Status</p>
+              <p className="text-xs text-gray-500">Resumo das reservas</p>
+            </div>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <span className="px-3 py-1.5 rounded-lg bg-white border border-gray-200 text-sm font-medium text-gray-700 shadow-sm">
+              Total <span className="font-bold text-gray-900">{stats.total}</span>
+            </span>
+            <span className="px-3 py-1.5 rounded-lg bg-green-100 text-green-800 text-sm font-medium">
+              Confirmado <span className="font-bold">{stats.confirmed}</span>
+            </span>
+            <span className="px-3 py-1.5 rounded-lg bg-amber-100 text-amber-800 text-sm font-medium">
+              Pendente <span className="font-bold">{stats.pending}</span>
+            </span>
+            <span className="px-3 py-1.5 rounded-lg bg-gray-100 text-gray-700 text-sm font-medium">
+              Concluído <span className="font-bold">{stats.completed}</span>
+            </span>
+          </div>
+        </div>
+      )}
+
+      <div className="space-y-6">
         {reservations.length === 0 ? (
           <EmptyState
             icon="🎫"
@@ -184,19 +148,18 @@ export function ReservationList({
           />
         ) : (
           <>
-            {/* Pre-trip section (items without date) */}
             {groupedReservations.preTripItems.length > 0 && (
-              <section className="space-y-4">
-                <div className="flex items-center gap-3 pb-2 border-b-2 border-indigo-200">
-                  <div className="w-2 h-2 rounded-full bg-indigo-500"></div>
-                  <h3 className="text-xl font-bold text-gray-900">
+              <section className="space-y-3">
+                <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white border border-indigo-200 shadow-sm w-fit">
+                  <div className="w-2 h-2 rounded-full bg-indigo-500" />
+                  <h3 className="text-base font-semibold text-gray-900">
                     Pré-Viagem
                   </h3>
                   <span className="text-sm text-gray-500">
-                    ({groupedReservations.preTripItems.length})
+                    {groupedReservations.preTripItems.length} {groupedReservations.preTripItems.length === 1 ? 'item' : 'itens'}
                   </span>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                   {groupedReservations.preTripItems.map(reservation => (
                     <ReservationCard
                       key={reservation.id}
@@ -209,21 +172,20 @@ export function ReservationList({
               </section>
             )}
 
-            {/* Date-grouped sections */}
             {Object.entries(groupedReservations.dateGrouped)
               .sort(([dateA], [dateB]) => new Date(dateA).getTime() - new Date(dateB).getTime())
               .map(([date, items]) => (
-                <section key={date} className="space-y-4">
-                  <div className="flex items-center gap-3 pb-2 border-b-2 border-blue-200">
-                    <div className="w-2 h-2 rounded-full bg-blue-500"></div>
-                    <h3 className="text-xl font-bold text-gray-900 capitalize">
-                      {formatSectionDate(date)}
-                    </h3>
-                    <span className="text-sm text-gray-500">
-                      ({items.length})
+                <section key={date} className="space-y-3">
+                  <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white border border-gray-200 shadow-sm w-fit mb-3">
+                    <span className="text-lg" aria-hidden>📅</span>
+                    <span className="text-base font-semibold text-gray-900">
+                      {formatDate(date)}
+                    </span>
+                    <span className="text-sm text-gray-400">
+                      · {items.length} {items.length === 1 ? 'reserva' : 'reservas'}
                     </span>
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                     {items.map(reservation => (
                       <ReservationCard
                         key={reservation.id}

@@ -1,4 +1,3 @@
-import { Wallet, TrendingDown, TrendingUp } from 'lucide-react'
 import { BUDGET_ORIGINS } from '@/config/constants'
 import { formatCurrency } from '@/utils/formatters'
 import type { BudgetOrigin } from '@/types/Attraction'
@@ -12,62 +11,46 @@ interface BudgetCardProps {
 
 export function BudgetCard({ origin, total, spent, remaining }: BudgetCardProps) {
   const config = BUDGET_ORIGINS[origin]
-  const percentSpent = (spent / total) * 100
+  const percentSpent = total > 0 ? (spent / total) * 100 : 0
 
   return (
-    <div 
-      className="rounded-lg p-4 shadow-md border-2 transition-all hover:shadow-lg"
-      style={{ borderColor: config.color }}
+    <div
+      className="bg-white rounded-2xl shadow-md overflow-hidden border-l-4 transition-shadow hover:shadow-lg"
+      style={{ borderLeftColor: config.color }}
     >
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-2">
-          <span className="text-2xl">{config.icon}</span>
-          <h3 className="font-semibold text-lg">{config.label}</h3>
-        </div>
-        <Wallet className="w-5 h-5 text-gray-400" />
-      </div>
-
-      <div className="space-y-2">
-        <div className="flex justify-between items-baseline">
-          <span className="text-sm text-gray-600">Total</span>
-          <span className="text-lg font-bold" style={{ color: config.color }}>
-            {formatCurrency(total)}
-          </span>
+      <div className="p-4">
+        <div className="flex items-center gap-2 mb-4">
+          <span className="text-2xl" aria-hidden>{config.icon}</span>
+          <span className="font-semibold text-gray-900">{config.label}</span>
         </div>
 
-        <div className="flex justify-between items-baseline">
-          <span className="text-sm text-gray-600 flex items-center gap-1">
-            <TrendingDown className="w-3 h-3" />
-            Gasto
-          </span>
-          <span className="text-sm text-red-600 font-medium">
-            {formatCurrency(spent)}
-          </span>
+        <div className="space-y-3">
+          <div className="flex justify-between items-baseline">
+            <span className="text-xs text-gray-500 uppercase tracking-wide">Total</span>
+            <span className="font-bold text-lg text-gray-900">{formatCurrency(total)}</span>
+          </div>
+          <div className="flex justify-between items-baseline text-sm">
+            <span className="text-gray-500">Gasto</span>
+            <span className="font-semibold text-red-600">{formatCurrency(spent)}</span>
+          </div>
+          <div className="flex justify-between items-baseline text-sm">
+            <span className="text-gray-500">Restante</span>
+            <span className="font-semibold text-emerald-600">{formatCurrency(remaining)}</span>
+          </div>
         </div>
 
-        <div className="flex justify-between items-baseline">
-          <span className="text-sm text-gray-600 flex items-center gap-1">
-            <TrendingUp className="w-3 h-3" />
-            Restante
-          </span>
-          <span className="text-sm text-green-600 font-medium">
-            {formatCurrency(remaining)}
-          </span>
+        <div className="mt-4 pt-3 border-t border-gray-100">
+          <div className="flex justify-between items-center">
+            <span className="text-xs text-gray-400">Utilizado</span>
+            <span className="text-xs font-medium text-gray-600">{percentSpent.toFixed(1)}%</span>
+          </div>
+          <div className="mt-1.5 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+            <div
+              className="h-full rounded-full transition-all duration-300"
+              style={{ width: `${Math.min(percentSpent, 100)}%`, backgroundColor: config.color }}
+            />
+          </div>
         </div>
-
-        {/* Progress bar */}
-        <div className="w-full bg-gray-200 rounded-full h-2 mt-3">
-          <div
-            className="h-2 rounded-full transition-all"
-            style={{
-              width: `${Math.min(percentSpent, 100)}%`,
-              backgroundColor: config.color
-            }}
-          />
-        </div>
-        <p className="text-xs text-gray-500 text-right">
-          {percentSpent.toFixed(1)}% utilizado
-        </p>
       </div>
     </div>
   )

@@ -1,4 +1,4 @@
-import { Trash2, Edit2, Calendar, DollarSign } from 'lucide-react'
+import { Trash2, Pencil, Calendar } from 'lucide-react'
 import type { Budget } from '@/types/Budget'
 import { BUDGET_ORIGINS } from '@/config/constants'
 import { formatCurrency, formatDate } from '@/utils/formatters'
@@ -13,67 +13,61 @@ export function BudgetItemCard({ budget, onEdit, onDelete }: BudgetItemCardProps
   const originConfig = BUDGET_ORIGINS[budget.origin]
 
   return (
-    <div 
-      className="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-all border-l-4"
+    <div
+      className="group bg-white rounded-2xl shadow-md overflow-hidden border-l-4 transition-all hover:shadow-lg"
       style={{ borderLeftColor: originConfig.color }}
     >
-      <div className="flex items-start justify-between mb-3">
-        <div className="flex items-center gap-3 flex-1">
-          <div 
-            className="w-12 h-12 rounded-full flex items-center justify-center text-2xl"
-            style={{ backgroundColor: `${originConfig.color}20` }}
+      <div className="p-4">
+        {/* Linha 1: ícone + descrição (uma linha) + ações */}
+        <div className="flex items-center gap-3 min-w-0">
+          <div
+            className="w-11 h-11 rounded-xl flex items-center justify-center text-xl flex-shrink-0"
+            style={{ backgroundColor: `${originConfig.color}18` }}
           >
             {originConfig.icon}
           </div>
-          
-          <div className="flex-1">
-            <h3 className="font-semibold text-lg text-gray-900 leading-tight">
-              {budget.description}
-            </h3>
-            <div className="flex items-center gap-2 mt-1">
-              <span 
-                className="text-xs px-2 py-0.5 rounded-full font-medium"
-                style={{ 
-                  backgroundColor: `${originConfig.color}20`,
-                  color: originConfig.color 
-                }}
-              >
-                {originConfig.label}
-              </span>
-            </div>
+          <h3 className="font-semibold text-gray-900 truncate min-w-0 flex-1" title={budget.description}>
+            {budget.description}
+          </h3>
+          <div className="flex items-center gap-1 flex-shrink-0">
+            <button
+              onClick={() => onEdit?.(budget)}
+              className="p-2 rounded-xl text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+              title="Editar"
+              aria-label="Editar"
+            >
+              <Pencil className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => onDelete?.(budget.id)}
+              className="p-2 rounded-xl text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors"
+              title="Excluir"
+              aria-label="Excluir"
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
           </div>
         </div>
 
-        {/* Actions */}
-        <div className="flex gap-1">
-          <button
-            onClick={() => onEdit?.(budget)}
-            className="p-2 hover:bg-blue-50 rounded-lg transition-colors text-blue-600"
-            title="Editar"
-          >
-            <Edit2 className="w-4 h-4" />
-          </button>
-          <button
-            onClick={() => onDelete?.(budget.id)}
-            className="p-2 hover:bg-red-50 rounded-lg transition-colors text-red-600"
-            title="Excluir"
-          >
-            <Trash2 className="w-4 h-4" />
-          </button>
-        </div>
-      </div>
+        {/* Linha 2: pill da origem (Casal, Diego, etc.) */}
+        <span
+          className="inline-block mt-2 text-xs font-medium px-2 py-0.5 rounded-md w-fit"
+          style={{
+            backgroundColor: `${originConfig.color}18`,
+            color: originConfig.color,
+          }}
+        >
+          {originConfig.label}
+        </span>
 
-      {/* Valor e Data */}
-      <div className="flex items-center justify-between pt-3 border-t">
-        <div className="flex items-center gap-2 text-sm text-gray-600">
-          <Calendar className="w-4 h-4" />
-          <span>{formatDate(budget.date)}</span>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <DollarSign className="w-4 h-4" style={{ color: originConfig.color }} />
-          <span 
-            className="text-xl font-bold"
+        {/* Linha 3: data + valor */}
+        <div className="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-2 text-sm text-gray-500">
+            <Calendar className="w-4 h-4 text-gray-400 flex-shrink-0" />
+            <span>{formatDate(budget.date)}</span>
+          </div>
+          <span
+            className="text-lg font-bold tabular-nums flex-shrink-0"
             style={{ color: originConfig.color }}
           >
             {formatCurrency(budget.amount)}

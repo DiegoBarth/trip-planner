@@ -140,14 +140,14 @@ export const BUDGET_CATEGORIES = [
 ]
 
 export const CHECKLIST_CATEGORIES = {
-   documents: { label: 'Documentos', icon: '📄' },
-   clothes: { label: 'Roupas', icon: '👕' },
-   electronics: { label: 'Eletrônicos', icon: '🔌' },
-   hygiene: { label: 'Higiene', icon: '🧴' },
-   medicines: { label: 'Medicamentos', icon: '💊' },
-   accessories: { label: 'Acessórios', icon: '🎒' },
-   entertainment: { label: 'Entretenimento', icon: '🎮' },
-   other: { label: 'Outros', icon: '📦' }
+   documents: { label: 'Documentos', icon: '📄', color: '#3b82f6' },     // blue
+   clothes: { label: 'Roupas', icon: '👕', color: '#ec4899' },         // pink
+   electronics: { label: 'Eletrônicos', icon: '🔌', color: '#6366f1' }, // indigo
+   hygiene: { label: 'Higiene', icon: '🧴', color: '#14b8a6' },         // teal
+   medicines: { label: 'Medicamentos', icon: '💊', color: '#ef4444' },   // red
+   accessories: { label: 'Acessórios', icon: '🎒', color: '#f59e0b' },  // amber
+   entertainment: { label: 'Entretenimento', icon: '🎮', color: '#8b5cf6' }, // violet
+   other: { label: 'Outros', icon: '📦', color: '#6b7280' }             // gray
 }
 
 export const RESERVATION_TYPES = {
@@ -156,7 +156,7 @@ export const RESERVATION_TYPES = {
    flight: { label: 'Voo', icon: '✈️', color: '#3b82f6' },              // blue
    accommodation: { label: 'Hospedagem', icon: '🏨', color: '#8b5cf6' }, // purple
    'transport-pass': { label: 'Passe', icon: '🎫', color: '#f59e0b' },  // amber
-   activity: { label: 'Atividade', icon: '🎭', color: '#ec4899' },      // pink
+   activity: { label: 'Atividade', icon: '🎭', color: '#7c3aed' },      // violet
    other: { label: 'Outro', icon: '📋', color: '#6b7280' }              // gray
 }
 

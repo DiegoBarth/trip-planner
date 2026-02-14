@@ -91,30 +91,30 @@ export function AttractionsList({
 
    return (
       <div>
-         <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-semibold text-gray-900">
-               Todas as Atrações
-               <span className="text-sm font-normal text-gray-500 ml-2">
-                  ({attractions.length})
+         <div className="flex items-center justify-between gap-4 mb-5 flex-wrap">
+            <div className="flex items-center gap-2">
+               <h2 className="text-lg font-semibold text-gray-900">
+                  Todas as Atrações
+               </h2>
+               <span className="text-sm text-gray-500 font-medium">
+                  {attractions.length} {attractions.length === 1 ? 'item' : 'itens'}
                </span>
-            </h2>
-
-            <div className="flex items-center gap-3">
-               {onBulkUpdate && !isMobile && (
-                  <button
-                     onClick={() => setIsDragEnabled(!isDragEnabled)}
-                     className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors shadow-sm ${
-                        isDragEnabled
-                           ? 'bg-blue-600 text-white hover:bg-blue-700'
-                           : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                     }`}
-                     title={isDragEnabled ? 'Desabilitar reordenação' : 'Habilitar reordenação'}
-                  >
-                     <GripVertical className="w-5 h-5" />
-                     {isDragEnabled ? 'Reordenação ativa' : 'Reordenar'}
-                  </button>
-               )}
             </div>
+
+            {onBulkUpdate && !isMobile && (
+               <button
+                  onClick={() => setIsDragEnabled(!isDragEnabled)}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
+                     isDragEnabled
+                        ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-sm'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                  title={isDragEnabled ? 'Desabilitar reordenação' : 'Habilitar reordenação'}
+               >
+                  <GripVertical className="w-4 h-4" />
+                  {isDragEnabled ? 'Reordenação ativa' : 'Reordenar'}
+               </button>
+            )}
          </div>
 
          {isLoading ? (

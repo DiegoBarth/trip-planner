@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react'
-import { ListChecks, FileDown } from 'lucide-react'
+import { ListChecks, FileDown, Luggage, CheckCircle } from 'lucide-react'
 import { ChecklistCard } from './ChecklistCard'
 import { ModalChecklistItem } from './ModalChecklistItem'
 import { EmptyState } from '@/components/ui/EmptyState'
@@ -89,55 +89,67 @@ export function ChecklistList({
 
    return (
       <div>
-         {/* Header with stats */}
-         <div className="mb-6">
-            <div className="flex items-center justify-between mb-4">
-               <div>
-                  <h2 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
-                     <ListChecks className="w-6 h-6" />
-                     Checklist de Viagem
-                  </h2>
-                  <p className="text-sm text-gray-500 mt-1">
-                     {stats.total} {stats.total === 1 ? 'item' : 'itens'} no total
-                  </p>
-               </div>
-               <div className="flex gap-2">
+         {/* Resumo: card com gradiente + progresso */}
+         <div className="mb-8">
+            <div className="rounded-2xl shadow-lg overflow-hidden bg-gradient-to-br from-emerald-500 to-teal-600 text-white mb-4">
+               <div className="p-5 md:p-6">
+                  <div className="flex items-center justify-between gap-4 flex-wrap">
+                     <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center">
+                           <ListChecks className="w-7 h-7" />
+                        </div>
+                        <div>
+                           <h2 className="text-xl font-bold tracking-tight">
+                              Checklist de Viagem
+                           </h2>
+                           <p className="text-sm opacity-90 mt-0.5">
+                              {stats.total} {stats.total === 1 ? 'item' : 'itens'} no total
+                           </p>
+                        </div>
+                     </div>
+                     {stats.total > 0 && (
+                        <button
+                           onClick={handleExportPDF}
+                           className="flex items-center gap-2 px-4 py-2.5 bg-white text-emerald-700 rounded-xl font-semibold hover:bg-white/90 transition-colors shadow-md"
+                           title="Exportar para PDF"
+                        >
+                           <FileDown className="w-5 h-5" />
+                           Exportar PDF
+                        </button>
+                     )}
+                  </div>
+
+                  {/* Progresso da mala */}
                   {stats.total > 0 && (
-                     <button
-                        onClick={handleExportPDF}
-                        className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors shadow-sm"
-                        title="Exportar para PDF"
-                     >
-                        <FileDown className="w-5 h-5" />
-                        Exportar PDF
-                     </button>
+                     <div className="mt-5 pt-5 border-t border-white/25">
+                        <div className="flex items-center justify-between mb-2">
+                           <span className="text-sm font-medium opacity-90">
+                              Progresso da mala
+                           </span>
+                           <span className="text-sm font-bold">
+                              {stats.packed} de {stats.total} ({stats.percentage}%)
+                           </span>
+                        </div>
+                        <div className="h-2.5 bg-white/25 rounded-full overflow-hidden">
+                           <div
+                              className="h-full bg-white rounded-full transition-all duration-500"
+                              style={{ width: `${stats.percentage}%` }}
+                           />
+                        </div>
+                        <div className="flex items-center justify-between mt-2.5 text-xs opacity-90">
+                           <span className="flex items-center gap-1.5">
+                              <Luggage className="w-4 h-4" />
+                              {stats.unpacked} faltando
+                           </span>
+                           <span className="flex items-center gap-1.5">
+                              <CheckCircle className="w-4 h-4" />
+                              {stats.packed} empacotado{stats.packed !== 1 ? 's' : ''}
+                           </span>
+                        </div>
+                     </div>
                   )}
                </div>
             </div>
-
-            {/* Progress bar */}
-            {stats.total > 0 && (
-               <div className="bg-white rounded-lg border-2 border-gray-200 p-4">
-                  <div className="flex items-center justify-between mb-2">
-                     <span className="text-sm font-medium text-gray-700">
-                        Progresso da Mala
-                     </span>
-                     <span className="text-sm font-bold text-blue-600">
-                        {stats.packed} de {stats.total} ({stats.percentage}%)
-                     </span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
-                     <div
-                        className="bg-gradient-to-r from-blue-500 to-green-500 h-3 rounded-full transition-all duration-500"
-                        style={{ width: `${stats.percentage}%` }}
-                     />
-                  </div>
-                  <div className="flex items-center justify-between mt-2 text-xs text-gray-500">
-                     <span>🎒 {stats.unpacked} faltando</span>
-                     <span>✅ {stats.packed} empacotado{stats.packed !== 1 ? 's' : ''}</span>
-                  </div>
-               </div>
-            )}
          </div>
 
          {/* Items by category */}
@@ -163,23 +175,24 @@ export function ChecklistList({
 
                      return (
                         <section key={category} className="space-y-4">
-                           {/* Category header */}
-                           <div className="flex items-center gap-3 pb-2 border-b-2 border-gray-200">
-                              <span className="text-3xl">{categoryConfig.icon}</span>
-                              <h3 className="text-xl font-bold text-gray-900">
-                                 {categoryConfig.label}
+                           {/* Header da categoria em pill */}
+                           <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white border border-gray-200 shadow-sm w-fit">
+                              <span className="text-xl">{categoryConfig?.icon ?? '📦'}</span>
+                              <h3 className="text-base font-semibold text-gray-900">
+                                 {categoryConfig?.label ?? category}
                               </h3>
                               <span className="text-sm text-gray-500">
                                  {packedCount}/{totalCount}
                               </span>
                               {packedCount === totalCount && totalCount > 0 && (
-                                 <span className="ml-auto text-green-600 font-semibold text-sm flex items-center gap-1">
-                                    <span>✓</span> Completo!
+                                 <span className="text-xs font-semibold text-emerald-600 flex items-center gap-1">
+                                    <CheckCircle className="w-3.5 h-3.5" />
+                                    Completo
                                  </span>
                               )}
                            </div>
 
-                           {/* Items grid */}
+                           {/* Items grid - máx 3 colunas no mobile */}
                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                               {categoryItems.map(item => (
                                  <ChecklistCard

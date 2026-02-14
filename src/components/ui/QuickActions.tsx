@@ -17,7 +17,7 @@ const quickActions: QuickAction[] = [
     icon: TrendingUp,
     label: 'Orçamento',
     color: 'text-emerald-600',
-    bgColor: 'bg-emerald-50',
+    bgColor: 'bg-emerald-100',
     hoverColor: 'hover:bg-emerald-100',
   },
   {
@@ -25,7 +25,7 @@ const quickActions: QuickAction[] = [
     icon: TrendingDown,
     label: 'Gastos',
     color: 'text-rose-600',
-    bgColor: 'bg-rose-50',
+    bgColor: 'bg-rose-100',
     hoverColor: 'hover:bg-rose-100',
   },
   {
@@ -33,7 +33,7 @@ const quickActions: QuickAction[] = [
     icon: Plus,
     label: 'Atrações',
     color: 'text-purple-600',
-    bgColor: 'bg-purple-50',
+    bgColor: 'bg-purple-100',
     hoverColor: 'hover:bg-purple-100',
   },
   {
@@ -41,7 +41,7 @@ const quickActions: QuickAction[] = [
     icon: Ticket,
     label: 'Reservas',
     color: 'text-indigo-600',
-    bgColor: 'bg-indigo-50',
+    bgColor: 'bg-indigo-100',
     hoverColor: 'hover:bg-indigo-100',
   },
 ]

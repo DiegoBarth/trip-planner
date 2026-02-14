@@ -23,123 +23,125 @@ export function AttractionCard({ attraction, onCheckVisited, onDelete, onClick }
       attraction.dayOfWeek &&
       attraction.closedDays.split(',').map(d => d.trim()).includes(attraction.dayOfWeek)
 
+   const borderClass = isClosedOnVisitDay
+      ? 'border-l-red-500'
+      : attraction.visited
+         ? 'border-l-green-500'
+         : 'border-l-blue-500'
+   const bgClass = isClosedOnVisitDay
+      ? 'bg-red-50'
+      : attraction.visited
+         ? 'bg-green-50/60'
+         : 'bg-white'
+
    return (
       <div
          className={`
-        relative rounded-lg shadow-md overflow-hidden transition-all cursor-pointer border-l-4
-        active:scale-[1.02] active:shadow-xl
-        ${isClosedOnVisitDay
-               ? 'bg-red-50 hover:shadow-lg border-l-red-500'
-               : 'bg-white hover:shadow-lg border-l-blue-500'
-            }
-        ${attraction.visited ? 'scale-[0.97]' : ''}
+        relative rounded-2xl shadow-md overflow-hidden transition-all cursor-pointer border-l-4
+        hover:shadow-lg active:scale-[0.99]
+        ${borderClass} ${bgClass}
       `}
          onClick={onClick}
       >
 
          {attraction.imageUrl ? (
-            <div className="h-32 bg-cover bg-center" style={{ backgroundImage: `url(${attraction.imageUrl})` }} />
+            <div className="h-28 bg-cover bg-center" style={{ backgroundImage: `url(${attraction.imageUrl})` }} />
          ) : (
-            <div className="h-32 bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center">
-               <span className="text-6xl">{attractionType.icon}</span>
+            <div className="h-28 bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center">
+               <span className="text-5xl">{attractionType.icon}</span>
             </div>
          )}
 
          <div className="p-4">
-            <div className="flex items-start justify-between mb-2">
-               <div className="flex-1">
+            <div className="flex items-start justify-between gap-2 mb-2">
+               <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
-                     <span className="text-sm font-medium text-gray-500">#{attraction.order}</span>
-                     <h3 className="font-bold text-lg leading-tight text-gray-900">{attraction.name}</h3>
+                     <span className="text-xs font-medium text-gray-500">#{attraction.order}</span>
+                     <h3 className="font-bold text-base leading-tight text-gray-900 truncate">{attraction.name}</h3>
                   </div>
                   <div className="flex items-center gap-1 text-sm text-gray-600">
-                     <MapPin className="w-4 h-4" />
-                     <span>{attraction.region ? `${attraction.region}, ` : ''}{attraction.city}</span>
+                     <MapPin className="w-3.5 h-3.5 flex-shrink-0" />
+                     <span className="truncate">{attraction.region ? `${attraction.region}, ` : ''}{attraction.city}</span>
                   </div>
                </div>
 
-               <div className="flex gap-1">
+               <div className="flex gap-1 flex-shrink-0">
                   {onDelete && (
                      <button
                         onClick={(e) => {
                            e.stopPropagation()
                            onDelete(attraction.id)
                         }}
-                        className="p-2 rounded-full transition-all bg-gray-100 text-gray-400 hover:bg-red-100 hover:text-red-600"
+                        className="p-2 rounded-xl transition-all text-gray-400 hover:bg-red-50 hover:text-red-600"
+                        aria-label="Excluir"
                      >
-                        <Trash2 className="w-5 h-5" />
+                        <Trash2 className="w-4 h-4" />
                      </button>
                   )}
-
                   <button
                      onClick={(e) => {
                         e.stopPropagation()
                         onCheckVisited?.(attraction.id)
                      }}
-                     className={`p-2 rounded-full transition-all ${attraction.visited
+                     className={`p-2 rounded-xl transition-all ${attraction.visited
                         ? 'bg-green-100 text-green-600'
-                        : 'bg-gray-100 text-gray-400 hover:bg-gray-200'
+                        : 'text-gray-400 hover:bg-gray-100 hover:text-gray-600'
                         }`}
+                     aria-label={attraction.visited ? 'Marcar como não visitado' : 'Marcar como visitado'}
                   >
-                     <CheckCircle2 className="w-5 h-5" />
+                     <CheckCircle2 className="w-4 h-4" />
                   </button>
                </div>
             </div>
 
-            <div className="space-y-2">
-               <div className="flex items-center gap-2 text-sm text-gray-700">
-                  <Clock className="w-4 h-4 text-blue-500" />
+            <div className="space-y-1.5">
+               <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <Clock className="w-3.5 h-3.5 text-blue-500 flex-shrink-0" />
                   <span>
                      {attraction.openingTime
-                        ? `${formatTime(attraction.openingTime)}${attraction.closingTime ? ` - ${formatTime(attraction.closingTime)}` : ''}`
-                        : '24 horas'
+                        ? `${formatTime(attraction.openingTime)}${attraction.closingTime ? ` – ${formatTime(attraction.closingTime)}` : ''}`
+                        : '24h'
                      }
+                     {attraction.duration ? ` · ${formatDuration(attraction.duration)}` : ''}
                   </span>
-                  {attraction.duration && (
-                     <span className="text-gray-500">• {formatDuration(attraction.duration)}</span>
+               </div>
+
+               <div className="flex items-center gap-2 text-sm">
+                  <Banknote className="w-3.5 h-3.5 text-green-600 flex-shrink-0" />
+                  {attraction.couplePrice ? (
+                     <>
+                        <span className="font-semibold text-green-600">
+                           {formatCurrency(attraction.couplePrice, attraction.currency)}
+                        </span>
+                        <span className="text-gray-500 text-xs">({formatCurrency(attraction.priceInBRL)})</span>
+                     </>
+                  ) : (
+                     <span className="font-semibold text-green-600">Gratuito</span>
                   )}
                </div>
 
-               {attraction.couplePrice ? (
-                  <div className="flex items-center gap-2 text-sm">
-                     <Banknote className="w-4 h-4 text-green-600" />
-                     <span className="font-semibold text-green-600">
-                        {formatCurrency(attraction.couplePrice, attraction.currency)}
-                     </span>
-                     <span className="text-gray-500">
-                        ({formatCurrency(attraction.priceInBRL)})
-                     </span>
-                  </div>
-               ) : (
-                  <div className="flex items-center gap-2 text-sm">
-                     <Banknote className="w-4 h-4 text-green-600" />
-                     <span className="font-semibold text-green-600">Gratuito</span>
-                  </div>
-               )}
-
-               <div className="flex flex-wrap gap-2 mt-2">
+               <div className="flex flex-wrap gap-1.5 mt-2">
                   {isClosedOnVisitDay && (
-                     <span className="px-2 py-1 bg-red-100 text-red-700 text-xs rounded-full font-bold flex items-center gap-1">
+                     <span className="px-2 py-0.5 bg-red-100 text-red-700 text-xs rounded-md font-medium flex items-center gap-1">
                         <AlertTriangle className="w-3 h-3" />
                         Fechado neste dia
                      </span>
                   )}
-                  <span className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full">
+                  <span className="px-2 py-0.5 bg-gray-100 text-gray-700 text-xs rounded-md font-medium">
                      {attractionType.label}
                   </span>
                   {attraction.needsReservation && attraction.reservationStatus && (
-                     <span className={`px-2 py-1 text-xs rounded-full flex items-center gap-1 ${
+                     <span className={`px-2 py-0.5 text-xs rounded-md font-medium flex items-center gap-1 ${
                         attraction.reservationStatus === 'confirmed' ? 'bg-green-100 text-green-700' :
                         attraction.reservationStatus === 'pending' ? 'bg-orange-100 text-orange-700' :
                         attraction.reservationStatus === 'cancelled' ? 'bg-red-100 text-red-700' :
                         'bg-gray-100 text-gray-700'
                      }`}>
-                        <span>{RESERVATION_STATUS[attraction.reservationStatus].icon}</span>
-                        <span>{RESERVATION_STATUS[attraction.reservationStatus].label}</span>
+                        {RESERVATION_STATUS[attraction.reservationStatus].icon} {RESERVATION_STATUS[attraction.reservationStatus].label}
                      </span>
                   )}
                   {attraction.idealPeriod && (
-                     <span className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full">
+                     <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded-md font-medium">
                         {PERIODS[attraction.idealPeriod].label}
                      </span>
                   )}
@@ -147,16 +149,17 @@ export function AttractionCard({ attraction, onCheckVisited, onDelete, onClick }
             </div>
          </div>
 
-         {attraction.location && (
+         {(attraction.location || (attraction.lat && attraction.lng)) && (
             <a
-               href={attraction.location}
+               href={attraction.location || `https://www.google.com/maps/search/?api=1&query=${attraction.lat},${attraction.lng}`}
                target="_blank"
                rel="noopener noreferrer"
                onClick={(e) => e.stopPropagation()}
-               className="absolute bottom-3 right-3 p-2 rounded-full bg-blue-400 text-white shadow-md hover:bg-blue-700 transition-all"
+               className="absolute bottom-3 right-3 p-2 rounded-xl bg-blue-500 text-white shadow-md hover:bg-blue-600 transition-colors"
                title="Abrir no mapa"
+               aria-label="Abrir no mapa"
             >
-               <Map className="w-5 h-5" />
+               <Map className="w-4 h-4" />
             </a>
          )}
 
