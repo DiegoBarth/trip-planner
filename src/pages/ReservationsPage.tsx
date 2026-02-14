@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { ReservationList } from '@/components/reservation/ReservationList'
 import { useReservation } from '@/hooks/useReservation'
+import { useCountry } from '@/contexts/CountryContext'
 import { useToast } from '@/contexts/toast'
 import type { Reservation } from '@/types/Reservation'
 import { PageHeader } from '@/components/ui/PageHeader'
@@ -10,7 +11,8 @@ import { Plus } from 'lucide-react'
 
 export function ReservationsPage() {
    const [showModal, setShowModal] = useState(false)
-   const { reservations, createReservation, updateReservation, deleteReservation, isLoading } = useReservation()
+   const { reservations, isReady } = useCountry()
+   const { createReservation, updateReservation, deleteReservation } = useReservation()
    const toast = useToast()
 
    const handleCreate = async (data: Omit<Reservation, 'id'>) => {
@@ -56,7 +58,7 @@ export function ReservationsPage() {
                onCreate={handleCreate}
                onUpdate={handleUpdate}
                onDelete={handleDelete}
-               isLoading={isLoading}
+               isLoading={!isReady}
             />
          </main>
 

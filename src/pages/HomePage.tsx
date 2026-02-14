@@ -1,5 +1,6 @@
 import { BudgetSummary } from '@/components/home/BudgetSummary'
-import { NextAttractions } from '@/components/home/NextAttractions'
+import { NextDaySummary } from '@/components/home/NextDaySummary'
+import { TodaysPendencies } from '@/components/home/TodaysPendencies'
 import { CountryFilter } from '@/components/home/CountryFilter'
 import { QuickActions } from '@/components/ui/QuickActions'
 import { Sparkles } from 'lucide-react'
@@ -31,10 +32,20 @@ export function HomePage() {
 
          {/* Main Content */}
          <main className="max-w-6xl mx-auto px-4 py-6 space-y-6">
+            {/* Next Day Summary */}
+            <section>
+               <NextDaySummary />
+            </section>
+
+            {/* Today's Pendencies */}
+            <section>
+               <TodaysPendencies />
+            </section>
+
             {/* Quick Actions */}
             <section>
                <h2 className="text-lg font-semibold text-gray-900 mb-4">
-                  Ações Rápidas
+                  Navegação Rápida
                </h2>
                <QuickActions />
             </section>
@@ -42,11 +53,6 @@ export function HomePage() {
             {/* Budget Summary */}
             <section>
                <BudgetSummary />
-            </section>
-
-            {/* Next Attractions */}
-            <section>
-               <NextAttractions />
             </section>
          </main>
       </div>

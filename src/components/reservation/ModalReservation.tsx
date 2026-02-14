@@ -7,7 +7,7 @@ import { ModalBase } from '@/components/ui/ModalBase'
 import { CustomSelect } from '@/components/ui/CustomSelect'
 import { FileUpload } from './FileUpload'
 import { deleteFile } from '@/api/reservation'
-import { useAttraction } from '@/hooks/useAttraction'
+import { useCountry } from '@/contexts/CountryContext'
 import { dateToInputFormat } from '@/utils/formatters'
 
 interface ModalReservationProps {
@@ -60,7 +60,7 @@ export function ModalReservation({ reservation, isOpen, onClose, onSave }: Modal
    })
 
    const formData = watch()
-   const { attractions } = useAttraction('all')
+   const { attractions } = useCountry()
 
    // Reset form when modal opens or reservation changes
    useEffect(() => {
@@ -153,11 +153,11 @@ export function ModalReservation({ reservation, isOpen, onClose, onSave }: Modal
          onSave={handleSubmit(onSubmit)}
          size="lg"
       >
-         <div className="space-y-6">
+         <div className="space-y-4">
             {/* Type and Status */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                <div>
-                  <label className="block text-sm font-bold text-gray-900 mb-2">
+                  <label className="block text-sm font-bold text-gray-900 mb-1.5">
                      Tipo *
                   </label>
                   <CustomSelect
@@ -171,7 +171,7 @@ export function ModalReservation({ reservation, isOpen, onClose, onSave }: Modal
                </div>
 
                <div>
-                  <label className="block text-sm font-bold text-gray-900 mb-2">
+                  <label className="block text-sm font-bold text-gray-900 mb-1.5">
                      Status *
                   </label>
                   <CustomSelect
@@ -187,7 +187,7 @@ export function ModalReservation({ reservation, isOpen, onClose, onSave }: Modal
 
             {/* Title */}
             <div>
-               <label className="block text-sm font-bold text-gray-900 mb-2">
+               <label className="block text-sm font-bold text-gray-900 mb-1.5">
                   Título *
                </label>
                <input
@@ -202,7 +202,7 @@ export function ModalReservation({ reservation, isOpen, onClose, onSave }: Modal
 
             {/* Description */}
             <div>
-               <label className="block text-sm font-bold text-gray-900 mb-2">
+               <label className="block text-sm font-bold text-gray-900 mb-1.5">
                   Descrição
                </label>
                <input
@@ -216,10 +216,10 @@ export function ModalReservation({ reservation, isOpen, onClose, onSave }: Modal
 
             {/* Dates and Time Section */}
             <div className="pt-4 border-t border-gray-200">
-               <h3 className="text-sm font-bold text-gray-900 mb-4">📅 Datas e Horário</h3>
-               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+               <h3 className="text-sm font-bold text-gray-900 mb-2.5">📅 Datas e Horário</h3>
+               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                   <div>
-                     <label className="block text-sm font-medium text-gray-700 mb-2">
+                     <label className="block text-sm font-medium text-gray-700 mb-1.5">
                         Data
                      </label>
                      <input
@@ -230,7 +230,7 @@ export function ModalReservation({ reservation, isOpen, onClose, onSave }: Modal
                   </div>
 
                   <div>
-                     <label className="block text-sm font-medium text-gray-700 mb-2">
+                     <label className="block text-sm font-medium text-gray-700 mb-1.5">
                         Data Fim
                      </label>
                      <input
@@ -241,7 +241,7 @@ export function ModalReservation({ reservation, isOpen, onClose, onSave }: Modal
                   </div>
 
                   <div>
-                     <label className="block text-sm font-medium text-gray-700 mb-2">
+                     <label className="block text-sm font-medium text-gray-700 mb-1.5">
                         Horário
                      </label>
                      <input
@@ -255,10 +255,10 @@ export function ModalReservation({ reservation, isOpen, onClose, onSave }: Modal
 
             {/* Provider and Code Section */}
             <div className="pt-4 border-t border-gray-200">
-               <h3 className="text-sm font-bold text-gray-900 mb-4">🏢 Provedor e Confirmação</h3>
-               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+               <h3 className="text-sm font-bold text-gray-900 mb-2.5">🏢 Provedor e Confirmação</h3>
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <div>
-                     <label className="block text-sm font-medium text-gray-700 mb-2">
+                     <label className="block text-sm font-medium text-gray-700 mb-1.5">
                         Provedor
                      </label>
                      <input
@@ -271,7 +271,7 @@ export function ModalReservation({ reservation, isOpen, onClose, onSave }: Modal
                   </div>
 
                   <div>
-                     <label className="block text-sm font-medium text-gray-700 mb-2">
+                     <label className="block text-sm font-medium text-gray-700 mb-1.5">
                         Código
                      </label>
                      <input
@@ -287,10 +287,10 @@ export function ModalReservation({ reservation, isOpen, onClose, onSave }: Modal
 
             {/* Location Section */}
             <div className="pt-4 border-t border-gray-200">
-               <h3 className="text-sm font-bold text-gray-900 mb-4">📍 Localização</h3>
+               <h3 className="text-sm font-bold text-gray-900 mb-2.5">📍 Localização</h3>
                <div className="space-y-4">
                   <div>
-                     <label className="block text-sm font-medium text-gray-700 mb-2">
+                     <label className="block text-sm font-medium text-gray-700 mb-1.5">
                         Local
                      </label>
                      <input
@@ -302,9 +302,9 @@ export function ModalReservation({ reservation, isOpen, onClose, onSave }: Modal
                      />
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-gray-700 mb-1.5">
                            País
                         </label>
                         <CustomSelect
@@ -325,7 +325,7 @@ export function ModalReservation({ reservation, isOpen, onClose, onSave }: Modal
                      </div>
 
                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-gray-700 mb-1.5">
                            Vincular Atração <span className="text-xs text-gray-500">(opcional)</span>
                         </label>
                         <Controller
@@ -354,9 +354,9 @@ export function ModalReservation({ reservation, isOpen, onClose, onSave }: Modal
 
             {/* Links Section */}
             <div className="pt-4 border-t border-gray-200">
-               <h3 className="text-sm font-bold text-gray-900 mb-4">🔗 Links</h3>
+               <h3 className="text-sm font-bold text-gray-900 mb-2.5">🔗 Links</h3>
                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">
                      Link da Reserva
                   </label>
                   <input
@@ -371,7 +371,7 @@ export function ModalReservation({ reservation, isOpen, onClose, onSave }: Modal
 
             {/* Document Section */}
             <div className="pt-4 border-t border-gray-200">
-               <h3 className="text-sm font-bold text-gray-900 mb-4">📄 Documento</h3>
+               <h3 className="text-sm font-bold text-gray-900 mb-2.5">📄 Documento</h3>
                <div className="space-y-4">
                   <FileUpload
                      label="Comprovante ou documento"
@@ -405,7 +405,7 @@ export function ModalReservation({ reservation, isOpen, onClose, onSave }: Modal
 
             {/* Notes */}
             <div className="pt-4 border-t border-gray-200">
-               <label className="block text-sm font-bold text-gray-900 mb-2">
+               <label className="block text-sm font-bold text-gray-900 mb-1.5">
                   📝 Observações
                </label>
                <textarea

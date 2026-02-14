@@ -8,7 +8,7 @@ export function MapSidebar({ distances, getColor }: Props) {
 
    return (
       <div className="w-full md:w-72 bg-white border-b md:border-r p-4">
-         <h2 className="text-lg font-semibold mb-4">📏 Distance</h2>
+         <h2 className="text-lg font-semibold mb-4">📏 Distância</h2>
 
          {Object.entries(distances).map(([day, km]) => (
             <div key={day} className="mb-4 p-3 rounded-lg border">
@@ -17,7 +17,7 @@ export function MapSidebar({ distances, getColor }: Props) {
                      className="w-3 h-3 rounded-full"
                      style={{ backgroundColor: getColor(Number(day)) }}
                   />
-                  <span className="font-medium">Day {day}</span>
+                  <span className="font-medium">Dia {day}</span>
                </div>
                <div className="text-sm font-bold text-blue-600">
                   {km.toFixed(2)} km

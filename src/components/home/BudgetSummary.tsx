@@ -1,11 +1,11 @@
 import { BudgetCard } from '@/components/home/BudgetCard'
-import { useBudget } from '@/hooks/useBudget'
+import { useCountry } from '@/contexts/CountryContext'
 import type { BudgetOrigin } from '@/types/Attraction'
 import { TrendingUp, TrendingDown, Wallet } from 'lucide-react'
 import { Card } from '@/components/ui/Card'
 
 export function BudgetSummary() {
-   const { budgetSummary } = useBudget()
+   const { budgetSummary } = useCountry()
 
    if (!budgetSummary) return null
 

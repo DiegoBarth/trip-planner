@@ -6,46 +6,84 @@ import { Timeline } from '@/components/timeline/Timeline'
 import { useCountry } from '@/contexts/CountryContext'
 import { dateToInputFormat } from '@/utils/formatters'
 import { PageHeader } from '@/components/ui/PageHeader'
+import { useToast } from '@/contexts/toast'
+import type { Attraction, Country } from '@/types/Attraction'
 
 export function TimelinePage() {
-   const { country, day } = useCountry()
-   const { attractions, isLoading } = useAttraction(country)
+  const { country, day, accommodations, attractions, isReady } = useCountry()
+  const { toggleVisited } = useAttraction(country)
+  const { success, error } = useToast()
+
+  const handleToggleVisited = async (id: number) => {
+    try {
+      await toggleVisited(id)
+      success('Status da atração atualizado')
+    } catch (err) {
+      error('Erro ao atualizar atração')
+      console.error(err)
+    }
+  }
 
   // Filter attractions for the timeline
   const timelineAttractions = useMemo(() => {
     const mappable = attractions.filter(a => a.lat && a.lng)
-    
-    if (mappable.length === 0) return []
-    
-    // If a specific day is selected, use it
+    if (mappable.length === 0) return [];
+
+    let filtered: typeof mappable = [];
     if (day !== 'all') {
-      return mappable.filter(a => a.day === day)
+      filtered = mappable.filter(a => a.day === day);
+    } else {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const futureAttractions = mappable
+        .filter(a => a.date)
+        .map(a => ({
+          ...a,
+          parsedDate: new Date(dateToInputFormat(a.date))
+        }))
+        .filter(a => a.parsedDate >= today);
+      if (futureAttractions.length === 0) return [];
+      futureAttractions.sort((a, b) => a.parsedDate.getTime() - b.parsedDate.getTime());
+      const nextDate = futureAttractions[0].parsedDate.getTime();
+      filtered = futureAttractions
+        .filter(a => a.parsedDate.getTime() === nextDate)
+        .map(({ parsedDate, ...rest }) => rest);
     }
-    
-    // If 'all', get the next day (similar to NextAttractions logic)
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
-    
-    const futureAttractions = mappable
-      .filter(a => a.date)
-      .map(a => ({
-        ...a,
-        parsedDate: new Date(dateToInputFormat(a.date))
-      }))
-      .filter(a => a.parsedDate >= today)
-    
-    if (futureAttractions.length === 0) return []
-    
-    // Sort by date
-    futureAttractions.sort((a, b) => a.parsedDate.getTime() - b.parsedDate.getTime())
-    
-    // Get the next day
-    const nextDate = futureAttractions[0].parsedDate.getTime()
-    
-    return futureAttractions
-      .filter(a => a.parsedDate.getTime() === nextDate)
-      .map(({ parsedDate, ...rest }) => rest)
-  }, [attractions, day])
+
+    // Adiciona acomodação da cidade ao início, se houver
+    if (filtered.length > 0 && accommodations.length > 0) {
+      const city = filtered[0].city;
+      const acc = accommodations.find(a => a.city === city);
+      if (acc && acc.lat && acc.lng) {
+        // Cria um objeto limpo de atração para acomodação (sem copiar imagem de outra atração)
+        const accAttraction: Attraction = {
+          id: -999,
+          name: acc.description,
+          lat: acc.lat,
+          lng: acc.lng,
+          city: acc.city,
+          region: filtered[0].region,
+          country: acc.country as Country,
+          order: 0,
+          date: filtered[0].date,
+          day: filtered[0].day,
+          dayOfWeek: filtered[0].dayOfWeek,
+          type: 'other',
+          duration: 0,
+          couplePrice: 0,
+          priceInBRL: 0,
+          currency: filtered[0].currency,
+          visited: false,
+          needsReservation: false,
+          openingTime: undefined,
+          closingTime: undefined,
+          imageUrl: undefined, // Explicitamente sem imagem
+        };
+        return [accAttraction, ...filtered];
+      }
+    }
+    return filtered;
+  }, [attractions, day, accommodations])
 
   const dayLabel = useMemo(() => {
     if (timelineAttractions.length === 0) return ''
@@ -53,7 +91,7 @@ export function TimelinePage() {
     return `Dia ${day}`
   }, [timelineAttractions, day])
 
-  if (isLoading) {
+  if (!isReady) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
@@ -117,7 +155,10 @@ export function TimelinePage() {
           </div>
         ) : (
           <div className="bg-white rounded-xl shadow-md p-6">
-            <Timeline attractions={timelineAttractions} />
+            <Timeline 
+              attractions={timelineAttractions}
+              onToggleVisited={handleToggleVisited}
+            />
           </div>
         )}
       </main>

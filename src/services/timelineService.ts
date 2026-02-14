@@ -60,7 +60,10 @@ function minutesToTime(minutes: number): string {
  * Calculate estimated time for attraction visit
  */
 function getAttractionDuration(attraction: Attraction): number {
-  // Use attraction duration if provided, otherwise default to 60 minutes
+  // Use attraction duration if provided
+  // If duration is explicitly 0, return 0 (e.g., for accommodations that are just starting points)
+  // Otherwise default to 60 minutes
+  if (attraction.duration === 0) return 0
   return attraction.duration || 60
 }
 
@@ -151,20 +154,20 @@ export async function buildDayTimeline(
   const sortedAttractions = [...attractions].sort((a, b) => a.order - b.order)
 
   // Calculate segments (travel between attractions)
-  const segments: TimelineSegment[] = []
-  let totalDistance = 0
-  let totalTravelTime = 0
+  const segments: TimelineSegment[] = [];
+  let totalDistance = 0;
+  let totalTravelTime = 0;
 
+  // Sempre calcula o segmento entre acomodação (primeiro item) e a primeira atração
   for (let i = 0; i < sortedAttractions.length - 1; i++) {
     const segment = await calculateTravelSegment(
       sortedAttractions[i],
       sortedAttractions[i + 1]
-    )
-    
+    );
     if (segment) {
-      segments.push(segment)
-      totalDistance += segment.distanceKm
-      totalTravelTime += segment.durationMinutes
+      segments.push(segment);
+      totalDistance += segment.distanceKm;
+      totalTravelTime += segment.durationMinutes;
     }
   }
 
@@ -172,30 +175,48 @@ export async function buildDayTimeline(
   const conflicts = detectConflicts(sortedAttractions, segments)
 
   // Calculate start and end times
-  const startTime = '09:00'
-  let totalMinutes = timeToMinutes(startTime)
-  
+  const startTime = '09:00';
+  let currentMinutes = timeToMinutes(startTime);
+  const arrivalTimes: string[] = [];
+  const departureTimes: string[] = [];
+
   for (let i = 0; i < sortedAttractions.length; i++) {
-    const segment = segments[i]
-    if (segment) {
-      totalMinutes += segment.durationMinutes
+    // Chegada: para o primeiro ponto, é o horário inicial; para os demais, é após deslocamento
+    if (i === 0) {
+      arrivalTimes.push(minutesToTime(currentMinutes));
+    } else {
+      // Chegada = saída do anterior + tempo de viagem
+      const prevDeparture = departureTimes[i - 1] ? timeToMinutes(departureTimes[i - 1]) : currentMinutes;
+      const travel = segments[i - 1]?.durationMinutes || 0;
+      arrivalTimes.push(minutesToTime(prevDeparture + travel));
+      currentMinutes = prevDeparture + travel;
     }
-    totalMinutes += getAttractionDuration(sortedAttractions[i])
+    // Saída = chegada + duração
+    const duration = getAttractionDuration(sortedAttractions[i]);
+    departureTimes.push(minutesToTime(currentMinutes + duration));
+    currentMinutes = currentMinutes + duration;
   }
-  
-  const endTime = minutesToTime(totalMinutes)
+
+  const endTime = departureTimes[departureTimes.length - 1] || startTime;
+
+  // Adiciona horários nos objetos de atração
+  const attractionsWithTimes = sortedAttractions.map((a, idx) => ({
+    ...a,
+    arrivalTime: arrivalTimes[idx],
+    departureTime: departureTimes[idx],
+  }));
 
   return {
     date: sortedAttractions[0].date,
     dayNumber: sortedAttractions[0].day,
-    attractions: sortedAttractions,
+    attractions: attractionsWithTimes,
     segments,
     conflicts,
     totalDistance,
     totalTravelTime,
     startTime,
-    endTime
-  }
+    endTime,
+  };
 }
 
 /**

@@ -76,13 +76,13 @@ export function ModalChecklistItem({ item, isOpen, onClose, onSave }: ModalCheck
          onSave={handleSubmit(onSubmit)}
          size="md"
       >
-         <div className="space-y-6">
+         <div className="space-y-4">
             {/* Category */}
             <div>
-               <label htmlFor="checklist-category" className="block text-sm font-medium text-gray-700 mb-2">
+               <label htmlFor="checklist-category" className="block text-sm font-medium text-gray-700 mb-1.5">
                   Categoria *
                </label>
-               <div className="grid grid-cols-4 gap-2">
+               <div className="grid grid-cols-3 md:grid-cols-4 gap-2">
                   {(Object.entries(CHECKLIST_CATEGORIES) as [ChecklistCategory, typeof CHECKLIST_CATEGORIES[ChecklistCategory]][]).map(([key, config]) => (
                      <button
                         key={key}
@@ -105,7 +105,7 @@ export function ModalChecklistItem({ item, isOpen, onClose, onSave }: ModalCheck
 
             {/* Description */}
             <div>
-               <label htmlFor="checklist-description" className="block text-sm font-medium text-gray-700 mb-2">
+               <label htmlFor="checklist-description" className="block text-sm font-medium text-gray-700 mb-1.5">
                   Descrição *
                </label>
                <input
@@ -121,7 +121,7 @@ export function ModalChecklistItem({ item, isOpen, onClose, onSave }: ModalCheck
 
             {/* Quantity */}
             <div>
-               <label htmlFor="checklist-quantity" className="block text-sm font-medium text-gray-700 mb-2">
+               <label htmlFor="checklist-quantity" className="block text-sm font-medium text-gray-700 mb-1.5">
                   Quantidade
                </label>
                <input
@@ -151,7 +151,7 @@ export function ModalChecklistItem({ item, isOpen, onClose, onSave }: ModalCheck
 
             {/* Notes */}
             <div>
-               <label htmlFor="checklist-notes" className="block text-sm font-medium text-gray-700 mb-2">
+               <label htmlFor="checklist-notes" className="block text-sm font-medium text-gray-700 mb-1.5">
                   Observações
                </label>
                <textarea

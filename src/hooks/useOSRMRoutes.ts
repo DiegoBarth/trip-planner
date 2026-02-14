@@ -9,6 +9,7 @@ export function useOSRMRoutes(groupedByDay: Record<number, Attraction[]>, accomm
    const [distances, setDistances] = useState<Record<number, number>>({})
 
    useEffect(() => {
+      let isMounted = true;
       async function loadRoutes() {
          const newRoutes: Record<number, [number, number][]> = {}
          const newDistances: Record<number, number> = {}
@@ -41,14 +42,17 @@ export function useOSRMRoutes(groupedByDay: Record<number, Attraction[]>, accomm
             }
          }
 
-         setRoutes(newRoutes)
-         setDistances(newDistances)
+         if (isMounted) {
+            setRoutes(newRoutes)
+            setDistances(newDistances)
+         }
       }
 
       if (Object.keys(groupedByDay).length > 0) {
          loadRoutes()
       }
-   }, [groupedByDay])
+      return () => { isMounted = false; };
+   }, [JSON.stringify(groupedByDay), JSON.stringify(accommodations)])
 
    return { routes, distances }
 }

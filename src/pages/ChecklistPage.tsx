@@ -1,13 +1,18 @@
-import { useNavigate } from 'react-router-dom'
-import { Layout } from '@/components/layout/Layout'
 import { ChecklistList } from '@/components/checklist/ChecklistList'
 import { useChecklist } from '@/hooks/useChecklist'
+import { useCountry } from '@/contexts/CountryContext'
 import { useToast } from '@/contexts/toast'
 import type { ChecklistItem } from '@/types/ChecklistItem'
+import { PageHeader } from '@/components/ui/PageHeader'
+import { Fab } from '@/components/ui/Fab'
+import { useState } from 'react'
+import { Plus } from 'lucide-react'
+import { ModalChecklistItem } from '@/components/checklist/ModalChecklistItem'
 
 export function ChecklistPage() {
-   const navigate = useNavigate()
-   const { items, createItem, updateItem, deleteItem, togglePacked, isLoading } = useChecklist()
+   const [showModal, setShowModal] = useState(false)
+   const { checklistItems: items, isReady } = useCountry()
+   const { createItem, updateItem, deleteItem, togglePacked } = useChecklist()
    const toast = useToast()
 
    const handleCreate = async (data: Omit<ChecklistItem, 'id'>) => {
@@ -55,19 +60,38 @@ export function ChecklistPage() {
    }
 
    return (
-      <Layout
-         title="✅ Checklist"
-         onBack={() => navigate('/')}
-         headerClassName="bg-gradient-to-r from-blue-600 to-cyan-600 text-white"
-      >
-         <ChecklistList
-            items={items}
-            onCreate={handleCreate}
-            onUpdate={handleUpdate}
-            onDelete={handleDelete}
-            onTogglePacked={handleTogglePacked}
-            isLoading={isLoading}
+      <div className="min-h-screen bg-gray-50 pb-20 md:pb-6">
+         <PageHeader
+            title="✅ Checklist"
          />
-      </Layout>
+
+         <main className="max-w-6xl mx-auto px-4 py-6 mb-12">
+            <ChecklistList
+               items={items}
+               onCreate={handleCreate}
+               onUpdate={handleUpdate}
+               onDelete={handleDelete}
+               onTogglePacked={handleTogglePacked}
+               isLoading={!isReady}
+            />
+         </main>
+
+         <Fab
+            onClick={() => setShowModal(true)}
+            icon={<Plus className="w-6 h-6" />}
+            label="Adicionar"
+         />
+
+         {showModal && (
+            <ModalChecklistItem
+               isOpen={showModal}
+               onClose={() => setShowModal(false)}
+               onSave={async (data) => {
+                  await handleCreate(data as any)
+                  setShowModal(false)
+               }}
+            />
+         )}
+      </div>
    )
 }

@@ -67,7 +67,7 @@ export function ModalBase({
 
    return (
       <div
-         className="fixed inset-0 z-50 flex justify-center items-end md:items-center"
+         className="fixed inset-0 z-[60] flex justify-center items-end md:items-center"
          role="dialog"
          aria-modal="true"
          aria-labelledby={title ? 'modal-title' : undefined}
@@ -83,14 +83,14 @@ export function ModalBase({
          <div
             ref={trapRef}
             className={cn(
-               'relative w-full max-h-[90vh] bg-white rounded-t-2xl md:rounded-2xl flex flex-col shadow-2xl',
+               'relative w-full max-h-[50vh] bg-white rounded-t-2xl md:rounded-2xl flex flex-col shadow-2xl',
                sizeClasses[size]
             )}
          >
             {/* Header */}
             {title && (
-               <div className="flex items-center justify-between p-6 border-b border-gray-200 flex-shrink-0">
-                  <h2 id="modal-title" className="text-xl font-semibold text-gray-900">
+               <div className="flex items-center justify-between px-4 py-3 md:px-6 md:py-4 border-b border-gray-200 flex-shrink-0">
+                  <h2 id="modal-title" className="text-lg md:text-xl font-semibold text-gray-900">
                      {title}
                   </h2>
                   <button
@@ -108,12 +108,12 @@ export function ModalBase({
             )}
 
             {/* Content */}
-            <div className="p-6 overflow-y-auto flex-1">
+            <div className="px-4 py-3 md:px-6 md:py-4 overflow-y-auto flex-1 min-h-0">
                {children}
             </div>
 
             {/* Footer */}
-            <div className="flex gap-3 p-6 border-t border-gray-200 bg-gray-50/50 flex-shrink-0">
+            <div className="flex gap-3 px-4 py-3 md:px-6 md:py-4 border-t border-gray-200 bg-gray-50/50 flex-shrink-0">
                <button
                   onClick={onClose}
                   disabled={loading}

@@ -7,12 +7,16 @@ import { useAttraction } from '@/hooks/useAttraction'
 import { useDashboard } from '@/hooks/useDashboard'
 import { useCurrency } from '@/hooks/useCurrency'
 import { useAccommodation } from '@/hooks/useAccommodation'
+import { useChecklist } from '@/hooks/useChecklist'
+import { useReservation } from '@/hooks/useReservation'
 import type { CurrencyRates } from '@/types/Currency'
 import type { Budget, BudgetSummary } from '@/types/Budget'
 import type { Expense } from '@/types/Expense'
 import type { Attraction, Country } from '@/types/Attraction'
 import type { DashboardStats } from '@/types/Dashboard'
 import type { Accommodation } from '@/types/Accommodation'
+import type { ChecklistItem } from '@/types/ChecklistItem'
+import type { Reservation } from '@/types/Reservation'
 
 type DayFilter = number | 'all'
 type CountryFilter = Country | 'all'
@@ -31,6 +35,8 @@ interface CountryContextType {
    dashboard: DashboardStats
    availableDays: number[]
    accommodations: Accommodation[]
+   checklistItems: ChecklistItem[]
+   reservations: Reservation[]
 }
 
 function getInitialFilter(): { country: CountryFilter; day: DayFilter } {
@@ -60,7 +66,9 @@ export const CountryContext = createContext<CountryContextType>({
       attractionStatus: { total: 0, visited: 0, pendingReservation: 0, visitedPercentage: 0 },
    },
    availableDays: [],
-   accommodations: []
+   accommodations: [],
+   checklistItems: [],
+   reservations: []
 })
 
 export function CountryProvider({ children }: { children: ReactNode }) {
@@ -73,6 +81,8 @@ export function CountryProvider({ children }: { children: ReactNode }) {
    const { attractions } = useAttraction(country)
    const { rates } = useCurrency()
    const { accommodations } = useAccommodation()
+   const { items: checklistItems } = useChecklist()
+   const { reservations } = useReservation()
 
    const dashboardData = useDashboard({ budgets, expenses, attractions })
 
@@ -124,7 +134,9 @@ export function CountryProvider({ children }: { children: ReactNode }) {
             attractions,
             dashboard,
             availableDays,
-            accommodations
+            accommodations,
+            checklistItems,
+            reservations
          }}
       >
          {children}

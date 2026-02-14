@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Calendar, MapPin, Clock, AlertCircle, TrendingUp } from 'lucide-react'
 import type { TimelineDay } from '@/types/Timeline'
 import type { Attraction } from '@/types/Attraction'
-import { buildDayTimeline, calculateArrivalTime } from '@/services/timelineService'
+import { buildDayTimeline } from '@/services/timelineService'
 import { TimelineCard } from './TimelineCard'
 import { TimelineSegment } from './TimelineSegment'
 import { WeatherBadge } from './WeatherBadge'
@@ -12,9 +12,10 @@ import { getWeatherForDate } from '@/services/weatherService'
 
 interface TimelineProps {
   attractions: Attraction[]
+  onToggleVisited?: (id: number) => void
 }
 
-export function Timeline({ attractions }: TimelineProps) {
+export function Timeline({ attractions, onToggleVisited }: TimelineProps) {
   const [timeline, setTimeline] = useState<TimelineDay | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   
@@ -137,34 +138,29 @@ export function Timeline({ attractions }: TimelineProps) {
         <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-gradient-to-b from-blue-400 via-blue-300 to-blue-400" />
 
         {timeline.attractions.map((attraction, index) => {
-          const segment = timeline.segments[index]
+          // Segment is BEFORE the attraction (except for the first one)
+          const segment = index > 0 ? timeline.segments[index - 1] : null
           const attractionConflicts = timeline.conflicts.filter(
             c => c.attractionId === attraction.id
           )
           
-          const arrivalTime = calculateArrivalTime(
-            timeline.attractions,
-            timeline.segments,
-            index,
-            timeline.startTime
-          )
-          
-          // Calculate departure time (arrival + duration)
+          // Use the arrival and departure times that were already calculated in buildDayTimeline
+          const arrivalTime = (attraction as any).arrivalTime || timeline.startTime
+          const departureTime = (attraction as any).departureTime || timeline.startTime
           const duration = attraction.duration || 60
-          const [arrHours, arrMinutes] = arrivalTime.split(':').map(Number)
-          const departureMinutes = arrHours * 60 + arrMinutes + duration
-          const departureTime = `${Math.floor(departureMinutes / 60).toString().padStart(2, '0')}:${(departureMinutes % 60).toString().padStart(2, '0')}`
 
           return (
             <div key={attraction.id}>
+              {/* Show travel segment before the attraction (except for first one) */}
+              {segment && <TimelineSegment segment={segment} />}
               <TimelineCard
                 attraction={attraction}
                 arrivalTime={arrivalTime}
                 departureTime={departureTime}
                 duration={duration}
                 conflicts={attractionConflicts}
+                onToggleVisited={onToggleVisited}
               />
-              {segment && <TimelineSegment segment={segment} />}
             </div>
           )
         })}

@@ -1,7 +1,7 @@
-import { MapPin, Clock, AlertTriangle, CheckCircle2 } from 'lucide-react'
+import { MapPin, Clock, AlertTriangle, CheckCircle2, Navigation } from 'lucide-react'
 import type { Attraction } from '@/types/Attraction'
 import type { TimelineConflict } from '@/types/Timeline'
-import { ATTRACTION_TYPES } from '@/config/constants'
+import { ATTRACTION_TYPES, RESERVATION_STATUS } from '@/config/constants'
 
 interface TimelineCardProps {
   attraction: Attraction
@@ -9,6 +9,12 @@ interface TimelineCardProps {
   departureTime: string
   duration: number
   conflicts: TimelineConflict[]
+  onToggleVisited?: (id: number) => void
+}
+
+function openInMaps(lat: number, lng: number, name: string) {
+  const url = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}&query_place_id=${encodeURIComponent(name)}`
+  window.open(url, '_blank')
 }
 
 export function TimelineCard({
@@ -16,102 +22,142 @@ export function TimelineCard({
   arrivalTime,
   departureTime,
   duration,
-  conflicts
+  conflicts,
+  onToggleVisited
 }: TimelineCardProps) {
   const typeConfig = ATTRACTION_TYPES[attraction.type]
   const hasError = conflicts.some(c => c.severity === 'error')
   const hasWarning = conflicts.some(c => c.severity === 'warning')
+  const isVisited = attraction.visited
+  const isAccommodation = attraction.id === -999
+  const hasLocation = attraction.lat && attraction.lng
 
   return (
     <div className="relative">
       {/* Timeline dot */}
-      <div className="absolute left-0 top-8 w-5 h-5 md:w-4 md:h-4 rounded-full border-4 border-white bg-blue-500 shadow-lg z-10 -translate-x-1/2" />
+      <div className={`
+        absolute left-0 top-6 w-5 h-5 md:w-4 md:h-4 rounded-full border-4 border-white shadow-lg z-10 -translate-x-1/2 transition-colors
+        ${isVisited ? 'bg-green-500' : 'bg-blue-500'}
+      `} />
 
-      {/* Card */}
+      {/* Card - Similar to AttractionCard */}
       <div
         className={`
-          ml-4 md:ml-6 p-4 md:p-5 rounded-2xl border-2 shadow-sm transition-all
-          ${hasError ? 'border-red-500 bg-red-50' : ''}
-          ${hasWarning && !hasError ? 'border-yellow-500 bg-yellow-50' : ''}
-          ${!hasError && !hasWarning ? 'border-gray-200 bg-white' : ''}
+          ml-4 md:ml-6 rounded-2xl shadow-md overflow-hidden transition-all border-l-4
+          ${hasError ? 'border-l-red-500 bg-red-50' : ''}
+          ${hasWarning && !hasError ? 'border-l-yellow-500 bg-yellow-50' : ''}
+          ${isVisited && !hasError && !hasWarning ? 'border-l-green-500 bg-green-50' : ''}
+          ${!hasError && !hasWarning && !isVisited ? 'border-l-blue-500 bg-white' : ''}
+          ${isVisited ? 'opacity-75' : ''}
         `}
       >
-        {/* Times */}
-        <div className="flex items-center gap-3 mb-3 pb-3 border-b border-gray-200">
-          <div className="flex items-center gap-2 text-blue-600">
-            <Clock className="w-5 h-5" />
-            <div>
-              <div className="text-base md:text-lg font-bold">{arrivalTime}</div>
-              <div className="text-xs text-gray-500">Chegada</div>
-            </div>
+        {/* Header with image/gradient - Compact */}
+        {attraction.imageUrl ? (
+          <div className="h-16 bg-cover bg-center" style={{ backgroundImage: `url(${attraction.imageUrl})` }} />
+        ) : (
+          <div className="h-16 bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center">
+            <span className="text-4xl">{typeConfig.icon}</span>
           </div>
-          <div className="text-gray-400">→</div>
-          <div>
-            <div className="text-base md:text-lg font-bold text-gray-900">{departureTime}</div>
-            <div className="text-xs text-gray-500">Saída</div>
-          </div>
-          {attraction.visited && (
-            <CheckCircle2 className="w-5 h-5 text-green-600 ml-auto" />
-          )}
-        </div>
+        )}
 
-        {/* Main Content */}
-        <div className="flex items-start gap-3">
-          <div className="w-12 h-12 md:w-14 md:h-14 rounded-xl flex items-center justify-center bg-blue-600 text-white text-2xl flex-shrink-0 shadow-md">
-            {typeConfig.icon}
+        <div className="p-3">
+          {/* Times - Compact */}
+          <div className="flex items-center gap-2 mb-3 pb-2 border-b border-gray-200">
+            <Clock className="w-4 h-4 text-blue-600 flex-shrink-0" />
+            <div className="flex items-center gap-2 text-sm flex-1">
+              <span className="font-bold text-gray-900">{arrivalTime}</span>
+              <span className="text-gray-400">→</span>
+              <span className="font-bold text-gray-900">{departureTime}</span>
+              <span className="text-xs text-gray-500">({duration}min)</span>
+            </div>
+            
+            {/* Maps button - Show if has location */}
+            {hasLocation && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation()
+                  openInMaps(attraction.lat!, attraction.lng!, attraction.name)
+                }}
+                className="p-1.5 rounded-full transition-all flex-shrink-0 bg-blue-100 text-blue-600 hover:bg-blue-200"
+                title="Abrir no Google Maps"
+              >
+                <Navigation className="w-5 h-5" />
+              </button>
+            )}
+            
+            {/* Check button - Only show if NOT accommodation */}
+            {!isAccommodation && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation()
+                  onToggleVisited?.(attraction.id)
+                }}
+                className={`
+                  p-1.5 rounded-full transition-all flex-shrink-0
+                  ${isVisited
+                    ? 'bg-green-100 text-green-600'
+                    : 'bg-gray-100 text-gray-400 hover:bg-gray-200'
+                  }
+                `}
+                title={isVisited ? 'Marcar como não visitado' : 'Marcar como visitado'}
+              >
+                <CheckCircle2 className="w-5 h-5" />
+              </button>
+            )}
           </div>
-          <div className="flex-1 min-w-0">
-            <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-2 line-clamp-2">
+
+          {/* Main info - Compact */}
+          <div className="mb-2">
+            <h3 className="text-base font-bold text-gray-900 mb-1.5 line-clamp-2">
               {attraction.name}
             </h3>
-            <div className="space-y-1.5">
-              <div className="flex items-center gap-2 text-sm md:text-base text-gray-600">
-                <MapPin className="w-4 h-4 md:w-5 md:h-5 flex-shrink-0" />
-                <span className="font-medium">{attraction.city}</span>
-                {attraction.region && <span className="text-gray-400">• {attraction.region}</span>}
-              </div>
-              <div className="flex items-center gap-2 text-sm md:text-base text-gray-600">
-                <Clock className="w-4 h-4 md:w-5 md:h-5 flex-shrink-0" />
-                <span><span className="font-semibold">{duration}</span> minutos</span>
-              </div>
+            <div className="flex items-center gap-2 text-sm text-gray-600">
+              <MapPin className="w-3.5 h-3.5 flex-shrink-0" />
+              <span>{attraction.city}</span>
+              {attraction.region && <span className="text-gray-400 text-xs">• {attraction.region}</span>}
             </div>
           </div>
+
+          {/* Tags - Only essential ones */}
+          {attraction.needsReservation && attraction.reservationStatus && (
+            <div className="mb-2">
+              <span className={`inline-flex items-center gap-1 px-2 py-0.5 text-xs rounded-full font-medium ${
+                attraction.reservationStatus === 'confirmed' ? 'bg-green-100 text-green-700' :
+                attraction.reservationStatus === 'pending' ? 'bg-orange-100 text-orange-700' :
+                attraction.reservationStatus === 'cancelled' ? 'bg-red-100 text-red-700' :
+                'bg-gray-100 text-gray-700'
+              }`}>
+                <span>{RESERVATION_STATUS[attraction.reservationStatus].icon}</span>
+                <span>{RESERVATION_STATUS[attraction.reservationStatus].label}</span>
+              </span>
+            </div>
+          )}
+
+          {/* Conflicts */}
+          {conflicts.length > 0 && (
+            <div className="space-y-2 mb-3">
+              {conflicts.map((conflict, index) => (
+                <div
+                  key={index}
+                  className={`
+                    flex items-start gap-2 text-sm p-3 rounded-xl
+                    ${conflict.severity === 'error' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800'}
+                  `}
+                >
+                  <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                  <span className="font-medium">{conflict.message}</span>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Notes */}
+          {attraction.notes && (
+            <div className="text-sm text-gray-700 bg-blue-50 p-3 rounded-xl border border-blue-200">
+              <span className="font-semibold">💡</span> {attraction.notes}
+            </div>
+          )}
         </div>
-
-        {/* Opening hours */}
-        {attraction.openingTime && attraction.closingTime && (
-          <div className="mt-3 pt-3 border-t border-gray-200 text-sm text-gray-600 flex items-center gap-2">
-            <span>🕐</span>
-            <span>Abre: <span className="font-semibold">{attraction.openingTime}</span></span>
-            <span className="text-gray-400">•</span>
-            <span>Fecha: <span className="font-semibold">{attraction.closingTime}</span></span>
-          </div>
-        )}
-
-        {/* Conflicts */}
-        {conflicts.length > 0 && (
-          <div className="mt-3 space-y-2">
-            {conflicts.map((conflict, index) => (
-              <div
-                key={index}
-                className={`
-                  flex items-start gap-2 text-sm p-3 rounded-xl
-                  ${conflict.severity === 'error' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800'}
-                `}
-              >
-                <AlertTriangle className="w-5 h-5 flex-shrink-0 mt-0.5" />
-                <span className="font-medium">{conflict.message}</span>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Notes */}
-        {attraction.notes && (
-          <div className="mt-3 text-sm text-gray-700 bg-blue-50 p-3 rounded-xl border border-blue-200">
-            <span className="font-semibold">💡 Nota:</span> {attraction.notes}
-          </div>
-        )}
       </div>
     </div>
   )

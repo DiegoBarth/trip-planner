@@ -5,8 +5,7 @@ import { COUNTRIES, ATTRACTION_TYPES, PERIODS, RESERVATION_STATUS, WEEK_DAYS } f
 import { convertToBRL, formatCurrencyInputByCurrency, currencyToNumber, convertCurrency, dateToInputFormat } from '@/utils/formatters'
 import { ModalBase } from '@/components/ui/ModalBase'
 import { CustomSelect } from '@/components/ui/CustomSelect'
-import { useCurrency } from '@/hooks/useCurrency'
-import { useReservation } from '@/hooks/useReservation'
+import { useCountry } from '@/contexts/CountryContext'
 import { LocationField } from './LocationField'
 interface ModalAttractionProps {
    attraction?: Attraction
@@ -78,8 +77,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
 
    const formData = watch()
    const previousCurrency = useRef<Currency>(formData.currency)
-   const { rates } = useCurrency()
-   const { reservations } = useReservation()
+   const { rates, reservations } = useCountry()
 
    // Reset form when modal opens or attraction changes
    useEffect(() => {
@@ -242,16 +240,16 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
          onSave={handleSubmit(onSubmit)}
          size="xl"
       >
-         <div className="space-y-6">
+         <div className="space-y-4">
             {/* Basic Information */}
             <section>
-               <h3 className="font-bold text-base mb-4 pb-2 border-b-2 border-gray-200 flex items-center gap-2">
+               <h3 className="font-bold text-base mb-2.5 pb-2 border-b-2 border-gray-200 flex items-center gap-2">
                   <span>📍</span>
                   <span>Informações Básicas</span>
                </h3>
-               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <div className="md:col-span-2">
-                     <label className="block text-sm font-bold text-gray-900 mb-2">
+                     <label className="block text-sm font-bold text-gray-900 mb-1.5">
                         Nome da Atração *
                      </label>
                      <input
@@ -264,7 +262,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
                   </div>
 
                   <div>
-                     <label className="block text-sm font-bold text-gray-900 mb-2">
+                     <label className="block text-sm font-bold text-gray-900 mb-1.5">
                         País *
                      </label>
                      <Controller
@@ -289,7 +287,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
                   </div>
 
                   <div>
-                     <label className="block text-sm font-bold text-gray-900 mb-2">
+                     <label className="block text-sm font-bold text-gray-900 mb-1.5">
                         Cidade *
                      </label>
                      <input
@@ -302,7 +300,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
                   </div>
 
                   <div>
-                     <label className="block text-sm font-bold text-gray-900 mb-2">
+                     <label className="block text-sm font-bold text-gray-900 mb-1.5">
                         Região/Bairro
                      </label>
                      <input
@@ -314,7 +312,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
                   </div>
 
                   <div>
-                     <label className="block text-sm font-bold text-gray-900 mb-2">
+                     <label className="block text-sm font-bold text-gray-900 mb-1.5">
                         Tipo *
                      </label>
                      <Controller
@@ -348,13 +346,13 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
 
             {/* Date and Time */}
             <section>
-               <h3 className="font-bold text-base mb-4 pb-2 border-b-2 border-gray-200 flex items-center gap-2">
+               <h3 className="font-bold text-base mb-2.5 pb-2 border-b-2 border-gray-200 flex items-center gap-2">
                   <span>📅</span>
                   <span>Data e Horário</span>
                </h3>
-               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                   <div>
-                     <label className="block text-sm font-bold text-gray-900 mb-2">
+                     <label className="block text-sm font-bold text-gray-900 mb-1.5">
                         Data *
                      </label>
                      <Controller
@@ -380,7 +378,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
                   </div>
 
                   <div>
-                     <label className="block text-sm font-bold text-gray-900 mb-2">
+                     <label className="block text-sm font-bold text-gray-900 mb-1.5">
                         Período Ideal
                      </label>
                      <Controller
@@ -405,7 +403,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
                   </div>
 
                   <div>
-                     <label className="block text-sm font-bold text-gray-900 mb-2">
+                     <label className="block text-sm font-bold text-gray-900 mb-1.5">
                         Hora Abertura
                      </label>
                      <input
@@ -416,7 +414,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
                   </div>
 
                   <div>
-                     <label className="block text-sm font-bold text-gray-900 mb-2">
+                     <label className="block text-sm font-bold text-gray-900 mb-1.5">
                         Hora Fechamento
                      </label>
                      <input
@@ -427,7 +425,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
                   </div>
 
                   <div>
-                     <label className="block text-sm font-bold text-gray-900 mb-2">
+                     <label className="block text-sm font-bold text-gray-900 mb-1.5">
                         Duração (min)
                      </label>
                      <input
@@ -439,7 +437,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
                   </div>
 
                   <div className="md:col-span-2">
-                     <label className="block text-sm font-bold text-gray-900 mb-2">
+                     <label className="block text-sm font-bold text-gray-900 mb-1.5">
                         Dias Fechados
                      </label>
                      <Controller
@@ -481,13 +479,13 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
 
             {/* Valores */}
             <section>
-               <h3 className="font-bold text-base mb-4 pb-2 border-b-2 border-gray-200 flex items-center gap-2">
+               <h3 className="font-bold text-base mb-2.5 pb-2 border-b-2 border-gray-200 flex items-center gap-2">
                   <span>💰</span>
                   <span>Valores</span>
                </h3>
-               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                   <div>
-                     <label className="block text-sm font-bold text-gray-900 mb-2">
+                     <label className="block text-sm font-bold text-gray-900 mb-1.5">
                         Valor Casal
                      </label>
                      <Controller
@@ -510,7 +508,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
                   </div>
 
                   <div>
-                     <label className="block text-sm font-bold text-gray-900 mb-2">
+                     <label className="block text-sm font-bold text-gray-900 mb-1.5">
                         Moeda
                      </label>
                      <Controller
@@ -545,7 +543,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
 
             {/* Status e Links */}
             <section>
-               <h3 className="font-bold text-base mb-4 pb-2 border-b-2 border-gray-200 flex items-center gap-2">
+               <h3 className="font-bold text-base mb-2.5 pb-2 border-b-2 border-gray-200 flex items-center gap-2">
                   <span>🔗</span>
                   <span>Links e Status</span>
                </h3>
@@ -571,9 +569,9 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
                   </div>
 
                   {formData.needsReservation && (
-                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                         <div>
-                           <label className="block text-sm font-bold text-gray-900 mb-2">
+                           <label className="block text-sm font-bold text-gray-900 mb-1.5">
                               Status da Reserva
                            </label>
                            <Controller
@@ -602,7 +600,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
                         </div>
 
                         <div>
-                           <label className="block text-sm font-bold text-gray-900 mb-2">
+                           <label className="block text-sm font-bold text-gray-900 mb-1.5">
                               Vincular Reserva
                               <span className="text-xs font-normal text-gray-500 ml-2">(opcional)</span>
                            </label>
@@ -629,10 +627,10 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
                      </div>
                   )}
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                      {!formData.reservationId && (
                         <div>
-                           <label className="block text-sm font-bold text-gray-900 mb-2">
+                           <label className="block text-sm font-bold text-gray-900 mb-1.5">
                               Link Ingresso/Reserva
                            </label>
                            <input
@@ -645,7 +643,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
                      )}
 
                      <div className="md:col-span-2">
-                        <label className="block text-sm font-bold text-gray-900 mb-2">
+                        <label className="block text-sm font-bold text-gray-900 mb-1.5">
                            URL da Imagem
                         </label>
                         <input
@@ -657,7 +655,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
                      </div>
 
                      <div className="md:col-span-2">
-                        <label className="block text-sm font-bold text-gray-900 mb-2">
+                        <label className="block text-sm font-bold text-gray-900 mb-1.5">
                            Observações
                         </label>
                         <textarea

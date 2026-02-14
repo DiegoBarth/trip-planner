@@ -8,7 +8,6 @@ export function MapPage() {
             title="Mapa"
             subtitle="Visualize suas atrações no mapa"
          />
-
          <main className="flex-1">
             <MapView />
          </main>
