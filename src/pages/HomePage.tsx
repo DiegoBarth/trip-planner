@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { Plus, DollarSign, MapIcon, BarChart3, ListChecks, Ticket } from 'lucide-react'
+import { Plus, DollarSign, MapIcon, BarChart3, ListChecks, Ticket, Calendar } from 'lucide-react'
 import { BudgetSummary } from '@/components/home/BudgetSummary'
 import { NextAttractions } from '@/components/home/NextAttractions'
 import { CountryFilter } from '@/components/home/CountryFilter'
@@ -60,6 +60,14 @@ export function HomePage() {
                   >
                      <Ticket className="w-6 h-6 text-indigo-600" />
                      <span className="text-xs font-medium">Reservas</span>
+                  </Link>
+
+                  <Link
+                     to="/timeline"
+                     className="flex flex-col items-center gap-1 p-3 hover:bg-orange-50 rounded-lg transition-colors"
+                  >
+                     <Calendar className="w-6 h-6 text-orange-600" />
+                     <span className="text-xs font-medium">Timeline</span>
                   </Link>
 
                   <Link

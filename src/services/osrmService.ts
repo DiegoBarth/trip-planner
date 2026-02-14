@@ -20,7 +20,7 @@ export async function fetchOSRMRoute(
          .join(';')
 
       const url =
-         `https://router.project-osrm.org/route/v1/driving/${coordsString}` +
+         `https://router.project-osrm.org/route/v1/walking/${coordsString}` +
          `?overview=full&geometries=geojson`
 
       const controller = new AbortController()

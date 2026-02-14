@@ -7,6 +7,7 @@ import { MapPage } from './pages/MapPage'
 import { DashboardPage } from '@/pages/DashboardPage'
 import { ChecklistPage } from '@/pages/ChecklistPage'
 import { ReservationsPage } from '@/pages/ReservationsPage'
+import { TimelinePage } from '@/pages/TimelinePage'
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
       <Route path="/dashboard" element={<DashboardPage />} />
       <Route path="/checklist" element={<ChecklistPage />} />
       <Route path="/reservations" element={<ReservationsPage />} />
+      <Route path="/timeline" element={<TimelinePage />} />
     </Routes>
   )
 }
