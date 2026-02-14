@@ -40,6 +40,7 @@ export interface Attraction {
    visited: boolean
    needsReservation: boolean
    reservationStatus?: ReservationStatus
+   reservationId?: number  // Optional link to a reservation
 
    // Values
    couplePrice: number

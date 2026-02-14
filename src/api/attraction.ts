@@ -33,6 +33,7 @@ export interface CreateAttractionPayload {
    duration?: number
    notes?: string
    imageUrl?: string
+   reservationId?: number
 }
 
 export interface UpdateAttractionPayload extends CreateAttractionPayload {

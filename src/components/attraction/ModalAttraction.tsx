@@ -6,6 +6,7 @@ import { convertToBRL, formatCurrencyInputByCurrency, currencyToNumber, convertC
 import { ModalBase } from '@/components/ui/ModalBase'
 import { CustomSelect } from '@/components/ui/CustomSelect'
 import { useCurrency } from '@/hooks/useCurrency'
+import { useReservation } from '@/hooks/useReservation'
 import { LocationField } from './LocationField'
 interface ModalAttractionProps {
    attraction?: Attraction
@@ -25,6 +26,7 @@ interface AttractionFormData {
    visited: boolean
    needsReservation: boolean
    reservationStatus?: string
+   reservationId?: number
    couplePrice: string | number
    currency: Currency
    priceInBRL: number
@@ -55,6 +57,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
          visited: false,
          needsReservation: false,
          reservationStatus: undefined,
+         reservationId: undefined,
          couplePrice: 0,
          currency: 'JPY',
          priceInBRL: 0,
@@ -76,6 +79,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
    const formData = watch()
    const previousCurrency = useRef<Currency>(formData.currency)
    const { rates } = useCurrency()
+   const { reservations } = useReservation()
 
    // Reset form when modal opens or attraction changes
    useEffect(() => {
@@ -115,6 +119,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
                visited: false,
                needsReservation: false,
                reservationStatus: undefined,
+               reservationId: undefined,
                couplePrice: 0,
                currency: 'JPY',
                priceInBRL: 0,
@@ -566,48 +571,78 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
                   </div>
 
                   {formData.needsReservation && (
-                     <div>
-                        <label className="block text-sm font-bold text-gray-900 mb-2">
-                           Status da Reserva
-                        </label>
-                        <Controller
-                           name="reservationStatus"
-                           control={control}
-                           render={({ field }) => (
-                              <CustomSelect
-                                 value={formData.reservationStatus ? `${RESERVATION_STATUS[formData.reservationStatus as ReservationStatus].icon} ${RESERVATION_STATUS[formData.reservationStatus as ReservationStatus].label}` : ''}
-                                 onChange={(val) => {
-                                    if (!val) {
-                                       field.onChange(undefined)
-                                       return
-                                    }
-                                    const statusKey = Object.entries(RESERVATION_STATUS)
+                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                           <label className="block text-sm font-bold text-gray-900 mb-2">
+                              Status da Reserva
+                           </label>
+                           <Controller
+                              name="reservationStatus"
+                              control={control}
+                              render={({ field }) => (
+                                 <CustomSelect
+                                    value={formData.reservationStatus ? `${RESERVATION_STATUS[formData.reservationStatus as ReservationStatus].icon} ${RESERVATION_STATUS[formData.reservationStatus as ReservationStatus].label}` : ''}
+                                    onChange={(val) => {
+                                       if (!val) {
+                                          field.onChange(undefined)
+                                          return
+                                       }
+                                       const statusKey = Object.entries(RESERVATION_STATUS)
+                                          .filter(([key]) => key !== 'not-needed')
+                                          .find(([_, s]) => `${s.icon} ${s.label}` === val)?.[0]
+                                       if (statusKey) field.onChange(statusKey as ReservationStatus)
+                                    }}
+                                    options={Object.entries(RESERVATION_STATUS)
                                        .filter(([key]) => key !== 'not-needed')
-                                       .find(([_, s]) => `${s.icon} ${s.label}` === val)?.[0]
-                                    if (statusKey) field.onChange(statusKey as ReservationStatus)
-                                 }}
-                                 options={Object.entries(RESERVATION_STATUS)
-                                    .filter(([key]) => key !== 'not-needed')
-                                    .map(([_, status]) => `${status.icon} ${status.label}`)}
-                                 placeholder="Selecione o status"
-                              />
-                           )}
-                        />
+                                       .map(([_, status]) => `${status.icon} ${status.label}`)}
+                                    placeholder="Selecione o status"
+                                 />
+                              )}
+                           />
+                        </div>
+
+                        <div>
+                           <label className="block text-sm font-bold text-gray-900 mb-2">
+                              Vincular Reserva
+                              <span className="text-xs font-normal text-gray-500 ml-2">(opcional)</span>
+                           </label>
+                           <Controller
+                              name="reservationId"
+                              control={control}
+                              render={({ field }) => (
+                                 <CustomSelect
+                                    value={formData.reservationId ? reservations.find(r => r.id === formData.reservationId)?.title || '' : ''}
+                                    onChange={(val) => {
+                                       if (!val) {
+                                          field.onChange(undefined)
+                                          return
+                                       }
+                                       const reservation = reservations.find(r => r.title === val)
+                                       if (reservation) field.onChange(reservation.id)
+                                    }}
+                                    options={['', ...reservations.map(r => r.title)]}
+                                    placeholder="Nenhuma reserva vinculada"
+                                 />
+                              )}
+                           />
+                        </div>
                      </div>
                   )}
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                     <div>
-                        <label className="block text-sm font-bold text-gray-900 mb-2">
-                           Link Ingresso/Reserva
-                        </label>
-                        <input
-                           type="url"
-                           {...register('ticketLink')}
-                           className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 focus:outline-none transition-colors placeholder-gray-500 text-gray-900"
-                           placeholder="https://..."
-                        />
-                     </div>
+                     {!formData.reservationId && (
+                        <div>
+                           <label className="block text-sm font-bold text-gray-900 mb-2">
+                              Link Ingresso/Reserva
+                           </label>
+                           <input
+                              type="url"
+                              {...register('ticketLink')}
+                              className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 focus:outline-none transition-colors placeholder-gray-500 text-gray-900"
+                              placeholder="https://..."
+                           />
+                        </div>
+                     )}
 
                      <div className="md:col-span-2">
                         <label className="block text-sm font-bold text-gray-900 mb-2">

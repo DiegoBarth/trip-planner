@@ -1,16 +1,19 @@
 import { useMemo } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { createAttraction, updateAttraction, deleteAttraction, getAttractions, bulkUpdateAttractions } from '@/api/attraction'
+import { deleteReservation, updateReservation } from '@/api/reservation'
 import { QUERY_STALE_TIME_MS } from '@/config/constants'
 import type { CreateAttractionPayload, UpdateAttractionPayload } from '@/api/attraction'
 import { dateToInputFormat } from '@/utils/formatters'
 import type { Attraction, Country } from '@/types/Attraction'
+import type { Reservation } from '@/types/Reservation'
 import { applyAutoDays, normalizeOrderByDate } from '@/utils/attractionDayUtils'
 import {
    updateAttractionCacheOnCreate,
    updateAttractionCacheOnUpdate,
    updateAttractionCacheOnDelete
 } from '@/services/attractionCacheService'
+import { updateReservationCacheOnDelete } from '@/services/reservationCacheService'
 
 /**
  * Hook to manage attraction operations
@@ -42,7 +45,50 @@ export function useAttraction(country: Country) {
 
    // Update mutation
    const updateMutation = useMutation({
-      mutationFn: (payload: UpdateAttractionPayload) => updateAttraction(payload),
+      mutationFn: async (payload: UpdateAttractionPayload) => {
+         const updatedAttraction = await updateAttraction(payload)
+         
+         // If attraction is linked to a reservation, sync the reservation status
+         if (updatedAttraction.reservationId && updatedAttraction.reservationStatus) {
+            try {
+               const reservations = queryClient.getQueryData<Reservation[]>(['reservations'])
+               const linkedReservation = reservations?.find(r => r.id === updatedAttraction.reservationId)
+               
+               if (linkedReservation) {
+                  // Map attraction status to reservation status
+                  let reservationStatus: 'pending' | 'confirmed' | 'cancelled' | 'completed' | undefined
+                  if (updatedAttraction.reservationStatus === 'confirmed') reservationStatus = 'confirmed'
+                  else if (updatedAttraction.reservationStatus === 'pending') reservationStatus = 'pending'
+                  else if (updatedAttraction.reservationStatus === 'cancelled') reservationStatus = 'cancelled'
+                  
+                  if (reservationStatus) {
+                     linkedReservation.date = dateToInputFormat(updatedAttraction.date);
+                     linkedReservation.endDate = dateToInputFormat(updatedAttraction.date);
+                     linkedReservation.attractionId = updatedAttraction.id;
+
+                     await updateReservation({
+                        ...linkedReservation,
+                        status: reservationStatus
+                     })
+                     
+                     // Update reservation cache
+                     queryClient.setQueryData<Reservation[]>(
+                        ['reservations'],
+                        (old = []) => old.map(r => 
+                           r.id === linkedReservation.id 
+                              ? { ...r, status: reservationStatus }
+                              : r
+                        )
+                     )
+                  }
+               }
+            } catch (error) {
+               console.error('Error syncing status with linked reservation:', error)
+            }
+         }
+         
+         return updatedAttraction
+      },
       onSuccess: updatedAttraction => {
          const previous = attractions.find(a => a.id === updatedAttraction.id)
          if (!previous) return
@@ -52,7 +98,26 @@ export function useAttraction(country: Country) {
 
    // Delete mutation
    const deleteMutation = useMutation({
-      mutationFn: (id: number) => deleteAttraction(id),
+      mutationFn: async (id: number) => {
+         // Get the attraction to check if it's linked to a reservation
+         const attraction = attractions.find(a => a.id === id)
+         
+         // If linked to a reservation, delete the reservation too (cascade delete)
+         if (attraction?.reservationId) {
+            try {
+               await deleteReservation(attraction.reservationId)
+               
+               // Update reservation cache
+               updateReservationCacheOnDelete(queryClient, attraction.reservationId)
+            } catch (error) {
+               console.error('Error cascade deleting linked reservation:', error)
+               // Continue with attraction deletion even if reservation deletion fails
+            }
+         }
+         
+         // Delete the attraction
+         return deleteAttraction(id)
+      },
       onSuccess: (_, deletedId) => {
          updateAttractionCacheOnDelete(queryClient, country, deletedId)
       }

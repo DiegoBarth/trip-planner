@@ -112,6 +112,7 @@ export const PERIODS = {
    'full-day': { label: 'Dia todo', icon: '🌍', hours: '00:00-23:59' }
 }
 
+// For Attractions reservation status
 export const RESERVATION_STATUS = {
    'not-needed': { label: 'Não precisa', icon: '✓' },
    pending: { label: 'Pendente', icon: '⏳' },
@@ -147,6 +148,23 @@ export const CHECKLIST_CATEGORIES = {
    accessories: { label: 'Acessórios', icon: '🎒' },
    entertainment: { label: 'Entretenimento', icon: '🎮' },
    other: { label: 'Outros', icon: '📦' }
+}
+
+export const RESERVATION_TYPES = {
+   document: { label: 'Documento', icon: '📄', color: '#6366f1' },       // indigo
+   insurance: { label: 'Seguro', icon: '🛡️', color: '#10b981' },        // green
+   flight: { label: 'Voo', icon: '✈️', color: '#3b82f6' },              // blue
+   accommodation: { label: 'Hospedagem', icon: '🏨', color: '#8b5cf6' }, // purple
+   'transport-pass': { label: 'Passe', icon: '🎫', color: '#f59e0b' },  // amber
+   activity: { label: 'Atividade', icon: '🎭', color: '#ec4899' },      // pink
+   other: { label: 'Outro', icon: '📋', color: '#6b7280' }              // gray
+}
+
+export const BOOKING_STATUS = {
+   pending: { label: 'Pendente', icon: '⏳', color: '#f59e0b' },      // amber
+   confirmed: { label: 'Confirmado', icon: '✅', color: '#10b981' },   // green
+   cancelled: { label: 'Cancelado', icon: '❌', color: '#ef4444' },   // red
+   completed: { label: 'Concluído', icon: '✓', color: '#6b7280' }    // gray
 }
 
 // Labels em português
