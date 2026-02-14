@@ -42,7 +42,16 @@ export function updateAttractionCacheOnDelete(
 ) {
    const queryKey = getAttractionQueryKey(country)
 
-   queryClient.setQueryData<Attraction[]>(queryKey, old =>
-      old ? old.filter(a => a.id !== deletedAttractionId) : []
-   )
+   queryClient.setQueryData<Attraction[]>(queryKey, old => {
+      if (!old) return []
+      
+      return old
+         .filter(a => a.id !== deletedAttractionId)
+         .map(a => {
+            if (a.id > deletedAttractionId) {
+               return { ...a, id: a.id - 1 }
+            }
+            return a
+         })
+   })
 }

@@ -138,6 +138,17 @@ export const BUDGET_CATEGORIES = [
    'Outros'
 ]
 
+export const CHECKLIST_CATEGORIES = {
+   documents: { label: 'Documentos', icon: '📄' },
+   clothes: { label: 'Roupas', icon: '👕' },
+   electronics: { label: 'Eletrônicos', icon: '🔌' },
+   hygiene: { label: 'Higiene', icon: '🧴' },
+   medicines: { label: 'Medicamentos', icon: '💊' },
+   accessories: { label: 'Acessórios', icon: '🎒' },
+   entertainment: { label: 'Entretenimento', icon: '🎮' },
+   other: { label: 'Outros', icon: '📦' }
+}
+
 // Labels em português
 export const LABELS = {
    countries: {

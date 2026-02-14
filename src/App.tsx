@@ -5,6 +5,7 @@ import { ExpensesPage } from '@/pages/ExpensesPage'
 import { AttractionsPage } from '@/pages/AttractionsPage'
 import { MapPage } from './pages/MapPage'
 import { DashboardPage } from '@/pages/DashboardPage'
+import { ChecklistPage } from '@/pages/ChecklistPage'
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
       <Route path="/attractions" element={<AttractionsPage />} />
       <Route path="/map" element={<MapPage />} />
       <Route path="/dashboard" element={<DashboardPage />} />
+      <Route path="/checklist" element={<ChecklistPage />} />
     </Routes>
   )
 }

@@ -35,9 +35,16 @@ export function updateBudgetCacheOnDelete(
    queryClient: QueryClient,
    deletedBudgetId: number
 ) {
-   queryClient.setQueryData<Budget[]>(
-      BUDGET_QUERY_KEY,
-      old =>
-         old ? old.filter(budget => budget.id !== deletedBudgetId) : []
-   )
+   queryClient.setQueryData<Budget[]>(BUDGET_QUERY_KEY, old => {
+      if (!old) return []
+      
+      return old
+         .filter(budget => budget.id !== deletedBudgetId)
+         .map(budget => {
+            if (budget.id > deletedBudgetId) {
+               return { ...budget, id: budget.id - 1 }
+            }
+            return budget
+         })
+   })
 }

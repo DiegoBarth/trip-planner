@@ -45,9 +45,16 @@ export function updateExpenseCacheOnDelete(
 ) {
    const queryKey = getExpenseQueryKey(country)
 
-   queryClient.setQueryData<Expense[]>(
-      queryKey,
-      old =>
-         old ? old.filter(expense => expense.id !== deletedExpenseId) : []
-   )
+   queryClient.setQueryData<Expense[]>(queryKey, old => {
+      if (!old) return []
+      
+      return old
+         .filter(expense => expense.id !== deletedExpenseId)
+         .map(expense => {
+            if (expense.id > deletedExpenseId) {
+               return { ...expense, id: expense.id - 1 }
+            }
+            return expense
+         })
+   })
 }
