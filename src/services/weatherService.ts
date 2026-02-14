@@ -1,0 +1,163 @@
+import type { WeatherData } from '@/types/Weather'
+
+const OPENWEATHER_API_KEY = import.meta.env.VITE_OPENWEATHER_API_KEY
+const OPENWEATHER_BASE_URL = 'https://api.openweathermap.org/data/2.5'
+
+/**
+ * City coordinates for weather lookup
+ */
+const CITY_COORDINATES: Record<string, { lat: number; lon: number }> = {
+  // Japan
+  'Tokyo': { lat: 35.6762, lon: 139.6503 },
+  'Tóquio': { lat: 35.6762, lon: 139.6503 },
+  'Kyoto': { lat: 35.0116, lon: 135.7681 },
+  'Osaka': { lat: 34.6937, lon: 135.5023 },
+  'Nara': { lat: 34.6851, lon: 135.8048 },
+  'Hiroshima': { lat: 34.3853, lon: 132.4553 },
+  'Hakone': { lat: 35.2328, lon: 139.1070 },
+  
+  // South Korea
+  'Seoul': { lat: 37.5665, lon: 126.9780 },
+  'Seul': { lat: 37.5665, lon: 126.9780 },
+  'Busan': { lat: 35.1796, lon: 129.0756 },
+  'Jeju': { lat: 33.4996, lon: 126.5312 },
+  'Incheon': { lat: 37.4563, lon: 126.7052 },
+  'Daegu': { lat: 35.8714, lon: 128.6014 }
+}
+
+/**
+ * Get weather icon emoji based on OpenWeather icon code
+ */
+function getWeatherEmoji(iconCode: string): string {
+  const code = iconCode.substring(0, 2)
+  
+  const iconMap: Record<string, string> = {
+    '01': '☀️',  // clear sky
+    '02': '🌤️',  // few clouds
+    '03': '☁️',  // scattered clouds
+    '04': '☁️',  // broken clouds
+    '09': '🌧️',  // shower rain
+    '10': '🌦️',  // rain
+    '11': '⛈️',  // thunderstorm
+    '13': '❄️',  // snow
+    '50': '🌫️'   // mist/fog
+  }
+  
+  return iconMap[code] || '🌤️'
+}
+
+
+/**
+ * Fetch weather forecast for a city
+ */
+export async function fetchWeatherForecast(city: string): Promise<WeatherData[]> {
+  // Check if API key is configured
+  if (!OPENWEATHER_API_KEY) {
+    console.warn('OpenWeather API key not configured')
+    return []
+  }
+
+  // Get coordinates for the city
+  const coords = CITY_COORDINATES[city]
+  if (!coords) {
+    console.warn(`Coordinates not found for city: ${city}`)
+    return []
+  }
+
+  try {
+    const url = `${OPENWEATHER_BASE_URL}/forecast?lat=${coords.lat}&lon=${coords.lon}&appid=${OPENWEATHER_API_KEY}&units=metric&lang=pt_br`
+    
+    const controller = new AbortController()
+    const timeout = setTimeout(() => controller.abort(), 8000)
+
+    const response = await fetch(url, { signal: controller.signal })
+    clearTimeout(timeout)
+
+    if (!response.ok) {
+      console.error('Weather API error:', response.status)
+      return []
+    }
+
+    const data = await response.json()
+
+    if (!data.list || data.list.length === 0) {
+      return []
+    }
+
+    // Group by date and get daily forecast (noon reading)
+    const dailyForecasts: Record<string, WeatherData> = {}
+    
+    data.list.forEach((item: any) => {
+      const date = item.dt_txt.split(' ')[0] // YYYY-MM-DD
+      const hour = parseInt(item.dt_txt.split(' ')[1].split(':')[0])
+      
+      // Get reading closest to noon (12:00)
+      if (hour >= 11 && hour <= 13) {
+        if (!dailyForecasts[date] || hour === 12) {
+          dailyForecasts[date] = {
+            date,
+            temp: Math.round(item.main.temp),
+            tempMin: Math.round(item.main.temp_min),
+            tempMax: Math.round(item.main.temp_max),
+            description: item.weather[0].description,
+            icon: getWeatherEmoji(item.weather[0].icon),
+            humidity: item.main.humidity,
+            windSpeed: item.wind.speed,
+            pop: item.pop || 0,
+            rain: item.rain?.['3h'] || 0
+          }
+        }
+      }
+    })
+
+    return Object.values(dailyForecasts)
+  } catch (error) {
+    console.error('Error fetching weather:', error)
+    return []
+  }
+}
+
+/**
+ * Get weather for a specific date
+ */
+export function getWeatherForDate(
+  forecast: WeatherData[],
+  date: string
+): WeatherData | null {
+  // Convert date format if needed (DD/MM/YYYY -> YYYY-MM-DD)
+  let searchDate = date
+  if (date.includes('/')) {
+    const [day, month, year] = date.split('/')
+    searchDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
+  } else if (date.includes('T')) {
+    searchDate = date.split('T')[0]
+  }
+
+  return forecast.find(w => w.date === searchDate) || null
+}
+
+/**
+ * Get weather recommendation based on conditions
+ */
+export function getWeatherRecommendation(weather: WeatherData): string {
+  if (weather.pop > 0.7) {
+    return '☔ Alta chance de chuva - leve guarda-chuva'
+  }
+  if (weather.pop > 0.4) {
+    return '🌂 Possibilidade de chuva - considere levar guarda-chuva'
+  }
+  if (weather.temp > 30) {
+    return '🌡️ Muito calor - use protetor solar e hidrate-se'
+  }
+  if (weather.temp < 10) {
+    return '🧥 Frio - leve casaco'
+  }
+  if (weather.windSpeed > 10) {
+    return '💨 Vento forte - se agasalhe'
+  }
+  if (weather.description.toLowerCase().includes('neve')) {
+    return '❄️ Neve - vista roupas apropriadas'
+  }
+  
+  return '✅ Clima favorável para passeios'
+}

@@ -5,7 +5,10 @@ import type { Attraction } from '@/types/Attraction'
 import { buildDayTimeline, calculateArrivalTime } from '@/services/timelineService'
 import { TimelineCard } from './TimelineCard'
 import { TimelineSegment } from './TimelineSegment'
-import { formatDate } from '@/utils/formatters'
+import { WeatherBadge } from './WeatherBadge'
+import { formatDate, dateToInputFormat } from '@/utils/formatters'
+import { useWeather } from '@/hooks/useWeather'
+import { getWeatherForDate } from '@/services/weatherService'
 
 interface TimelineProps {
   attractions: Attraction[]
@@ -14,6 +17,10 @@ interface TimelineProps {
 export function Timeline({ attractions }: TimelineProps) {
   const [timeline, setTimeline] = useState<TimelineDay | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+  
+  // Get city from first attraction for weather (always call hook, even with empty string)
+  const city = attractions[0]?.city || ''
+  const { forecast } = useWeather(city)
 
   useEffect(() => {
     async function loadTimeline() {
@@ -45,6 +52,9 @@ export function Timeline({ attractions }: TimelineProps) {
     )
   }
 
+  // Get weather for the timeline date (always calculate, even if timeline is null)
+  const weather = timeline ? getWeatherForDate(forecast, dateToInputFormat(timeline.date)) : null
+
   if (!timeline) {
     return (
       <div className="text-center py-12">
@@ -59,6 +69,11 @@ export function Timeline({ attractions }: TimelineProps) {
 
   return (
     <div className="space-y-6">
+      {/* Weather badge */}
+      {weather && (
+        <WeatherBadge weather={weather} />
+      )}
+
       {/* Day header */}
       <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl p-6 shadow-lg">
         <div className="flex items-center justify-between mb-4">

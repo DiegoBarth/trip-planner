@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { ArrowLeft, Calendar } from 'lucide-react'
+import { ArrowLeft, Calendar, CloudSun } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useAttraction } from '@/hooks/useAttraction'
 import { Timeline } from '@/components/timeline/Timeline'
@@ -46,6 +46,12 @@ export function TimelinePage() {
       .map(({ parsedDate, ...rest }) => rest)
   }, [attractions, day])
 
+  const dayLabel = useMemo(() => {
+    if (timelineAttractions.length === 0) return ''
+    if (day === 'all') return `Próximo Dia (Dia ${timelineAttractions[0]?.day || 1})`
+    return `Dia ${day}`
+  }, [timelineAttractions, day])
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -53,12 +59,6 @@ export function TimelinePage() {
       </div>
     )
   }
-
-  const dayLabel = useMemo(() => {
-    if (timelineAttractions.length === 0) return ''
-    if (day === 'all') return `Próximo Dia (Dia ${timelineAttractions[0]?.day || 1})`
-    return `Dia ${day}`
-  }, [timelineAttractions, day])
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -84,6 +84,32 @@ export function TimelinePage() {
 
       {/* Main content */}
       <main className="max-w-6xl mx-auto p-6">
+        {/* Weather info banner */}
+        {!import.meta.env.VITE_OPENWEATHER_API_KEY && (
+          <div className="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6 rounded-lg">
+            <div className="flex items-start gap-3">
+              <CloudSun className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+              <div className="flex-1">
+                <h3 className="text-sm font-semibold text-blue-900 mb-1">
+                  🌤️ Clima Integrado Disponível
+                </h3>
+                <p className="text-sm text-blue-800">
+                  Configure sua chave da API OpenWeather no arquivo <code className="bg-blue-100 px-1 rounded">.env</code> para 
+                  ver previsões do tempo integradas à timeline. É grátis! 
+                  <a 
+                    href="https://openweathermap.org/api" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="underline hover:text-blue-600 ml-1"
+                  >
+                    Obtenha sua chave aqui
+                  </a>
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
         {timelineAttractions.length === 0 ? (
           <div className="bg-white rounded-xl shadow-md p-12 text-center">
             <Calendar className="w-16 h-16 text-gray-400 mx-auto mb-4" />
