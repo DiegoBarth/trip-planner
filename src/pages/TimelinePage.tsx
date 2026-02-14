@@ -1,14 +1,15 @@
 import { useMemo } from 'react'
-import { ArrowLeft, Calendar, CloudSun } from 'lucide-react'
+import { Calendar, CloudSun } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useAttraction } from '@/hooks/useAttraction'
 import { Timeline } from '@/components/timeline/Timeline'
 import { useCountry } from '@/contexts/CountryContext'
 import { dateToInputFormat } from '@/utils/formatters'
+import { PageHeader } from '@/components/ui/PageHeader'
 
 export function TimelinePage() {
-  const { country, day } = useCountry()
-  const { attractions, isLoading } = useAttraction(country)
+   const { country, day } = useCountry()
+   const { attractions, isLoading } = useAttraction(country)
 
   // Filter attractions for the timeline
   const timelineAttractions = useMemo(() => {
@@ -60,30 +61,15 @@ export function TimelinePage() {
     )
   }
 
-  return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4 shadow-lg sticky top-0 z-10">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Link to="/" className="hover:bg-white/10 p-2 rounded-lg transition-colors">
-                <ArrowLeft className="w-6 h-6" />
-              </Link>
-              <div>
-                <h1 className="text-2xl font-bold">Timeline do Roteiro</h1>
-                <p className="text-sm opacity-90">
-                  {dayLabel} - Visualize seu dia com cálculo de rotas
-                </p>
-              </div>
-            </div>
-            <Calendar className="w-8 h-8" />
-          </div>
-        </div>
-      </header>
+   return (
+      <div className="min-h-screen bg-gray-50 pb-20 md:pb-6">
+         <PageHeader
+            title="Timeline do Roteiro"
+            subtitle={`${dayLabel} - Visualize seu dia com rotas e clima`}
+         />
 
-      {/* Main content */}
-      <main className="max-w-6xl mx-auto p-6">
+         {/* Main content */}
+         <main className="max-w-6xl mx-auto px-4 py-6">
         {/* Weather info banner */}
         {!import.meta.env.VITE_OPENWEATHER_API_KEY && (
           <div className="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6 rounded-lg">

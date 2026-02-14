@@ -1,13 +1,16 @@
-import { useNavigate } from 'react-router-dom'
-import { Layout } from '@/components/layout/Layout'
+import { PageHeader } from '@/components/ui/PageHeader'
+import { Fab } from '@/components/ui/Fab'
 import { AttractionsList } from '@/components/attraction/AttractionsList'
 import { useAttraction } from '@/hooks/useAttraction'
 import { useToast } from '@/contexts/toast'
 import type { Attraction } from '@/types/Attraction'
 import { useCountry } from '@/contexts/CountryContext'
+import { useState } from 'react'
+import { ModalAttraction } from '@/components/attraction/ModalAttraction'
+import { Plus } from 'lucide-react'
 
 export function AttractionsPage() {
-   const navigate = useNavigate()
+   const [showModal, setShowModal] = useState(false)
    const { country, attractions, isReady } = useCountry()
 
    const {
@@ -72,20 +75,40 @@ export function AttractionsPage() {
    }
 
    return (
-      <Layout
-         title="🗺️ Atrações"
-         onBack={() => navigate('/')}
-         headerClassName="bg-gradient-to-r from-green-600 to-teal-600 text-white"
-      >
-         <AttractionsList
-            attractions={attractions}
-            isLoading={!isReady}
-            onCreate={handleCreate}
-            onUpdate={handleUpdate}
-            onDelete={handleDelete}
-            onToggleVisited={handleToggleVisited}
-            onBulkUpdate={handleBulkUpdate}
+      <div className="min-h-screen bg-gray-50 pb-20 md:pb-6">
+         <PageHeader
+            title="Atrações"
+            subtitle="Planeje seus pontos turísticos"
          />
-      </Layout>
+
+         <main className="max-w-6xl mx-auto px-4 py-6 mb-12">
+            <AttractionsList
+               attractions={attractions}
+               isLoading={!isReady}
+               onCreate={handleCreate}
+               onUpdate={handleUpdate}
+               onDelete={handleDelete}
+               onToggleVisited={handleToggleVisited}
+               onBulkUpdate={handleBulkUpdate}
+            />
+         </main>
+
+         <Fab
+            onClick={() => setShowModal(true)}
+            icon={<Plus className="w-6 h-6" />}
+            label="Adicionar"
+         />
+
+         {showModal && (
+            <ModalAttraction
+               isOpen={showModal}
+               onClose={() => setShowModal(false)}
+               onSave={async (data) => {
+                  await handleCreate(data as any)
+                  setShowModal(false)
+               }}
+            />
+         )}
+      </div>
    )
 }

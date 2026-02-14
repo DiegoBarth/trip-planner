@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Plus, GripVertical } from 'lucide-react'
+import { GripVertical } from 'lucide-react'
 import { AttractionsGrid } from './AttractionsGrid'
 import { ModalAttraction } from './ModalAttraction'
 import { SkeletonList } from '@/components/ui/SkeletonList'
@@ -90,7 +90,7 @@ export function AttractionsList({
    }
 
    return (
-      <div className="p-6">
+      <div>
          <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-semibold text-gray-900">
                Todas as Atrações
@@ -114,14 +114,6 @@ export function AttractionsList({
                      {isDragEnabled ? 'Reordenação ativa' : 'Reordenar'}
                   </button>
                )}
-
-               <button
-                  onClick={() => setIsModalOpen(true)}
-                  className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors shadow-sm"
-               >
-                  <Plus className="w-5 h-5" />
-                  Nova Atração
-               </button>
             </div>
          </div>
 

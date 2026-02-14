@@ -1,11 +1,11 @@
 import { useNavigate } from 'react-router-dom'
-import { Layout } from '@/components/layout/Layout'
 import { useCountry } from '@/contexts/CountryContext'
 import { formatCurrency } from '@/utils/formatters'
 import { DashboardCard } from '@/components/dashboard/DashboardCard'
 import { AttractionStatusCards } from '@/components/dashboard/AttractionStatusCards'
 import { ExpensesByCategoryChart } from '@/components/dashboard/ExpensesByCategoryChart'
 import { BudgetByOriginChart } from '@/components/dashboard/BudgetByOriginChart'
+import { PageHeader } from '@/components/ui/PageHeader'
 
 export function DashboardPage() {
    const navigate = useNavigate()
@@ -13,29 +13,30 @@ export function DashboardPage() {
 
    if(!isReady) {
       return (
-         <Layout
-            title="📊 Dashboard"
-            onBack={() => navigate('/')}
-            headerClassName="bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg"
-         >
+         <div className="min-h-screen bg-gray-50 pb-20 md:pb-6">
+            <PageHeader
+               title="Dashboard"
+               subtitle="Resumo da sua viagem"
+            />
             <div className="flex flex-col items-center justify-center h-[60vh] space-y-4">
-               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
+               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
                <p className="text-gray-500 font-medium animate-pulse">Carregando dados da viagem...</p>
             </div>
-         </Layout>
+         </div>
       );
    }
 
    const stats = dashboard
 
    return (
-      <Layout
-         title="Dashboard da Viagem"
-         onBack={() => navigate('/')}
-         headerClassName="bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg"
-      >
-         <div className="max-w-7xl mx-auto p-4 md:p-8 space-y-8 bg-gray-50 min-h-screen">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="min-h-screen bg-gray-50 pb-20 md:pb-6">
+         <PageHeader
+            title="Dashboard"
+            subtitle="Resumo completo da sua viagem"
+         />
+
+         <main className="max-w-7xl mx-auto px-4 py-6 space-y-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                <DashboardCard
                   label="Total Gasto"
                   value={formatCurrency(stats.totalSpent)}
@@ -63,30 +64,32 @@ export function DashboardPage() {
                   colorClass="bg-amber-500 text-amber-600"
                />
             </div>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                <ExpensesByCategoryChart data={stats.expensesByCategory} />
                <BudgetByOriginChart data={stats.budgetByOrigin} />
             </div>
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
                <div className="lg:col-span-2">
                   <AttractionStatusCards status={stats.attractionStatus} />
                </div>
-               <div className="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl p-6 text-white shadow-lg flex flex-col justify-between">
+               <div className="bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl p-6 text-white shadow-lg flex flex-col justify-between">
                   <div>
                      <h3 className="font-bold text-lg mb-2">Próxima Parada?</h3>
-                     <p className="text-indigo-100 text-sm">
+                     <p className="text-white/90 text-sm">
                         Você tem {stats.attractionStatus.total - stats.attractionStatus.visited} atrações restantes no seu roteiro.
                      </p>
                   </div>
                   <button
                      onClick={() => navigate('/attractions')}
-                     className="mt-6 bg-white text-indigo-600 px-4 py-2 rounded-lg font-semibold text-sm hover:bg-indigo-50 transition-colors w-full"
+                     className="mt-6 bg-white text-blue-600 px-4 py-3 rounded-xl font-semibold text-sm hover:bg-blue-50 transition-all active:scale-95 w-full"
                   >
                      Ver Roteiro Completo
                   </button>
                </div>
             </div>
-         </div>
-      </Layout>
+         </main>
+      </div>
    )
 }

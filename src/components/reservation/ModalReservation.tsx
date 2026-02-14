@@ -153,12 +153,11 @@ export function ModalReservation({ reservation, isOpen, onClose, onSave }: Modal
          onSave={handleSubmit(onSubmit)}
          size="lg"
       >
-         <div className="space-y-4">
+         <div className="space-y-6">
             {/* Type and Status */}
-            <div className="grid grid-cols-2 gap-4">
-               {/* Type */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                <div>
-                  <label htmlFor="reservation-type" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-bold text-gray-900 mb-2">
                      Tipo *
                   </label>
                   <CustomSelect
@@ -171,9 +170,8 @@ export function ModalReservation({ reservation, isOpen, onClose, onSave }: Modal
                   />
                </div>
 
-               {/* Status */}
                <div>
-                  <label htmlFor="reservation-status" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-bold text-gray-900 mb-2">
                      Status *
                   </label>
                   <CustomSelect
@@ -189,229 +187,231 @@ export function ModalReservation({ reservation, isOpen, onClose, onSave }: Modal
 
             {/* Title */}
             <div>
-               <label htmlFor="reservation-title" className="block text-sm font-medium text-gray-700 mb-2">
+               <label className="block text-sm font-bold text-gray-900 mb-2">
                   Título *
                </label>
                <input
-                  id="reservation-title"
                   type="text"
                   required
                   autoComplete="off"
                   {...register('title', { required: true })}
-                  className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none placeholder:text-gray-400 text-gray-900"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none placeholder:text-gray-400 text-gray-900"
                   placeholder="Ex: Voo São Paulo → Tóquio"
                />
             </div>
 
             {/* Description */}
             <div>
-               <label htmlFor="reservation-description" className="block text-sm font-medium text-gray-700 mb-2">
+               <label className="block text-sm font-bold text-gray-900 mb-2">
                   Descrição
                </label>
                <input
-                  id="reservation-description"
                   type="text"
                   autoComplete="off"
                   {...register('description')}
-                  className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none placeholder:text-gray-400 text-gray-900"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none placeholder:text-gray-400 text-gray-900"
                   placeholder="Detalhes adicionais..."
                />
             </div>
 
-            {/* Date Range and Time */}
-            <div className="grid grid-cols-3 gap-4">
-               <div>
-                  <label htmlFor="reservation-date" className="block text-sm font-medium text-gray-700 mb-2">
-                     Data
-                  </label>
-                  <input
-                     id="reservation-date"
-                     type="date"
-                     {...register('date')}
-                     className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-gray-900"
-                  />
-               </div>
+            {/* Dates and Time Section */}
+            <div className="pt-4 border-t border-gray-200">
+               <h3 className="text-sm font-bold text-gray-900 mb-4">📅 Datas e Horário</h3>
+               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                     <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Data
+                     </label>
+                     <input
+                        type="date"
+                        {...register('date')}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none text-gray-900"
+                     />
+                  </div>
 
-               <div>
-                  <label htmlFor="reservation-endDate" className="block text-sm font-medium text-gray-700 mb-2">
-                     Data Fim
-                  </label>
-                  <input
-                     id="reservation-endDate"
-                     type="date"
-                     {...register('endDate')}
-                     className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-gray-900"
-                  />
-               </div>
+                  <div>
+                     <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Data Fim
+                     </label>
+                     <input
+                        type="date"
+                        {...register('endDate')}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none text-gray-900"
+                     />
+                  </div>
 
-               <div>
-                  <label htmlFor="reservation-time" className="block text-sm font-medium text-gray-700 mb-2">
-                     Horário
-                  </label>
-                  <input
-                     id="reservation-time"
-                     type="time"
-                     {...register('time')}
-                     className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-gray-900"
-                  />
-               </div>
-            </div>
-
-            {/* Provider and Confirmation Code */}
-            <div className="grid grid-cols-2 gap-4">
-               <div>
-                  <label htmlFor="reservation-provider" className="block text-sm font-medium text-gray-700 mb-2">
-                     Provedor
-                  </label>
-                  <input
-                     id="reservation-provider"
-                     type="text"
-                     autoComplete="off"
-                     {...register('provider')}
-                     className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none placeholder:text-gray-400 text-gray-900"
-                     placeholder="Ex: LATAM, Booking.com"
-                  />
-               </div>
-
-               <div>
-                  <label htmlFor="reservation-confirmationCode" className="block text-sm font-medium text-gray-700 mb-2">
-                     Código de Confirmação
-                  </label>
-                  <input
-                     id="reservation-confirmationCode"
-                     type="text"
-                     autoComplete="off"
-                     {...register('confirmationCode')}
-                     className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none placeholder:text-gray-400 text-gray-900 font-mono"
-                     placeholder="ABC123"
-                  />
+                  <div>
+                     <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Horário
+                     </label>
+                     <input
+                        type="time"
+                        {...register('time')}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none text-gray-900"
+                     />
+                  </div>
                </div>
             </div>
 
-            {/* Location, Country and Attraction */}
-            <div className="grid grid-cols-3 gap-4">
-               <div>
-                  <label htmlFor="reservation-location" className="block text-sm font-medium text-gray-700 mb-2">
-                     Local
-                  </label>
-                  <input
-                     id="reservation-location"
-                     type="text"
-                     autoComplete="off"
-                     {...register('location')}
-                     className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none placeholder:text-gray-400 text-gray-900"
-                     placeholder="Ex: Aeroporto de Narita"
-                  />
-               </div>
+            {/* Provider and Code Section */}
+            <div className="pt-4 border-t border-gray-200">
+               <h3 className="text-sm font-bold text-gray-900 mb-4">🏢 Provedor e Confirmação</h3>
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                     <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Provedor
+                     </label>
+                     <input
+                        type="text"
+                        autoComplete="off"
+                        {...register('provider')}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none placeholder:text-gray-400 text-gray-900"
+                        placeholder="Ex: LATAM, Booki..."
+                     />
+                  </div>
 
-               <div>
-                  <label htmlFor="reservation-country" className="block text-sm font-medium text-gray-700 mb-2">
-                     País
-                  </label>
-                  <CustomSelect
-                     value={formData.country ? `${COUNTRIES[formData.country].flag} ${COUNTRIES[formData.country].name}` : ''}
-                     onChange={(val) => {
-                        if (!val) {
-                           setValue('country', undefined)
-                           return
-                        }
-                        const countryKey = Object.entries(COUNTRIES).find(([_, c]) => `${c.flag} ${c.name}` === val)?.[0] as Country | undefined
-                        if (countryKey) setValue('country', countryKey)
-                     }}
-                     options={['', ...Object.entries(COUNTRIES)
-                        .map(([_, country]) => `${country.flag} ${country.name}`)
-                     ].filter(Boolean)}
-                     placeholder="Selecione o país"
-                  />
+                  <div>
+                     <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Código
+                     </label>
+                     <input
+                        type="text"
+                        autoComplete="off"
+                        {...register('confirmationCode')}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none placeholder:text-gray-400 text-gray-900 font-mono uppercase"
+                        placeholder="ABC123"
+                     />
+                  </div>
                </div>
+            </div>
 
-               <div>
-                  <label htmlFor="reservation-attraction" className="block text-sm font-medium text-gray-700 mb-2">
-                     Vincular Atração
-                     <span className="text-xs font-normal text-gray-500 ml-1">(opcional)</span>
-                  </label>
-                  <Controller
-                     name="attractionId"
-                     control={control}
-                     render={({ field }) => (
+            {/* Location Section */}
+            <div className="pt-4 border-t border-gray-200">
+               <h3 className="text-sm font-bold text-gray-900 mb-4">📍 Localização</h3>
+               <div className="space-y-4">
+                  <div>
+                     <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Local
+                     </label>
+                     <input
+                        type="text"
+                        autoComplete="off"
+                        {...register('location')}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none placeholder:text-gray-400 text-gray-900"
+                        placeholder="Ex: Aeroporto de Narita"
+                     />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                     <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                           País
+                        </label>
                         <CustomSelect
-                           value={formData.attractionId ? attractions.find(a => a.id === formData.attractionId)?.name || '' : ''}
+                           value={formData.country ? `${COUNTRIES[formData.country].flag} ${COUNTRIES[formData.country].name}` : ''}
                            onChange={(val) => {
                               if (!val) {
-                                 field.onChange(undefined)
+                                 setValue('country', undefined)
                                  return
                               }
-                              const attraction = attractions.find(a => a.name === val)
-                              if (attraction) field.onChange(attraction.id)
+                              const countryKey = Object.entries(COUNTRIES).find(([_, c]) => `${c.flag} ${c.name}` === val)?.[0] as Country | undefined
+                              if (countryKey) setValue('country', countryKey)
                            }}
-                           options={['', ...attractions.map(a => a.name)]}
-                           placeholder="Nenhuma atração vinculada"
+                           options={['', ...Object.entries(COUNTRIES)
+                              .map(([_, country]) => `${country.flag} ${country.name}`)
+                           ].filter(Boolean)}
+                           placeholder="Selecione..."
                         />
-                     )}
+                     </div>
+
+                     <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                           Vincular Atração <span className="text-xs text-gray-500">(opcional)</span>
+                        </label>
+                        <Controller
+                           name="attractionId"
+                           control={control}
+                           render={({ field }) => (
+                              <CustomSelect
+                                 value={formData.attractionId ? attractions.find(a => a.id === formData.attractionId)?.name || '' : ''}
+                                 onChange={(val) => {
+                                    if (!val) {
+                                       field.onChange(undefined)
+                                       return
+                                    }
+                                    const attraction = attractions.find(a => a.name === val)
+                                    if (attraction) field.onChange(attraction.id)
+                                 }}
+                                 options={['', ...attractions.map(a => a.name)]}
+                                 placeholder="Nenhuma..."
+                              />
+                           )}
+                        />
+                     </div>
+                  </div>
+               </div>
+            </div>
+
+            {/* Links Section */}
+            <div className="pt-4 border-t border-gray-200">
+               <h3 className="text-sm font-bold text-gray-900 mb-4">🔗 Links</h3>
+               <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                     Link da Reserva
+                  </label>
+                  <input
+                     type="url"
+                     autoComplete="off"
+                     {...register('bookingUrl')}
+                     className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none placeholder:text-gray-400 text-gray-900"
+                     placeholder="https://booking.com/..."
                   />
                </div>
             </div>
 
-            {/* Booking URL */}
-            <div>
-               <label htmlFor="reservation-bookingUrl" className="block text-sm font-medium text-gray-700 mb-2">
-                  Link da Reserva
-               </label>
-               <input
-                  id="reservation-bookingUrl"
-                  type="url"
-                  autoComplete="off"
-                  {...register('bookingUrl')}
-                  className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none placeholder:text-gray-400 text-gray-900"
-                  placeholder="https://booking.com/confirmation/..."
-               />
-               <p className="text-xs text-gray-500 mt-1">
-                  Link para página de confirmação da reserva
-               </p>
-            </div>
+            {/* Document Section */}
+            <div className="pt-4 border-t border-gray-200">
+               <h3 className="text-sm font-bold text-gray-900 mb-4">📄 Documento</h3>
+               <div className="space-y-4">
+                  <FileUpload
+                     label="Comprovante ou documento"
+                     currentFile={formData.documentUrl}
+                     currentFileId={documentFileId}
+                     onFileUploaded={(url, fileId) => {
+                        setValue('documentUrl', url)
+                        setDocumentFileId(fileId)
+                     }}
+                  />
+                  
+                  <div className="relative">
+                     <div className="absolute inset-0 flex items-center">
+                        <div className="w-full border-t border-gray-200"></div>
+                     </div>
+                     <div className="relative flex justify-center text-xs">
+                        <span className="px-2 bg-white text-gray-500">ou cole um link</span>
+                     </div>
+                  </div>
 
-            {/* Document Upload/URL */}
-            <div className="space-y-3">
-               <FileUpload
-                  label="Documento/Comprovante"
-                  currentFile={formData.documentUrl}
-                  currentFileId={documentFileId}
-                  onFileUploaded={(url, fileId) => {
-                     setValue('documentUrl', url)
-                     setDocumentFileId(fileId)
-                  }}
-               />
-               
-               <div className="relative">
-                  <div className="absolute inset-0 flex items-center">
-                     <div className="w-full border-t border-gray-200"></div>
-                  </div>
-                  <div className="relative flex justify-center text-xs">
-                     <span className="px-2 bg-white text-gray-500">ou cole um link</span>
-                  </div>
+                  <input
+                     type="url"
+                     autoComplete="off"
+                     value={formData.documentUrl}
+                     onChange={(e) => setValue('documentUrl', e.target.value)}
+                     className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none placeholder:text-gray-400 text-gray-900 text-sm"
+                     placeholder="https://drive.google.com/..."
+                  />
                </div>
-
-               <input
-                  id="reservation-documentUrl-manual"
-                  type="url"
-                  autoComplete="off"
-                  value={formData.documentUrl}
-                  onChange={(e) => setValue('documentUrl', e.target.value)}
-                  className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none placeholder:text-gray-400 text-gray-900 text-sm"
-                  placeholder="https://drive.google.com/..."
-               />
             </div>
 
             {/* Notes */}
-            <div>
-               <label htmlFor="reservation-notes" className="block text-sm font-medium text-gray-700 mb-2">
-                  Observações
+            <div className="pt-4 border-t border-gray-200">
+               <label className="block text-sm font-bold text-gray-900 mb-2">
+                  📝 Observações
                </label>
                <textarea
-                  id="reservation-notes"
                   {...register('notes')}
                   rows={3}
-                  className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none placeholder:text-gray-400 text-gray-900"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none placeholder:text-gray-400 text-gray-900 resize-none"
                   placeholder="Informações adicionais importantes..."
                />
             </div>

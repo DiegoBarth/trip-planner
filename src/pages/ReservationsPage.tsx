@@ -1,12 +1,15 @@
-import { useNavigate } from 'react-router-dom'
-import { Layout } from '@/components/layout/Layout'
+import { useState } from 'react'
 import { ReservationList } from '@/components/reservation/ReservationList'
 import { useReservation } from '@/hooks/useReservation'
 import { useToast } from '@/contexts/toast'
 import type { Reservation } from '@/types/Reservation'
+import { PageHeader } from '@/components/ui/PageHeader'
+import { Fab } from '@/components/ui/Fab'
+import { ModalReservation } from '@/components/reservation/ModalReservation'
+import { Plus } from 'lucide-react'
 
 export function ReservationsPage() {
-   const navigate = useNavigate()
+   const [showModal, setShowModal] = useState(false)
    const { reservations, createReservation, updateReservation, deleteReservation, isLoading } = useReservation()
    const toast = useToast()
 
@@ -41,18 +44,38 @@ export function ReservationsPage() {
    }
 
    return (
-      <Layout
-         title="🎫 Reservas"
-         onBack={() => navigate('/')}
-         headerClassName="bg-gradient-to-r from-indigo-600 to-purple-600 text-white"
-      >
-         <ReservationList
-            reservations={reservations}
-            onCreate={handleCreate}
-            onUpdate={handleUpdate}
-            onDelete={handleDelete}
-            isLoading={isLoading}
+      <div className="min-h-screen bg-gray-50 pb-20 md:pb-6">
+         <PageHeader
+            title="Reservas"
+            subtitle="Gerencie suas reservas e documentos"
          />
-      </Layout>
+
+         <main className="max-w-6xl mx-auto px-4 py-6 mb-12">
+            <ReservationList
+               reservations={reservations}
+               onCreate={handleCreate}
+               onUpdate={handleUpdate}
+               onDelete={handleDelete}
+               isLoading={isLoading}
+            />
+         </main>
+
+         <Fab
+            onClick={() => setShowModal(true)}
+            icon={<Plus className="w-6 h-6" />}
+            label="Adicionar"
+         />
+
+         {showModal && (
+            <ModalReservation
+               isOpen={showModal}
+               onClose={() => setShowModal(false)}
+               onSave={async (data) => {
+                  await handleCreate(data as any)
+                  setShowModal(false)
+               }}
+            />
+         )}
+      </div>
    )
 }

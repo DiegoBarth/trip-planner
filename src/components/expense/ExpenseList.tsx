@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { Plus } from 'lucide-react'
 import { ExpenseCard } from './ExpenseCard'
 import { ModalExpense } from './ModalExpense'
 import { EmptyState } from '@/components/ui/EmptyState'
@@ -62,23 +61,7 @@ export function ExpenseList({ expenses, onUpdate, onCreate, onDelete, isLoading 
   }
 
   return (
-    <div className="p-6">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-semibold text-gray-900">
-          Todos os Gastos
-          <span className="text-sm font-normal text-gray-500 ml-2">
-            ({expenses.length})
-          </span>
-        </h2>
-        <button
-          onClick={() => handleOpenModal()}
-          className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors shadow-sm"
-        >
-          <Plus className="w-5 h-5" />
-          Novo Gasto
-        </button>
-      </div>
-
+    <div>
       <div className="space-y-10">
         {Object.keys(groupedByCountry).length === 0 ? (
           <EmptyState

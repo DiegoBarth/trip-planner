@@ -1,20 +1,17 @@
-import { useNavigate } from 'react-router-dom'
-import { Layout } from '@/components/layout/Layout'
 import { MapView } from '@/components/map/MapView'
+import { PageHeader } from '@/components/ui/PageHeader'
 
 export function MapPage() {
-   const navigate = useNavigate()
-
    return (
-      <Layout
-         title="🗺️ Mapa do Roteiro"
-         subtitle="Visualize seus deslocamentos por período"
-         onBack={() => navigate('/')}
-         headerClassName="bg-gradient-to-r from-emerald-600 to-teal-600 text-white"
-         containerClassName="max-w-full"
-         contentClassName="p-0"
-      >
-         <MapView />
-      </Layout>
+      <div className="min-h-screen bg-gray-50 pb-20 md:pb-6 flex flex-col">
+         <PageHeader
+            title="Mapa"
+            subtitle="Visualize suas atrações no mapa"
+         />
+
+         <main className="flex-1">
+            <MapView />
+         </main>
+      </div>
    )
 }

@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react'
-import { Plus, Ticket } from 'lucide-react'
+import { Ticket } from 'lucide-react'
 import { ReservationCard } from './ReservationCard'
 import { ModalReservation } from './ModalReservation'
 import { EmptyState } from '@/components/ui/EmptyState'
@@ -136,7 +136,7 @@ export function ReservationList({
   }
 
   return (
-    <div className="p-6">
+    <div>
       {/* Header with stats */}
       <div className="mb-6">
         <div className="flex items-center justify-between mb-4">
@@ -149,13 +149,6 @@ export function ReservationList({
               {stats.total} {stats.total === 1 ? 'item' : 'itens'} no total
             </p>
           </div>
-          <button
-            onClick={() => handleOpenModal()}
-            className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors shadow-sm"
-          >
-            <Plus className="w-5 h-5" />
-            Nova Reserva
-          </button>
         </div>
 
         {/* Statistics */}
