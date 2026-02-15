@@ -19,7 +19,8 @@ export interface TimelineDay {
   date: string
   dayNumber: number
   attractions: Attraction[]
-  segments: TimelineSegment[]
+  /** Segmento entre atrações consecutivas; pode ser null quando não há rota (ex.: sem coords). */
+  segments: (TimelineSegment | null)[]
   conflicts: TimelineConflict[]
   totalDistance: number
   totalTravelTime: number

@@ -1,5 +1,5 @@
-import { useMemo } from 'react'
-import { Calendar, CloudSun } from 'lucide-react'
+import { useMemo, useState, useEffect } from 'react'
+import { Calendar, CloudSun, FileDown } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useAttraction } from '@/hooks/useAttraction'
 import { Timeline } from '@/components/timeline/Timeline'
@@ -7,8 +7,11 @@ import { useCountry } from '@/contexts/CountryContext'
 import { PageHeader } from '@/components/ui/PageHeader'
 import { CountryFilter } from '@/components/home/CountryFilter'
 import { useToast } from '@/contexts/toast'
+import { buildDayTimeline } from '@/services/timelineService'
+import { exportTimelineToPDF } from '@/utils/exportTimelineToPDF'
 import type { Attraction, Country } from '@/types/Attraction'
 import type { Accommodation } from '@/types/Accommodation'
+import type { TimelineDay } from '@/types/Timeline'
 
 function addAccommodationToDay(
    dayAttractions: Attraction[],
@@ -48,6 +51,7 @@ export function TimelinePage() {
    const { country, day, accommodations, attractions, isReady } = useCountry()
    const { toggleVisited } = useAttraction(country)
    const { success, error } = useToast()
+   const [isExporting, setIsExporting] = useState(false)
 
    const handleToggleVisited = async (id: number) => {
       try {
@@ -97,6 +101,93 @@ export function TimelinePage() {
       return `Dia ${day}`
    }, [day, dayGroups.length, timelineAttractions.length])
 
+   const canExport = day === 'all' ? dayGroups.length > 0 : timelineAttractions.length > 0
+
+   // Chave estável para evitar requisições duplicadas: só refaz quando o conjunto de dias/atrações muda
+   const timelineBuildKey = useMemo(() => {
+      if (day === 'all') {
+         return JSON.stringify(dayGroups.map((g) => ({ day: g.day, ids: g.attractions.map((a) => a.id) })))
+      }
+      return JSON.stringify(timelineAttractions.map((a) => a.id))
+   }, [day, dayGroups, timelineAttractions])
+
+   const [singleTimeline, setSingleTimeline] = useState<TimelineDay | null>(null)
+   const [dayTimelines, setDayTimelines] = useState<(TimelineDay | null)[]>([])
+   const [isTimelineLoading, setIsTimelineLoading] = useState(false)
+
+   useEffect(() => {
+      if (day !== 'all') {
+         if (timelineAttractions.length === 0) {
+            setSingleTimeline(null)
+            return
+         }
+         let cancelled = false
+         setIsTimelineLoading(true)
+         setDayTimelines([])
+         buildDayTimeline(timelineAttractions)
+            .then((t) => {
+               if (!cancelled) setSingleTimeline(t)
+            })
+            .finally(() => {
+               if (!cancelled) setIsTimelineLoading(false)
+            })
+         return () => {
+            cancelled = true
+         }
+      }
+      if (dayGroups.length === 0) {
+         setDayTimelines([])
+         setSingleTimeline(null)
+         return
+      }
+      let cancelled = false
+      setIsTimelineLoading(true)
+      setSingleTimeline(null)
+      Promise.all(dayGroups.map((g) => buildDayTimeline(g.attractions)))
+         .then((results) => {
+            if (!cancelled) setDayTimelines(results)
+         })
+         .finally(() => {
+            if (!cancelled) setIsTimelineLoading(false)
+         })
+      return () => {
+         cancelled = true
+      }
+   }, [timelineBuildKey])
+
+   const handleExportPDF = async () => {
+      if (!canExport) return
+      setIsExporting(true)
+      try {
+         if (day === 'all') {
+            const timelineDays =
+               dayTimelines.length === dayGroups.length
+                  ? dayTimelines
+                  : await Promise.all(dayGroups.map((group) => buildDayTimeline(group.attractions)))
+            const valid = timelineDays.filter((d): d is NonNullable<typeof d> => d != null)
+            if (valid.length > 0) {
+               exportTimelineToPDF(valid)
+               success('PDF exportado com sucesso!')
+            } else {
+               error('Nenhuma timeline gerada para exportar')
+            }
+         } else {
+            const single = singleTimeline ?? (await buildDayTimeline(timelineAttractions))
+            if (single) {
+               exportTimelineToPDF([single])
+               success('PDF exportado com sucesso!')
+            } else {
+               error('Nenhuma timeline gerada para exportar')
+            }
+         }
+      } catch (err) {
+         console.error(err)
+         error('Erro ao exportar PDF')
+      } finally {
+         setIsExporting(false)
+      }
+   }
+
    if (!isReady) {
       return (
          <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
@@ -111,6 +202,20 @@ export function TimelinePage() {
             title="Timeline do Roteiro"
             subtitle={`${dayLabel} - Visualize seu dia com rotas e clima`}
             filter={<CountryFilter />}
+            action={
+               canExport ? (
+                  <button
+                     type="button"
+                     onClick={handleExportPDF}
+                     disabled={isExporting}
+                     className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/20 hover:bg-white/30 text-white text-sm font-medium transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+                     title="Exportar timeline em PDF"
+                  >
+                     <FileDown className="w-4 h-4" />
+                     {isExporting ? 'Exportando…' : 'Exportar PDF'}
+                  </button>
+               ) : undefined
+            }
          />
 
          {/* Main content */}
@@ -160,12 +265,16 @@ export function TimelinePage() {
                      Ir para Atrações
                   </Link>
                </div>
+            ) : isTimelineLoading ? (
+               <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-12 flex items-center justify-center min-h-[200px]">
+                  <div className="animate-spin rounded-full h-12 w-12 border-2 border-gray-200 dark:border-gray-700 border-t-slate-600 dark:border-t-slate-400" />
+               </div>
             ) : day === 'all' ? (
                <div className="space-y-10">
-                  {dayGroups.map((group) => (
+                  {dayGroups.map((group, idx) => (
                      <div key={group.day} className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
                         <Timeline
-                           attractions={group.attractions}
+                           timeline={dayTimelines[idx] ?? null}
                            onToggleVisited={handleToggleVisited}
                         />
                      </div>
@@ -174,7 +283,7 @@ export function TimelinePage() {
             ) : (
                <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
                   <Timeline
-                     attractions={timelineAttractions}
+                     timeline={singleTimeline}
                      onToggleVisited={handleToggleVisited}
                   />
                </div>
@@ -182,7 +291,7 @@ export function TimelinePage() {
          </main>
 
          {/* Info footer */}
-         {timelineAttractions.length > 0 && (
+         {(day === 'all' ? dayGroups.length > 0 : timelineAttractions.length > 0) && (
             <div className="max-w-6xl mx-auto px-6 pb-6">
                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                   <h4 className="font-semibold text-blue-900 mb-2 flex items-center gap-2">

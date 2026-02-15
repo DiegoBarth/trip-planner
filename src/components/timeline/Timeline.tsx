@@ -1,8 +1,5 @@
-import { useEffect, useState } from 'react'
 import { Calendar, MapPin, Clock, AlertCircle, TrendingUp } from 'lucide-react'
 import type { TimelineDay } from '@/types/Timeline'
-import type { Attraction } from '@/types/Attraction'
-import { buildDayTimeline } from '@/services/timelineService'
 import { TimelineCard } from './TimelineCard'
 import { TimelineSegment } from './TimelineSegment'
 import { WeatherBadge } from './WeatherBadge'
@@ -11,49 +8,15 @@ import { useWeather } from '@/hooks/useWeather'
 import { getWeatherForDate } from '@/services/weatherService'
 
 interface TimelineProps {
-   attractions: Attraction[]
+   /** Timeline já construída pela página (uma requisição OSRM por dia). */
+   timeline: TimelineDay | null
    onToggleVisited?: (id: number) => void
 }
 
-export function Timeline({ attractions, onToggleVisited }: TimelineProps) {
-   const [timeline, setTimeline] = useState<TimelineDay | null>(null)
-   const [isLoading, setIsLoading] = useState(false)
-
-   // Get city from first attraction for weather (always call hook, even with empty string)
-   const city = attractions[0]?.city || ''
+export function Timeline({ timeline, onToggleVisited }: TimelineProps) {
+   const city = timeline?.attractions[0]?.city ?? ''
    const { forecast } = useWeather(city)
 
-   useEffect(() => {
-      async function loadTimeline() {
-         setIsLoading(true)
-         try {
-            if (attractions.length === 0) {
-               setTimeline(null)
-               return
-            }
-
-            const dayTimeline = await buildDayTimeline(attractions)
-            setTimeline(dayTimeline)
-         } catch (error) {
-            console.error('Error loading timeline:', error)
-            setTimeline(null)
-         } finally {
-            setIsLoading(false)
-         }
-      }
-
-      loadTimeline()
-   }, [attractions])
-
-   if (isLoading) {
-      return (
-         <div className="flex items-center justify-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-2 border-gray-200 dark:border-gray-700 border-t-slate-600 dark:border-t-slate-400"></div>
-         </div>
-      )
-   }
-
-   // Get weather for the timeline date (always calculate, even if timeline is null)
    const weather = timeline ? getWeatherForDate(forecast, dateToInputFormat(timeline.date)) : null
 
    if (!timeline) {

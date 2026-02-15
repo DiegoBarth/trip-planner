@@ -3,15 +3,21 @@ type Coordinate = {
    lng: number
 }
 
-type OSRMResult = {
+export type OSRMLeg = {
+   distanceKm: number
+   durationMinutes: number
+}
+
+export type OSRMResult = {
    path: [number, number][]
    distanceKm: number
+   /** Legs entre waypoints consecutivos (length === coordinates.length - 1). Só presente quando há 2+ coordenadas. */
+   legs?: OSRMLeg[]
 }
 
 export async function fetchOSRMRoute(
    coordinates: Coordinate[]
 ): Promise<OSRMResult | null> {
-
    if (coordinates.length < 2) return null
 
    try {
@@ -24,7 +30,7 @@ export async function fetchOSRMRoute(
          `?overview=full&geometries=geojson`
 
       const controller = new AbortController()
-      const timeout = setTimeout(() => controller.abort(), 5000)
+      const timeout = setTimeout(() => controller.abort(), 15000)
 
       const response = await fetch(url, {
          signal: controller.signal,
@@ -46,14 +52,18 @@ export async function fetchOSRMRoute(
       const route = data.routes[0]
 
       const path: [number, number][] =
-         route.geometry.coordinates.map(
+         route.geometry?.coordinates?.map(
             ([lng, lat]: [number, number]) => [lat, lng]
-         )
+         ) ?? []
 
       const distanceKm = route.distance / 1000
 
-      return { path, distanceKm }
+      const legs: OSRMLeg[] | undefined = route.legs?.map((leg: { distance: number; duration: number }) => ({
+         distanceKm: leg.distance / 1000,
+         durationMinutes: Math.ceil(leg.duration / 60),
+      }))
 
+      return { path, distanceKm, legs }
    } catch (error) {
       console.warn('OSRM unavailable. Showing only markers.')
       return null
