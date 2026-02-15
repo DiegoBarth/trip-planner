@@ -19,6 +19,7 @@ export function Fab({ onClick, icon, label, className }: FabProps) {
         'bg-gradient-to-r from-blue-600 to-purple-600 text-white',
         'shadow-lg hover:shadow-xl active:scale-95',
         'transition-all duration-200',
+        'focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none',
         'z-40',
         className
       )}

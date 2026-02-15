@@ -29,10 +29,10 @@ export function AttractionCard({ attraction, onCheckVisited, onDelete, onClick }
          ? 'border-l-green-500'
          : 'border-l-blue-500'
    const bgClass = isClosedOnVisitDay
-      ? 'bg-red-50'
+      ? 'bg-red-50 dark:bg-red-900/30'
       : attraction.visited
-         ? 'bg-green-50/60'
-         : 'bg-white'
+         ? 'bg-green-50/60 dark:bg-green-900/30'
+         : 'bg-white dark:bg-gray-800'
 
    return (
       <div
@@ -56,10 +56,10 @@ export function AttractionCard({ attraction, onCheckVisited, onDelete, onClick }
             <div className="flex items-start justify-between gap-2 mb-2">
                <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
-                     <span className="text-xs font-medium text-gray-500">#{attraction.order}</span>
-                     <h3 className="font-bold text-base leading-tight text-gray-900 truncate">{attraction.name}</h3>
+                     <span className="text-xs font-medium text-gray-500 dark:text-gray-400">#{attraction.order}</span>
+                     <h3 className="font-bold text-base leading-tight text-gray-900 dark:text-gray-100 truncate">{attraction.name}</h3>
                   </div>
-                  <div className="flex items-center gap-1 text-sm text-gray-600">
+                  <div className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-300">
                      <MapPin className="w-3.5 h-3.5 flex-shrink-0" />
                      <span className="truncate">{attraction.region ? `${attraction.region}, ` : ''}{attraction.city}</span>
                   </div>
@@ -72,7 +72,7 @@ export function AttractionCard({ attraction, onCheckVisited, onDelete, onClick }
                            e.stopPropagation()
                            onDelete(attraction.id)
                         }}
-                        className="p-2 rounded-xl transition-all text-gray-400 hover:bg-red-50 hover:text-red-600"
+                        className="p-2 rounded-xl transition-all text-gray-400 dark:text-gray-500 hover:bg-red-50 dark:hover:bg-red-900/40 hover:text-red-600 dark:hover:text-red-400"
                         aria-label="Excluir"
                      >
                         <Trash2 className="w-4 h-4" />
@@ -84,8 +84,8 @@ export function AttractionCard({ attraction, onCheckVisited, onDelete, onClick }
                         onCheckVisited?.(attraction.id)
                      }}
                      className={`p-2 rounded-xl transition-all ${attraction.visited
-                        ? 'bg-green-100 text-green-600'
-                        : 'text-gray-400 hover:bg-gray-100 hover:text-gray-600'
+                        ? 'bg-green-100 dark:bg-green-900/40 text-green-600 dark:text-green-400'
+                        : 'text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-600 dark:hover:text-gray-300'
                         }`}
                      aria-label={attraction.visited ? 'Marcar como não visitado' : 'Marcar como visitado'}
                   >
@@ -95,8 +95,8 @@ export function AttractionCard({ attraction, onCheckVisited, onDelete, onClick }
             </div>
 
             <div className="space-y-1.5">
-               <div className="flex items-center gap-2 text-sm text-gray-600">
-                  <Clock className="w-3.5 h-3.5 text-blue-500 flex-shrink-0" />
+               <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+                  <Clock className="w-3.5 h-3.5 text-blue-500 dark:text-blue-400 flex-shrink-0" />
                   <span>
                      {attraction.openingTime
                         ? `${formatTime(attraction.openingTime)}${attraction.closingTime ? ` – ${formatTime(attraction.closingTime)}` : ''}`
@@ -107,41 +107,41 @@ export function AttractionCard({ attraction, onCheckVisited, onDelete, onClick }
                </div>
 
                <div className="flex items-center gap-2 text-sm">
-                  <Banknote className="w-3.5 h-3.5 text-green-600 flex-shrink-0" />
+                  <Banknote className="w-3.5 h-3.5 text-green-600 dark:text-green-400 flex-shrink-0" />
                   {attraction.couplePrice ? (
                      <>
-                        <span className="font-semibold text-green-600">
+                        <span className="font-semibold text-green-600 dark:text-green-400">
                            {formatCurrency(attraction.couplePrice, attraction.currency)}
                         </span>
-                        <span className="text-gray-500 text-xs">({formatCurrency(attraction.priceInBRL)})</span>
+                        <span className="text-gray-500 dark:text-gray-400 text-xs">({formatCurrency(attraction.priceInBRL)})</span>
                      </>
                   ) : (
-                     <span className="font-semibold text-green-600">Gratuito</span>
+                     <span className="font-semibold text-green-600 dark:text-green-400">Gratuito</span>
                   )}
                </div>
 
                <div className="flex flex-wrap gap-1.5 mt-2">
                   {isClosedOnVisitDay && (
-                     <span className="px-2 py-0.5 bg-red-100 text-red-700 text-xs rounded-md font-medium flex items-center gap-1">
+                     <span className="px-2 py-0.5 bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300 text-xs rounded-md font-medium flex items-center gap-1">
                         <AlertTriangle className="w-3 h-3" />
                         Fechado neste dia
                      </span>
                   )}
-                  <span className="px-2 py-0.5 bg-gray-100 text-gray-700 text-xs rounded-md font-medium">
+                  <span className="px-2 py-0.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs rounded-md font-medium">
                      {attractionType.label}
                   </span>
                   {attraction.needsReservation && attraction.reservationStatus && (
                      <span className={`px-2 py-0.5 text-xs rounded-md font-medium flex items-center gap-1 ${
-                        attraction.reservationStatus === 'confirmed' ? 'bg-green-100 text-green-700' :
-                        attraction.reservationStatus === 'pending' ? 'bg-orange-100 text-orange-700' :
-                        attraction.reservationStatus === 'cancelled' ? 'bg-red-100 text-red-700' :
-                        'bg-gray-100 text-gray-700'
+                        attraction.reservationStatus === 'confirmed' ? 'bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300' :
+                        attraction.reservationStatus === 'pending' ? 'bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-300' :
+                        attraction.reservationStatus === 'cancelled' ? 'bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300' :
+                        'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
                      }`}>
                         {RESERVATION_STATUS[attraction.reservationStatus].icon} {RESERVATION_STATUS[attraction.reservationStatus].label}
                      </span>
                   )}
                   {attraction.idealPeriod && (
-                     <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded-md font-medium">
+                     <span className="px-2 py-0.5 bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 text-xs rounded-md font-medium">
                         {PERIODS[attraction.idealPeriod].label}
                      </span>
                   )}

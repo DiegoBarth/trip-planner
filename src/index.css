@@ -7,6 +7,7 @@ html.dark,
 html[data-theme="dark"] {
    color-scheme: dark;
 }
+
 html.dark body,
 html[data-theme="dark"] body {
    background-color: #111827;
@@ -27,7 +28,12 @@ html[data-theme="dark"] body {
       -moz-osx-font-smoothing: grayscale;
    }
 
-   h1, h2, h3, h4, h5, h6 {
+   h1,
+   h2,
+   h3,
+   h4,
+   h5,
+   h6 {
       font-family: 'Poppins', 'Inter', sans-serif;
       @apply font-semibold;
    }
@@ -47,8 +53,24 @@ html[data-theme="dark"] body {
    }
 
    /* Better tap targets for mobile */
-   button, a {
+   button,
+   a {
       -webkit-tap-highlight-color: transparent;
+   }
+
+   input:focus,
+   textarea:focus,
+   select:focus {
+      @apply outline-none;
+      --tw-ring-color: theme(colors.gray.300);
+      @apply ring-2 border-gray-300;
+   }
+
+   .dark input:focus,
+   .dark textarea:focus,
+   .dark select:focus {
+      --tw-ring-color: theme(colors.gray.500);
+      @apply ring-2 border-gray-500;
    }
 }
 
@@ -94,6 +116,7 @@ html[data-theme="dark"] body {
       opacity: 0;
       transform: translateY(10px);
    }
+
    to {
       opacity: 1;
       transform: translateY(0);
@@ -105,6 +128,7 @@ html[data-theme="dark"] body {
       opacity: 0;
       transform: translateY(20px);
    }
+
    to {
       opacity: 1;
       transform: translateY(0);
@@ -116,6 +140,7 @@ html[data-theme="dark"] body {
       opacity: 0;
       transform: scale(0.95);
    }
+
    to {
       opacity: 1;
       transform: scale(1);
@@ -126,6 +151,7 @@ html[data-theme="dark"] body {
    0% {
       background-position: -200% 0;
    }
+
    100% {
       background-position: 200% 0;
    }
@@ -145,12 +171,10 @@ html[data-theme="dark"] body {
 
 .animate-shimmer {
    animation: shimmer 2s linear infinite;
-   background: linear-gradient(
-      90deg,
-      transparent 0%,
-      rgba(255, 255, 255, 0.8) 50%,
-      transparent 100%
-   );
+   background: linear-gradient(90deg,
+         transparent 0%,
+         rgba(255, 255, 255, 0.8) 50%,
+         transparent 100%);
    background-size: 200% 100%;
 }
 
@@ -173,7 +197,7 @@ html[data-theme="dark"] body {
 
 /* Card styles */
 .card-shadow {
-   box-shadow: 
+   box-shadow:
       0 1px 3px 0 rgba(0, 0, 0, 0.1),
       0 1px 2px 0 rgba(0, 0, 0, 0.06);
 }
@@ -183,7 +207,7 @@ html[data-theme="dark"] body {
 }
 
 .card-shadow-hover:hover {
-   box-shadow: 
+   box-shadow:
       0 10px 15px -3px rgba(0, 0, 0, 0.1),
       0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }

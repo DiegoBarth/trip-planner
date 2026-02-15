@@ -1,4 +1,3 @@
-import { useNavigate } from 'react-router-dom'
 import { useCountry } from '@/contexts/CountryContext'
 import { formatCurrency } from '@/utils/formatters'
 import { DashboardCard } from '@/components/dashboard/DashboardCard'
@@ -8,7 +7,6 @@ import { BudgetByOriginChart } from '@/components/dashboard/BudgetByOriginChart'
 import { PageHeader } from '@/components/ui/PageHeader'
 
 export function DashboardPage() {
-   const navigate = useNavigate()
    const { dashboard, isReady } = useCountry()
 
    if(!isReady) {
@@ -81,12 +79,6 @@ export function DashboardPage() {
                         Você tem {stats.attractionStatus.total - stats.attractionStatus.visited} atrações restantes no seu roteiro.
                      </p>
                   </div>
-                  <button
-                     onClick={() => navigate('/attractions')}
-                     className="mt-6 bg-white text-blue-600 px-4 py-3 rounded-xl font-semibold text-sm hover:bg-blue-50 transition-all active:scale-95 w-full"
-                  >
-                     Ver Roteiro Completo
-                  </button>
                </div>
             </div>
          </main>

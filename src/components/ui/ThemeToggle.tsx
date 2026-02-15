@@ -37,7 +37,7 @@ export function ThemeToggle() {
         e.stopPropagation()
         handleClick()
       }}
-      className="relative z-10 p-2.5 rounded-xl text-white/90 hover:text-white hover:bg-white/15 transition-colors cursor-pointer"
+      className="relative z-10 p-2.5 rounded-xl text-white/90 hover:text-white hover:bg-white/15 transition-colors cursor-pointer focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none"
       title={theme === 'light' ? 'Ativar tema escuro' : 'Ativar tema claro'}
       aria-label={theme === 'light' ? 'Ativar tema escuro' : 'Ativar tema claro'}
     >

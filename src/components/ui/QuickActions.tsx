@@ -7,6 +7,7 @@ interface QuickAction {
   icon: typeof DollarSign
   label: string
   color: string
+  darkColor: string
   bgColor: string
   hoverColor: string
 }
@@ -17,6 +18,7 @@ const quickActions: QuickAction[] = [
     icon: TrendingUp,
     label: 'Orçamento',
     color: 'text-emerald-600',
+    darkColor: 'dark:text-emerald-400',
     bgColor: 'bg-emerald-100',
     hoverColor: 'hover:bg-emerald-100',
   },
@@ -25,6 +27,7 @@ const quickActions: QuickAction[] = [
     icon: TrendingDown,
     label: 'Gastos',
     color: 'text-rose-600',
+    darkColor: 'dark:text-rose-400',
     bgColor: 'bg-rose-100',
     hoverColor: 'hover:bg-rose-100',
   },
@@ -33,6 +36,7 @@ const quickActions: QuickAction[] = [
     icon: Plus,
     label: 'Atrações',
     color: 'text-purple-600',
+    darkColor: 'dark:text-purple-400',
     bgColor: 'bg-purple-100',
     hoverColor: 'hover:bg-purple-100',
   },
@@ -41,6 +45,7 @@ const quickActions: QuickAction[] = [
     icon: Ticket,
     label: 'Reservas',
     color: 'text-indigo-600',
+    darkColor: 'dark:text-indigo-400',
     bgColor: 'bg-indigo-100',
     hoverColor: 'hover:bg-indigo-100',
   },
@@ -60,17 +65,19 @@ export function QuickActions() {
               'transition-all duration-200 active:scale-95',
               action.bgColor,
               action.hoverColor,
-              'dark:bg-gray-800 dark:border dark:border-gray-700'
+              'dark:bg-gray-800 dark:border dark:border-gray-700',
+              'focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none'
             )}
           >
             <div className={cn(
               'w-12 h-12 rounded-full flex items-center justify-center',
               'bg-white dark:bg-gray-700 shadow-sm',
-              action.color
+              action.color,
+              action.darkColor
             )}>
               <Icon className="w-6 h-6" />
             </div>
-            <span className={cn('text-sm font-semibold', action.color)}>
+            <span className={cn('text-sm font-semibold', action.color, action.darkColor)}>
               {action.label}
             </span>
           </Link>

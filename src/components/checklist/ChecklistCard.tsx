@@ -47,7 +47,7 @@ export function ChecklistCard({ item, onEdit, onDelete, onTogglePacked }: Checkl
         <div className="flex items-center gap-2">
           <button
             onClick={handleToggle}
-            className={`flex-shrink-0 w-6 h-6 rounded-md border-2 flex items-center justify-center transition-all ${
+            className={`flex-shrink-0 w-6 h-6 rounded-md border-2 flex items-center justify-center transition-all focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none ${
               item.isPacked
                 ? 'bg-emerald-500 border-emerald-500'
                 : 'border-gray-300 hover:border-emerald-400'
@@ -99,7 +99,7 @@ export function ChecklistCard({ item, onEdit, onDelete, onTogglePacked }: Checkl
           <div className="flex items-center gap-1 flex-shrink-0">
             <button
               onClick={(e) => { e.stopPropagation(); onEdit() }}
-              className="p-2 rounded-xl text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+              className="p-2 rounded-xl text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none"
               title="Editar"
               aria-label="Editar"
             >
@@ -107,7 +107,7 @@ export function ChecklistCard({ item, onEdit, onDelete, onTogglePacked }: Checkl
             </button>
             <button
               onClick={(e) => { e.stopPropagation(); handleDelete() }}
-              className="p-2 rounded-xl text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors"
+              className="p-2 rounded-xl text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none"
               title="Excluir"
               aria-label="Excluir"
             >

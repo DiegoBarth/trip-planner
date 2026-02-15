@@ -225,7 +225,7 @@ export function ModalExpense({ expense, isOpen, onClose, onSave }: ModalExpenseP
                         key={key}
                         type="button"
                         onClick={() => setValue('category', key)}
-                        className={`p-4 rounded-lg border-2 transition-all ${formData.category === key
+                        className={`p-4 rounded-lg border-2 transition-all focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none ${formData.category === key
                            ? 'border-red-500 bg-red-50 dark:bg-red-900/40 shadow-md'
                            : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
                            }`}
@@ -248,7 +248,7 @@ export function ModalExpense({ expense, isOpen, onClose, onSave }: ModalExpenseP
                   required
                   autoComplete="off"
                   {...register('description', { required: true })}
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-red-500 focus:outline-none placeholder:text-gray-400 dark:placeholder:text-gray-500 text-gray-900 dark:text-gray-100"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none placeholder:text-gray-400 dark:placeholder:text-gray-500 text-gray-900 dark:text-gray-100"
                   placeholder="Ex: Almoço no restaurante"
                />
             </div>
@@ -262,7 +262,7 @@ export function ModalExpense({ expense, isOpen, onClose, onSave }: ModalExpenseP
                      type="date"
                      required
                      {...register('date', { required: true })}
-                     className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-red-500 focus:outline-none text-gray-900 dark:text-gray-100"
+                     className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none text-gray-900 dark:text-gray-100"
                   />
                </div>
 
@@ -308,7 +308,7 @@ export function ModalExpense({ expense, isOpen, onClose, onSave }: ModalExpenseP
                               const formatted = formatCurrencyInputByCurrency(e.target.value, formData.currency)
                               field.onChange(formatted)
                            }}
-                           className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-red-500 focus:outline-none placeholder:text-gray-400 dark:placeholder:text-gray-500 text-gray-900 dark:text-gray-100"
+                           className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none placeholder:text-gray-400 dark:placeholder:text-gray-500 text-gray-900 dark:text-gray-100"
                            placeholder={formData.currency === 'BRL' ? 'R$ 0,00' : formData.currency === 'JPY' ? '¥ 0' : '₩ 0'}
                         />
                      )}
@@ -338,9 +338,9 @@ export function ModalExpense({ expense, isOpen, onClose, onSave }: ModalExpenseP
                   ? currencyToNumber(formData.amount, formData.currency) > 0
                   : formData.amount > 0
             ) && (
-                  <div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
-                     <span className="text-sm text-blue-700">Valor em reais: </span>
-                     <span className="font-bold text-blue-900">
+                  <div className="bg-blue-50 dark:bg-blue-900/30 p-3 rounded-lg border border-blue-200 dark:border-blue-700">
+                     <span className="text-sm text-blue-700 dark:text-blue-200">Valor em reais: </span>
+                     <span className="font-bold text-blue-900 dark:text-blue-100">
                         {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(formData.amountInBRL || 0)}
                      </span>
                   </div>
@@ -355,9 +355,9 @@ export function ModalExpense({ expense, isOpen, onClose, onSave }: ModalExpenseP
                         key={key}
                         type="button"
                         onClick={() => setValue('budgetOrigin', key)}
-                        className={`p-4 rounded-lg border-2 transition-all ${formData.budgetOrigin === key
+                        className={`p-4 rounded-lg border-2 transition-all focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none ${formData.budgetOrigin === key
                            ? 'border-current shadow-md'
-                           : 'border-gray-200 hover:border-gray-300'
+                           : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 bg-white dark:bg-gray-800'
                            }`}
                         style={{
                            borderColor: formData.budgetOrigin === key ? config.color : undefined,
@@ -366,7 +366,7 @@ export function ModalExpense({ expense, isOpen, onClose, onSave }: ModalExpenseP
                      >
                         <div className="text-2xl mb-1">{config.icon}</div>
                         <div
-                           className="font-semibold text-gray-500"
+                           className="font-semibold text-gray-500 dark:text-gray-300"
                            style={{ color: formData.budgetOrigin === key ? config.color : undefined }}
                         >
                            {config.label}
@@ -383,7 +383,7 @@ export function ModalExpense({ expense, isOpen, onClose, onSave }: ModalExpenseP
                   id="expense-notes"
                   {...register('notes')}
                   rows={3}
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-red-500 focus:outline-none placeholder:text-gray-400 dark:placeholder:text-gray-500 text-gray-900 dark:text-gray-100"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none placeholder:text-gray-400 dark:placeholder:text-gray-500 text-gray-900 dark:text-gray-100"
                   placeholder="Anotações adicionais sobre este gasto..."
                />
             </div>

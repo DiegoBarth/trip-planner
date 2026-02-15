@@ -26,7 +26,7 @@ export function LocationField({
 
    return (
       <div>
-         <label className="block text-sm font-bold text-gray-900 mb-2">
+         <label className="block text-sm font-bold text-gray-900 dark:text-gray-100 mb-2">
             Localização (Google Maps)
          </label>
 
@@ -39,7 +39,7 @@ export function LocationField({
                      type="url"
                      value={field.value || ''}
                      onChange={(e) => field.onChange(e.target.value)}
-                     className="flex-1 px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 focus:outline-none transition-colors placeholder-gray-500 text-gray-900"
+                     className="flex-1 px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none focus:outline-none transition-colors placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-gray-100"
                      placeholder="https://maps.google.com/..."
                   />
                )}
@@ -49,7 +49,7 @@ export function LocationField({
                type="button"
                onClick={handleSearch}
                disabled={!nameValue  || !cityValue  || loading}
-               className="px-4 py-3 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 disabled:bg-gray-400 transition-colors"
+               className="px-4 py-3 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 disabled:bg-gray-400 dark:disabled:bg-gray-600 transition-colors"
             >
                {loading ? 'Buscando...' : 'Buscar'}
             </button>
@@ -59,7 +59,7 @@ export function LocationField({
          <input type="hidden" {...register('lng', { valueAsNumber: true })} />
 
          {results.length > 0 && (
-            <div className="mt-3 border-2 border-gray-200 rounded-lg bg-white  text-gray-900 shadow-sm max-h-60 overflow-auto">
+            <div className="mt-3 border-2 border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 shadow-sm max-h-60 overflow-auto">
 
                {results.map((place, index) => (
                   <div
@@ -77,7 +77,7 @@ export function LocationField({
                         clear()
                      }}
 
-                     className="p-3 hover:bg-gray-100 cursor-pointer text-sm"
+                     className="p-3 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer text-sm"
                   >
                      {place.displayName}
                   </div>

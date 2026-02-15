@@ -151,17 +151,17 @@ export function AttractionsGrid({
 
       const content = dayGroups.map(({ day, dayAttractions }) => (
          <section key={day}>
-            <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white border border-gray-200 shadow-sm mb-3 w-fit">
+            <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm mb-3 w-fit">
                <span className="text-lg" aria-hidden>📅</span>
-               <h3 className="text-base font-semibold text-gray-900">
+               <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">
                   Dia {day}
                </h3>
                {dayAttractions[0]?.date && (
-                  <span className="text-sm text-gray-500">
+                  <span className="text-sm text-gray-500 dark:text-gray-400">
                      {formatDate(dayAttractions[0].date)}
                   </span>
                )}
-               <span className="text-sm text-gray-400">
+               <span className="text-sm text-gray-400 dark:text-gray-500">
                   · {dayAttractions.length} {dayAttractions.length === 1 ? 'atração' : 'atrações'}
                </span>
             </div>
@@ -250,11 +250,11 @@ export function AttractionsGrid({
       .map(([country, days]) => (
       <section key={country} className="space-y-6">
          {/* Country header - pill style */}
-         <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white border border-gray-200 shadow-sm w-fit">
+         <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm w-fit">
             <span className="text-xl" aria-hidden>
                {COUNTRIES[country as keyof typeof COUNTRIES]?.flag ?? '🌍'}
             </span>
-            <h2 className="text-base font-semibold text-gray-900">
+            <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100">
                {COUNTRIES[country as keyof typeof COUNTRIES]?.name ?? country}
             </h2>
          </div>
@@ -263,17 +263,17 @@ export function AttractionsGrid({
             .sort(([a], [b]) => Number(a) - Number(b))
             .map(([day, dayAttractions]) => (
                <section key={`${country}-${day}`}>
-                  <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white border border-gray-200 shadow-sm mb-3 w-fit">
+                  <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm mb-3 w-fit">
                      <span className="text-lg" aria-hidden>📅</span>
-                     <h3 className="text-base font-semibold text-gray-900">
+                     <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">
                         Dia {day}
                      </h3>
                      {dayAttractions[0]?.date && (
-                        <span className="text-sm text-gray-500">
+                        <span className="text-sm text-gray-500 dark:text-gray-400">
                            {formatDate(dayAttractions[0].date)}
                         </span>
                      )}
-                     <span className="text-sm text-gray-400">
+                     <span className="text-sm text-gray-400 dark:text-gray-500">
                         · {dayAttractions.length} {dayAttractions.length === 1 ? 'atração' : 'atrações'}
                      </span>
                   </div>

@@ -110,7 +110,7 @@ export function ChecklistList({
                      {stats.total > 0 && (
                         <button
                            onClick={handleExportPDF}
-                           className="flex items-center gap-2 px-4 py-2.5 bg-white text-emerald-700 rounded-xl font-semibold hover:bg-white/90 transition-colors shadow-md"
+                           className="flex items-center gap-2 px-4 py-2.5 bg-white text-emerald-700 rounded-xl font-semibold hover:bg-white/90 transition-colors shadow-md focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none"
                            title="Exportar para PDF"
                         >
                            <FileDown className="w-5 h-5" />

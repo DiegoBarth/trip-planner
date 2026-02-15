@@ -256,7 +256,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
                         type="text"
                         required
                         {...register('name', { required: true })}
-                        className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-green-500 focus:border-green-500 focus:outline-none transition-colors placeholder-gray-500 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
+                        className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none transition-colors placeholder-gray-500 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
                         placeholder="Ex: Templo Senso-ji"
                      />
                   </div>
@@ -294,7 +294,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
                         type="text"
                         required
                         {...register('city', { required: true })}
-                        className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-green-500 focus:border-green-500 focus:outline-none transition-colors placeholder-gray-500 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
+                        className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none transition-colors placeholder-gray-500 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
                         placeholder="Ex: Tóquio"
                      />
                   </div>
@@ -306,7 +306,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
                      <input
                         type="text"
                         {...register('region')}
-                        className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-green-500 focus:border-green-500 focus:outline-none transition-colors placeholder-gray-500 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
+                        className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none focus:outline-none transition-colors placeholder-gray-500 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
                         placeholder="Ex: Asakusa"
                      />
                   </div>
@@ -371,7 +371,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
                                  const date = new Date(e.target.value + 'T12:00:00')
                                  setValue('dayOfWeek', date.toLocaleDateString('en-US', { weekday: 'long' }))
                               }}
-                              className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-green-500 focus:border-green-500 focus:outline-none transition-colors placeholder-gray-500 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
+                              className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none focus:outline-none transition-colors placeholder-gray-500 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
                            />
                         )}
                      />
@@ -409,7 +409,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
                      <input
                         type="time"
                         {...register('openingTime')}
-                        className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-green-500 focus:border-green-500 focus:outline-none transition-colors placeholder-gray-500 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
+                        className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none focus:outline-none transition-colors placeholder-gray-500 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
                      />
                   </div>
 
@@ -420,7 +420,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
                      <input
                         type="time"
                         {...register('closingTime')}
-                        className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-green-500 focus:border-green-500 focus:outline-none transition-colors placeholder-gray-500 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
+                        className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none focus:outline-none transition-colors placeholder-gray-500 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
                      />
                   </div>
 
@@ -432,7 +432,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
                         type="number"
                         min="0"
                         {...register('duration', { valueAsNumber: true })}
-                        className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-green-500 focus:border-green-500 focus:outline-none transition-colors placeholder-gray-500 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
+                        className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none focus:outline-none transition-colors placeholder-gray-500 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
                      />
                   </div>
 
@@ -500,7 +500,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
                                  field.onChange(e.target.value)
                                  handleCouplerPriceChange(e.target.value)
                               }}
-                              className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-green-500 focus:border-green-500 focus:outline-none transition-colors placeholder-gray-500 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
+                              className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none focus:outline-none transition-colors placeholder-gray-500 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
                               placeholder={formData.currency === 'BRL' ? 'R$ 0,00' : formData.currency === 'JPY' ? '¥ 0' : '₩ 0'}
                            />
                         )}
@@ -531,9 +531,9 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
                   </div>
 
                   {formData.currency !== 'BRL' && (
-                     <div className="md:col-span-3 bg-green-50 border-2 border-green-200 p-4 rounded-lg">
+                     <div className="md:col-span-3 bg-green-50 dark:bg-green-900/30 border-2 border-green-200 dark:border-green-700 p-4 rounded-lg">
                         <span className="text-sm font-bold text-gray-900 dark:text-gray-100">Valor em Reais: </span>
-                        <span className="font-bold text-lg text-green-700">
+                        <span className="font-bold text-lg text-green-700 dark:text-green-200">
                            {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(formData.priceInBRL || 0)}
                         </span>
                      </div>
@@ -543,19 +543,19 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
 
             {/* Status e Links */}
             <section>
-               <h3 className="font-bold text-base mb-2.5 pb-2 border-b-2 border-gray-200 dark:border-gray-700 flex items-center gap-2">
+               <h3 className="font-bold text-base text-gray-900 dark:text-gray-100 mb-2.5 pb-2 border-b-2 border-gray-200 dark:border-gray-700 flex items-center gap-2">
                   <span>🔗</span>
                   <span>Links e Status</span>
                </h3>
                <div className="space-y-4">
-                  <div className="flex items-center gap-6 p-3 bg-gray-50 rounded-lg">
+                  <div className="flex items-center gap-6 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
                      <label className="flex items-center gap-2 cursor-pointer">
                         <input
                            type="checkbox"
                            {...register('needsReservation')}
                            className="w-5 h-5 text-green-600 rounded"
                         />
-                        <span className="text-sm font-bold text-gray-900">Necessita Reserva</span>
+                        <span className="text-sm font-bold text-gray-900 dark:text-gray-100">Necessita Reserva</span>
                      </label>
 
                      <label className="flex items-center gap-2 cursor-pointer">
@@ -564,7 +564,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
                            {...register('visited')}
                            className="w-5 h-5 text-green-600 rounded"
                         />
-                        <span className="text-sm font-bold text-gray-900">Já Visitado</span>
+                        <span className="text-sm font-bold text-gray-900 dark:text-gray-100">Já Visitado</span>
                      </label>
                   </div>
 
@@ -636,7 +636,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
                            <input
                               type="url"
                               {...register('ticketLink')}
-                              className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-green-500 focus:border-green-500 focus:outline-none transition-colors placeholder-gray-500 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
+                              className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none focus:outline-none transition-colors placeholder-gray-500 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
                               placeholder="https://..."
                            />
                         </div>
@@ -649,7 +649,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
                         <input
                            type="url"
                            {...register('imageUrl')}
-                           className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-green-500 focus:border-green-500 focus:outline-none transition-colors placeholder-gray-500 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
+                           className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none focus:outline-none transition-colors placeholder-gray-500 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
                            placeholder="https://..."
                         />
                      </div>
@@ -661,7 +661,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
                         <textarea
                            {...register('notes')}
                            rows={3}
-                           className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-green-500 focus:border-green-500 focus:outline-none transition-colors resize-none placeholder-gray-500 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
+                           className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none focus:outline-none transition-colors resize-none placeholder-gray-500 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
                            placeholder="Anotações adicionais..."
                         />
                      </div>

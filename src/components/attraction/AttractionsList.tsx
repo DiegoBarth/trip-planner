@@ -93,10 +93,10 @@ export function AttractionsList({
       <div>
          <div className="flex items-center justify-between gap-4 mb-5 flex-wrap">
             <div className="flex items-center gap-2">
-               <h2 className="text-lg font-semibold text-gray-900">
+               <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                   Todas as Atrações
                </h2>
-               <span className="text-sm text-gray-500 font-medium">
+               <span className="text-sm text-gray-500 dark:text-gray-400 font-medium">
                   {attractions.length} {attractions.length === 1 ? 'item' : 'itens'}
                </span>
             </div>
@@ -107,7 +107,7 @@ export function AttractionsList({
                   className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
                      isDragEnabled
                         ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-sm'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                   }`}
                   title={isDragEnabled ? 'Desabilitar reordenação' : 'Habilitar reordenação'}
                >

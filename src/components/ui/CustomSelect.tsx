@@ -10,6 +10,13 @@ interface CustomSelectProps {
    label?: string
    id?: string
    placeholder?: string
+   /** Variante visual: default (formulário) ou glass (header/filtros em fundo escuro) */
+   variant?: 'default' | 'glass'
+   /** Ícone à esquerda do texto (ex: MapPin, Calendar) */
+   leftIcon?: React.ReactNode
+   disabled?: boolean
+   /** Posição do dropdown: acima (padrão) ou abaixo do campo */
+   dropdownPosition?: 'above' | 'below'
 }
 
 /**
@@ -29,10 +36,14 @@ export function CustomSelect({
    options, 
    label, 
    id,
-   placeholder = 'Selecione'
+   placeholder = 'Selecione',
+   variant = 'default',
+   leftIcon,
+   disabled = false,
+   dropdownPosition = 'above'
 }: CustomSelectProps) {
    const [isOpen, setIsOpen] = useState(false)
-   const [coords, setCoords] = useState({ top: 0, left: 0, width: 0 })
+   const [coords, setCoords] = useState({ top: 0, left: 0, width: 0, height: 0 })
    const [highlightedIndex, setHighlightedIndex] = useState(-1)
    const containerRef = useRef<HTMLDivElement>(null)
    const selectedItemRef = useRef<HTMLDivElement>(null)
@@ -45,7 +56,8 @@ export function CustomSelect({
          setCoords({
             top: rect.top,
             left: rect.left,
-            width: rect.width
+            width: rect.width,
+            height: rect.height
          })
          const selectedIndex = options.indexOf(value)
          setHighlightedIndex(selectedIndex)
@@ -144,7 +156,8 @@ export function CustomSelect({
          <button
             type="button"
             id={id}
-            onClick={() => setIsOpen(!isOpen)}
+            disabled={disabled}
+            onClick={() => !disabled && setIsOpen(!isOpen)}
             onKeyDown={handleKeyDown}
             aria-haspopup="listbox"
             aria-expanded={isOpen}
@@ -152,20 +165,37 @@ export function CustomSelect({
             aria-controls={isOpen ? listboxId : undefined}
             aria-activedescendant={isOpen && highlightedIndex >= 0 ? `${listboxId}-option-${highlightedIndex}` : undefined}
             className={cn(
-               'flex h-10 w-full items-center justify-between rounded-lg border bg-white dark:bg-gray-700 px-3 py-2 text-sm transition-all',
-               'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20',
-               'outline-none'
+               'flex h-10 w-full items-center justify-between rounded-xl border text-sm font-medium transition-all outline-none',
+               variant === 'glass' && 'relative',
+               variant === 'default' && [
+                  'bg-white dark:bg-gray-700 px-3 py-2',
+                  'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 focus:border-blue-500 focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none',
+                  disabled && 'opacity-50 cursor-not-allowed'
+               ],
+               variant === 'glass' && [
+                  'bg-white/15 backdrop-blur-sm border-white/20 pl-10 pr-4 py-2.5',
+                  'hover:bg-white/20 focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none focus:bg-white/20',
+                  disabled && 'opacity-50 cursor-not-allowed'
+               ]
             )}
          >
+            {variant === 'glass' && leftIcon && (
+               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-white/70 [&>svg]:w-4 [&>svg]:h-4 pointer-events-none" aria-hidden="true">
+                  {leftIcon}
+               </span>
+            )}
             <span className={cn(
                'truncate',
-               value ? 'text-gray-900 dark:text-gray-100' : 'text-gray-500 dark:text-gray-400'
+               variant === 'default' && (value ? 'text-gray-900 dark:text-gray-100' : 'text-gray-500 dark:text-gray-400'),
+               variant === 'glass' && 'text-white'
             )}>
                {value || placeholder}
             </span>
             <ChevronDown 
                className={cn(
-                  'h-4 w-4 text-gray-400 dark:text-gray-500 transition-transform flex-shrink-0 ml-2',
+                  'h-4 w-4 transition-transform flex-shrink-0 ml-2',
+                  variant === 'default' && 'text-gray-400 dark:text-gray-500',
+                  variant === 'glass' && 'text-white/70',
                   isOpen && 'rotate-180'
                )} 
                aria-hidden="true" 
@@ -176,13 +206,17 @@ export function CustomSelect({
             <div
                style={{
                   position: 'fixed',
-                  top: coords.top,
+                  top: dropdownPosition === 'below' ? coords.top + coords.height + 4 : coords.top,
                   left: coords.left,
                   width: coords.width,
-                  transform: 'translateY(-100%) translateY(-4px)',
+                  transform: dropdownPosition === 'above' ? 'translateY(-100%) translateY(-4px)' : undefined,
                   zIndex: 10000
                }}
-               className="overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-xl"
+               className={cn(
+                  'overflow-hidden rounded-xl shadow-xl backdrop-blur-md',
+                  variant === 'default' && 'border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800',
+                  variant === 'glass' && 'border border-white/20 bg-white/15'
+               )}
             >
                <div
                   id={listboxId}
@@ -207,14 +241,26 @@ export function CustomSelect({
                            }}
                            onMouseEnter={() => setHighlightedIndex(index)}
                            className={cn(
-                              'flex cursor-pointer items-center justify-between rounded-md px-3 py-2 text-sm transition-colors',
-                              isHighlighted && 'bg-gray-100 dark:bg-gray-700',
-                              !isHighlighted && 'hover:bg-gray-50 dark:hover:bg-gray-700',
-                              isSelected ? 'font-semibold text-gray-900 dark:text-gray-100' : 'text-gray-700 dark:text-gray-300'
+                              'flex cursor-pointer items-center justify-between rounded-lg px-3 py-2 text-sm transition-colors',
+                              variant === 'default' && [
+                                  (isHighlighted || isSelected) && 'bg-gray-100 dark:bg-gray-700',
+                                  !isHighlighted && !isSelected && 'hover:bg-gray-50 dark:hover:bg-gray-700',
+                                  isSelected ? 'font-semibold text-gray-900 dark:text-gray-100' : 'text-gray-700 dark:text-gray-300'
+                               ],
+                              variant === 'glass' && [
+                                  'text-white',
+                                  (isHighlighted || isSelected) && 'bg-white/25',
+                                  !isHighlighted && !isSelected && 'hover:bg-white/20'
+                               ]
                            )}
                         >
                            <span className="truncate">{option}</span>
-                           {isSelected && <Check className="h-4 w-4 text-blue-600 flex-shrink-0 ml-2" aria-hidden="true" />}
+                           {isSelected && (
+                              <Check 
+                                 className={cn('h-4 w-4 flex-shrink-0 ml-2', variant === 'glass' ? 'text-white' : 'text-blue-600')} 
+                                 aria-hidden="true" 
+                              />
+                           )}
                         </div>
                      )
                   })}

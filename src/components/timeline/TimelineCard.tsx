@@ -1,7 +1,8 @@
-import { MapPin, Clock, AlertTriangle, CheckCircle2, Navigation } from 'lucide-react'
+   import { MapPin, Clock, Banknote, AlertTriangle, CheckCircle2, Navigation } from 'lucide-react'
 import type { Attraction } from '@/types/Attraction'
 import type { TimelineConflict } from '@/types/Timeline'
 import { ATTRACTION_TYPES, RESERVATION_STATUS } from '@/config/constants'
+import { formatCurrency } from '@/utils/formatters'
 
 interface TimelineCardProps {
   attraction: Attraction
@@ -32,6 +33,12 @@ export function TimelineCard({
   const isAccommodation = attraction.id === -999
   const hasLocation = attraction.lat && attraction.lng
 
+  const bgClass = hasError
+    ? 'bg-red-50 dark:bg-red-900/30'
+    : isVisited && !hasError && !hasWarning
+      ? 'bg-green-50/60 dark:bg-green-900/30'
+      : 'bg-white dark:bg-gray-800'
+
   return (
     <div className="relative">
       {/* Ponto da timeline na linha */}
@@ -40,11 +47,11 @@ export function TimelineCard({
         ${isVisited ? 'bg-emerald-500' : 'bg-blue-500'}
       `} />
 
-      {/* Card - estilo unificado: fundo neutro, borda lateral indica estado */}
+      {/* Card - mesmo padrão do AttractionCard: fundo por estado, borda lateral */}
       <div
         className={`
           ml-4 md:ml-6 rounded-2xl shadow-md overflow-hidden transition-all border-l-4
-          bg-white dark:bg-gray-800
+          ${bgClass}
           ${hasError ? 'border-l-red-500' : ''}
           ${hasWarning && !hasError ? 'border-l-amber-500' : ''}
           ${isVisited && !hasError && !hasWarning ? 'border-l-emerald-500' : ''}
@@ -52,13 +59,13 @@ export function TimelineCard({
           ${isVisited ? 'opacity-90' : ''}
         `}
       >
-        {/* Faixa superior compacta: imagem ou ícone em fundo neutro */}
+        {/* Faixa superior: imagem ou ícone/gradiente (alinhado ao AttractionCard) */}
         {attraction.imageUrl ? (
-          <div className="h-14 bg-cover bg-center bg-gray-100 dark:bg-gray-700" style={{ backgroundImage: `url(${attraction.imageUrl})` }} />
+          <div className="h-20 bg-cover bg-center bg-gray-100 dark:bg-gray-700" style={{ backgroundImage: `url(${attraction.imageUrl})` }} />
         ) : (
-          <div className="h-14 flex items-center justify-center gap-2 bg-gray-100 dark:bg-gray-700/80">
-            <span className="text-2xl">{typeConfig.icon}</span>
-            <span className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">{typeConfig.label}</span>
+          <div className="h-20 flex items-center justify-center gap-2 bg-gradient-to-br from-blue-400 to-purple-500 dark:from-blue-600 dark:to-purple-600">
+            <span className="text-3xl">{typeConfig?.icon}</span>
+            <span className="text-xs font-medium text-white/90 uppercase tracking-wide">{typeConfig?.label}</span>
           </div>
         )}
 
@@ -80,7 +87,9 @@ export function TimelineCard({
                   e.stopPropagation()
                   openInMaps(attraction.lat!, attraction.lng!, attraction.name)
                 }}
-                className="p-1.5 rounded-full transition-all flex-shrink-0 bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 hover:bg-blue-200 dark:hover:bg-blue-800/50"
+                className="p-1.5 rounded-full transition-all flex-shrink-0 bg-blue-100
+                dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 hover:bg-blue-200 dark:hover:bg-blue-800/50
+                focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none"
                 title="Abrir no Google Maps"
               >
                 <Navigation className="w-5 h-5" />
@@ -96,6 +105,7 @@ export function TimelineCard({
                 }}
                 className={`
                   p-1.5 rounded-full transition-all flex-shrink-0
+                  focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none
                   ${isVisited
                     ? 'bg-green-100 dark:bg-green-900/50 text-green-600 dark:text-green-400'
                     : 'bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-600'
@@ -108,32 +118,50 @@ export function TimelineCard({
             )}
           </div>
 
-          {/* Main info - Compact */}
+          {/* Main info - alinhado ao AttractionCard */}
           <div className="mb-2">
             <h3 className="text-base font-bold text-gray-900 dark:text-gray-100 mb-1.5 line-clamp-2">
               {attraction.name}
             </h3>
-            <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+            <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
               <MapPin className="w-3.5 h-3.5 flex-shrink-0" />
-              <span>{attraction.city}</span>
-              {attraction.region && <span className="text-gray-400 dark:text-gray-500 text-xs">• {attraction.region}</span>}
+              <span>{attraction.region ? `${attraction.region}, ` : ''}{attraction.city}</span>
+            </div>
+            {/* Custo - mesmo estilo do AttractionCard */}
+            <div className="flex items-center gap-2 text-sm mt-1.5">
+              <Banknote className="w-3.5 h-3.5 text-green-600 dark:text-green-400 flex-shrink-0" />
+              {attraction.couplePrice ? (
+                <>
+                  <span className="font-semibold text-green-600 dark:text-green-400">
+                    {formatCurrency(attraction.couplePrice, attraction.currency)}
+                  </span>
+                  <span className="text-gray-500 dark:text-gray-400 text-xs">({formatCurrency(attraction.priceInBRL)})</span>
+                </>
+              ) : (
+                <span className="font-semibold text-green-600 dark:text-green-400">Gratuito</span>
+              )}
             </div>
           </div>
 
-          {/* Tags - Only essential ones */}
-          {attraction.needsReservation && attraction.reservationStatus && (
-            <div className="mb-2">
-              <span className={`inline-flex items-center gap-1 px-2 py-0.5 text-xs rounded-full font-medium ${
-                attraction.reservationStatus === 'confirmed' ? 'bg-green-100 text-green-700' :
-                attraction.reservationStatus === 'pending' ? 'bg-orange-100 text-orange-700' :
-                attraction.reservationStatus === 'cancelled' ? 'bg-red-100 text-red-700' :
-                'bg-gray-100 text-gray-700'
+          {/* Chips - tipo + reserva (mesmo estilo do AttractionCard com dark mode) */}
+          <div className="flex flex-wrap gap-1.5 mb-2">
+            {typeConfig && (
+              <span className="px-2 py-0.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs rounded-md font-medium">
+                {typeConfig.label}
+              </span>
+            )}
+            {attraction.needsReservation && attraction.reservationStatus && (
+              <span className={`px-2 py-0.5 text-xs rounded-md font-medium flex items-center gap-1 ${
+                attraction.reservationStatus === 'confirmed' ? 'bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300' :
+                attraction.reservationStatus === 'pending' ? 'bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-300' :
+                attraction.reservationStatus === 'cancelled' ? 'bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300' :
+                'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
               }`}>
                 <span>{RESERVATION_STATUS[attraction.reservationStatus].icon}</span>
                 <span>{RESERVATION_STATUS[attraction.reservationStatus].label}</span>
               </span>
-            </div>
-          )}
+            )}
+          </div>
 
           {/* Conflitos - aviso discreto dentro do card */}
           {conflicts.length > 0 && (

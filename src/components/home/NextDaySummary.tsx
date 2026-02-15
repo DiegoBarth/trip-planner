@@ -53,7 +53,7 @@ export function NextDaySummary() {
    return (
       <Link
          to="/timeline"
-         className="block bg-gradient-to-br from-blue-500 to-purple-600 text-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all hover:scale-[1.02]"
+         className="block bg-gradient-to-br from-blue-500 to-purple-600 text-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all hover:scale-[1.02] focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none"
       >
          <div className="flex items-start justify-between mb-4">
             <div>

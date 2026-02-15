@@ -98,7 +98,7 @@ export function ModalBase({
                      disabled={loading}
                      aria-label="Fechar modal"
                      className={cn(
-                        'p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors',
+                        'p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none',
                         loading && 'opacity-50 cursor-not-allowed'
                      )}
                   >
@@ -119,7 +119,7 @@ export function ModalBase({
                   disabled={loading}
                   aria-label="Cancelar e fechar modal"
                   className={cn(
-                     'flex-1 px-4 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition-all',
+                     'flex-1 px-4 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition-all focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none',
                      loading && 'opacity-50 cursor-not-allowed'
                   )}
                >
@@ -133,7 +133,7 @@ export function ModalBase({
                      aria-label="Excluir registro permanentemente"
                      type="button"
                      className={cn(
-                        'flex-1 px-4 py-2.5 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition-all',
+                        'flex-1 px-4 py-2.5 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition-all focus:ring-2 focus:ring-red-500 dark:focus:ring-red-500 focus:outline-none',
                         loading && 'opacity-50 cursor-not-allowed'
                      )}
                   >
@@ -148,7 +148,7 @@ export function ModalBase({
                      aria-label={type === 'create' ? 'Salvar novo registro' : 'Salvar alterações'}
                      type="button"
                      className={cn(
-                        'flex-1 px-4 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-all',
+                        'flex-1 px-4 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-all focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:outline-none',
                         loading && 'opacity-50 cursor-not-allowed'
                      )}
                   >

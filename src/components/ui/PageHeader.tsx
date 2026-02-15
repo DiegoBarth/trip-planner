@@ -31,7 +31,7 @@ export function PageHeader({
         {showBack && (
           <button
             onClick={() => navigate('/')}
-            className="flex items-center gap-2 text-white/90 hover:text-white transition-colors mb-4"
+            className="flex items-center gap-2 text-white/90 hover:text-white transition-colors mb-4 focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none"
           >
             <ArrowLeft className="w-5 h-5" />
             <span className="text-sm font-medium">Voltar</span>

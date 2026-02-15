@@ -4,7 +4,6 @@ import { TodaysPendencies } from '@/components/home/TodaysPendencies'
 import { CountryFilter } from '@/components/home/CountryFilter'
 import { QuickActions } from '@/components/ui/QuickActions'
 import { ThemeToggle } from '@/components/ui/ThemeToggle'
-import { Sparkles } from 'lucide-react'
 
 export function HomePage() {
    return (
@@ -14,10 +13,6 @@ export function HomePage() {
             <div className="max-w-6xl mx-auto px-4 pt-6 pb-8">
                <div className="flex items-start justify-between mb-6">
                   <div className="flex-1 min-w-0">
-                     <div className="flex items-center gap-2 mb-2">
-                        <Sparkles className="w-5 h-5" />
-                        <span className="text-sm font-medium opacity-90">Sua Viagem</span>
-                     </div>
                      <h1 className="text-3xl md:text-4xl font-bold font-display">
                         Japão & Coreia
                      </h1>

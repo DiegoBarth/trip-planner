@@ -19,7 +19,7 @@ export function TodaysPendencies() {
 
    if (pendencies.total === 0) {
       return (
-         <div className="bg-gradient-to-br from-green-500 to-emerald-600 text-white rounded-2xl shadow-md p-6">
+         <div className="bg-gradient-to-br from-green-500 to-emerald-600 text-white rounded-2xl shadow-md p-6 focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none">
             <div className="flex items-center gap-3">
                <CheckSquare className="w-8 h-8" />
                <div>
@@ -32,7 +32,7 @@ export function TodaysPendencies() {
    }
 
    return (
-      <div className="bg-white rounded-2xl shadow-md overflow-hidden">
+      <div className="bg-white rounded-2xl shadow-md overflow-hidden focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none">
          <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-6 py-4">
             <div className="flex items-center gap-3">
                <AlertCircle className="w-6 h-6" />
@@ -47,7 +47,7 @@ export function TodaysPendencies() {
             {pendencies.checklist > 0 && (
                <Link
                   to="/checklist"
-                  className="flex items-center justify-between p-4 hover:bg-gray-50 transition-colors group"
+                  className="flex items-center justify-between p-4 hover:bg-gray-50 transition-colors group focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none"
                >
                   <div className="flex items-center gap-3">
                      <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center group-hover:bg-blue-200 transition-colors">
@@ -67,7 +67,7 @@ export function TodaysPendencies() {
             {pendencies.reservations > 0 && (
                <Link
                   to="/reservations"
-                  className="flex items-center justify-between p-4 hover:bg-gray-50 transition-colors group"
+                  className="flex items-center justify-between p-4 hover:bg-gray-50 transition-colors group focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none"
                >
                   <div className="flex items-center gap-3">
                      <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center group-hover:bg-orange-200 transition-colors">

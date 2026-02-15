@@ -2,62 +2,59 @@ import type { Country } from '@/types/Attraction'
 import { COUNTRIES } from '@/config/constants'
 import { useCountry } from '@/contexts/CountryContext'
 import { MapPin, Calendar } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { CustomSelect } from '@/components/ui/CustomSelect'
+
+const countryOptions = Object.entries(COUNTRIES).map(([, c]) => `${c.flag} ${c.name}`)
+
+function countryToLabel(country: Country | 'all'): string {
+   const c = COUNTRIES[country]
+   return c ? `${c.flag} ${c.name}` : countryOptions[0]
+}
+
+function labelToCountry(label: string): Country | 'all' {
+   const entry = Object.entries(COUNTRIES).find(
+      ([, c]) => `${c.flag} ${c.name}` === label
+   )
+   return (entry?.[0] as Country | 'all') ?? 'all'
+}
 
 export function CountryFilter() {
    const { country, setCountry, day, setDay, availableDays } = useCountry()
 
+   const dayOptions = ['Todos os dias', ...availableDays.map((d) => `Dia ${d}`)]
+   const dayValue = day === 'all' ? 'Todos os dias' : `Dia ${day}`
+
+   const handleDayChange = (val: string) => {
+      if (val === 'Todos os dias') setDay('all')
+      else setDay(Number(val.replace('Dia ', '')))
+   }
+
    return (
       <div className="flex gap-2 flex-wrap">
-         <div className="relative flex-1 min-w-[140px]">
-            <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/70 pointer-events-none" />
-            <select
-               value={country}
-               onChange={(e) => setCountry(e.target.value as Country | 'all')}
-               className={cn(
-                  'w-full pl-10 pr-4 py-2.5 rounded-xl',
-                  'bg-white/15 backdrop-blur-sm text-white text-sm font-medium',
-                  'border border-white/20',
-                  'focus:outline-none focus:ring-2 focus:ring-white/30 focus:bg-white/20',
-                  'transition-all duration-200',
-                  'appearance-none cursor-pointer'
-               )}
-            >
-               {Object.entries(COUNTRIES).map(([key, c]) => (
-                  <option key={key} value={key} className="text-gray-900 bg-white">
-                     {c.flag} {c.name}
-                  </option>
-               ))}
-            </select>
+         <div className="flex-1 min-w-[140px]">
+            <CustomSelect
+               id="country-filter"
+               value={countryToLabel(country)}
+               onChange={(val) => setCountry(labelToCountry(val))}
+               options={countryOptions}
+               variant="glass"
+               leftIcon={<MapPin />}
+               placeholder="País"
+               dropdownPosition="below"
+            />
          </div>
-
-         <div className="relative flex-1 min-w-[140px]">
-            <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/70 pointer-events-none" />
-            <select
-               value={day}
-               onChange={(e) =>
-                  setDay(e.target.value === 'all' ? 'all' : Number(e.target.value))
-               }
-               className={cn(
-                  'w-full pl-10 pr-4 py-2.5 rounded-xl',
-                  'bg-white/15 backdrop-blur-sm text-white text-sm font-medium',
-                  'border border-white/20',
-                  'focus:outline-none focus:ring-2 focus:ring-white/30 focus:bg-white/20',
-                  'transition-all duration-200',
-                  'appearance-none cursor-pointer',
-                  'disabled:opacity-50 disabled:cursor-not-allowed'
-               )}
+         <div className="flex-1 min-w-[140px]">
+            <CustomSelect
+               id="day-filter"
+               value={dayValue}
+               onChange={handleDayChange}
+               options={dayOptions}
+               variant="glass"
+               leftIcon={<Calendar />}
+               placeholder="Dia"
                disabled={availableDays.length === 0}
-            >
-               <option value="all" className="text-gray-900 bg-white">
-                  Todos os dias
-               </option>
-               {availableDays.map(d => (
-                  <option key={d} value={d} className="text-gray-900 bg-white">
-                     Dia {d}
-                  </option>
-               ))}
-            </select>
+               dropdownPosition="below"
+            />
          </div>
       </div>
    )
