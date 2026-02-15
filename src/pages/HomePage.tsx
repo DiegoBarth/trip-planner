@@ -1,5 +1,6 @@
 import { BudgetSummary } from '@/components/home/BudgetSummary'
 import { NextDaySummary } from '@/components/home/NextDaySummary'
+import { TodayExpensesCard } from '@/components/home/TodayExpensesCard'
 import { TodaysPendencies } from '@/components/home/TodaysPendencies'
 import { CountryFilter } from '@/components/home/CountryFilter'
 import { QuickActions } from '@/components/ui/QuickActions'
@@ -32,6 +33,11 @@ export function HomePage() {
             {/* Next Day Summary */}
             <section>
                <NextDaySummary />
+            </section>
+
+            {/* Gastos de hoje (Modo Viagem) */}
+            <section>
+               <TodayExpensesCard />
             </section>
 
             {/* Today's Pendencies */}

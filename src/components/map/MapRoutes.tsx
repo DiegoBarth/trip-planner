@@ -9,9 +9,13 @@ type Props = {
    routes: Record<number, [number, number][]>
    accommodations: Accommodation[]
    getColor: (day: number) => string
+   /** ID da próxima atração (não visitada) para destacar no mapa - Modo Viagem */
+   highlightAttractionId?: number | null
 }
 
-export function MapRoutes({ groupedByDay, routes, accommodations, getColor }: Props) {
+const HIGHLIGHT_COLOR = '#16a34a' // green-600
+
+export function MapRoutes({ groupedByDay, routes, accommodations, getColor, highlightAttractionId }: Props) {
    return (
       <>
          {accommodations.map(acc => {
@@ -26,7 +30,7 @@ export function MapRoutes({ groupedByDay, routes, accommodations, getColor }: Pr
                   <Popup>
                      <div className="p-2 space-y-2">
                         <h3 className="font-bold">{acc.description}</h3>
-                        <p className="text-sm">{acc.address}</p><br/>
+                        <p className="text-sm">{acc.address}</p><br />
 
                         <a
                            href={mapsUrl}
@@ -58,22 +62,23 @@ export function MapRoutes({ groupedByDay, routes, accommodations, getColor }: Pr
                      />
                   )}
 
-                  {points.map(point => (
-                     <Marker
-                        key={point.id}
-                        position={[point.lat, point.lng]}
-                        icon={createCustomIcon(getColor(point.day), 'attraction', point)}
-                     >
-                        <Popup maxWidth={300} minWidth={280} className="custom-attraction-popup">
-                           <div className="w-[310px] -m-1">
+                  {points.map(point => {
+                     const isHighlight = highlightAttractionId != null && point.id === highlightAttractionId
+                     return (
+                        <Marker
+                           key={point.id}
+                           position={[point.lat, point.lng]}
+                           icon={createCustomIcon(isHighlight ? HIGHLIGHT_COLOR : getColor(point.day), 'attraction', point)}
+                        >
+                           <Popup maxWidth={300} minWidth={280} className="custom-attraction-popup">
                               <AttractionCard
                                  attraction={point}
                                  onCheckVisited={() => { }}
                               />
-                           </div>
-                        </Popup>
-                     </Marker>
-                  ))}
+                           </Popup>
+                        </Marker>
+                     )
+                  })}
                </div>
             )
          })}

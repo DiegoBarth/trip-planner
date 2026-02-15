@@ -1,5 +1,6 @@
 import { MapView } from '@/components/map/MapView'
 import { PageHeader } from '@/components/ui/PageHeader'
+import { CountryFilter } from '@/components/home/CountryFilter'
 
 export function MapPage() {
    return (
@@ -7,6 +8,7 @@ export function MapPage() {
          <PageHeader
             title="Mapa"
             subtitle="Visualize suas atrações no mapa"
+            filter={<CountryFilter />}
          />
          <main className="flex-1">
             <MapView />

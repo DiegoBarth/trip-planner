@@ -155,7 +155,7 @@ export function AttractionCard({ attraction, onCheckVisited, onDelete, onClick }
                target="_blank"
                rel="noopener noreferrer"
                onClick={(e) => e.stopPropagation()}
-               className="absolute bottom-3 right-3 p-2 rounded-xl bg-blue-500 text-white shadow-md hover:bg-blue-600 transition-colors"
+               className="absolute bottom-3 right-3 p-2 rounded-xl bg-blue-500 text-white dark:text-white shadow-md hover:bg-blue-600 transition-colors"
                title="Abrir no mapa"
                aria-label="Abrir no mapa"
             >
