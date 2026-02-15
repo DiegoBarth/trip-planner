@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import type { Budget } from '@/types/Budget'
 import type { BudgetOrigin } from '@/types/Attraction'
@@ -10,7 +10,7 @@ interface ModalBudgetProps {
    budget?: Budget
    isOpen: boolean
    onClose: () => void
-   onSave: (budget: Omit<Budget, 'id'>) => void
+   onSave: (budget: Omit<Budget, 'id'>) => void | Promise<void>
 }
 
 type BudgetFormData = Omit<Budget, 'amount' | 'id'> & {
@@ -26,6 +26,7 @@ const defaultValues: BudgetFormData = {
 }
 
 export function ModalBudget({ budget, isOpen, onClose, onSave }: ModalBudgetProps) {
+   const [saving, setSaving] = useState(false)
    const { control, register, handleSubmit, reset, setValue, watch } = useForm<BudgetFormData>({
       defaultValues
    })
@@ -49,20 +50,22 @@ export function ModalBudget({ budget, isOpen, onClose, onSave }: ModalBudgetProp
       }
    }, [isOpen, budget, reset])
 
-   const handleSave = (values: BudgetFormData) => {
-      // Convert formatted value back to number before saving
+   const handleSave = async (values: BudgetFormData) => {
       const amount = typeof values.amount === 'string' ? currencyToNumber(values.amount) : values.amount
-      
       const budgetData: Omit<Budget, 'id'> = {
          origin: values.origin,
          description: values.description,
          amount: amount || 0,
          date: values.date
       }
-      
-      onSave(budgetData)
-      reset(defaultValues)
-      onClose()
+      setSaving(true)
+      try {
+         await Promise.resolve(onSave(budgetData))
+         reset(defaultValues)
+         onClose()
+      } finally {
+         setSaving(false)
+      }
    }
 
    return (
@@ -72,6 +75,8 @@ export function ModalBudget({ budget, isOpen, onClose, onSave }: ModalBudgetProp
          title={budget ? 'Editar Orçamento' : 'Novo Orçamento'}
          type={budget ? 'edit' : 'create'}
          onSave={handleSubmit(handleSave)}
+         loading={saving}
+         loadingText="Salvando..."
          size="md"
       >
          <div className="space-y-4">

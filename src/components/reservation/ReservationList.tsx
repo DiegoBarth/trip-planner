@@ -84,13 +84,12 @@ export function ReservationList({
     setIsModalOpen(false)
   }
 
-  const handleSave = (data: Omit<Reservation, 'id'>) => {
+  const handleSave = async (data: Omit<Reservation, 'id'>) => {
     if (editingReservation) {
-      onUpdate({ ...data, id: editingReservation.id } as Reservation)
+      await Promise.resolve(onUpdate({ ...data, id: editingReservation.id } as Reservation))
     } else {
-      onCreate(data)
+      await Promise.resolve(onCreate(data))
     }
-    handleCloseModal()
   }
 
   if (isLoading) {

@@ -1,17 +1,26 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { ExpenseList } from '@/components/expense/ExpenseList'
 import { useExpense } from '@/hooks/useExpense'
 import { useToast } from '@/contexts/toast'
 import { useCountry } from '@/contexts/CountryContext'
 import type { Expense } from '@/types/Expense'
+import type { BudgetOrigin } from '@/types/Attraction'
 import { PageHeader } from '@/components/ui/PageHeader'
+import { CountryFilter } from '@/components/home/CountryFilter'
+import { BudgetOriginFilter } from '@/components/expense/BudgetOriginFilter'
 import { Fab } from '@/components/ui/Fab'
 import { ModalExpense } from '@/components/expense/ModalExpense'
 import { Plus } from 'lucide-react'
 
 export function ExpensesPage() {
    const [showModal, setShowModal] = useState(false)
+   const [budgetOrigin, setBudgetOrigin] = useState<BudgetOrigin | 'all'>('all')
    const { country, expenses, isReady } = useCountry()
+
+   const filteredExpenses = useMemo(() => {
+      if (budgetOrigin === 'all') return expenses
+      return expenses.filter((e) => e.budgetOrigin === budgetOrigin)
+   }, [expenses, budgetOrigin])
    const { createExpense, updateExpense, deleteExpense } = useExpense(country)
    const toast = useToast()
 
@@ -50,11 +59,17 @@ export function ExpensesPage() {
          <PageHeader
             title="Gastos"
             subtitle="Registre e acompanhe seus gastos"
+            filter={
+               <div className="flex gap-2 flex-wrap">
+                  <CountryFilter showDayFilter={false} />
+                  <BudgetOriginFilter value={budgetOrigin} onChange={setBudgetOrigin} />
+               </div>
+            }
          />
 
          <main className="max-w-6xl mx-auto px-4 py-6 mb-12">
             <ExpenseList
-               expenses={expenses}
+               expenses={filteredExpenses}
                onCreate={handleCreate}
                onUpdate={handleUpdate}
                onDelete={handleDelete}

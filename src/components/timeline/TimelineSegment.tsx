@@ -35,12 +35,12 @@ export function TimelineSegment({ segment }: TimelineSegmentProps) {
   return (
     <div className="relative flex items-center py-3 md:py-2">
       {/* Linha contínua (herda do container pai) - sem linha própria para não quebrar visual */}
-      <div className="absolute left-0 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-blue-400 dark:bg-blue-500 z-10 -translate-x-1/2" aria-hidden />
+      <div className="absolute left-0 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-slate-400 dark:bg-slate-500 z-10 -translate-x-1/2" aria-hidden />
 
       {/* Card de deslocamento - mesmo padrão dos cards de atração: fundo neutro, boa legibilidade */}
       <div className="ml-4 md:ml-6 flex flex-col md:flex-row md:items-center gap-2 md:gap-4 px-4 py-3 rounded-2xl shadow-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 w-full md:w-auto">
         <div className="flex items-center gap-2 text-gray-700 dark:text-gray-200">
-          <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400">
+          <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">
             {getTravelIcon()}
           </span>
           <span className="text-sm md:text-base font-semibold">{getTravelModeLabel()}</span>

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Pencil, Trash2, ExternalLink, FileText, MapPin, Calendar, Clock } from 'lucide-react'
 import type { Reservation } from '@/types/Reservation'
-import { RESERVATION_TYPES, BOOKING_STATUS } from '@/config/constants'
+import { RESERVATION_TYPES, BOOKING_STATUS, COUNTRIES } from '@/config/constants'
 import { formatDate } from '@/utils/formatters'
 
 interface ReservationCardProps {
@@ -110,10 +110,18 @@ export function ReservationCard({ reservation, onEdit, onDelete }: ReservationCa
               <span>{reservation.time}</span>
             </div>
           )}
-          {reservation.location && (
-            <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+          {(reservation.location || (reservation.country && reservation.country !== 'all')) && (
+            <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 flex-wrap">
               <MapPin className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
-              <span className="line-clamp-1">{reservation.location}</span>
+              {reservation.location && (
+                <span className="line-clamp-1">{reservation.location}</span>
+              )}
+              <span className="whitespace-nowrap"> - </span>
+              {reservation.country && reservation.country !== 'all' && COUNTRIES[reservation.country] && (
+                <span className="whitespace-nowrap">
+                  {COUNTRIES[reservation.country].name}
+                </span>
+              )}
             </div>
           )}
           {reservation.provider && (

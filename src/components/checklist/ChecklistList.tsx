@@ -66,16 +66,15 @@ export function ChecklistList({
       setIsModalOpen(false)
    }
 
-   const handleSave = (data: Omit<ChecklistItem, 'id'>) => {
+   const handleSave = async (data: Omit<ChecklistItem, 'id'>) => {
       if (editingItem) {
-         onUpdate({
+         await Promise.resolve(onUpdate({
             ...data,
             id: editingItem.id
-         } as ChecklistItem)
+         } as ChecklistItem))
       } else {
-         onCreate(data)
+         await Promise.resolve(onCreate(data))
       }
-      handleCloseModal()
    }
 
    const handleExportPDF = () => {

@@ -1,17 +1,25 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { ReservationList } from '@/components/reservation/ReservationList'
 import { useReservation } from '@/hooks/useReservation'
 import { useCountry } from '@/contexts/CountryContext'
 import { useToast } from '@/contexts/toast'
 import type { Reservation } from '@/types/Reservation'
 import { PageHeader } from '@/components/ui/PageHeader'
+import { CountryFilter } from '@/components/home/CountryFilter'
 import { Fab } from '@/components/ui/Fab'
 import { ModalReservation } from '@/components/reservation/ModalReservation'
 import { Plus } from 'lucide-react'
 
 export function ReservationsPage() {
    const [showModal, setShowModal] = useState(false)
-   const { reservations, isReady } = useCountry()
+   const { country, reservations, isReady } = useCountry()
+
+   const filteredReservations = useMemo(() => {
+      if (country === 'all') return reservations
+      return reservations.filter(
+         (r) => !r.country || r.country === 'all' || r.country === country
+      )
+   }, [reservations, country])
    const { createReservation, updateReservation, deleteReservation } = useReservation()
    const toast = useToast()
 
@@ -50,11 +58,12 @@ export function ReservationsPage() {
          <PageHeader
             title="Reservas"
             subtitle="Gerencie suas reservas e documentos"
+            filter={<CountryFilter showDayFilter={false} />}
          />
 
          <main className="max-w-6xl mx-auto px-4 py-6 mb-12">
             <ReservationList
-               reservations={reservations}
+               reservations={filteredReservations}
                onCreate={handleCreate}
                onUpdate={handleUpdate}
                onDelete={handleDelete}

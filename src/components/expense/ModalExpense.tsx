@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import type { Expense, ExpenseCategory } from '@/types/Expense'
 import type { BudgetOrigin, Currency, Country } from '@/types/Attraction'
@@ -12,7 +12,7 @@ interface ModalExpenseProps {
    expense?: Expense
    isOpen: boolean
    onClose: () => void
-   onSave: (expense: Omit<Expense, 'id'>) => void
+   onSave: (expense: Omit<Expense, 'id'>) => void | Promise<void>
 }
 
 interface ExpenseFormData {
@@ -39,6 +39,7 @@ function getCountryFromCurrency(currency: Currency): Country | undefined {
 }
 
 export function ModalExpense({ expense, isOpen, onClose, onSave }: ModalExpenseProps) {
+   const [saving, setSaving] = useState(false)
    const { register, control, handleSubmit, watch, setValue, reset } = useForm<ExpenseFormData>({
       defaultValues: {
          category: 'food',
@@ -193,17 +194,23 @@ export function ModalExpense({ expense, isOpen, onClose, onSave }: ModalExpenseP
       setValue('amountInBRL', amountInBRL)
    }, [formData.amount, formData.currency, setValue])
 
-   const onSubmit = (values: ExpenseFormData) => {
+   const onSubmit = async (values: ExpenseFormData) => {
       const amount = typeof values.amount === 'string'
          ? currencyToNumber(values.amount, values.currency)
          : values.amount
 
-      onSave({
-         ...values,
-         amount,
-         amountInBRL: values.amountInBRL,
-         country: values.country
-      })
+      setSaving(true)
+      try {
+         await Promise.resolve(onSave({
+            ...values,
+            amount,
+            amountInBRL: values.amountInBRL,
+            country: values.country
+         }))
+         onClose()
+      } finally {
+         setSaving(false)
+      }
    }
 
    return (
@@ -213,6 +220,8 @@ export function ModalExpense({ expense, isOpen, onClose, onSave }: ModalExpenseP
          title={expense ? 'Editar Gasto' : 'Novo Gasto'}
          type={expense ? 'edit' : 'create'}
          onSave={handleSubmit(onSubmit)}
+         loading={saving}
+         loadingText="Salvando..."
          size="lg"
       >
          <div className="space-y-4">

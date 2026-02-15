@@ -18,7 +18,12 @@ function labelToCountry(label: string): Country | 'all' {
    return (entry?.[0] as Country | 'all') ?? 'all'
 }
 
-export function CountryFilter() {
+interface CountryFilterProps {
+   /** Exibe o seletor de dia. Default: true */
+   showDayFilter?: boolean
+}
+
+export function CountryFilter({ showDayFilter = true }: CountryFilterProps) {
    const { country, setCountry, day, setDay, availableDays } = useCountry()
 
    const dayOptions = ['Todos os dias', ...availableDays.map((d) => `Dia ${d}`)]
@@ -43,19 +48,21 @@ export function CountryFilter() {
                dropdownPosition="below"
             />
          </div>
-         <div className="flex-1 min-w-[140px]">
-            <CustomSelect
-               id="day-filter"
-               value={dayValue}
-               onChange={handleDayChange}
-               options={dayOptions}
-               variant="glass"
-               leftIcon={<Calendar />}
-               placeholder="Dia"
-               disabled={availableDays.length === 0}
-               dropdownPosition="below"
-            />
-         </div>
+         {showDayFilter && (
+            <div className="flex-1 min-w-[140px]">
+               <CustomSelect
+                  id="day-filter"
+                  value={dayValue}
+                  onChange={handleDayChange}
+                  options={dayOptions}
+                  variant="glass"
+                  leftIcon={<Calendar />}
+                  placeholder="Dia"
+                  disabled={availableDays.length === 0}
+                  dropdownPosition="below"
+               />
+            </div>
+         )}
       </div>
    )
 }

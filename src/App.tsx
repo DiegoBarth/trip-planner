@@ -9,10 +9,12 @@ import { ChecklistPage } from '@/pages/ChecklistPage'
 import { ReservationsPage } from '@/pages/ReservationsPage'
 import { TimelinePage } from '@/pages/TimelinePage'
 import { BottomNav } from '@/components/ui/BottomNav'
+import { GlobalLoading } from '@/components/ui/GlobalLoading'
 
 function App() {
   return (
     <>
+      <GlobalLoading />
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/budgets" element={<BudgetPage />} />

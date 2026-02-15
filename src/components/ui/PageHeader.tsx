@@ -9,6 +9,8 @@ interface PageHeaderProps {
   subtitle?: string
   showBack?: boolean
   action?: ReactNode
+  /** Conteúdo extra abaixo do título (ex.: CountryFilter para país/dia) */
+  filter?: ReactNode
   className?: string
 }
 
@@ -17,6 +19,7 @@ export function PageHeader({
   subtitle, 
   showBack = true, 
   action,
+  filter,
   className 
 }: PageHeaderProps) {
   const navigate = useNavigate()
@@ -55,6 +58,7 @@ export function PageHeader({
             <ThemeToggle />
           </div>
         </div>
+        {filter && <div className="mt-4">{filter}</div>}
       </div>
     </header>
   )

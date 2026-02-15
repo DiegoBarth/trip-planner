@@ -2,7 +2,6 @@ import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { useCountry } from '@/contexts/CountryContext'
 import { Calendar, MapPin, Clock, ChevronRight } from 'lucide-react'
-import { dateToInputFormat } from '@/utils/formatters'
 
 export function NextDaySummary() {
    const { attractions } = useCountry()
@@ -11,27 +10,44 @@ export function NextDaySummary() {
       const today = new Date()
       today.setHours(0, 0, 0, 0)
 
-      const futureAttractions = attractions
+      const attractionsWithDate = attractions
          .filter(a => a.date && a.lat && a.lng)
          .map(a => ({
             ...a,
-            parsedDate: new Date(dateToInputFormat(a.date))
+            parsedDate: new Date(a.date)
          }))
-         .filter(a => a.parsedDate >= today)
          .sort((a, b) => a.parsedDate.getTime() - b.parsedDate.getTime())
 
-      if (futureAttractions.length === 0) return null
+      if (attractionsWithDate.length === 0) return null
 
-      const nextDate = futureAttractions[0].parsedDate
-      const dayAttractions = futureAttractions.filter(
-         a => a.parsedDate.getTime() === nextDate.getTime()
-      )
+      const isTodayInTrip = attractionsWithDate.some(a => {
+         const d = a.parsedDate
+         return d.getFullYear() === today.getFullYear() &&
+            d.getMonth() === today.getMonth() &&
+            d.getDate() === today.getDate()
+      })
+
+      const targetDate = isTodayInTrip
+         ? today
+         : attractionsWithDate.find(a => a.parsedDate >= today)?.parsedDate ?? null
+
+      if (!targetDate) return null
+
+      const dayAttractions = attractionsWithDate.filter(a => {
+         const d = a.parsedDate
+         return d.getFullYear() === targetDate.getFullYear() &&
+            d.getMonth() === targetDate.getMonth() &&
+            d.getDate() === targetDate.getDate()
+      })
+
+      if (dayAttractions.length === 0) return null
 
       return {
-         date: nextDate,
-         day: futureAttractions[0].day,
+         date: targetDate,
+         day: dayAttractions[0].day,
+         isToday: isTodayInTrip,
          attractionsCount: dayAttractions.length,
-         attractions: dayAttractions.slice(0, 3) // Pega apenas as 3 primeiras
+         attractions: dayAttractions.slice(0, 3)
       }
    }, [attractions])
 
@@ -59,7 +75,9 @@ export function NextDaySummary() {
             <div>
                <div className="flex items-center gap-2 mb-1 opacity-90">
                   <Calendar className="w-4 h-4" />
-                  <span className="text-sm font-medium">Próximo Dia</span>
+                  <span className="text-sm font-medium">
+                     {nextDayData.isToday ? 'Dia Atual' : 'Próximo Dia'}
+                  </span>
                </div>
                <h3 className="text-2xl font-bold capitalize">
                   {dateStr}

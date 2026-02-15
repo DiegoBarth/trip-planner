@@ -14,7 +14,7 @@ interface ModalReservationProps {
    reservation?: Reservation
    isOpen: boolean
    onClose: () => void
-   onSave: (reservation: Omit<Reservation, 'id'>) => void
+   onSave: (reservation: Omit<Reservation, 'id'>) => void | Promise<void>
 }
 
 interface ReservationFormData {
@@ -36,6 +36,7 @@ interface ReservationFormData {
 }
 
 export function ModalReservation({ reservation, isOpen, onClose, onSave }: ModalReservationProps) {
+   const [saving, setSaving] = useState(false)
    const [documentFileId, setDocumentFileId] = useState<string>('')
    const [initialDocumentFileId, setInitialDocumentFileId] = useState<string>('')
    
@@ -123,25 +124,31 @@ export function ModalReservation({ reservation, isOpen, onClose, onSave }: Modal
       onClose()
    }
 
-   const onSubmit = (values: ReservationFormData) => {
-      onSave({
-         type: values.type,
-         title: values.title.trim(),
-         description: values.description.trim() || undefined,
-         confirmationCode: values.confirmationCode.trim() || undefined,
-         date: values.date || undefined,
-         endDate: values.endDate || undefined,
-         time: values.time || undefined,
-         location: values.location.trim() || undefined,
-         provider: values.provider.trim() || undefined,
-         bookingUrl: values.bookingUrl.trim() || undefined,
-         documentUrl: values.documentUrl.trim() || undefined,
-         documentFileId: documentFileId || undefined,
-         status: values.status,
-         notes: values.notes.trim() || undefined,
-         country: values.country,
-         attractionId: values.attractionId
-      })
+   const onSubmit = async (values: ReservationFormData) => {
+      setSaving(true)
+      try {
+         await Promise.resolve(onSave({
+            type: values.type,
+            title: values.title.trim(),
+            description: values.description.trim() || undefined,
+            confirmationCode: values.confirmationCode.trim() || undefined,
+            date: values.date || undefined,
+            endDate: values.endDate || undefined,
+            time: values.time || undefined,
+            location: values.location.trim() || undefined,
+            provider: values.provider.trim() || undefined,
+            bookingUrl: values.bookingUrl.trim() || undefined,
+            documentUrl: values.documentUrl.trim() || undefined,
+            documentFileId: documentFileId || undefined,
+            status: values.status,
+            notes: values.notes.trim() || undefined,
+            country: values.country,
+            attractionId: values.attractionId
+         }))
+         onClose()
+      } finally {
+         setSaving(false)
+      }
    }
 
    return (
@@ -151,6 +158,8 @@ export function ModalReservation({ reservation, isOpen, onClose, onSave }: Modal
          title={reservation ? 'Editar Reserva' : 'Nova Reserva'}
          type={reservation ? 'edit' : 'create'}
          onSave={handleSubmit(onSubmit)}
+         loading={saving}
+         loadingText="Salvando..."
          size="lg"
       >
          <div className="space-y-4">

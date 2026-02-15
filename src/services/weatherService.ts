@@ -1,4 +1,4 @@
-import type { WeatherData } from '@/types/Weather'
+import type { WeatherData, WeatherPeriodSummary } from '@/types/Weather'
 
 const OPENWEATHER_API_KEY = import.meta.env.VITE_OPENWEATHER_API_KEY
 const OPENWEATHER_BASE_URL = 'https://api.openweathermap.org/data/2.5'
@@ -84,33 +84,72 @@ export async function fetchWeatherForecast(city: string): Promise<WeatherData[]>
       return []
     }
 
-    // Group by date and get daily forecast (noon reading)
-    const dailyForecasts: Record<string, WeatherData> = {}
-    
+    // dt da API é Unix timestamp (UTC). city.timezone = offset em segundos (ex: Tóquio +32400 = UTC+9)
+    // Somando o offset, new Date(...).getUTC* retorna data/hora no fuso da cidade (manhã/tarde/noite corretos).
+    const timezoneOffsetSeconds = data.city?.timezone ?? 0
+
+    const toLocalDateAndHour = (dt: number) => {
+      const d = new Date((dt + timezoneOffsetSeconds) * 1000)
+      const date = d.toISOString().slice(0, 10)
+      const hour = d.getUTCHours()
+      return { date, hour }
+    }
+
+    type Slot = { hour: number; item: any }
+    const slotsByDate: Record<string, Slot[]> = {}
+
     data.list.forEach((item: any) => {
-      const date = item.dt_txt.split(' ')[0] // YYYY-MM-DD
-      const hour = parseInt(item.dt_txt.split(' ')[1].split(':')[0])
-      
-      // Get reading closest to noon (12:00)
-      if (hour >= 11 && hour <= 13) {
-        if (!dailyForecasts[date] || hour === 12) {
-          dailyForecasts[date] = {
-            date,
-            temp: Math.round(item.main.temp),
-            tempMin: Math.round(item.main.temp_min),
-            tempMax: Math.round(item.main.temp_max),
-            description: item.weather[0].description,
-            icon: getWeatherEmoji(item.weather[0].icon),
-            humidity: item.main.humidity,
-            windSpeed: item.wind.speed,
-            pop: item.pop || 0,
-            rain: item.rain?.['3h'] || 0
-          }
-        }
-      }
+      const { date, hour } = toLocalDateAndHour(item.dt)
+      if (!slotsByDate[date]) slotsByDate[date] = []
+      slotsByDate[date].push({ hour, item })
     })
 
-    return Object.values(dailyForecasts)
+    const dailyForecasts: WeatherData[] = []
+
+    Object.entries(slotsByDate).forEach(([date, slots]) => {
+      if (slots.length === 0) return
+
+      const tempMin = Math.min(...slots.map(s => s.item.main.temp_min))
+      const tempMax = Math.max(...slots.map(s => s.item.main.temp_max))
+      const maxPop = Math.max(...slots.map(s => s.item.pop || 0))
+
+      // Escolher slot de referência: preferir 12h, senão o primeiro disponível (para dia atual)
+      const noonSlot = slots.find(s => s.hour === 12)
+      const refSlot = noonSlot || slots[Math.floor(slots.length / 2)] || slots[0]
+      const ref = refSlot.item
+
+      const periodSlot = (h: number) => slots.find(s => s.hour === h)?.item
+      const periodFromSlot = (item: any): WeatherPeriodSummary | undefined => item ? {
+        temp: Math.round(item.main.temp),
+        icon: getWeatherEmoji(item.weather[0].icon),
+        description: item.weather[0].description,
+        pop: item.pop || 0
+      } : undefined
+
+      const morningItem = periodSlot(9) || periodSlot(6)
+      const afternoonItem = periodSlot(15) || periodSlot(12)
+      const eveningItem = periodSlot(21) || periodSlot(18)
+
+      dailyForecasts.push({
+        date,
+        temp: Math.round(ref.main.temp),
+        tempMin: Math.round(tempMin),
+        tempMax: Math.round(tempMax),
+        description: ref.weather[0].description,
+        icon: getWeatherEmoji(ref.weather[0].icon),
+        humidity: ref.main.humidity,
+        windSpeed: ref.wind.speed,
+        pop: maxPop,
+        rain: ref.rain?.['3h'] || 0,
+        periods: {
+          ...(morningItem && { morning: periodFromSlot(morningItem) }),
+          ...(afternoonItem && { afternoon: periodFromSlot(afternoonItem) }),
+          ...(eveningItem && { evening: periodFromSlot(eveningItem) })
+        }
+      })
+    })
+
+    return dailyForecasts.sort((a, b) => a.date.localeCompare(b.date))
   } catch (error) {
     console.error('Error fetching weather:', error)
     return []

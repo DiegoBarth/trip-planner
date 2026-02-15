@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import type { ChecklistItem, ChecklistCategory } from '@/types/ChecklistItem'
 import { CHECKLIST_CATEGORIES } from '@/config/constants'
@@ -8,7 +8,7 @@ interface ModalChecklistItemProps {
    item?: ChecklistItem
    isOpen: boolean
    onClose: () => void
-   onSave: (item: Omit<ChecklistItem, 'id'>) => void
+   onSave: (item: Omit<ChecklistItem, 'id'>) => void | Promise<void>
 }
 
 interface ChecklistFormData {
@@ -20,6 +20,7 @@ interface ChecklistFormData {
 }
 
 export function ModalChecklistItem({ item, isOpen, onClose, onSave }: ModalChecklistItemProps) {
+   const [saving, setSaving] = useState(false)
    const { register, handleSubmit, watch, setValue, reset } = useForm<ChecklistFormData>({
       defaultValues: {
          category: 'other',
@@ -55,16 +56,22 @@ export function ModalChecklistItem({ item, isOpen, onClose, onSave }: ModalCheck
       }
    }, [isOpen, item, reset])
 
-   const onSubmit = (values: ChecklistFormData) => {
+   const onSubmit = async (values: ChecklistFormData) => {
       const quantity = parseInt(values.quantity) || 1
-      
-      onSave({
+      const payload = {
          category: values.category,
          description: values.description.trim(),
          isPacked: values.isPacked,
          quantity: quantity > 1 ? quantity : undefined,
          notes: values.notes.trim() || undefined
-      })
+      }
+      setSaving(true)
+      try {
+         await Promise.resolve(onSave(payload))
+         onClose()
+      } finally {
+         setSaving(false)
+      }
    }
 
    return (
@@ -74,6 +81,8 @@ export function ModalChecklistItem({ item, isOpen, onClose, onSave }: ModalCheck
          title={item ? 'Editar Item' : 'Novo Item'}
          type={item ? 'edit' : 'create'}
          onSave={handleSubmit(onSubmit)}
+         loading={saving}
+         loadingText="Salvando..."
          size="md"
       >
          <div className="space-y-4">

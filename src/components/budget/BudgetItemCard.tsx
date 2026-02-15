@@ -52,10 +52,6 @@ export function BudgetItemCard({ budget, onEdit, onDelete }: BudgetItemCardProps
         {/* Linha 2: pill da origem (Casal, Diego, etc.) */}
         <span
           className="inline-block mt-2 text-xs font-medium px-2 py-0.5 rounded-md w-fit"
-          style={{
-            backgroundColor: `${originConfig.color}18`,
-            color: originConfig.color,
-          }}
         >
           {originConfig.label}
         </span>
@@ -67,8 +63,7 @@ export function BudgetItemCard({ budget, onEdit, onDelete }: BudgetItemCardProps
             <span>{formatDate(budget.date)}</span>
           </div>
           <span
-            className="text-lg font-bold tabular-nums flex-shrink-0"
-            style={{ color: originConfig.color }}
+            className="text-lg font-bold tabular-nums flex-shrink-0 text-emerald-500 dark:text-emerald-400"
           >
             {formatCurrency(budget.amount)}
           </span>

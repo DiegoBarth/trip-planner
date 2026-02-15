@@ -49,11 +49,11 @@ export function ExpenseList({
     setIsModalOpen(false)
   }
 
-  const handleSave = (data: Omit<Expense, 'id'>) => {
+  const handleSave = async (data: Omit<Expense, 'id'>) => {
     if (editingExpense) {
-      onUpdate({ ...data, id: editingExpense.id } as Expense)
+      await Promise.resolve(onUpdate({ ...data, id: editingExpense.id } as Expense))
     } else {
-      onCreate(data)
+      await Promise.resolve(onCreate(data))
     }
   }
 

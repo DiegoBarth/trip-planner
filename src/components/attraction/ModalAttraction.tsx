@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import type { Attraction, Country, AttractionType, Currency, Period, ReservationStatus } from '@/types/Attraction'
 import { COUNTRIES, ATTRACTION_TYPES, PERIODS, RESERVATION_STATUS, WEEK_DAYS } from '@/config/constants'
@@ -11,7 +11,7 @@ interface ModalAttractionProps {
    attraction?: Attraction
    isOpen: boolean
    onClose: () => void
-   onSave: (attraction: Omit<Attraction, 'id' | 'day' | 'order'>) => void
+   onSave: (attraction: Omit<Attraction, 'id' | 'day' | 'order'>) => void | Promise<void>
 }
 
 interface AttractionFormData {
@@ -44,6 +44,7 @@ interface AttractionFormData {
 }
 
 export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAttractionProps) {
+   const [saving, setSaving] = useState(false)
    const { register, control, handleSubmit, watch, setValue, reset } = useForm<AttractionFormData>({
       defaultValues: {
          name: '',
@@ -219,16 +220,21 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
       setValue('priceInBRL', convertToBRL(price, formData.currency as Currency, rates))
    }
 
-   const onSubmit = (values: AttractionFormData) => {
-      // Convert formatted couplePrice back to number
+   const onSubmit = async (values: AttractionFormData) => {
       const couplePrice = typeof values.couplePrice === 'string'
          ? currencyToNumber(values.couplePrice as string, values.currency as Currency)
          : (values.couplePrice as number)
 
-      onSave({
-         ...values,
-         couplePrice
-      } as Omit<Attraction, 'id' | 'day' | 'order'>)
+      setSaving(true)
+      try {
+         await Promise.resolve(onSave({
+            ...values,
+            couplePrice
+         } as Omit<Attraction, 'id' | 'day' | 'order'>))
+         onClose()
+      } finally {
+         setSaving(false)
+      }
    }
 
    return (
@@ -238,6 +244,8 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
          title={attraction ? 'Editar Atração' : 'Nova Atração'}
          type={attraction ? 'edit' : 'create'}
          onSave={handleSubmit(onSubmit)}
+         loading={saving}
+         loadingText="Salvando..."
          size="xl"
       >
          <div className="space-y-4">

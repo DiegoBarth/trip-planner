@@ -35,10 +35,17 @@ export default {
             '88': '22rem',
             '100': '25rem',
          },
+         keyframes: {
+            globalLoading: {
+               '0%': { transform: 'translateX(-100%)' },
+               '100%': { transform: 'translateX(400%)' },
+            },
+         },
          animation: {
             'fade-in': 'fadeIn 0.3s ease-out',
             'slide-up': 'slideUp 0.4s ease-out',
             'scale-in': 'scaleIn 0.2s ease-out',
+            'global-loading': 'globalLoading 1.5s ease-in-out infinite',
          },
          boxShadow: {
             'soft': '0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 10px 20px -2px rgba(0, 0, 0, 0.04)',

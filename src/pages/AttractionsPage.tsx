@@ -1,17 +1,23 @@
 import { PageHeader } from '@/components/ui/PageHeader'
+import { CountryFilter } from '@/components/home/CountryFilter'
 import { Fab } from '@/components/ui/Fab'
 import { AttractionsList } from '@/components/attraction/AttractionsList'
 import { useAttraction } from '@/hooks/useAttraction'
 import { useToast } from '@/contexts/toast'
 import type { Attraction } from '@/types/Attraction'
 import { useCountry } from '@/contexts/CountryContext'
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { ModalAttraction } from '@/components/attraction/ModalAttraction'
 import { Plus } from 'lucide-react'
 
 export function AttractionsPage() {
    const [showModal, setShowModal] = useState(false)
-   const { country, attractions, isReady } = useCountry()
+   const { country, day, attractions, isReady } = useCountry()
+
+   const filteredAttractions = useMemo(() => {
+      if (day === 'all') return attractions
+      return attractions.filter((a) => a.day === day)
+   }, [attractions, day])
 
    const {
       createAttraction,
@@ -79,11 +85,12 @@ export function AttractionsPage() {
          <PageHeader
             title="Atrações"
             subtitle="Planeje seus pontos turísticos"
+            filter={<CountryFilter />}
          />
 
          <main className="max-w-6xl mx-auto px-4 py-6 mb-12">
             <AttractionsList
-               attractions={attractions}
+               attractions={filteredAttractions}
                isLoading={!isReady}
                onCreate={handleCreate}
                onUpdate={handleUpdate}
