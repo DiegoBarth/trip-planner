@@ -23,7 +23,7 @@ export function HomePage() {
                   </div>
                   <ThemeToggle />
                </div>
-               
+
                <CountryFilter />
             </div>
          </header>
@@ -35,14 +35,13 @@ export function HomePage() {
                <NextDaySummary />
             </section>
 
-            {/* Gastos de hoje (Modo Viagem) */}
-            <section>
-               <TodayExpensesCard />
-            </section>
-
             {/* Today's Pendencies */}
             <section>
                <TodaysPendencies />
+            </section>
+
+            <section>
+               <TodayExpensesCard />
             </section>
 
             {/* Quick Actions */}

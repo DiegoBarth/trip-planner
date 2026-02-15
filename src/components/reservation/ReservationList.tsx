@@ -5,7 +5,7 @@ import { ModalReservation } from './ModalReservation'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { SkeletonList } from '@/components/ui/SkeletonList'
 import type { Reservation } from '@/types/Reservation'
-import { formatDate } from '@/utils/formatters'
+import { formatDate, dateToInputFormat, parseLocalDate } from '@/utils/formatters'
 
 interface ReservationListProps {
   reservations: Reservation[]
@@ -42,8 +42,8 @@ export function ReservationList({
       if (!a.date && !b.date) {
         return typePriority[a.type] - typePriority[b.type]
       }
-      const dateA = new Date(a.date!).getTime()
-      const dateB = new Date(b.date!).getTime()
+      const dateA = parseLocalDate(dateToInputFormat(a.date!)).getTime()
+      const dateB = parseLocalDate(dateToInputFormat(b.date!)).getTime()
       if (dateA !== dateB) return dateA - dateB
       return typePriority[a.type] - typePriority[b.type]
     })
@@ -57,12 +57,16 @@ export function ReservationList({
       if (!reservation.date) {
         preTripItems.push(reservation)
       } else {
-        const dateKey = reservation.date
+        const dateKey = dateToInputFormat(reservation.date)
         if (!dateGrouped[dateKey]) dateGrouped[dateKey] = []
         dateGrouped[dateKey].push(reservation)
       }
     })
-    return { preTripItems, dateGrouped }
+
+    const orderedDateKeys = Object.keys(dateGrouped).sort(
+      (a, b) => parseLocalDate(a).getTime() - parseLocalDate(b).getTime()
+    )
+    return { preTripItems, dateGrouped, orderedDateKeys }
   }, [sortedReservations])
 
   const stats = useMemo(() => {
@@ -171,9 +175,9 @@ export function ReservationList({
               </section>
             )}
 
-            {Object.entries(groupedReservations.dateGrouped)
-              .sort(([dateA], [dateB]) => new Date(dateA).getTime() - new Date(dateB).getTime())
-              .map(([date, items]) => (
+            {groupedReservations.orderedDateKeys.map(date => {
+              const items = groupedReservations.dateGrouped[date]
+              return (
                 <section key={date} className="space-y-3">
                   <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm w-fit mb-3">
                     <span className="text-lg" aria-hidden>📅</span>
@@ -195,7 +199,8 @@ export function ReservationList({
                     ))}
                   </div>
                 </section>
-              ))}
+              )
+            })}
           </>
         )}
       </div>

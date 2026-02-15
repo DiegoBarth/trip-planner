@@ -1,12 +1,14 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { ExpenseCard } from './ExpenseCard'
 import { ModalExpense } from './ModalExpense'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { SkeletonList } from '@/components/ui/SkeletonList'
 import type { Expense } from '@/types/Expense'
 import { COUNTRIES } from '@/config/constants'
-import { formatCurrency } from '@/utils/formatters'
+import { formatCurrency, dateToInputFormat } from '@/utils/formatters'
 import { Receipt } from 'lucide-react'
+
+const COUNTRY_DISPLAY_ORDER = ['japan', 'south-korea', 'all', 'outros']
 
 interface ExpenseListProps {
   expenses: Expense[]
@@ -26,18 +28,28 @@ export function ExpenseList({
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingExpense, setEditingExpense] = useState<Expense | undefined>()
 
-  const groupedByCountry = expenses.reduce((acc, expense) => {
-    const country = expense.country ?? 'outros'
-    if (!acc[country]) {
-      acc[country] = []
-    }
-    acc[country].push(expense)
-    return acc
-  }, {} as Record<string, Expense[]>)
+  const { groupedByCountry, orderedCountryKeys } = useMemo(() => {
+    const grouped = expenses.reduce((acc, expense) => {
+      const country = expense.country ?? 'outros'
+      if (!acc[country]) acc[country] = []
+      acc[country].push(expense)
+      return acc
+    }, {} as Record<string, Expense[]>)
 
-  Object.values(groupedByCountry).forEach(countryExpenses => {
-    countryExpenses.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-  })
+    const parseDate = (d: string) => {
+      const s = dateToInputFormat(d || '')
+      return s ? new Date(s).getTime() : 0
+    }
+    Object.values(grouped).forEach((list) => {
+      list.sort((a, b) => parseDate(a.date) - parseDate(b.date))
+    })
+
+    const ordered = [
+      ...COUNTRY_DISPLAY_ORDER.filter((k) => grouped[k]),
+      ...Object.keys(grouped).filter((k) => !COUNTRY_DISPLAY_ORDER.includes(k)).sort(),
+    ]
+    return { groupedByCountry: grouped, orderedCountryKeys: ordered }
+  }, [expenses])
 
   const handleOpenModal = (expense?: Expense) => {
     setEditingExpense(expense)
@@ -84,14 +96,15 @@ export function ExpenseList({
       )}
 
       <div className="space-y-8">
-        {Object.keys(groupedByCountry).length === 0 ? (
+        {orderedCountryKeys.length === 0 ? (
           <EmptyState
             icon="🧾"
             title="Nenhum gasto encontrado"
             description="Comece registrando seu primeiro gasto!"
           />
         ) : (
-          Object.entries(groupedByCountry).map(([country, countryExpenses]) => {
+          orderedCountryKeys.map((country) => {
+            const countryExpenses = groupedByCountry[country]
             const countryConfig = COUNTRIES[country as keyof typeof COUNTRIES]
             const countryName =
               countryConfig?.name ?? (country === 'outros' ? 'Outros' : country)
@@ -101,6 +114,7 @@ export function ExpenseList({
               0
             )
 
+            if (!countryExpenses?.length) return null
             return (
               <section key={country} className="space-y-4">
                 {/* Cabeçalho por destino - estilo único (pill com fundo) */}
