@@ -2,7 +2,6 @@ import { useState, useMemo } from 'react'
 import { ExpenseCard } from './ExpenseCard'
 import { ModalExpense } from './ModalExpense'
 import { EmptyState } from '@/components/ui/EmptyState'
-import { SkeletonList } from '@/components/ui/SkeletonList'
 import type { Expense } from '@/types/Expense'
 import { COUNTRIES } from '@/config/constants'
 import { formatCurrency, dateToInputFormat } from '@/utils/formatters'
@@ -69,9 +68,7 @@ export function ExpenseList({
     }
   }
 
-  if (isLoading) {
-    return <SkeletonList />
-  }
+  if (isLoading) return null
 
   const totalBRL = expenses.reduce((sum, e) => sum + (e.amountInBRL ?? 0), 0)
   const hasExpenses = expenses.length > 0

@@ -3,7 +3,6 @@ import { FileCheck } from 'lucide-react'
 import { ReservationCard } from './ReservationCard'
 import { ModalReservation } from './ModalReservation'
 import { EmptyState } from '@/components/ui/EmptyState'
-import { SkeletonList } from '@/components/ui/SkeletonList'
 import type { Reservation } from '@/types/Reservation'
 import { formatDate, dateToInputFormat, parseLocalDate } from '@/utils/formatters'
 
@@ -96,9 +95,7 @@ export function ReservationList({
     }
   }
 
-  if (isLoading) {
-    return <SkeletonList />
-  }
+  if (isLoading) return null
 
   return (
     <div>

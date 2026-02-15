@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import { GripVertical } from 'lucide-react'
 import { AttractionsGrid } from './AttractionsGrid'
 import { ModalAttraction } from './ModalAttraction'
-import { SkeletonList } from '@/components/ui/SkeletonList'
 import type { Attraction } from '@/types/Attraction'
 import { getAutoDayForDate, getNextOrderForDate } from '@/utils/attractionDayUtils'
 import { dateToInputFormat } from '@/utils/formatters'
@@ -117,9 +116,7 @@ export function AttractionsList({
             )}
          </div>
 
-         {isLoading ? (
-            <SkeletonList />
-         ) : (
+         {!isLoading && (
             <AttractionsGrid
                attractions={attractions}
                groupBy="country"

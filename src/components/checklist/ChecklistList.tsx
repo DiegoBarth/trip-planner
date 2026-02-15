@@ -3,7 +3,6 @@ import { ListChecks, FileDown, Luggage, CheckCircle } from 'lucide-react'
 import { ChecklistCard } from './ChecklistCard'
 import { ModalChecklistItem } from './ModalChecklistItem'
 import { EmptyState } from '@/components/ui/EmptyState'
-import { SkeletonList } from '@/components/ui/SkeletonList'
 import type { ChecklistItem } from '@/types/ChecklistItem'
 import { CHECKLIST_CATEGORIES } from '@/config/constants'
 import { exportChecklistToPDF } from '@/utils/exportChecklistToPDF'
@@ -81,10 +80,7 @@ export function ChecklistList({
       exportChecklistToPDF({ items })
    }
 
-   // Show loading skeleton
-   if (isLoading) {
-      return <SkeletonList />
-   }
+   if (isLoading) return null
 
    return (
       <div>
