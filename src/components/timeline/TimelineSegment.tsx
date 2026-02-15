@@ -33,7 +33,7 @@ export function TimelineSegment({ segment }: TimelineSegmentProps) {
   }
 
   return (
-    <div className="relative flex items-center py-3 md:py-2">
+    <div className="relative flex items-center pb-6">
       {/* Linha contínua (herda do container pai) - sem linha própria para não quebrar visual */}
       <div className="absolute left-0 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-slate-400 dark:bg-slate-500 z-10 -translate-x-1/2" aria-hidden />
 

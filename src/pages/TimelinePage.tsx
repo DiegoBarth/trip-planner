@@ -199,7 +199,7 @@ export function TimelinePage() {
    return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-20 md:pb-6">
          <PageHeader
-            title="Timeline do Roteiro"
+            title="Timeline"
             subtitle={`${dayLabel} - Visualize seu dia com rotas e clima`}
             filter={<CountryFilter />}
             action={

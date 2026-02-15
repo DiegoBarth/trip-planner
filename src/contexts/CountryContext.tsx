@@ -41,7 +41,15 @@ interface CountryContextType {
 
 function getInitialFilter(): { country: CountryFilter; day: DayFilter } {
    const saved = sessionStorage.getItem('trip_filter')
-   if (saved) return JSON.parse(saved)
+   if (!saved) return { country: 'all', day: 'all' }
+   try {
+      const parsed = JSON.parse(saved)
+      if (parsed && typeof parsed.country !== 'undefined' && typeof parsed.day !== 'undefined') {
+         return parsed
+      }
+   } catch {
+      sessionStorage.removeItem('trip_filter')
+   }
    return { country: 'all', day: 'all' }
 }
 

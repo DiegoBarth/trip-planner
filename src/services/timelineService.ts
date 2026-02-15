@@ -132,7 +132,7 @@ function detectConflicts(
 
    for (let i = 0; i < attractions.length; i++) {
       const attraction = attractions[i]
-      const segment = segments[i] // Travel TO this attraction (from i to i+1)
+      const segment = i > 0 ? segments[i - 1] : null // Travel TO this attraction (from i-1 to i)
 
       // Add travel time from previous attraction
       if (segment) {

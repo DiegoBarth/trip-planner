@@ -57,13 +57,15 @@ export function TimelineCard({
           ${isVisited ? 'opacity-90' : ''}
         `}
          >
-            {attraction.imageUrl ? (
-               <div className="h-20 bg-cover bg-center bg-gray-100 dark:bg-gray-700" style={{ backgroundImage: `url(${attraction.imageUrl})` }} />
-            ) : (
-               <div className="h-20 flex items-center justify-center gap-2 bg-gradient-to-br from-slate-500 to-slate-600 dark:from-slate-600 dark:to-slate-700">
-                  <span className="text-3xl">{typeConfig?.icon}</span>
-                  <span className="text-xs font-medium text-white/90 uppercase tracking-wide">{typeConfig?.label}</span>
-               </div>
+            {!isAccommodation && (
+               attraction.imageUrl ? (
+                  <div className="h-20 bg-cover bg-center bg-gray-100 dark:bg-gray-700" style={{ backgroundImage: `url(${attraction.imageUrl})` }} />
+               ) : (
+                  <div className="h-20 flex items-center justify-center gap-2 bg-gradient-to-br from-slate-500 to-slate-600 dark:from-slate-600 dark:to-slate-700">
+                     <span className="text-3xl">{typeConfig?.icon}</span>
+                     <span className="text-xs font-medium text-white/90 uppercase tracking-wide">{typeConfig?.label}</span>
+                  </div>
+               )
             )}
 
             <div className="p-3">
@@ -123,39 +125,42 @@ export function TimelineCard({
                      <span>{attraction.region ? `${attraction.region}, ` : ''}{attraction.city}</span>
                   </div>
                   {/* Custo - mesmo estilo do AttractionCard */}
-                  <div className="flex items-center gap-2 text-sm mt-1.5">
-                     <Banknote className="w-3.5 h-3.5 text-green-600 dark:text-green-400 flex-shrink-0" />
-                     {attraction.couplePrice ? (
-                        <>
-                           <span className="font-semibold text-green-600 dark:text-green-400">
-                              {formatCurrency(attraction.couplePrice, attraction.currency)}
-                           </span>
-                           <span className="text-gray-500 dark:text-gray-400 text-xs">({formatCurrency(attraction.priceInBRL)})</span>
-                        </>
-                     ) : (
-                        <span className="font-semibold text-green-600 dark:text-green-400">Gratuito</span>
-                     )}
-                  </div>
+                  {!isAccommodation && (
+                     <div className="flex items-center gap-2 text-sm mt-1.5">
+                        <Banknote className="w-3.5 h-3.5 text-green-600 dark:text-green-400 flex-shrink-0" />
+                        {attraction.couplePrice ? (
+                           <>
+                              <span className="font-semibold text-green-600 dark:text-green-400">
+                                 {formatCurrency(attraction.couplePrice, attraction.currency)}
+                              </span>
+                              <span className="text-gray-500 dark:text-gray-400 text-xs">({formatCurrency(attraction.priceInBRL)})</span>
+                           </>
+                        ) : (
+                           <span className="font-semibold text-green-600 dark:text-green-400">Gratuito</span>
+                        )}
+                     </div>
+                  )}
                </div>
 
-               {/* Chips - tipo + reserva (mesmo estilo do AttractionCard com dark mode) */}
-               <div className="flex flex-wrap gap-1.5 mb-2">
-                  {typeConfig && (
-                     <span className="px-2 py-0.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs rounded-md font-medium">
-                        {typeConfig.label}
-                     </span>
-                  )}
-                  {attraction.needsReservation && attraction.reservationStatus && (
-                     <span className={`px-2 py-0.5 text-xs rounded-md font-medium flex items-center gap-1 ${attraction.reservationStatus === 'confirmed' ? 'bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300' :
-                        attraction.reservationStatus === 'pending' ? 'bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-300' :
-                           attraction.reservationStatus === 'cancelled' ? 'bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300' :
-                              'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
-                        }`}>
-                        <span>{RESERVATION_STATUS[attraction.reservationStatus].icon}</span>
-                        <span>{RESERVATION_STATUS[attraction.reservationStatus].label}</span>
-                     </span>
-                  )}
-               </div>
+               {!isAccommodation && (
+                  <div className="flex flex-wrap gap-1.5 mb-2">
+                     {typeConfig && (
+                        <span className="px-2 py-0.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs rounded-md font-medium">
+                           {typeConfig.label}
+                        </span>
+                     )}
+                     {attraction.needsReservation && attraction.reservationStatus && (
+                        <span className={`px-2 py-0.5 text-xs rounded-md font-medium flex items-center gap-1 ${attraction.reservationStatus === 'confirmed' ? 'bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300' :
+                           attraction.reservationStatus === 'pending' ? 'bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-300' :
+                              attraction.reservationStatus === 'cancelled' ? 'bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300' :
+                                 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
+                           }`}>
+                           <span>{RESERVATION_STATUS[attraction.reservationStatus].icon}</span>
+                           <span>{RESERVATION_STATUS[attraction.reservationStatus].label}</span>
+                        </span>
+                     )}
+                  </div>
+               )}
 
                {/* Conflitos - aviso discreto dentro do card */}
                {conflicts.length > 0 && (
