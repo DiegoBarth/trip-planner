@@ -1,6 +1,52 @@
 import type { Attraction } from '@/types/Attraction'
 import type { TimelineSegment, TimelineConflict, TimelineDay } from '@/types/Timeline'
-import { fetchOSRMRoute } from './osrmService'
+import { fetchOSRMRoute, type OSRMLeg } from './osrmService'
+
+/**
+ * Convert OSRM legs + sorted attractions to timeline segments (for use with cached route data).
+ */
+export function legsToSegments(
+   sortedAttractions: Attraction[],
+   legs: OSRMLeg[]
+): (TimelineSegment | null)[] {
+   const n = sortedAttractions.length
+   const segments: (TimelineSegment | null)[] = new Array(n - 1)
+   const withCoords = sortedAttractions
+      .map((a, i) => ({ a, i }))
+      .filter(({ a }) => a.lat != null && a.lng != null) as { a: Attraction; i: number }[]
+
+   if (withCoords.length < 2 || legs.length === 0) {
+      return segments.fill(null)
+   }
+
+   for (let i = 0; i < n - 1; i++) {
+      const from = sortedAttractions[i]
+      const to = sortedAttractions[i + 1]
+      if (!from.lat || !from.lng || !to.lat || !to.lng) {
+         segments[i] = null
+         continue
+      }
+      const legIndex = withCoords.findIndex((w) => w.i === i)
+      if (legIndex < 0 || legIndex + 1 >= withCoords.length || withCoords[legIndex + 1].i !== i + 1 || !legs[legIndex]) {
+         segments[i] = null
+         continue
+      }
+      const leg = legs[legIndex]
+      const travelMode: 'walking' | 'transit' = leg.distanceKm > 3 ? 'transit' : 'walking'
+      const durationMinutes =
+         travelMode === 'walking'
+            ? Math.ceil((leg.distanceKm / 5) * 60)
+            : leg.durationMinutes
+      segments[i] = {
+         from,
+         to,
+         distanceKm: leg.distanceKm,
+         durationMinutes,
+         travelMode,
+      }
+   }
+   return segments
+}
 
 /**
  * One OSRM request for the whole day: all coordinates in order.
@@ -196,17 +242,22 @@ function detectConflicts(
 }
 
 /**
- * Build timeline for a specific day
+ * Build timeline for a specific day.
+ * If precomputedSegments is provided, skips OSRM fetch and uses them (e.g. from cache).
  */
 export async function buildDayTimeline(
-   attractions: Attraction[]
+   attractions: Attraction[],
+   precomputedSegments?: (TimelineSegment | null)[]
 ): Promise<TimelineDay | null> {
    if (attractions.length === 0) return null
 
    // Sort attractions by order
    const sortedAttractions = [...attractions].sort((a, b) => a.order - b.order)
 
-   const segments = await fetchSegmentsForDay(sortedAttractions)
+   const segments =
+      precomputedSegments != null && precomputedSegments.length === sortedAttractions.length - 1
+         ? precomputedSegments
+         : await fetchSegmentsForDay(sortedAttractions)
    const totalDistance = segments.reduce((sum, s) => sum + (s?.distanceKm ?? 0), 0)
    const totalTravelTime = segments.reduce((sum, s) => sum + (s?.durationMinutes ?? 0), 0)
 

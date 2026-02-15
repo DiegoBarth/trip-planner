@@ -3,7 +3,6 @@ import { useMemo } from 'react'
 import { useCountry } from '@/contexts/CountryContext'
 import { FitBounds } from './FitBounds'
 import { MapRoutes } from './MapRoutes'
-import { useOSRMRoutes } from '@/hooks/useOSRMRoutes'
 import { isMappableAttraction } from '@/utils/typeGuards'
 import type { MappableAttraction } from '@/types/MappableAttraction'
 import { useLocation } from 'react-router-dom'
@@ -15,7 +14,7 @@ function getColorForDay(day: number) {
 }
 
 export function MapView() {
-   const { attractions, accommodations, country, day, isReady } = useCountry()
+   const { attractions, accommodations, country, day, isReady, routes } = useCountry()
    const location = useLocation();
 
    // Filtra atrações mapeáveis
@@ -57,9 +56,7 @@ export function MapView() {
          return [...filtered, ...accs];
       }
       return filtered;
-   }, [filtered, accommodations]);
-
-   const { routes } = useOSRMRoutes(groupedByDay, accommodations)
+   }, [filtered, accommodations])
 
    if (!isReady) return <div className="p-6">Loading...</div>
    if (!mapPoints.length) return <div className="p-6">No attractions or accommodations found.</div>

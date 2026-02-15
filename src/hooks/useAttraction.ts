@@ -40,6 +40,7 @@ export function useAttraction(country: Country) {
       mutationFn: (payload: CreateAttractionPayload) => createAttraction(payload),
       onSuccess: newAttraction => {
          updateAttractionCacheOnCreate(queryClient, country, newAttraction)
+         queryClient.invalidateQueries({ queryKey: ['osrm-routes'] })
       }
    })
 
@@ -93,6 +94,7 @@ export function useAttraction(country: Country) {
          const previous = attractions.find(a => a.id === updatedAttraction.id)
          if (!previous) return
          updateAttractionCacheOnUpdate(queryClient, country, previous, updatedAttraction)
+         queryClient.invalidateQueries({ queryKey: ['osrm-routes'] })
       }
    })
 
@@ -120,6 +122,7 @@ export function useAttraction(country: Country) {
       },
       onSuccess: (_, deletedId) => {
          updateAttractionCacheOnDelete(queryClient, country, deletedId)
+         queryClient.invalidateQueries({ queryKey: ['osrm-routes'] })
       }
    })
 

@@ -30,7 +30,7 @@ export function AttractionStatusCards({ status }: { status: AttractionStats }) {
             </div>
             <div>
                <p className="text-xs text-amber-500 dark:text-amber-400">Pendentes</p>
-               <p className="font-bold text-gray-900 dark:text-gray-100">{status.pendingReservation}</p>
+               <p className="font-bold text-gray-900 dark:text-gray-100">{status.total - status.visited}</p>
             </div>
          </div>
       </div>

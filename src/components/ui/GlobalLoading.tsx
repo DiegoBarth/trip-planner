@@ -4,9 +4,12 @@ import { Loader2 } from 'lucide-react'
 /**
  * Overlay de loading no centro da tela.
  * Bloqueia cliques e edições no fundo enquanto há queries ou mutations em andamento (React Query).
+ * Requisições OSRM (rotas) são ignoradas para não bloquear a UI.
  */
 export function GlobalLoading() {
-  const isFetching = useIsFetching()
+  const isFetching = useIsFetching({
+    predicate: (query) => query.queryKey[0] !== 'osrm-routes',
+  })
   const isMutating = useIsMutating()
   const isLoading = isFetching > 0 || isMutating > 0
 

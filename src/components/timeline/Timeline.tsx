@@ -10,14 +10,21 @@ import { getWeatherForDate } from '@/services/weatherService'
 interface TimelineProps {
    /** Timeline já construída pela página (uma requisição OSRM por dia). */
    timeline: TimelineDay | null
+   /** Cidade do dia (para buscar clima mesmo antes da timeline carregar; obrigatório quando day='all'). */
+   city?: string
+   /** Data do dia no formato da atração (YYYY-MM-DD ou DD/MM/YYYY) para lookup do clima. */
+   date?: string
    onToggleVisited?: (id: number) => void
 }
 
-export function Timeline({ timeline, onToggleVisited }: TimelineProps) {
-   const city = timeline?.attractions[0]?.city ?? ''
+export function Timeline({ timeline, city: cityProp, date: dateProp, onToggleVisited }: TimelineProps) {
+   const city = cityProp ?? timeline?.attractions[0]?.city ?? ''
    const { forecast } = useWeather(city)
-
-   const weather = timeline ? getWeatherForDate(forecast, dateToInputFormat(timeline.date)) : null
+   const dateForWeather = dateProp ?? timeline?.date ?? ''
+   const weather =
+      dateForWeather && forecast.length > 0
+         ? getWeatherForDate(forecast, dateToInputFormat(dateForWeather))
+         : null
 
    if (!timeline) {
       return (
@@ -33,9 +40,15 @@ export function Timeline({ timeline, onToggleVisited }: TimelineProps) {
 
    return (
       <div className="space-y-6">
-         {/* Weather badge */}
-         {weather && (
-            <WeatherBadge weather={weather} />
+         {/* Weather: exibe previsão da data do dia ou mensagem se fora da janela de 5 dias */}
+         {dateForWeather && (
+            weather ? (
+               <WeatherBadge weather={weather} />
+            ) : (
+               <div className="rounded-lg border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/20 p-4 text-amber-800 dark:text-amber-200 text-sm">
+                  Clima não disponível para esta data. A previsão cobre apenas os próximos 5 dias.
+               </div>
+            )
          )}
 
          {/* Day header - neutro para não competir com o restante */}

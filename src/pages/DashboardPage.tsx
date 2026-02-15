@@ -40,26 +40,26 @@ export function DashboardPage() {
                   value={formatCurrency(stats.totalSpent)}
                   subValue={`de ${formatCurrency(stats.totalBudget)} orçados`}
                   icon="💸"
-                  colorClass="bg-red-500 text-red-600"
+                  iconClass="bg-rose-100 text-rose-600 dark:bg-rose-950/50 dark:text-rose-400"
                />
                <DashboardCard
                   label="Saldo Restante"
                   value={formatCurrency(stats.remaining)}
                   icon="💰"
-                  colorClass="bg-emerald-500 text-emerald-600"
+                  iconClass="bg-emerald-100 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400"
                />
                <DashboardCard
                   label="Duração da Viagem"
                   value={`${stats.daysOfTrip} Dias`}
                   icon="🗓️"
-                  colorClass="bg-blue-500 text-blue-600"
+                  iconClass="bg-blue-100 text-blue-600 dark:bg-blue-950/50 dark:text-blue-400"
                />
                <DashboardCard
                   label="Atrações Pendentes"
                   value={stats.attractionStatus.pendingReservation.toString()}
                   subValue="Necessitam reserva"
                   icon="⚠️"
-                  colorClass="bg-amber-500 text-amber-600"
+                  iconClass="bg-amber-100 text-amber-600 dark:bg-amber-950/50 dark:text-amber-400"
                />
             </div>
 

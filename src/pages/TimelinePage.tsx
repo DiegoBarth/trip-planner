@@ -48,7 +48,8 @@ function addAccommodationToDay(
 }
 
 export function TimelinePage() {
-   const { country, day, accommodations, attractions, isReady } = useCountry()
+   const { country, day, accommodations, attractions, isReady, segmentsByDay, isRoutesLoading } =
+      useCountry()
    const { toggleVisited } = useAttraction(country)
    const { success, error } = useToast()
    const [isExporting, setIsExporting] = useState(false)
@@ -116,15 +117,22 @@ export function TimelinePage() {
    const [isTimelineLoading, setIsTimelineLoading] = useState(false)
 
    useEffect(() => {
+      if (isRoutesLoading) {
+         return
+      }
       if (day !== 'all') {
          if (timelineAttractions.length === 0) {
             setSingleTimeline(null)
+            setIsTimelineLoading(false)
             return
          }
          let cancelled = false
          setIsTimelineLoading(true)
          setDayTimelines([])
-         buildDayTimeline(timelineAttractions)
+         const cached = segmentsByDay[Number(day)]
+         const precomputed =
+            cached && cached.length === timelineAttractions.length - 1 ? cached : undefined
+         buildDayTimeline(timelineAttractions, precomputed)
             .then((t) => {
                if (!cancelled) setSingleTimeline(t)
             })
@@ -138,12 +146,19 @@ export function TimelinePage() {
       if (dayGroups.length === 0) {
          setDayTimelines([])
          setSingleTimeline(null)
+         setIsTimelineLoading(false)
          return
       }
       let cancelled = false
       setIsTimelineLoading(true)
       setSingleTimeline(null)
-      Promise.all(dayGroups.map((g) => buildDayTimeline(g.attractions)))
+      Promise.all(
+         dayGroups.map((g) => {
+            const cached = segmentsByDay[g.day]
+            const precomputed = cached && cached.length === g.attractions.length - 1 ? cached : undefined
+            return buildDayTimeline(g.attractions, precomputed)
+         })
+      )
          .then((results) => {
             if (!cancelled) setDayTimelines(results)
          })
@@ -153,7 +168,7 @@ export function TimelinePage() {
       return () => {
          cancelled = true
       }
-   }, [timelineBuildKey])
+   }, [timelineBuildKey, segmentsByDay, isRoutesLoading])
 
    const handleExportPDF = async () => {
       if (!canExport) return
@@ -163,7 +178,14 @@ export function TimelinePage() {
             const timelineDays =
                dayTimelines.length === dayGroups.length
                   ? dayTimelines
-                  : await Promise.all(dayGroups.map((group) => buildDayTimeline(group.attractions)))
+                  : await Promise.all(
+                       dayGroups.map((g) => {
+                          const cached = segmentsByDay[g.day]
+                          const precomputed =
+                             cached && cached.length === g.attractions.length - 1 ? cached : undefined
+                          return buildDayTimeline(g.attractions, precomputed)
+                       })
+                    )
             const valid = timelineDays.filter((d): d is NonNullable<typeof d> => d != null)
             if (valid.length > 0) {
                exportTimelineToPDF(valid)
@@ -172,7 +194,11 @@ export function TimelinePage() {
                error('Nenhuma timeline gerada para exportar')
             }
          } else {
-            const single = singleTimeline ?? (await buildDayTimeline(timelineAttractions))
+            const cached = segmentsByDay[Number(day)]
+            const precomputed =
+               cached && cached.length === timelineAttractions.length - 1 ? cached : undefined
+            const single =
+               singleTimeline ?? (await buildDayTimeline(timelineAttractions, precomputed))
             if (single) {
                exportTimelineToPDF([single])
                success('PDF exportado com sucesso!')
@@ -265,6 +291,10 @@ export function TimelinePage() {
                      Ir para Atrações
                   </Link>
                </div>
+            ) : isRoutesLoading ? (
+               <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-8 text-center">
+                  <p className="text-gray-500 dark:text-gray-400 text-sm">Carregando rotas em segundo plano...</p>
+               </div>
             ) : isTimelineLoading ? (
                <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-12 flex items-center justify-center min-h-[200px]">
                   <div className="animate-spin rounded-full h-12 w-12 border-2 border-gray-200 dark:border-gray-700 border-t-slate-600 dark:border-t-slate-400" />
@@ -275,6 +305,8 @@ export function TimelinePage() {
                      <div key={group.day} className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
                         <Timeline
                            timeline={dayTimelines[idx] ?? null}
+                           city={group.attractions[0]?.city}
+                           date={group.date}
                            onToggleVisited={handleToggleVisited}
                         />
                      </div>
@@ -284,6 +316,8 @@ export function TimelinePage() {
                <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
                   <Timeline
                      timeline={singleTimeline}
+                     city={timelineAttractions[0]?.city}
+                     date={timelineAttractions[0]?.date}
                      onToggleVisited={handleToggleVisited}
                   />
                </div>

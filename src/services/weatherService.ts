@@ -72,7 +72,7 @@ export async function fetchWeatherForecast(city: string): Promise<WeatherData[]>
 
     const response = await fetch(url, { signal: controller.signal })
     clearTimeout(timeout)
-
+    
     if (!response.ok) {
       console.error('Weather API error:', response.status)
       return []
@@ -157,21 +157,45 @@ export async function fetchWeatherForecast(city: string): Promise<WeatherData[]>
 }
 
 /**
- * Get weather for a specific date
+ * Normalize date to YYYY-MM-DD for matching forecast entries
+ */
+function normalizeToYYYYMMDD(date: string): string {
+  if (!date || typeof date !== 'string') return ''
+  const trimmed = date.trim()
+  if (trimmed.includes('T')) return trimmed.split('T')[0]
+  if (trimmed.includes('/')) {
+    const parts = trimmed.split('/').map(p => p.trim())
+    if (parts.length === 3) {
+      const isYearLast = parts[2].length === 4
+      const isYearFirst = parts[0].length === 4
+      if (isYearLast) {
+        const [day, month, year] = parts
+        return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
+      }
+      if (isYearFirst) {
+        const [year, month, day] = parts
+        return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
+      }
+    }
+  }
+  if (/^\d{4}-\d{1,2}-\d{1,2}$/.test(trimmed)) {
+    const [y, m, d] = trimmed.split('-')
+    return `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`
+  }
+  return trimmed
+}
+
+/**
+ * Get weather for a specific date.
+ * Só retorna previsão quando a data está no forecast (API OpenWeather = máx. 5 dias).
+ * Datas fora da janela (ex.: 01/04/2026) retornam null para não exibir clima incorreto.
  */
 export function getWeatherForDate(
   forecast: WeatherData[],
   date: string
 ): WeatherData | null {
-  // Convert date format if needed (DD/MM/YYYY -> YYYY-MM-DD)
-  let searchDate = date
-  if (date.includes('/')) {
-    const [day, month, year] = date.split('/')
-    searchDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
-  } else if (date.includes('T')) {
-    searchDate = date.split('T')[0]
-  }
-
+  const searchDate = normalizeToYYYYMMDD(date)
+  if (!searchDate || !forecast?.length) return null
   return forecast.find(w => w.date === searchDate) || null
 }
 
