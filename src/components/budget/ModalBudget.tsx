@@ -4,7 +4,9 @@ import type { Budget } from '@/types/Budget'
 import type { BudgetOrigin } from '@/types/Attraction'
 import { BUDGET_ORIGINS } from '@/config/constants'
 import { ModalBase } from '@/components/ui/ModalBase'
-import { currencyToNumber, formatCurrencyInput, dateToInputFormat } from '@/utils/formatters'
+import { currencyToNumber, formatCurrencyInput, dateToInputFormat, parseLocalDate, dateToYYYYMMDD } from '@/utils/formatters'
+
+import { DateField } from '../ui/DateField'
 
 interface ModalBudgetProps {
    budget?: Budget
@@ -15,7 +17,7 @@ interface ModalBudgetProps {
 
 type BudgetFormData = Omit<Budget, 'amount' | 'id'> & {
    amount: string | number
-   id?:  number
+   id?: number
 }
 
 const defaultValues: BudgetFormData = {
@@ -125,44 +127,44 @@ export function ModalBudget({ budget, isOpen, onClose, onSave }: ModalBudgetProp
                />
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
-               <div>
-                  <label htmlFor="budget-amount" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                     Valor (R$) *
-                  </label>
-                  <Controller
-                     name="amount"
-                     control={control}
-                     render={({ field }) => (
-                        <input
-                           id="budget-amount"
-                           type="text"
-                           required
-                           aria-required="true"
-                           aria-label="Valor do or\u00e7amento em reais"
-                           autoComplete="off"
-                           className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none"
-                           placeholder="0,00"
-                           value={field.value}
-                           onChange={e => field.onChange(formatCurrencyInput(e.target.value))}
-                        />
-                     )}
-                  />
-               </div>
-
-               <div>
-                  <label htmlFor="budget-date" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                     Data *
-                  </label>
-                  <input
-                     id="budget-date"
-                     type="date"
-                     required
-                     aria-required="true"
-                     className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none"
-                     {...register('date')}
-                  />
-               </div>
+            <div>
+               <label htmlFor="budget-amount" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                  Valor (R$) *
+               </label>
+               <Controller
+                  name="amount"
+                  control={control}
+                  render={({ field }) => (
+                     <input
+                        id="budget-amount"
+                        type="text"
+                        required
+                        aria-required="true"
+                        aria-label="Valor do or\u00e7amento em reais"
+                        autoComplete="off"
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none"
+                        placeholder="0,00"
+                        value={field.value}
+                        onChange={e => field.onChange(formatCurrencyInput(e.target.value))}
+                     />
+                  )}
+               />
+            </div>
+            <div>
+               <label htmlFor="budget-date" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                  Data *
+               </label>
+               <Controller
+                  name="date"
+                  control={control}
+                  render={({ field }) => (
+                     <DateField
+                        value={field.value ? parseLocalDate(field.value) : undefined}
+                        onChange={(date: Date | undefined) => field.onChange(date ? dateToYYYYMMDD(date) : '')}
+                        required
+                     />
+                  )}
+               />
             </div>
 
          </div>

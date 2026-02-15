@@ -3,10 +3,11 @@ import { useForm, Controller } from 'react-hook-form'
 import type { Expense, ExpenseCategory } from '@/types/Expense'
 import type { BudgetOrigin, Currency, Country } from '@/types/Attraction'
 import { EXPENSE_CATEGORIES, BUDGET_ORIGINS, COUNTRIES, getCategoryFromLabel, getBudgetOriginFromLabel } from '@/config/constants'
-import { convertToBRL, convertCurrency, formatCurrencyInputByCurrency, currencyToNumber, dateToInputFormat } from '@/utils/formatters'
+import { convertToBRL, convertCurrency, formatCurrencyInputByCurrency, currencyToNumber, dateToInputFormat, parseLocalDate, dateToYYYYMMDD } from '@/utils/formatters'
 import { ModalBase } from '@/components/ui/ModalBase'
 import { CustomSelect } from '@/components/ui/CustomSelect'
 import { useCurrency } from '@/hooks/useCurrency'
+import { DateField } from '../ui/DateField'
 
 interface ModalExpenseProps {
    expense?: Expense
@@ -265,17 +266,6 @@ export function ModalExpense({ expense, isOpen, onClose, onSave }: ModalExpenseP
             {/* Date and Country */}
             <div className="grid grid-cols-2 gap-3">
                <div>
-                  <label htmlFor="expense-date" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Data *</label>
-                  <input
-                     id="expense-date"
-                     type="date"
-                     required
-                     {...register('date', { required: true })}
-                     className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none text-gray-900 dark:text-gray-100"
-                  />
-               </div>
-
-               <div>
                   <label htmlFor="expense-country" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">País *</label>
                   <CustomSelect
                      value={formData.country ? `${COUNTRIES[formData.country].flag} ${COUNTRIES[formData.country].name}` : ''}
@@ -293,37 +283,6 @@ export function ModalExpense({ expense, isOpen, onClose, onSave }: ModalExpenseP
                      placeholder="Selecione o país"
                   />
                </div>
-            </div>
-
-            {/* Amount and Currency */}
-            <div className="grid grid-cols-2 gap-3">
-               <div>
-                  <label htmlFor="expense-amount" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Valor *</label>
-                  <Controller
-                     name="amount"
-                     control={control}
-                     rules={{ required: true }}
-                     render={({ field }) => (
-                        <input
-                           id="expense-amount"
-                           type="text"
-                           required
-                           autoComplete="off"
-                           value={typeof field.value === 'number'
-                              ? formatCurrencyInputByCurrency(field.value.toString(), formData.currency)
-                              : field.value
-                           }
-                           onChange={(e) => {
-                              const formatted = formatCurrencyInputByCurrency(e.target.value, formData.currency)
-                              field.onChange(formatted)
-                           }}
-                           className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none placeholder:text-gray-400 dark:placeholder:text-gray-500 text-gray-900 dark:text-gray-100"
-                           placeholder={formData.currency === 'BRL' ? 'R$ 0,00' : formData.currency === 'JPY' ? '¥ 0' : '₩ 0'}
-                        />
-                     )}
-                  />
-               </div>
-
                <div>
                   <label htmlFor="expense-currency" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Moeda *</label>
                   <CustomSelect
@@ -339,6 +298,46 @@ export function ModalExpense({ expense, isOpen, onClose, onSave }: ModalExpenseP
                      options={['R$ Real (BRL)', '¥ Iene (JPY)', '₩ Won (KRW)']}
                   />
                </div>
+            </div>
+            <div>
+               <label htmlFor="expense-amount" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Valor *</label>
+               <Controller
+                  name="amount"
+                  control={control}
+                  rules={{ required: true }}
+                  render={({ field }) => (
+                     <input
+                        id="expense-amount"
+                        type="text"
+                        required
+                        autoComplete="off"
+                        value={typeof field.value === 'number'
+                           ? formatCurrencyInputByCurrency(field.value.toString(), formData.currency)
+                           : field.value
+                        }
+                        onChange={(e) => {
+                           const formatted = formatCurrencyInputByCurrency(e.target.value, formData.currency)
+                           field.onChange(formatted)
+                        }}
+                        className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none placeholder:text-gray-400 dark:placeholder:text-gray-500 text-gray-900 dark:text-gray-100"
+                        placeholder={formData.currency === 'BRL' ? 'R$ 0,00' : formData.currency === 'JPY' ? '¥ 0' : '₩ 0'}
+                     />
+                  )}
+               />
+            </div>
+            <div>
+               <label htmlFor="expense-date" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Data *</label>
+               <Controller
+                  name="date"
+                  control={control}
+                  render={({ field }) => (
+                     <DateField
+                        value={field.value ? parseLocalDate(field.value) : undefined}
+                        onChange={(date: Date | undefined) => field.onChange(date ? dateToYYYYMMDD(date) : '')}
+                        required
+                     />
+                  )}
+               />
             </div>
 
             {/* Converted amount preview */}

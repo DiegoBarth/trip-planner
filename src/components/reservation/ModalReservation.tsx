@@ -8,7 +8,8 @@ import { CustomSelect } from '@/components/ui/CustomSelect'
 import { FileUpload } from './FileUpload'
 import { deleteFile } from '@/api/reservation'
 import { useCountry } from '@/contexts/CountryContext'
-import { dateToInputFormat } from '@/utils/formatters'
+import { dateToInputFormat, parseLocalDate, dateToYYYYMMDD } from '@/utils/formatters'
+import { DateField } from '@/components/ui/DateField'
 
 interface ModalReservationProps {
    reservation?: Reservation
@@ -231,10 +232,15 @@ export function ModalReservation({ reservation, isOpen, onClose, onSave }: Modal
                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
                         Data
                      </label>
-                     <input
-                        type="date"
-                        {...register('date')}
-                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none text-gray-900 dark:text-gray-100"
+                     <Controller
+                        name="date"
+                        control={control}
+                        render={({ field }) => (
+                           <DateField
+                              value={field.value ? parseLocalDate(field.value) : undefined}
+                              onChange={(date: Date | undefined) => field.onChange(date ? dateToYYYYMMDD(date) : '')}
+                           />
+                        )}
                      />
                   </div>
 
@@ -242,10 +248,15 @@ export function ModalReservation({ reservation, isOpen, onClose, onSave }: Modal
                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
                         Data Fim
                      </label>
-                     <input
-                        type="date"
-                        {...register('endDate')}
-                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none text-gray-900 dark:text-gray-100"
+                     <Controller
+                        name="endDate"
+                        control={control}
+                        render={({ field }) => (
+                           <DateField
+                              value={field.value ? parseLocalDate(field.value) : undefined}
+                              onChange={(date: Date | undefined) => field.onChange(date ? dateToYYYYMMDD(date) : '')}
+                           />
+                        )}
                      />
                   </div>
 

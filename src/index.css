@@ -225,3 +225,7 @@ html[data-theme="dark"] body {
 .glass-dark {
    @apply bg-gray-900/10 backdrop-blur-lg border border-gray-800/20;
 }
+
+.custom-calendar {
+   --rdp-accent-color: #60A5FA;
+}

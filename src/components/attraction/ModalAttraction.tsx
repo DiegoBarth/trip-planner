@@ -2,9 +2,10 @@ import { useEffect, useRef, useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import type { Attraction, Country, AttractionType, Currency, Period, ReservationStatus } from '@/types/Attraction'
 import { COUNTRIES, ATTRACTION_TYPES, PERIODS, RESERVATION_STATUS, WEEK_DAYS } from '@/config/constants'
-import { convertToBRL, formatCurrencyInputByCurrency, currencyToNumber, convertCurrency, dateToInputFormat } from '@/utils/formatters'
+import { convertToBRL, formatCurrencyInputByCurrency, currencyToNumber, convertCurrency, dateToInputFormat, parseLocalDate, dateToYYYYMMDD } from '@/utils/formatters'
 import { ModalBase } from '@/components/ui/ModalBase'
 import { CustomSelect } from '@/components/ui/CustomSelect'
+import { DateField } from '@/components/ui/DateField'
 import { useCountry } from '@/contexts/CountryContext'
 import { LocationField } from './LocationField'
 interface ModalAttractionProps {
@@ -368,18 +369,16 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
                         control={control}
                         rules={{ required: true }}
                         render={({ field }) => (
-                           <input
-                              type="date"
-                              required
-                              {...field}
-                              onChange={(e) => {
-                                 field.onChange(e.target.value)
-                                 // Auto-calculate day of week
-                                 // Add time to prevent timezone issues
-                                 const date = new Date(e.target.value + 'T12:00:00')
-                                 setValue('dayOfWeek', date.toLocaleDateString('en-US', { weekday: 'long' }))
+                           <DateField
+                              value={field.value ? parseLocalDate(field.value) : undefined}
+                              onChange={(date: Date | undefined) => {
+                                 const value = date ? dateToYYYYMMDD(date) : ''
+                                 field.onChange(value)
+                                 if (date) {
+                                    setValue('dayOfWeek', date.toLocaleDateString('en-US', { weekday: 'long' }))
+                                 }
                               }}
-                              className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none focus:outline-none transition-colors placeholder-gray-500 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
+                              required
                            />
                         )}
                      />
