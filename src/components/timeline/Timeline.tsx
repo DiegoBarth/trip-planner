@@ -8,11 +8,8 @@ import { useWeather } from '@/hooks/useWeather'
 import { getWeatherForDate } from '@/services/weatherService'
 
 interface TimelineProps {
-   /** Timeline já construída pela página (uma requisição OSRM por dia). */
    timeline: TimelineDay | null
-   /** Cidade do dia (para buscar clima mesmo antes da timeline carregar; obrigatório quando day='all'). */
    city?: string
-   /** Data do dia no formato da atração (YYYY-MM-DD ou DD/MM/YYYY) para lookup do clima. */
    date?: string
    onToggleVisited?: (id: number) => void
 }
@@ -40,7 +37,6 @@ export function Timeline({ timeline, city: cityProp, date: dateProp, onToggleVis
 
    return (
       <div className="space-y-6">
-         {/* Weather: exibe previsão da data do dia ou mensagem se fora da janela de 5 dias */}
          {dateForWeather && (
             weather ? (
                <WeatherBadge weather={weather} />
@@ -51,7 +47,6 @@ export function Timeline({ timeline, city: cityProp, date: dateProp, onToggleVis
             )
          )}
 
-         {/* Day header - neutro para não competir com o restante */}
          <div className="bg-gradient-to-br from-slate-600 to-slate-700 dark:from-slate-700 dark:to-slate-800 text-white rounded-2xl p-5 md:p-6 shadow-lg">
             <div className="space-y-4">
                {/* Date and Time */}
@@ -108,7 +103,6 @@ export function Timeline({ timeline, city: cityProp, date: dateProp, onToggleVis
             </div>
          </div>
 
-         {/* Timeline - linha contínua à esquerda, itens com espaçamento */}
          <div className="relative pl-3 md:pl-6 pt-2">
             <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-gray-200 dark:bg-gray-700 rounded-full" aria-hidden />
 

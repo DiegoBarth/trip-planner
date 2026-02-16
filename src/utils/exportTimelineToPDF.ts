@@ -166,7 +166,7 @@ export function exportTimelineToPDF(days: TimelineDay[]) {
    doc.setFontSize(8)
    doc.setTextColor(148, 163, 184)
    doc.text('Trip Planner · Timeline do Roteiro', PAGE_WIDTH / 2, footerY, { align: 'center' })
-console.log(days[0])
+
    const filename = days.length === 1
       ? `timeline-dia-${days[0].dayNumber}-${dateToInputFormat(days[0].date)}.pdf`
       : `timeline-roteiro-${new Date().toISOString().split('T')[0]}.pdf`

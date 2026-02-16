@@ -115,7 +115,6 @@ export function TimelineCard({
                   )}
                </div>
 
-               {/* Main info - alinhado ao AttractionCard */}
                <div className="mb-2">
                   <h3 className="text-base font-bold text-gray-900 dark:text-gray-100 mb-1.5 line-clamp-2">
                      {attraction.name}
@@ -124,7 +123,6 @@ export function TimelineCard({
                      <MapPin className="w-3.5 h-3.5 flex-shrink-0" />
                      <span>{attraction.region ? `${attraction.region}, ` : ''}{attraction.city}</span>
                   </div>
-                  {/* Custo - mesmo estilo do AttractionCard */}
                   {!isAccommodation && (
                      <div className="flex items-center gap-2 text-sm mt-1.5">
                         <Banknote className="w-3.5 h-3.5 text-green-600 dark:text-green-400 flex-shrink-0" />
@@ -162,7 +160,6 @@ export function TimelineCard({
                   </div>
                )}
 
-               {/* Conflitos - aviso discreto dentro do card */}
                {conflicts.length > 0 && (
                   <div className="space-y-2 mb-3">
                      {conflicts.map((conflict, index) => (
