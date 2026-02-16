@@ -391,6 +391,7 @@ export function ModalExpense({ expense, isOpen, onClose, onSave }: ModalExpenseP
                   id="expense-notes"
                   {...register('notes')}
                   rows={3}
+                  autoComplete="off"
                   className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none placeholder:text-gray-400 dark:placeholder:text-gray-500 text-gray-900 dark:text-gray-100"
                   placeholder="Anotações adicionais sobre este gasto..."
                />

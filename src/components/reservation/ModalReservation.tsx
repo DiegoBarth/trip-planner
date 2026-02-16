@@ -266,6 +266,7 @@ export function ModalReservation({ reservation, isOpen, onClose, onSave }: Modal
                      </label>
                      <input
                         type="time"
+                        autoComplete="off"
                         {...register('time')}
                         className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none text-gray-900 dark:text-gray-100"
                      />
@@ -431,6 +432,7 @@ export function ModalReservation({ reservation, isOpen, onClose, onSave }: Modal
                <textarea
                   {...register('notes')}
                   rows={3}
+                  autoComplete="off"
                   className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none focus:outline-none placeholder:text-gray-400 dark:placeholder:text-gray-500 text-gray-900 dark:text-gray-100 resize-none"
                   placeholder="Informações adicionais importantes..."
                />

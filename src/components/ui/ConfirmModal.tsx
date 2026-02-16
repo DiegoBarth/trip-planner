@@ -61,7 +61,7 @@ export function ConfirmModal({
          />
          <div
             ref={trapRef}
-            className="relative w-full max-w-sm bg-white dark:bg-gray-800 rounded-t-2xl md:rounded-2xl shadow-2xl mx-auto"
+            className="relative w-full max-w-sm md:max-w-md bg-white dark:bg-gray-800 rounded-t-2xl md:rounded-2xl shadow-2xl mx-auto"
          >
             <div className="flex items-center justify-between px-4 py-3 md:px-6 md:py-4 border-b border-gray-200 dark:border-gray-700">
                <h2 id="confirm-modal-title" className="text-lg font-semibold text-gray-900 dark:text-gray-100">

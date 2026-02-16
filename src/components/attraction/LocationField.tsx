@@ -37,6 +37,7 @@ export function LocationField({
                render={({ field }) => (
                   <input
                      type="url"
+                     autoComplete="off"
                      value={field.value || ''}
                      onChange={(e) => field.onChange(e.target.value)}
                      className="flex-1 px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none focus:outline-none transition-colors placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-gray-100"
@@ -55,8 +56,8 @@ export function LocationField({
             </button>
          </div>
 
-         <input type="hidden" {...register('lat', { valueAsNumber: true })} />
-         <input type="hidden" {...register('lng', { valueAsNumber: true })} />
+         <input type="hidden" autoComplete="off" {...register('lat', { valueAsNumber: true })} />
+         <input type="hidden" autoComplete="off" {...register('lng', { valueAsNumber: true })} />
 
          {results.length > 0 && (
             <div className="mt-3 border-2 border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 shadow-sm max-h-60 overflow-auto">

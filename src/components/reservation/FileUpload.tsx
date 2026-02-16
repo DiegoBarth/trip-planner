@@ -158,6 +158,7 @@ export function FileUpload({
             <div className="relative">
                <input
                   type="file"
+                  autoComplete="off"
                   onChange={handleFileSelect}
                   disabled={isUploading}
                   className="hidden"

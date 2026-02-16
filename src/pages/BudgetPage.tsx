@@ -65,7 +65,7 @@ export function BudgetPage() {
             filter={<BudgetOriginFilter value={budgetOrigin} onChange={setBudgetOrigin} />}
          />
 
-         <main className="max-w-6xl mx-auto px-4 py-6 mb-12">
+         <main className="max-w-6xl mx-auto px-4 md:px-6 py-6 mb-12">
             <BudgetList
                budgets={filteredBudgets}
                isLoading={!isReady}

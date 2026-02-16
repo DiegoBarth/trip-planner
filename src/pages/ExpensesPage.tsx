@@ -60,14 +60,14 @@ export function ExpensesPage() {
             title="Gastos"
             subtitle="Registre e acompanhe seus gastos"
             filter={
-               <div className="flex gap-2 flex-wrap">
+               <div className="flex gap-2 flex-wrap md:flex-nowrap">
                   <CountryFilter showDayFilter={false} />
                   <BudgetOriginFilter value={budgetOrigin} onChange={setBudgetOrigin} />
                </div>
             }
          />
 
-         <main className="max-w-6xl mx-auto px-4 py-6 mb-12">
+         <main className="max-w-6xl mx-auto px-4 md:px-6 py-6 mb-12">
             <ExpenseList
                expenses={filteredExpenses}
                onCreate={handleCreate}

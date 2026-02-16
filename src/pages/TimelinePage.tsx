@@ -245,7 +245,7 @@ export function TimelinePage() {
          />
 
          {/* Main content */}
-         <main className="max-w-6xl mx-auto px-4 py-6">
+         <main className="max-w-6xl mx-auto px-4 md:px-6 py-6">
             {/* Weather info banner */}
             {!import.meta.env.VITE_OPENWEATHER_API_KEY && (
                <div className="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6 rounded-lg">

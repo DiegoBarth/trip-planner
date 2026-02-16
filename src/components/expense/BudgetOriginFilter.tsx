@@ -23,7 +23,7 @@ interface BudgetOriginFilterProps {
 
 export function BudgetOriginFilter({ value, onChange }: BudgetOriginFilterProps) {
    return (
-      <div className="flex-1 min-w-[140px]">
+      <div className="flex-1 min-w-[140px] md:max-w-[200px]">
          <CustomSelect
             id="budget-origin-filter"
             value={valueToLabel(value)}

@@ -35,8 +35,8 @@ export function CountryFilter({ showDayFilter = true }: CountryFilterProps) {
    }
 
    return (
-      <div className="flex gap-2 flex-wrap">
-         <div className="flex-1 min-w-[140px]">
+      <div className="flex gap-2 flex-wrap md:flex-nowrap">
+         <div className="flex-1 min-w-[140px] md:max-w-[200px]">
             <CustomSelect
                id="country-filter"
                value={countryToLabel(country)}
@@ -49,7 +49,7 @@ export function CountryFilter({ showDayFilter = true }: CountryFilterProps) {
             />
          </div>
          {showDayFilter && (
-            <div className="flex-1 min-w-[140px]">
+            <div className="flex-1 min-w-[140px] md:max-w-[200px]">
                <CustomSelect
                   id="day-filter"
                   value={dayValue}

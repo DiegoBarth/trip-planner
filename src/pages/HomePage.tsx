@@ -45,20 +45,17 @@ export function HomePage({ onLogout }: Props) {
          </header>
 
          {/* Main Content */}
-         <main className="max-w-6xl mx-auto px-4 py-6 space-y-6">
-            {/* Next Day Summary */}
-            <section>
-               <NextDaySummary />
-            </section>
-
-            {/* Today's Pendencies */}
-            <section>
-               <TodaysPendencies />
-            </section>
-
-            <section>
-               <TodayExpensesCard />
-            </section>
+         <main className="max-w-6xl mx-auto px-4 md:px-6 py-6 space-y-6">
+            {/* Top row: Next Day (left) + Pendências & Gastos (right) on desktop */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+               <section className="md:col-span-2">
+                  <NextDaySummary />
+               </section>
+               <section className="flex flex-col gap-6">
+                  <TodaysPendencies />
+                  <TodayExpensesCard />
+               </section>
+            </div>
 
             {/* Quick Actions */}
             <section>

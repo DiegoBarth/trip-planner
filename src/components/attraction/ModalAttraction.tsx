@@ -264,6 +264,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
                      <input
                         type="text"
                         required
+                        autoComplete="off"
                         {...register('name', { required: true })}
                         className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none transition-colors placeholder-gray-500 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
                         placeholder="Ex: Templo Senso-ji"
@@ -302,6 +303,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
                      <input
                         type="text"
                         required
+                        autoComplete="off"
                         {...register('city', { required: true })}
                         className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none transition-colors placeholder-gray-500 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
                         placeholder="Ex: Tóquio"
@@ -314,6 +316,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
                      </label>
                      <input
                         type="text"
+                        autoComplete="off"
                         {...register('region')}
                         className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none focus:outline-none transition-colors placeholder-gray-500 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
                         placeholder="Ex: Asakusa"
@@ -415,6 +418,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
                      </label>
                      <input
                         type="time"
+                        autoComplete="off"
                         {...register('openingTime')}
                         className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none focus:outline-none transition-colors placeholder-gray-500 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
                      />
@@ -426,6 +430,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
                      </label>
                      <input
                         type="time"
+                        autoComplete="off"
                         {...register('closingTime')}
                         className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none focus:outline-none transition-colors placeholder-gray-500 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
                      />
@@ -438,6 +443,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
                      <input
                         type="number"
                         min="0"
+                        autoComplete="off"
                         {...register('duration', { valueAsNumber: true })}
                         className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none focus:outline-none transition-colors placeholder-gray-500 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
                      />
@@ -502,6 +508,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
                         render={({ field }) => (
                            <input
                               type="text"
+                              autoComplete="off"
                               value={typeof field.value === 'string' ? field.value : ''}
                               onChange={(e) => {
                                  field.onChange(e.target.value)
@@ -642,6 +649,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
                            </label>
                            <input
                               type="url"
+                              autoComplete="off"
                               {...register('ticketLink')}
                               className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none focus:outline-none transition-colors placeholder-gray-500 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
                               placeholder="https://..."
@@ -655,6 +663,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
                         </label>
                         <input
                            type="url"
+                           autoComplete="off"
                            {...register('imageUrl')}
                            className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none focus:outline-none transition-colors placeholder-gray-500 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
                            placeholder="https://..."
@@ -668,6 +677,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
                         <textarea
                            {...register('notes')}
                            rows={3}
+                           autoComplete="off"
                            className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none focus:outline-none transition-colors resize-none placeholder-gray-500 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
                            placeholder="Anotações adicionais..."
                         />

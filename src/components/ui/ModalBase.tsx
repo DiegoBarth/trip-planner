@@ -83,7 +83,7 @@ export function ModalBase({
          <div
             ref={trapRef}
             className={cn(
-               'relative w-full max-h-[50vh] bg-white dark:bg-gray-800 rounded-t-2xl md:rounded-2xl flex flex-col shadow-2xl',
+               'relative w-full max-h-[80vh] md:max-h-[90vh] bg-white dark:bg-gray-800 rounded-t-2xl md:rounded-2xl flex flex-col shadow-2xl',
                sizeClasses[size]
             )}
          >

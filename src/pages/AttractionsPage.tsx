@@ -88,7 +88,7 @@ export function AttractionsPage() {
             filter={<CountryFilter />}
          />
 
-         <main className="max-w-6xl mx-auto px-4 py-6 mb-12">
+         <main className="max-w-6xl mx-auto px-4 md:px-6 py-6 mb-12">
             <AttractionsList
                attractions={filteredAttractions}
                isLoading={!isReady}

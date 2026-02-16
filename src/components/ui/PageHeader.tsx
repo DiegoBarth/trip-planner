@@ -27,7 +27,7 @@ export function PageHeader({
   return (
     <header className={cn(
       'sticky top-0 z-30 bg-gradient-to-r from-blue-600 to-purple-600 text-white',
-      'px-4 pt-3 pb-4 shadow-lg',
+      'px-4 md:px-6 pt-3 pb-4 shadow-lg',
       className
     )}>
       <div className="max-w-6xl mx-auto">

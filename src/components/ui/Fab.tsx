@@ -14,13 +14,13 @@ export function Fab({ onClick, icon, label, className }: FabProps) {
     <button
       onClick={onClick}
       className={cn(
-        'fixed bottom-20 right-4 md:bottom-6 md:right-6',
+        'fixed bottom-20 right-4 md:right-8',
         'flex items-center gap-2 px-4 py-4 rounded-full',
         'bg-gradient-to-r from-blue-600 to-purple-600 text-white',
         'shadow-lg hover:shadow-xl active:scale-95',
         'transition-all duration-200',
         'focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none',
-        'z-40',
+        'z-[60]',
         className
       )}
       aria-label={label || 'Adicionar'}
