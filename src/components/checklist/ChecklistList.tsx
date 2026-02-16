@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react'
 import { ListChecks, FileDown, Luggage, CheckCircle } from 'lucide-react'
 import { ChecklistCard } from './ChecklistCard'
 import { ModalChecklistItem } from './ModalChecklistItem'
+import { ConfirmModal } from '@/components/ui/ConfirmModal'
 import { EmptyState } from '@/components/ui/EmptyState'
 import type { ChecklistItem } from '@/types/ChecklistItem'
 import { CHECKLIST_CATEGORIES } from '@/config/constants'
@@ -26,6 +27,7 @@ export function ChecklistList({
 }: ChecklistListProps) {
    const [isModalOpen, setIsModalOpen] = useState(false)
    const [editingItem, setEditingItem] = useState<ChecklistItem | undefined>()
+   const [itemToDelete, setItemToDelete] = useState<ChecklistItem | null>(null)
 
    // Group by category and sort
    const groupedByCategory = useMemo(() => {
@@ -78,6 +80,12 @@ export function ChecklistList({
 
    const handleExportPDF = () => {
       exportChecklistToPDF({ items })
+   }
+
+   const handleConfirmDelete = async () => {
+      if (!itemToDelete) return
+      await onDelete(itemToDelete.id)
+      setItemToDelete(null)
    }
 
    if (isLoading) return null
@@ -194,7 +202,7 @@ export function ChecklistList({
                                     key={item.id}
                                     item={item}
                                     onEdit={() => handleOpenModal(item)}
-                                    onDelete={onDelete}
+                                    onDeleteRequest={() => setItemToDelete(item)}
                                     onTogglePacked={onTogglePacked}
                                  />
                               ))}
@@ -210,6 +218,18 @@ export function ChecklistList({
             isOpen={isModalOpen}
             onClose={handleCloseModal}
             onSave={handleSave}
+         />
+
+         <ConfirmModal
+            isOpen={!!itemToDelete}
+            onClose={() => setItemToDelete(null)}
+            title="Excluir item"
+            message={
+               itemToDelete ? (
+                  <>Tem certeza que deseja excluir &quot;{itemToDelete.description}&quot;?</>
+               ) : null
+            }
+            onConfirm={handleConfirmDelete}
          />
       </div>
    )

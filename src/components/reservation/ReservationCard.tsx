@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { Pencil, Trash2, ExternalLink, FileText, MapPin, Calendar, Clock } from 'lucide-react'
 import type { Reservation } from '@/types/Reservation'
 import { RESERVATION_TYPES, BOOKING_STATUS, COUNTRIES } from '@/config/constants'
@@ -7,25 +6,12 @@ import { formatDate } from '@/utils/formatters'
 interface ReservationCardProps {
   reservation: Reservation
   onEdit: () => void
-  onDelete: (id: number) => void
+  onDeleteRequest: () => void
 }
 
-export function ReservationCard({ reservation, onEdit, onDelete }: ReservationCardProps) {
-  const [isDeleting, setIsDeleting] = useState(false)
+export function ReservationCard({ reservation, onEdit, onDeleteRequest }: ReservationCardProps) {
   const typeConfig = RESERVATION_TYPES[reservation.type]
   const statusConfig = BOOKING_STATUS[reservation.status]
-
-  const handleDelete = async () => {
-    if (window.confirm(`Tem certeza que deseja excluir "${reservation.title}"?`)) {
-      setIsDeleting(true)
-      try {
-        await onDelete(reservation.id)
-      } catch (error) {
-        console.error('Error deleting reservation:', error)
-        setIsDeleting(false)
-      }
-    }
-  }
 
   const formatDateRange = () => {
     if (!reservation.date) return null
@@ -36,11 +22,7 @@ export function ReservationCard({ reservation, onEdit, onDelete }: ReservationCa
   }
 
   return (
-    <div
-      className={`relative bg-white dark:bg-gray-800 rounded-2xl shadow-md overflow-hidden transition-all hover:shadow-lg ${
-        isDeleting ? 'opacity-50 pointer-events-none' : ''
-      }`}
-    >
+    <div className="relative bg-white dark:bg-gray-800 rounded-2xl shadow-md overflow-hidden transition-all hover:shadow-lg">
       {/* Faixa superior por tipo - identidade da tela de reservas */}
       <div
         className="h-1"
@@ -77,7 +59,7 @@ export function ReservationCard({ reservation, onEdit, onDelete }: ReservationCa
               <Pencil className="w-4 h-4" />
             </button>
             <button
-              onClick={(e) => { e.stopPropagation(); handleDelete() }}
+              onClick={(e) => { e.stopPropagation(); onDeleteRequest() }}
               className="p-2 rounded-xl text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors"
               title="Excluir"
               aria-label="Excluir"

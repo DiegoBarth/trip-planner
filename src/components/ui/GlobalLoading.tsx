@@ -24,7 +24,7 @@ export function GlobalLoading() {
     >
       <div className="flex flex-col items-center gap-4 px-8 py-6">
         <Loader2 className="h-12 w-12 animate-spin text-blue-500 dark:text-blue-400" aria-hidden />
-        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Aguarde...</span>
+        <span className="text-sm font-medium text-white">Aguarde...</span>
       </div>
     </div>
   )

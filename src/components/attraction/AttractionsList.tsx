@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { GripVertical } from 'lucide-react'
 import { AttractionsGrid } from './AttractionsGrid'
 import { ModalAttraction } from './ModalAttraction'
+import { ConfirmModal } from '@/components/ui/ConfirmModal'
 import type { Attraction } from '@/types/Attraction'
 import { getAutoDayForDate, getNextOrderForDate } from '@/utils/attractionDayUtils'
 import { dateToInputFormat } from '@/utils/formatters'
@@ -28,6 +29,7 @@ export function AttractionsList({
    const [isModalOpen, setIsModalOpen] = useState(false)
    const [editingAttraction, setEditingAttraction] =
       useState<Attraction | undefined>()
+   const [attractionToDelete, setAttractionToDelete] = useState<Attraction | null>(null)
    const [isDragEnabled, setIsDragEnabled] = useState(false)
    const [isMobile, setIsMobile] = useState(() => {
       if (typeof window !== 'undefined') {
@@ -88,6 +90,17 @@ export function AttractionsList({
       }
    }
 
+   const handleDeleteRequest = (id: number) => {
+      const a = attractions.find(x => x.id === id)
+      if (a) setAttractionToDelete(a)
+   }
+
+   const handleConfirmDelete = async () => {
+      if (!attractionToDelete) return
+      await onDelete(attractionToDelete.id)
+      setAttractionToDelete(null)
+   }
+
    return (
       <div>
          <div className="flex items-center justify-between gap-4 mb-5 flex-wrap">
@@ -121,7 +134,7 @@ export function AttractionsList({
                attractions={attractions}
                groupBy="country"
                onToggleVisited={onToggleVisited}
-               onDelete={onDelete}
+               onDelete={handleDeleteRequest}
                onEdit={(attraction) => {
                   setEditingAttraction(attraction)
                   setIsModalOpen(true)
@@ -141,6 +154,18 @@ export function AttractionsList({
                setEditingAttraction(undefined)
             }}
             onSave={handleSave}
+         />
+
+         <ConfirmModal
+            isOpen={!!attractionToDelete}
+            onClose={() => setAttractionToDelete(null)}
+            title="Excluir atração"
+            message={
+               attractionToDelete ? (
+                  <>Tem certeza que deseja excluir &quot;{attractionToDelete.name}&quot;?</>
+               ) : null
+            }
+            onConfirm={handleConfirmDelete}
          />
       </div>
    )

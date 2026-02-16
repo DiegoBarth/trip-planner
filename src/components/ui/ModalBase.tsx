@@ -133,8 +133,8 @@ export function ModalBase({
                      aria-label="Excluir registro permanentemente"
                      type="button"
                      className={cn(
-                        'flex-1 px-4 py-2.5 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition-all focus:ring-2 focus:ring-red-500 dark:focus:ring-red-500 focus:outline-none',
-                        loading && 'opacity-50 cursor-not-allowed'
+                        'flex-1 px-4 py-2.5 text-sm font-medium text-white rounded-lg transition-all focus:ring-2 focus:ring-red-500 dark:focus:ring-red-500 focus:outline-none',
+                        loading ? 'bg-red-500 cursor-wait' : 'bg-red-600 hover:bg-red-700'
                      )}
                   >
                      {loading && loadingText === 'Excluindo...' ? 'Excluindo...' : 'Excluir'}
@@ -148,8 +148,8 @@ export function ModalBase({
                      aria-label={type === 'create' ? 'Salvar novo registro' : 'Salvar alterações'}
                      type="button"
                      className={cn(
-                        'flex-1 px-4 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-all focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:outline-none',
-                        loading && 'opacity-50 cursor-not-allowed'
+                        'flex-1 px-4 py-2.5 text-sm font-medium text-white rounded-lg transition-all focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-500 focus:outline-none',
+                        loading ? 'bg-blue-500 cursor-wait' : 'bg-blue-600 hover:bg-blue-700'
                      )}
                   >
                      {loading && loadingText !== 'Excluindo...' ? loadingText : 'Salvar'}

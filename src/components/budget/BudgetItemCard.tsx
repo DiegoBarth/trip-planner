@@ -6,7 +6,7 @@ import { formatCurrency, formatDate } from '@/utils/formatters'
 interface BudgetItemCardProps {
   budget: Budget
   onEdit?: (budget: Budget) => void
-  onDelete?: (id: number) => void
+  onDelete?: () => void
 }
 
 export function BudgetItemCard({ budget, onEdit, onDelete }: BudgetItemCardProps) {
@@ -39,7 +39,7 @@ export function BudgetItemCard({ budget, onEdit, onDelete }: BudgetItemCardProps
               <Pencil className="w-4 h-4" />
             </button>
             <button
-              onClick={() => onDelete?.(budget.id)}
+              onClick={() => onDelete?.()}
               className="p-2 rounded-xl text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors"
               title="Excluir"
               aria-label="Excluir"

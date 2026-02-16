@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react'
 import { ExpenseCard } from './ExpenseCard'
 import { ModalExpense } from './ModalExpense'
+import { ConfirmModal } from '@/components/ui/ConfirmModal'
 import { EmptyState } from '@/components/ui/EmptyState'
 import type { Expense } from '@/types/Expense'
 import { COUNTRIES } from '@/config/constants'
@@ -26,6 +27,7 @@ export function ExpenseList({
 }: ExpenseListProps) {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingExpense, setEditingExpense] = useState<Expense | undefined>()
+  const [expenseToDelete, setExpenseToDelete] = useState<Expense | null>(null)
 
   const { groupedByCountry, orderedCountryKeys } = useMemo(() => {
     const grouped = expenses.reduce((acc, expense) => {
@@ -58,6 +60,12 @@ export function ExpenseList({
   const handleCloseModal = () => {
     setEditingExpense(undefined)
     setIsModalOpen(false)
+  }
+
+  const handleConfirmDelete = async () => {
+    if (!expenseToDelete) return
+    await onDelete(expenseToDelete.id)
+    setExpenseToDelete(null)
   }
 
   const handleSave = async (data: Omit<Expense, 'id'>) => {
@@ -139,7 +147,7 @@ export function ExpenseList({
                       key={expense.id}
                       expense={expense}
                       onEdit={() => handleOpenModal(expense)}
-                      onDelete={onDelete}
+                      onDelete={() => setExpenseToDelete(expense)}
                     />
                   ))}
                 </div>
@@ -154,6 +162,18 @@ export function ExpenseList({
         isOpen={isModalOpen}
         onClose={handleCloseModal}
         onSave={handleSave}
+      />
+
+      <ConfirmModal
+        isOpen={!!expenseToDelete}
+        onClose={() => setExpenseToDelete(null)}
+        title="Excluir gasto"
+        message={
+          expenseToDelete ? (
+            <>Tem certeza que deseja excluir este gasto ({formatCurrency(expenseToDelete.amount, expenseToDelete.currency)})?</>
+          ) : null
+        }
+        onConfirm={handleConfirmDelete}
       />
     </div>
   )

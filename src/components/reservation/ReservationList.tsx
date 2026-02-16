@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react'
 import { FileCheck } from 'lucide-react'
 import { ReservationCard } from './ReservationCard'
 import { ModalReservation } from './ModalReservation'
+import { ConfirmModal } from '@/components/ui/ConfirmModal'
 import { EmptyState } from '@/components/ui/EmptyState'
 import type { Reservation } from '@/types/Reservation'
 import { formatDate, dateToInputFormat, parseLocalDate } from '@/utils/formatters'
@@ -23,6 +24,7 @@ export function ReservationList({
 }: ReservationListProps) {
    const [isModalOpen, setIsModalOpen] = useState(false)
    const [editingReservation, setEditingReservation] = useState<Reservation | undefined>()
+   const [reservationToDelete, setReservationToDelete] = useState<Reservation | null>(null)
 
    const sortedReservations = useMemo(() => {
       const typePriority: Record<Reservation['type'], number> = {
@@ -95,6 +97,12 @@ export function ReservationList({
       }
    }
 
+   const handleConfirmDelete = async () => {
+      if (!reservationToDelete) return
+      await onDelete(reservationToDelete.id)
+      setReservationToDelete(null)
+   }
+
    if (isLoading) return null
 
    return (
@@ -153,7 +161,7 @@ export function ReservationList({
                                  key={reservation.id}
                                  reservation={reservation}
                                  onEdit={() => handleOpenModal(reservation)}
-                                 onDelete={onDelete}
+                                 onDeleteRequest={() => setReservationToDelete(reservation)}
                               />
                            ))}
                         </div>
@@ -179,7 +187,7 @@ export function ReservationList({
                                     key={reservation.id}
                                     reservation={reservation}
                                     onEdit={() => handleOpenModal(reservation)}
-                                    onDelete={onDelete}
+                                    onDeleteRequest={() => setReservationToDelete(reservation)}
                                  />
                               ))}
                            </div>
@@ -195,6 +203,18 @@ export function ReservationList({
             isOpen={isModalOpen}
             onClose={handleCloseModal}
             onSave={handleSave}
+         />
+
+         <ConfirmModal
+            isOpen={!!reservationToDelete}
+            onClose={() => setReservationToDelete(null)}
+            title="Excluir reserva"
+            message={
+               reservationToDelete ? (
+                  <>Tem certeza que deseja excluir &quot;{reservationToDelete.title}&quot;?</>
+               ) : null
+            }
+            onConfirm={handleConfirmDelete}
          />
       </div>
    )

@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { Pencil, Trash2, Package } from 'lucide-react'
 import type { ChecklistItem } from '@/types/ChecklistItem'
 import { CHECKLIST_CATEGORIES } from '@/config/constants'
@@ -6,26 +5,13 @@ import { CHECKLIST_CATEGORIES } from '@/config/constants'
 interface ChecklistCardProps {
   item: ChecklistItem
   onEdit: () => void
-  onDelete: (id: number) => void
+  onDeleteRequest: () => void
   onTogglePacked: (id: number, isPacked: boolean) => void
 }
 
-export function ChecklistCard({ item, onEdit, onDelete, onTogglePacked }: ChecklistCardProps) {
-  const [isDeleting, setIsDeleting] = useState(false)
+export function ChecklistCard({ item, onEdit, onDeleteRequest, onTogglePacked }: ChecklistCardProps) {
   const category = CHECKLIST_CATEGORIES[item.category as keyof typeof CHECKLIST_CATEGORIES]
   const color = category?.color ?? '#6b7280'
-
-  const handleDelete = async () => {
-    if (window.confirm(`Tem certeza que deseja excluir "${item.description}"?`)) {
-      setIsDeleting(true)
-      try {
-        await onDelete(item.id)
-      } catch (error) {
-        console.error('Error deleting item:', error)
-        setIsDeleting(false)
-      }
-    }
-  }
 
   const handleToggle = async () => {
     try {
@@ -39,7 +25,7 @@ export function ChecklistCard({ item, onEdit, onDelete, onTogglePacked }: Checkl
     <div
       className={`group bg-white dark:bg-gray-800 rounded-2xl shadow-md overflow-hidden border-l-4 transition-all hover:shadow-lg ${
         item.isPacked ? 'bg-emerald-50/50 dark:bg-emerald-900/30 border-emerald-400' : ''
-      } ${isDeleting ? 'opacity-50 pointer-events-none' : ''}`}
+      }`}
       style={!item.isPacked ? { borderLeftColor: color } : undefined}
     >
       <div className="p-4">
@@ -106,7 +92,7 @@ export function ChecklistCard({ item, onEdit, onDelete, onTogglePacked }: Checkl
               <Pencil className="w-4 h-4" />
             </button>
             <button
-              onClick={(e) => { e.stopPropagation(); handleDelete() }}
+              onClick={(e) => { e.stopPropagation(); onDeleteRequest() }}
               className="p-2 rounded-xl text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none"
               title="Excluir"
               aria-label="Excluir"

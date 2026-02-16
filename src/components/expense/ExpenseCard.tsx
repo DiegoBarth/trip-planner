@@ -33,7 +33,7 @@ const CATEGORY_ICON_BG: Record<string, string> = {
 interface ExpenseCardProps {
   expense: Expense
   onEdit?: (expense: Expense) => void
-  onDelete?: (id: number) => void
+  onDelete?: () => void
 }
 
 export function ExpenseCard({ expense, onEdit, onDelete }: ExpenseCardProps) {
@@ -94,7 +94,7 @@ export function ExpenseCard({ expense, onEdit, onDelete }: ExpenseCardProps) {
                 <Pencil className="w-4 h-4" />
               </button>
               <button
-                onClick={() => onDelete?.(expense.id)}
+                onClick={() => onDelete?.()}
                 className="p-2 rounded-xl text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors"
                 title="Excluir"
                 aria-label="Excluir"
