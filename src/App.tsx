@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { GoogleLogin, googleLogout, type CredentialResponse } from "@react-oauth/google";
 import { useToast } from '@/contexts/toast';
 import { verifyEmailAuthorization } from "@/api/home";
-import { createQueryClient } from "@/main";
+import { createQueryClient } from '@/lib/queryClient';
 import { AppRouter } from "@/AppRouter";
 import { AUTH_TIMEOUT_MS, AUTH_REFRESH_INTERVAL_MS } from "@/config/constants";
 

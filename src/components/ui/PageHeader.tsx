@@ -27,38 +27,36 @@ export function PageHeader({
   return (
     <header className={cn(
       'sticky top-0 z-30 bg-gradient-to-r from-blue-600 to-purple-600 text-white',
-      'px-4 pt-4 pb-6 shadow-lg',
+      'px-4 pt-3 pb-4 shadow-lg',
       className
     )}>
       <div className="max-w-6xl mx-auto">
-        {showBack && (
-          <button
-            onClick={() => navigate('/')}
-            className="flex items-center gap-2 text-white/90 hover:text-white transition-colors mb-4 focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none"
-          >
-            <ArrowLeft className="w-5 h-5" />
-            <span className="text-sm font-medium">Voltar</span>
-          </button>
-        )}
-        
-        <div className="flex items-start justify-between gap-4">
-          <div className="flex-1 min-w-0">
-            <h1 className="text-2xl md:text-3xl font-bold font-display truncate">
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex flex-1 items-center gap-2 min-w-0">
+            {showBack && (
+              <button
+                onClick={() => navigate('/')}
+                className="flex items-center gap-1.5 text-white/90 hover:text-white transition-colors flex-shrink-0 focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none"
+              >
+                <ArrowLeft className="w-5 h-5" />
+                <span className="text-sm font-medium hidden sm:inline">Voltar</span>
+              </button>
+            )}
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold font-display truncate">
               {title}
             </h1>
-            {subtitle && (
-              <p className="text-sm md:text-base text-white/90 mt-1 line-clamp-2">
-                {subtitle}
-              </p>
-            )}
           </div>
-          
           <div className="flex items-center gap-2 flex-shrink-0">
             {action}
             <ThemeToggle />
           </div>
         </div>
-        {filter && <div className="mt-4">{filter}</div>}
+        {subtitle && (
+          <p className="text-white/90 mt-0.5 line-clamp-2 text-xs sm:text-sm md:text-base hidden sm:block">
+            {subtitle}
+          </p>
+        )}
+        {filter && <div className="mt-3">{filter}</div>}
       </div>
     </header>
   )
