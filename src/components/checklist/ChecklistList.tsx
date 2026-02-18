@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react'
 import { ListChecks, FileDown, Luggage, CheckCircle } from 'lucide-react'
 import { ChecklistCard } from './ChecklistCard'
 import { ModalChecklistItem } from './ModalChecklistItem'
+import { ChecklistActionsModal } from './ChecklistActionsModal'
 import { ConfirmModal } from '@/components/ui/ConfirmModal'
 import { EmptyState } from '@/components/ui/EmptyState'
 import type { ChecklistItem } from '@/types/ChecklistItem'
@@ -28,6 +29,7 @@ export function ChecklistList({
    const [isModalOpen, setIsModalOpen] = useState(false)
    const [editingItem, setEditingItem] = useState<ChecklistItem | undefined>()
    const [itemToDelete, setItemToDelete] = useState<ChecklistItem | null>(null)
+   const [itemForActions, setItemForActions] = useState<ChecklistItem | null>(null)
 
    // Group by category and sort
    const groupedByCategory = useMemo(() => {
@@ -57,11 +59,6 @@ export function ChecklistList({
       return { total, packed, unpacked: total - packed, percentage }
    }, [items])
 
-   const handleOpenModal = (item?: ChecklistItem) => {
-      setEditingItem(item)
-      setIsModalOpen(true)
-   }
-
    const handleCloseModal = () => {
       setEditingItem(undefined)
       setIsModalOpen(false)
@@ -86,6 +83,21 @@ export function ChecklistList({
       if (!itemToDelete) return
       await onDelete(itemToDelete.id)
       setItemToDelete(null)
+   }
+
+   const handleCardClick = (item: ChecklistItem) => {
+      setItemForActions(item)
+   }
+
+   const handleOpenEditFromActions = (item: ChecklistItem) => {
+      setItemForActions(null)
+      setEditingItem(item)
+      setIsModalOpen(true)
+   }
+
+   const handleOpenDeleteFromActions = (item: ChecklistItem) => {
+      setItemForActions(null)
+      setItemToDelete(item)
    }
 
    if (isLoading) return null
@@ -201,8 +213,7 @@ export function ChecklistList({
                                  <ChecklistCard
                                     key={item.id}
                                     item={item}
-                                    onEdit={() => handleOpenModal(item)}
-                                    onDeleteRequest={() => setItemToDelete(item)}
+                                    onClick={handleCardClick}
                                     onTogglePacked={onTogglePacked}
                                  />
                               ))}
@@ -218,6 +229,14 @@ export function ChecklistList({
             isOpen={isModalOpen}
             onClose={handleCloseModal}
             onSave={handleSave}
+         />
+
+         <ChecklistActionsModal
+            item={itemForActions}
+            isOpen={!!itemForActions}
+            onClose={() => setItemForActions(null)}
+            onEdit={handleOpenEditFromActions}
+            onDelete={handleOpenDeleteFromActions}
          />
 
          <ConfirmModal

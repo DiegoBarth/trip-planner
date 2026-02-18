@@ -1,21 +1,21 @@
-import { Pencil, Trash2, Package } from 'lucide-react'
+import { Package } from 'lucide-react'
 import type { ChecklistItem } from '@/types/ChecklistItem'
 import { CHECKLIST_CATEGORIES } from '@/config/constants'
 
 interface ChecklistCardProps {
   item: ChecklistItem
-  onEdit: () => void
-  onDeleteRequest: () => void
+  onClick?: (item: ChecklistItem) => void
   onTogglePacked: (id: number, isPacked: boolean) => void
 }
 
-export function ChecklistCard({ item, onEdit, onDeleteRequest, onTogglePacked }: ChecklistCardProps) {
+export function ChecklistCard({ item, onClick, onTogglePacked }: ChecklistCardProps) {
   const category = CHECKLIST_CATEGORIES[item.category as keyof typeof CHECKLIST_CATEGORIES]
   const color = category?.color ?? '#6b7280'
 
-  const handleToggle = async () => {
+  const handleToggle = (e: React.MouseEvent) => {
+    e.stopPropagation()
     try {
-      await onTogglePacked(item.id, !item.isPacked)
+      onTogglePacked(item.id, !item.isPacked)
     } catch (error) {
       console.error('Error toggling item:', error)
     }
@@ -23,7 +23,16 @@ export function ChecklistCard({ item, onEdit, onDeleteRequest, onTogglePacked }:
 
   return (
     <div
-      className={`group bg-white dark:bg-gray-800 rounded-2xl shadow-md overflow-hidden border-l-4 transition-all hover:shadow-lg ${
+      role={onClick ? 'button' : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      onClick={() => onClick?.(item)}
+      onKeyDown={e => {
+        if (onClick && (e.key === 'Enter' || e.key === ' ')) {
+          e.preventDefault()
+          onClick(item)
+        }
+      }}
+      className={`group bg-white dark:bg-gray-800 rounded-2xl shadow-md overflow-hidden border-l-4 transition-all ${onClick ? 'cursor-pointer hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/50' : ''} ${
         item.isPacked ? 'bg-emerald-50/50 dark:bg-emerald-900/30 border-emerald-400' : ''
       }`}
       style={!item.isPacked ? { borderLeftColor: color } : undefined}
@@ -33,6 +42,7 @@ export function ChecklistCard({ item, onEdit, onDeleteRequest, onTogglePacked }:
         <div className="flex items-center gap-2">
           <button
             onClick={handleToggle}
+            type="button"
             className={`flex-shrink-0 w-6 h-6 rounded-md border-2 flex items-center justify-center transition-all focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none ${
               item.isPacked
                 ? 'bg-emerald-500 border-emerald-500'
@@ -74,7 +84,6 @@ export function ChecklistCard({ item, onEdit, onDeleteRequest, onTogglePacked }:
           )}
         </div>
 
-        {/* Linha 2: título + ações (título trunca; botões sempre à direita na mesma linha) */}
         <div className="flex items-center gap-2 mt-2 min-w-0">
           <h3
             className={`font-semibold text-gray-900 dark:text-gray-100 truncate min-w-0 flex-1 ${item.isPacked ? 'text-gray-500 dark:text-gray-400 line-through' : ''}`}
@@ -82,24 +91,6 @@ export function ChecklistCard({ item, onEdit, onDeleteRequest, onTogglePacked }:
           >
             {item.description}
           </h3>
-          <div className="flex items-center gap-1 flex-shrink-0">
-            <button
-              onClick={(e) => { e.stopPropagation(); onEdit() }}
-              className="p-2 rounded-xl text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none"
-              title="Editar"
-              aria-label="Editar"
-            >
-              <Pencil className="w-4 h-4" />
-            </button>
-            <button
-              onClick={(e) => { e.stopPropagation(); onDeleteRequest() }}
-              className="p-2 rounded-xl text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none"
-              title="Excluir"
-              aria-label="Excluir"
-            >
-              <Trash2 className="w-4 h-4" />
-            </button>
-          </div>
         </div>
 
         {(item.quantity && item.quantity > 1) || item.notes ? (

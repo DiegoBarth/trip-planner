@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { BudgetItemCard } from './BudgetItemCard'
 import { ModalBudget } from './ModalBudget'
+import { BudgetActionsModal } from './BudgetActionsModal'
 import { ConfirmModal } from '@/components/ui/ConfirmModal'
 import { EmptyState } from '@/components/ui/EmptyState'
 import type { Budget } from '@/types/Budget'
@@ -21,6 +22,7 @@ export function BudgetList({ budgets, isLoading, onUpdate, onCreate, onDelete }:
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingBudget, setEditingBudget] = useState<Budget | undefined>()
   const [budgetToDelete, setBudgetToDelete] = useState<Budget | null>(null)
+  const [budgetForActions, setBudgetForActions] = useState<Budget | null>(null)
   const toast = useToast()
   
   const groupedByOrigin = budgets.reduce((acc, budget) => {
@@ -36,11 +38,6 @@ export function BudgetList({ budgets, isLoading, onUpdate, onCreate, onDelete }:
       new Date(b.date).getTime() - new Date(a.date).getTime()
     )
   })
-
-  const handleOpenModal = (budget?: Budget) => {
-    setEditingBudget(budget)
-    setIsModalOpen(true)
-  }
 
   const handleCloseModal = () => {
     setEditingBudget(undefined)
@@ -65,6 +62,21 @@ export function BudgetList({ budgets, isLoading, onUpdate, onCreate, onDelete }:
     if (!budgetToDelete) return
     await onDelete(budgetToDelete.id)
     setBudgetToDelete(null)
+  }
+
+  const handleCardClick = (budget: Budget) => {
+    setBudgetForActions(budget)
+  }
+
+  const handleOpenEditFromActions = (budget: Budget) => {
+    setBudgetForActions(null)
+    setEditingBudget(budget)
+    setIsModalOpen(true)
+  }
+
+  const handleOpenDeleteFromActions = (budget: Budget) => {
+    setBudgetForActions(null)
+    setBudgetToDelete(budget)
   }
 
   if (isLoading) return null
@@ -98,8 +110,7 @@ export function BudgetList({ budgets, isLoading, onUpdate, onCreate, onDelete }:
                     <BudgetItemCard
                       key={budget.id}
                       budget={budget}
-                      onEdit={() => handleOpenModal(budget)}
-                      onDelete={() => setBudgetToDelete(budget)}
+                      onClick={handleCardClick}
                     />
                   ))}
                 </div>
@@ -114,6 +125,14 @@ export function BudgetList({ budgets, isLoading, onUpdate, onCreate, onDelete }:
         isOpen={isModalOpen}
         onClose={handleCloseModal}
         onSave={handleSave}
+      />
+
+      <BudgetActionsModal
+        budget={budgetForActions}
+        isOpen={!!budgetForActions}
+        onClose={() => setBudgetForActions(null)}
+        onEdit={handleOpenEditFromActions}
+        onDelete={handleOpenDeleteFromActions}
       />
 
       <ConfirmModal

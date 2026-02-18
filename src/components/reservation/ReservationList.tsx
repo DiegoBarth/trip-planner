@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react'
 import { FileCheck } from 'lucide-react'
 import { ReservationCard } from './ReservationCard'
 import { ModalReservation } from './ModalReservation'
+import { ReservationActionsModal } from './ReservationActionsModal'
 import { ConfirmModal } from '@/components/ui/ConfirmModal'
 import { EmptyState } from '@/components/ui/EmptyState'
 import type { Reservation } from '@/types/Reservation'
@@ -25,6 +26,7 @@ export function ReservationList({
    const [isModalOpen, setIsModalOpen] = useState(false)
    const [editingReservation, setEditingReservation] = useState<Reservation | undefined>()
    const [reservationToDelete, setReservationToDelete] = useState<Reservation | null>(null)
+   const [reservationForActions, setReservationForActions] = useState<Reservation | null>(null)
 
    const sortedReservations = useMemo(() => {
       const typePriority: Record<Reservation['type'], number> = {
@@ -79,11 +81,6 @@ export function ReservationList({
       }
    }, [reservations])
 
-   const handleOpenModal = (reservation?: Reservation) => {
-      setEditingReservation(reservation)
-      setIsModalOpen(true)
-   }
-
    const handleCloseModal = () => {
       setEditingReservation(undefined)
       setIsModalOpen(false)
@@ -101,6 +98,21 @@ export function ReservationList({
       if (!reservationToDelete) return
       await onDelete(reservationToDelete.id)
       setReservationToDelete(null)
+   }
+
+   const handleCardClick = (reservation: Reservation) => {
+      setReservationForActions(reservation)
+   }
+
+   const handleOpenEditFromActions = (reservation: Reservation) => {
+      setReservationForActions(null)
+      setEditingReservation(reservation)
+      setIsModalOpen(true)
+   }
+
+   const handleOpenDeleteFromActions = (reservation: Reservation) => {
+      setReservationForActions(null)
+      setReservationToDelete(reservation)
    }
 
    if (isLoading) return null
@@ -160,8 +172,7 @@ export function ReservationList({
                               <ReservationCard
                                  key={reservation.id}
                                  reservation={reservation}
-                                 onEdit={() => handleOpenModal(reservation)}
-                                 onDeleteRequest={() => setReservationToDelete(reservation)}
+                                 onClick={handleCardClick}
                               />
                            ))}
                         </div>
@@ -186,8 +197,7 @@ export function ReservationList({
                                  <ReservationCard
                                     key={reservation.id}
                                     reservation={reservation}
-                                    onEdit={() => handleOpenModal(reservation)}
-                                    onDeleteRequest={() => setReservationToDelete(reservation)}
+                                    onClick={handleCardClick}
                                  />
                               ))}
                            </div>
@@ -203,6 +213,14 @@ export function ReservationList({
             isOpen={isModalOpen}
             onClose={handleCloseModal}
             onSave={handleSave}
+         />
+
+         <ReservationActionsModal
+            reservation={reservationForActions}
+            isOpen={!!reservationForActions}
+            onClose={() => setReservationForActions(null)}
+            onEdit={handleOpenEditFromActions}
+            onDelete={handleOpenDeleteFromActions}
          />
 
          <ConfirmModal

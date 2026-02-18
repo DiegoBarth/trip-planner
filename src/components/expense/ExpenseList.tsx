@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react'
 import { ExpenseCard } from './ExpenseCard'
 import { ModalExpense } from './ModalExpense'
+import { ExpenseActionsModal } from './ExpenseActionsModal'
 import { ConfirmModal } from '@/components/ui/ConfirmModal'
 import { EmptyState } from '@/components/ui/EmptyState'
 import type { Expense } from '@/types/Expense'
@@ -28,6 +29,7 @@ export function ExpenseList({
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingExpense, setEditingExpense] = useState<Expense | undefined>()
   const [expenseToDelete, setExpenseToDelete] = useState<Expense | null>(null)
+  const [expenseForActions, setExpenseForActions] = useState<Expense | null>(null)
 
   const { groupedByCountry, orderedCountryKeys } = useMemo(() => {
     const grouped = expenses.reduce((acc, expense) => {
@@ -52,9 +54,19 @@ export function ExpenseList({
     return { groupedByCountry: grouped, orderedCountryKeys: ordered }
   }, [expenses])
 
-  const handleOpenModal = (expense?: Expense) => {
+  const handleCardClick = (expense: Expense) => {
+    setExpenseForActions(expense)
+  }
+
+  const handleOpenEditFromActions = (expense: Expense) => {
+    setExpenseForActions(null)
     setEditingExpense(expense)
     setIsModalOpen(true)
+  }
+
+  const handleOpenDeleteFromActions = (expense: Expense) => {
+    setExpenseForActions(null)
+    setExpenseToDelete(expense)
   }
 
   const handleCloseModal = () => {
@@ -146,8 +158,7 @@ export function ExpenseList({
                     <ExpenseCard
                       key={expense.id}
                       expense={expense}
-                      onEdit={() => handleOpenModal(expense)}
-                      onDelete={() => setExpenseToDelete(expense)}
+                      onClick={handleCardClick}
                     />
                   ))}
                 </div>
@@ -162,6 +173,14 @@ export function ExpenseList({
         isOpen={isModalOpen}
         onClose={handleCloseModal}
         onSave={handleSave}
+      />
+
+      <ExpenseActionsModal
+        expense={expenseForActions}
+        isOpen={!!expenseForActions}
+        onClose={() => setExpenseForActions(null)}
+        onEdit={handleOpenEditFromActions}
+        onDelete={handleOpenDeleteFromActions}
       />
 
       <ConfirmModal

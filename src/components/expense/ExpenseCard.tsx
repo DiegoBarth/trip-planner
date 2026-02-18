@@ -1,4 +1,4 @@
-import { Trash2, Pencil, Calendar } from 'lucide-react'
+import { Calendar } from 'lucide-react'
 import type { Expense } from '@/types/Expense'
 import {
   EXPENSE_CATEGORIES,
@@ -32,11 +32,10 @@ const CATEGORY_ICON_BG: Record<string, string> = {
 
 interface ExpenseCardProps {
   expense: Expense
-  onEdit?: (expense: Expense) => void
-  onDelete?: () => void
+  onClick?: (expense: Expense) => void
 }
 
-export function ExpenseCard({ expense, onEdit, onDelete }: ExpenseCardProps) {
+export function ExpenseCard({ expense, onClick }: ExpenseCardProps) {
   const categoryKey = EXPENSE_CATEGORIES[expense.category as keyof typeof EXPENSE_CATEGORIES]
     ? expense.category
     : getCategoryFromLabel(expense.category as string)
@@ -50,8 +49,19 @@ export function ExpenseCard({ expense, onEdit, onDelete }: ExpenseCardProps) {
   const iconBgClass = CATEGORY_ICON_BG[categoryKey] ?? CATEGORY_ICON_BG.other
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-md overflow-hidden transition-shadow hover:shadow-lg">
-      {/* Faixa superior por categoria - identidade visual da tela de gastos */}
+    <div
+      role={onClick ? 'button' : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      onClick={() => onClick?.(expense)}
+      onKeyDown={e => {
+        if (onClick && (e.key === 'Enter' || e.key === ' ')) {
+          e.preventDefault()
+          onClick(expense)
+        }
+      }}
+      className={`bg-white dark:bg-gray-800 rounded-2xl shadow-md overflow-hidden transition-shadow ${onClick ? 'cursor-pointer hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-rose-500/50' : ''}`}
+    >
+      {/* Faixa superior por categoria */}
       <div className={`h-1 ${topBarClass}`} />
 
       <div className="p-4">
@@ -83,35 +93,15 @@ export function ExpenseCard({ expense, onEdit, onDelete }: ExpenseCardProps) {
             </div>
           </div>
 
-          <div className="flex flex-col items-end gap-1 flex-shrink-0">
-            <div className="flex items-center gap-1">
-              <button
-                onClick={() => onEdit?.(expense)}
-                className="p-2 rounded-xl text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors"
-                title="Editar"
-                aria-label="Editar"
-              >
-                <Pencil className="w-4 h-4" />
-              </button>
-              <button
-                onClick={() => onDelete?.()}
-                className="p-2 rounded-xl text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors"
-                title="Excluir"
-                aria-label="Excluir"
-              >
-                <Trash2 className="w-4 h-4" />
-              </button>
-            </div>
-            <div className="text-right">
-              <p className="text-lg font-bold text-rose-600 tabular-nums">
-                {formatCurrency(expense.amount, expense.currency)}
+          <div className="text-right flex-shrink-0">
+            <p className="text-lg font-bold text-rose-600 tabular-nums">
+              {formatCurrency(expense.amount, expense.currency)}
+            </p>
+            {expense.currency !== 'BRL' && (
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                {formatCurrency(expense.amountInBRL)}
               </p>
-              {expense.currency !== 'BRL' && (
-                <p className="text-xs text-gray-500 dark:text-gray-400">
-                  {formatCurrency(expense.amountInBRL)}
-                </p>
-              )}
-            </div>
+            )}
           </div>
         </div>
 
@@ -121,7 +111,7 @@ export function ExpenseCard({ expense, onEdit, onDelete }: ExpenseCardProps) {
           </p>
         )}
 
-        <div className="flex items-center gap-2 mt-3 pt-3 border-t border-gray-100 dark:border-gray-700 text-sm text-gray-500 dark:text-gray-400">
+        <div className="flex items-center gap-2 pt-3 border-gray-100 dark:border-gray-700 text-sm text-gray-500 dark:text-gray-400">
           <Calendar className="w-4 h-4 text-gray-400" />
           <span>{formatDate(expense.date)}</span>
         </div>

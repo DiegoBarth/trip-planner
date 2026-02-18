@@ -1,15 +1,14 @@
-import { Pencil, Trash2, ExternalLink, FileText, MapPin, Calendar, Clock } from 'lucide-react'
+import { ExternalLink, FileText, MapPin, Calendar, Clock, Hash } from 'lucide-react'
 import type { Reservation } from '@/types/Reservation'
 import { RESERVATION_TYPES, BOOKING_STATUS, COUNTRIES } from '@/config/constants'
 import { formatDate } from '@/utils/formatters'
 
 interface ReservationCardProps {
   reservation: Reservation
-  onEdit: () => void
-  onDeleteRequest: () => void
+  onClick?: (reservation: Reservation) => void
 }
 
-export function ReservationCard({ reservation, onEdit, onDeleteRequest }: ReservationCardProps) {
+export function ReservationCard({ reservation, onClick }: ReservationCardProps) {
   const typeConfig = RESERVATION_TYPES[reservation.type]
   const statusConfig = BOOKING_STATUS[reservation.status]
 
@@ -22,15 +21,25 @@ export function ReservationCard({ reservation, onEdit, onDeleteRequest }: Reserv
   }
 
   return (
-    <div className="relative bg-white dark:bg-gray-800 rounded-2xl shadow-md overflow-hidden transition-all hover:shadow-lg">
-      {/* Faixa superior por tipo - identidade da tela de reservas */}
+    <div
+      role={onClick ? 'button' : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      onClick={() => onClick?.(reservation)}
+      onKeyDown={e => {
+        if (onClick && (e.key === 'Enter' || e.key === ' ')) {
+          e.preventDefault()
+          onClick(reservation)
+        }
+      }}
+      className={`relative bg-white dark:bg-gray-800 rounded-2xl shadow-md overflow-hidden transition-all ${onClick ? 'cursor-pointer hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-indigo-500/50' : ''}`}
+    >
+      {/* Faixa superior por tipo */}
       <div
         className="h-1"
         style={{ backgroundColor: typeConfig.color }}
       />
 
       <div className="p-4">
-        {/* Linha 1: ícone + tipo + status + ações */}
         <div className="flex items-center justify-between gap-3 mb-1.5">
           <div className="flex items-center gap-3 min-w-0">
             <div
@@ -39,34 +48,16 @@ export function ReservationCard({ reservation, onEdit, onDeleteRequest }: Reserv
             >
               {typeConfig.icon}
             </div>
-            <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+            <span className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
               {typeConfig.label}
             </span>
           </div>
-          <div className="flex items-center gap-1 flex-shrink-0">
-            <span
-              className="px-2 py-0.5 rounded-md text-xs font-semibold text-white"
-              style={{ backgroundColor: statusConfig.color }}
-            >
-              {statusConfig.label}
-            </span>
-            <button
-              onClick={(e) => { e.stopPropagation(); onEdit() }}
-              className="p-2 rounded-xl text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors"
-              title="Editar"
-              aria-label="Editar"
-            >
-              <Pencil className="w-4 h-4" />
-            </button>
-            <button
-              onClick={(e) => { e.stopPropagation(); onDeleteRequest() }}
-              className="p-2 rounded-xl text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors"
-              title="Excluir"
-              aria-label="Excluir"
-            >
-              <Trash2 className="w-4 h-4" />
-            </button>
-          </div>
+          <span
+            className="px-2 py-0.5 rounded-md text-xs font-semibold text-white flex-shrink-0"
+            style={{ backgroundColor: statusConfig.color }}
+          >
+            {statusConfig.label}
+          </span>
         </div>
         {/* Linha 2: título em uma linha (rolagem horizontal se muito longo) */}
         <h3 className="font-bold text-gray-900 dark:text-gray-100 text-lg overflow-x-auto whitespace-nowrap mb-3 pr-1" title={reservation.title}>
@@ -79,7 +70,7 @@ export function ReservationCard({ reservation, onEdit, onDeleteRequest }: Reserv
           </p>
         )}
 
-        <div className="space-y-1.5 mb-3">
+        <div className="space-y-1.5">
           {reservation.date && (
             <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
               <Calendar className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
@@ -98,7 +89,7 @@ export function ReservationCard({ reservation, onEdit, onDeleteRequest }: Reserv
               {reservation.location && (
                 <span className="line-clamp-1">{reservation.location}</span>
               )}
-              <span className="whitespace-nowrap"> - </span>
+              {reservation.location && reservation.country && reservation.country !== 'all' && ' - '}
               {reservation.country && reservation.country !== 'all' && COUNTRIES[reservation.country] && (
                 <span className="whitespace-nowrap">
                   {COUNTRIES[reservation.country].name}
@@ -107,14 +98,17 @@ export function ReservationCard({ reservation, onEdit, onDeleteRequest }: Reserv
             </div>
           )}
           {reservation.provider && (
-            <p className="text-sm text-gray-600">
-              <span className="font-medium">Provedor:</span> {reservation.provider}
-            </p>
+            <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+              <span className="font-medium">Provedor:</span>
+              <span>{reservation.provider}</span>
+            </div>
           )}
           {reservation.confirmationCode && (
-            <p className="text-xs font-mono bg-gray-100 text-gray-700 px-2 py-1 rounded-md inline-block">
-              {reservation.confirmationCode}
-            </p>
+            <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+              <Hash className="w-3.5 h-3.5 flex-shrink-0" />
+              <span className="font-medium">Código:</span>
+              <span className="font-mono">{reservation.confirmationCode}</span>
+            </div>
           )}
         </div>
 
@@ -145,12 +139,6 @@ export function ReservationCard({ reservation, onEdit, onDeleteRequest }: Reserv
               </a>
             )}
           </div>
-        )}
-
-        {reservation.notes && (
-          <p className="text-xs text-gray-500 bg-gray-50 p-2 rounded-lg border border-gray-100">
-            {reservation.notes}
-          </p>
         )}
       </div>
     </div>
