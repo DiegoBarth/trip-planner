@@ -1,6 +1,7 @@
-import { Marker, Popup, Polyline } from 'react-leaflet'
+import { Marker, Popup } from 'react-leaflet'
 import { AttractionCard } from '../attraction/AttractionCard'
 import { createCustomIcon } from './markers'
+import { PolylineWithArrows } from './PolylineWithArrows'
 import type { MappableAttraction } from '@/types/MappableAttraction'
 import type { Accommodation } from '@/types/Accommodation'
 
@@ -52,7 +53,7 @@ export function MapRoutes({ groupedByDay, routes, accommodations, getColor, high
             return (
                <div key={dayNum}>
                   {routes[dNum] && (
-                     <Polyline
+                     <PolylineWithArrows
                         positions={routes[dNum]}
                         pathOptions={{
                            color: getColor(dNum),

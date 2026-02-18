@@ -35,9 +35,22 @@ export function MapView() {
       return grouped
    }, [filtered])
 
+   // Acomodações no mapa: dia "all" → todas; dia específico → só da cidade da primeira atração do dia
+   const accommodationsForMap = useMemo(() => {
+      if (!accommodations || accommodations.length === 0) return []
+      if (day === 'all') return accommodations
+      if (filtered.length === 0) return []
+      const firstAttraction = [...filtered].sort((a, b) => a.order - b.order)[0]
+      const firstCity = firstAttraction?.city?.trim().toLowerCase()
+      if (!firstCity) return accommodations
+      return accommodations.filter(
+         acc => acc.city?.trim().toLowerCase() === firstCity
+      )
+   }, [accommodations, day, filtered])
+
    const { routes } = useOSRMRoutesQuery(
       groupedByDay as Record<number, Attraction[]>,
-      accommodations
+      accommodationsForMap
    )
 
    // Próxima atração (primeira não visitada) para destacar no mapa (Modo Viagem)
@@ -49,14 +62,11 @@ export function MapView() {
 
    // Lista de pontos para o mapa: atrações filtradas + acomodação(s)
    const mapPoints = useMemo(() => {
-      if (accommodations && accommodations.length > 0) {
-         // Evita duplicidade: só adiciona se não estiver já em filtered
-         const filteredIds = new Set(filtered.map(a => a.id));
-         const accs = accommodations.filter(acc => !filteredIds.has(acc.id));
-         return [...filtered, ...accs];
-      }
-      return filtered;
-   }, [filtered, accommodations])
+      if (accommodationsForMap.length === 0) return filtered
+      const filteredIds = new Set(filtered.map(a => a.id))
+      const accs = accommodationsForMap.filter(acc => !filteredIds.has(acc.id))
+      return [...filtered, ...accs]
+   }, [filtered, accommodationsForMap])
 
    if (!isReady) return <div className="p-6">Loading...</div>
    if (!mapPoints.length) return <div className="p-6">No attractions or accommodations found.</div>
@@ -79,7 +89,7 @@ export function MapView() {
                <MapRoutes
                   groupedByDay={groupedByDay}
                   routes={routes}
-                  accommodations={accommodations}
+                  accommodations={accommodationsForMap}
                   getColor={getColorForDay}
                   highlightAttractionId={highlightAttractionId}
                />
