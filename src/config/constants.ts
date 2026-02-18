@@ -154,12 +154,14 @@ export const CHECKLIST_CATEGORIES = {
 }
 
 export const RESERVATION_TYPES = {
+   activity: { label: 'Atividade', icon: '🎭', color: '#7c3aed' },      // violet
    document: { label: 'Documento', icon: '📄', color: '#6366f1' },       // indigo
+   accommodation: { label: 'Hospedagem', icon: '🏨', color: '#8b5cf6' }, // purple
+   bus: { label: 'Ônibus', icon: '🚌', color: '#1927e9ff' },      // blue
+   'transport-pass': { label: 'Passe', icon: '🎫', color: '#f59e0b' },  // amber
+   train: { label: 'Trem', icon: '🚈', color: '#991219ff' },        // green
    insurance: { label: 'Seguro', icon: '🛡️', color: '#10b981' },        // green
    flight: { label: 'Voo', icon: '✈️', color: '#3b82f6' },              // blue
-   accommodation: { label: 'Hospedagem', icon: '🏨', color: '#8b5cf6' }, // purple
-   'transport-pass': { label: 'Passe', icon: '🎫', color: '#f59e0b' },  // amber
-   activity: { label: 'Atividade', icon: '🎭', color: '#7c3aed' },      // violet
    other: { label: 'Outro', icon: '📋', color: '#6b7280' }              // gray
 }
 

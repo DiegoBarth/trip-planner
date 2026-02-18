@@ -2,6 +2,8 @@ export type ReservationType =
   | 'document'        // Passport, visa, etc.
   | 'insurance'       // Travel insurance
   | 'flight'          // Flight tickets
+  | 'train'           // Train tickets
+  | 'bus'             // Bus tickets
   | 'accommodation'   // Hotels, Airbnb
   | 'transport-pass'  // JR Pass, T-Money, Suica
   | 'activity'        // Pre-purchased tickets for attractions

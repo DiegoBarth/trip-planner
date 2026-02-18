@@ -43,7 +43,7 @@ export function ModalReservation({ reservation, isOpen, onClose, onSave }: Modal
    
    const { register, handleSubmit, watch, setValue, reset, control } = useForm<ReservationFormData>({
       defaultValues: {
-         type: 'document',
+         type: 'activity',
          title: '',
          description: '',
          confirmationCode: '',
@@ -90,7 +90,7 @@ export function ModalReservation({ reservation, isOpen, onClose, onSave }: Modal
             setInitialDocumentFileId(fileId)
          } else {
             reset({
-               type: 'document',
+               type: 'activity',
                title: '',
                description: '',
                confirmationCode: '',

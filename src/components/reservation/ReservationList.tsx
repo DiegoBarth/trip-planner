@@ -32,11 +32,13 @@ export function ReservationList({
       const typePriority: Record<Reservation['type'], number> = {
          'document': 1,
          'insurance': 2,
-         'flight': 3,
-         'accommodation': 4,
-         'transport-pass': 5,
-         'activity': 6,
-         'other': 7
+         'train': 3,
+         'flight': 4,
+         'bus': 5,
+         'accommodation': 6,
+         'transport-pass': 7,
+         'activity': 8,
+         'other': 9
       }
 
       return [...reservations].sort((a, b) => {
