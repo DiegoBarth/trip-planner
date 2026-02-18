@@ -28,37 +28,21 @@ export function ReservationList({
    const [reservationToDelete, setReservationToDelete] = useState<Reservation | null>(null)
    const [reservationForActions, setReservationForActions] = useState<Reservation | null>(null)
 
-   const sortedReservations = useMemo(() => {
-      const typePriority: Record<Reservation['type'], number> = {
-         'document': 1,
-         'insurance': 2,
-         'train': 3,
-         'flight': 4,
-         'bus': 5,
-         'accommodation': 6,
-         'transport-pass': 7,
-         'activity': 8,
-         'other': 9
-      }
-
-      return [...reservations].sort((a, b) => {
-         if (!a.date && b.date) return -1
-         if (a.date && !b.date) return 1
-         if (!a.date && !b.date) {
-            return typePriority[a.type] - typePriority[b.type]
-         }
-         const dateA = parseLocalDate(dateToInputFormat(a.date!)).getTime()
-         const dateB = parseLocalDate(dateToInputFormat(b.date!)).getTime()
-         if (dateA !== dateB) return dateA - dateB
-         return typePriority[a.type] - typePriority[b.type]
-      })
-   }, [reservations])
+   /** Parse "HH:mm" or "HH:mm:ss" to minutes since midnight; empty => end of day (sorts last) */
+   function timeToMinutes(t: string | undefined): number {
+      if (!t || !t.trim()) return 24 * 60
+      const parts = t.trim().split(':').map(Number)
+      const h = parts[0] ?? 0
+      const m = parts[1] ?? 0
+      const s = parts[2] ?? 0
+      return h * 60 + m + s / 60
+   }
 
    const groupedReservations = useMemo(() => {
       const preTripItems: Reservation[] = []
       const dateGrouped: Record<string, Reservation[]> = {}
 
-      sortedReservations.forEach(reservation => {
+      reservations.forEach(reservation => {
          if (!reservation.date) {
             preTripItems.push(reservation)
          } else {
@@ -71,8 +55,13 @@ export function ReservationList({
       const orderedDateKeys = Object.keys(dateGrouped).sort(
          (a, b) => parseLocalDate(a).getTime() - parseLocalDate(b).getTime()
       )
+
+      orderedDateKeys.forEach(key => {
+         dateGrouped[key].sort((a, b) => timeToMinutes(a.time) - timeToMinutes(b.time))
+      })
+
       return { preTripItems, dateGrouped, orderedDateKeys }
-   }, [sortedReservations])
+   }, [reservations])
 
    const stats = useMemo(() => {
       return {

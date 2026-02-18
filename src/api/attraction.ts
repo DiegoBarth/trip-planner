@@ -1,5 +1,5 @@
 import { apiGet, apiPost } from './client'
-import type { Attraction, Country } from '@/types/Attraction'
+import type { Attraction } from '@/types/Attraction'
 
 interface ApiResponse<T> {
    success: boolean
@@ -87,12 +87,11 @@ export async function deleteAttraction(id: number): Promise<void> {
 }
 
 /**
- * Get all attractions
+ * Get all attractions (no country filter; filter on the client)
  */
-export async function getAttractions(country: Country): Promise<Attraction[]> {
+export async function getAttractions(): Promise<Attraction[]> {
    const response = await apiGet<ApiResponse<Attraction[]>>({
-      action: 'getAttractions',
-      country
+      action: 'getAttractions'
    })
 
    if (!response.success || !response.data) {

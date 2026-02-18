@@ -81,30 +81,45 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
    const previousCurrency = useRef<Currency>(formData.currency)
    const { rates, reservations } = useCountry()
 
-   // Reset form when modal opens or attraction changes
+   // Reset form when modal opens or attraction changes (explicit fields so no stale values when switching attractions)
    useEffect(() => {
       if (isOpen) {
          if (attraction) {
-            // Format couplePrice based on currency
             let formattedPrice: string
             if (attraction.currency === 'BRL') {
-               // For BRL, multiply by 100 to get cents for the formatter
                const cents = Math.round(attraction.couplePrice * 100).toString()
                formattedPrice = formatCurrencyInputByCurrency(cents, attraction.currency)
             } else {
-               // For JPY and KRW, use the amount directly
                formattedPrice = formatCurrencyInputByCurrency(attraction.couplePrice.toString(), attraction.currency)
             }
 
-            const formattedData = dateToInputFormat(attraction.date)
-
-            const { id: _, day: __, ...rest } = attraction
-
             reset({
-               ...rest,
+               name: attraction.name ?? '',
+               country: attraction.country ?? 'japan',
+               city: attraction.city ?? '',
+               region: attraction.region ?? '',
+               date: dateToInputFormat(attraction.date),
+               dayOfWeek: attraction.dayOfWeek ?? '',
+               type: attraction.type ?? 'other',
+               visited: attraction.visited ?? false,
+               needsReservation: attraction.needsReservation ?? false,
+               reservationStatus: attraction.reservationStatus,
+               reservationId: attraction.reservationId,
                couplePrice: formattedPrice,
-               date: formattedData,
-               closedDays: attraction.closedDays || ''
+               currency: attraction.currency ?? 'JPY',
+               priceInBRL: attraction.priceInBRL ?? 0,
+               idealPeriod: attraction.idealPeriod,
+               isOpen: attraction.isOpen,
+               openingTime: attraction.openingTime ?? '',
+               closingTime: attraction.closingTime ?? '',
+               closedDays: attraction.closedDays ?? '',
+               ticketLink: attraction.ticketLink ?? '',
+               location: attraction.location ?? '',
+               duration: attraction.duration ?? 0,
+               notes: attraction.notes ?? '',
+               imageUrl: attraction.imageUrl ?? '',
+               lat: attraction.lat ?? 0,
+               lng: attraction.lng ?? 0
             })
             previousCurrency.current = attraction.currency
          } else {
@@ -132,7 +147,9 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
                location: '',
                duration: 0,
                notes: '',
-               imageUrl: ''
+               imageUrl: '',
+               lat: 0,
+               lng: 0
             })
             previousCurrency.current = 'JPY'
          }

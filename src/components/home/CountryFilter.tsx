@@ -1,30 +1,45 @@
-import type { Country } from '@/types/Attraction'
+import type { Country, CountryFilterValue } from '@/types/Attraction'
 import { COUNTRIES } from '@/config/constants'
 import { useCountry } from '@/contexts/CountryContext'
 import { MapPin, Calendar } from 'lucide-react'
 import { CustomSelect } from '@/components/ui/CustomSelect'
 
-const countryOptions = Object.entries(COUNTRIES).map(([, c]) => `${c.flag} ${c.name}`)
-
-function countryToLabel(country: Country | 'all'): string {
-   const c = COUNTRIES[country]
-   return c ? `${c.flag} ${c.name}` : countryOptions[0]
-}
-
-function labelToCountry(label: string): Country | 'all' {
-   const entry = Object.entries(COUNTRIES).find(
-      ([, c]) => `${c.flag} ${c.name}` === label
-   )
-   return (entry?.[0] as Country | 'all') ?? 'all'
-}
+const FILTER_OPTIONS: { key: CountryFilterValue; label: string }[] = [
+   { key: 'todos', label: 'Todos' },
+   { key: 'all', label: `${COUNTRIES.all.flag} ${COUNTRIES.all.name}` },
+   ...Object.entries(COUNTRIES)
+      .filter(([key]) => key !== 'all')
+      .map(([key, c]) => ({ key: key as Country, label: `${c.flag} ${c.name}`, name: c.name }))
+      .sort((a, b) => a.name.localeCompare(b.name))
+      .map(({ key, label }) => ({ key, label })),
+]
 
 interface CountryFilterProps {
    /** Exibe o seletor de dia. Default: true */
    showDayFilter?: boolean
+   /** Oculta a opção "Geral" (ex.: na Home). Quando ativo, se o valor for "Geral" exibe "Todos". */
+   hideGeneralOption?: boolean
 }
 
-export function CountryFilter({ showDayFilter = true }: CountryFilterProps) {
+export function CountryFilter({ showDayFilter = true, hideGeneralOption = false }: CountryFilterProps) {
    const { country, setCountry, day, setDay, availableDays } = useCountry()
+
+   const visibleOptions = hideGeneralOption
+      ? FILTER_OPTIONS.filter(o => o.key !== 'all')
+      : FILTER_OPTIONS
+
+   const countryOptions = visibleOptions.map(o => o.label)
+
+   function countryToLabel(value: CountryFilterValue): string {
+      if (hideGeneralOption && value === 'all') return 'Todos'
+      const opt = FILTER_OPTIONS.find(o => o.key === value)
+      return opt?.label ?? 'Todos'
+   }
+
+   function labelToCountry(label: string): CountryFilterValue {
+      const opt = visibleOptions.find(o => o.label === label)
+      return opt?.key ?? 'todos'
+   }
 
    const dayOptions = ['Todos os dias', ...availableDays.map((d) => `Dia ${d}`)]
    const dayValue = day === 'all' ? 'Todos os dias' : `Dia ${day}`

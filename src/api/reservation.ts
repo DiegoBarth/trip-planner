@@ -1,4 +1,5 @@
 import { apiGet, apiPost } from './client'
+import { normalizeTimeFromSheets } from '@/utils/formatters'
 import type { Reservation } from '@/types/Reservation'
 
 interface ApiResponse<T> {
@@ -84,7 +85,8 @@ export async function deleteReservation(id: number): Promise<void> {
 }
 
 /**
- * Get all reservations
+ * Get all reservations.
+ * Normalizes time field: Sheets stores "10:00" but API may return ISO datetime (e.g. 1899-12-30T13:06:28.000Z).
  */
 export async function getReservations(): Promise<Reservation[]> {
    const response = await apiGet<ApiResponse<Reservation[]>>({
@@ -95,7 +97,10 @@ export async function getReservations(): Promise<Reservation[]> {
       return []
    }
 
-   return response.data
+   return response.data.map((r: Reservation) => ({
+      ...r,
+      time: normalizeTimeFromSheets(r.time) ?? r.time
+   }))
 }
 
 /**

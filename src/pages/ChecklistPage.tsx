@@ -62,7 +62,7 @@ export function ChecklistPage() {
    return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-20 md:pb-6">
          <PageHeader
-            title="✅ Checklist"
+            title="Checklist"
          />
 
          <main className="max-w-6xl mx-auto px-4 md:px-6 py-6 mb-12">

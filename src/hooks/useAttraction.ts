@@ -5,7 +5,8 @@ import { deleteReservation, updateReservation } from '@/api/reservation'
 import { QUERY_STALE_TIME_MS } from '@/config/constants'
 import type { CreateAttractionPayload, UpdateAttractionPayload } from '@/api/attraction'
 import { dateToInputFormat } from '@/utils/formatters'
-import type { Attraction, Country } from '@/types/Attraction'
+import type { Attraction } from '@/types/Attraction'
+import type { CountryFilterValue } from '@/types/Attraction'
 import type { Reservation } from '@/types/Reservation'
 import { applyAutoDays, normalizeOrderByDate } from '@/utils/attractionDayUtils'
 import {
@@ -15,31 +16,35 @@ import {
 } from '@/services/attractionCacheService'
 import { updateReservationCacheOnDelete } from '@/services/reservationCacheService'
 
+const ATTRACTION_QUERY_KEY = ['attractions']
+
 /**
- * Hook to manage attraction operations
+ * Hook to manage attraction operations. Fetches all attractions; filters by country on the client.
+ * 'todos' = todos os registros; 'all' = geral; 'japan' | 'south-korea' = país.
  */
-export function useAttraction(country: Country) {
-   const ATTRACTION_QUERY_KEY = ['attractions', country]
+export function useAttraction(country: CountryFilterValue) {
    const queryClient = useQueryClient()
 
-   // Fetch all attractions
-   const { data, isLoading, error } = useQuery<Attraction[]>({
+   const { data: allAttractions = [], isLoading, error } = useQuery<Attraction[]>({
       queryKey: ATTRACTION_QUERY_KEY,
-      queryFn: () => getAttractions(country),
+      queryFn: getAttractions,
       staleTime: QUERY_STALE_TIME_MS,
    })
 
-   const rawAttractions = data ?? []
+   const rawFiltered =
+      country === 'todos'
+         ? allAttractions
+         : allAttractions.filter(a => (a.country ?? 'all') === country)
+
    const attractions = useMemo(
-      () => normalizeOrderByDate(applyAutoDays(rawAttractions)),
-      [rawAttractions]
+      () => normalizeOrderByDate(applyAutoDays(rawFiltered)),
+      [rawFiltered]
    )
 
-   // Create mutation
    const createMutation = useMutation({
       mutationFn: (payload: CreateAttractionPayload) => createAttraction(payload),
       onSuccess: newAttraction => {
-         updateAttractionCacheOnCreate(queryClient, country, newAttraction)
+         updateAttractionCacheOnCreate(queryClient, newAttraction)
          queryClient.invalidateQueries({ queryKey: ['osrm-routes'] })
       }
    })
@@ -91,9 +96,10 @@ export function useAttraction(country: Country) {
          return updatedAttraction
       },
       onSuccess: updatedAttraction => {
-         const previous = attractions.find(a => a.id === updatedAttraction.id)
+         const previousAttractions = queryClient.getQueryData<Attraction[]>(ATTRACTION_QUERY_KEY)
+         const previous = previousAttractions?.find(a => a.id === updatedAttraction.id)
          if (!previous) return
-         updateAttractionCacheOnUpdate(queryClient, country, previous, updatedAttraction)
+         updateAttractionCacheOnUpdate(queryClient, previous, updatedAttraction)
          queryClient.invalidateQueries({ queryKey: ['osrm-routes'] })
       }
    })
@@ -121,15 +127,14 @@ export function useAttraction(country: Country) {
          return deleteAttraction(id)
       },
       onSuccess: (_, deletedId) => {
-         updateAttractionCacheOnDelete(queryClient, country, deletedId)
+         updateAttractionCacheOnDelete(queryClient, deletedId)
          queryClient.invalidateQueries({ queryKey: ['osrm-routes'] })
       }
    })
 
-   // Helper function to get fresh attractions from cache
    const getFreshAttractions = (): Attraction[] => {
       const cachedData = queryClient.getQueryData<Attraction[]>(ATTRACTION_QUERY_KEY)
-      const rawData = cachedData ?? rawAttractions
+      const rawData = cachedData ?? allAttractions
       return normalizeOrderByDate(applyAutoDays(rawData))
    }
 
@@ -154,7 +159,6 @@ export function useAttraction(country: Country) {
       }))
 
       const updated = await bulkUpdateAttractions(payload)
-      
       queryClient.setQueryData<Attraction[]>(ATTRACTION_QUERY_KEY, (old = []) => {
          const updatedMap = new Map(updated.map(a => [a.id, a]))
          return old.map(a => updatedMap.get(a.id) ?? a)

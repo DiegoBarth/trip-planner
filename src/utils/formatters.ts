@@ -145,6 +145,22 @@ export function formatTime(time: string): string {
    return time
 }
 
+/**
+ * Normalize time coming from Sheets/API: when stored as "10:00" in Sheets
+ * it often returns as ISO datetime (e.g. 1899-12-30T13:06:28.000Z).
+ * Returns "HH:mm" in local time, or the original value if not an ISO datetime.
+ */
+export function normalizeTimeFromSheets(value: string | undefined): string | undefined {
+   if (value == null || value === '') return value
+   const trimmed = value.trim()
+   if (!trimmed.includes('T') || !/\d{2}:\d{2}/.test(trimmed)) return value
+   const date = new Date(trimmed)
+   if (Number.isNaN(date.getTime())) return value
+   const hours = date.getHours()
+   const minutes = date.getMinutes()
+   return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`
+}
+
 export function formatDuration(minutes: number): string {
    const hours = Math.floor(minutes / 60)
    const mins = minutes % 60

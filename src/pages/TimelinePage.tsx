@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 import { useAttraction } from '@/hooks/useAttraction'
 import { Timeline } from '@/components/timeline/Timeline'
 import { useCountry } from '@/contexts/CountryContext'
+import { useOSRMRoutesQuery } from '@/hooks/useOSRMRoutesQuery'
 import { PageHeader } from '@/components/ui/PageHeader'
 import { CountryFilter } from '@/components/home/CountryFilter'
 import { useToast } from '@/contexts/toast'
@@ -48,9 +49,24 @@ function addAccommodationToDay(
 }
 
 export function TimelinePage() {
-   const { country, day, accommodations, attractions, isReady, segmentsByDay, isRoutesLoading } =
-      useCountry()
+   const { country, day, accommodations, attractions, isReady } = useCountry()
    const { toggleVisited } = useAttraction(country)
+
+   const groupedByDayForRoutes = useMemo(() => {
+      const grouped: Record<number, Attraction[]> = {}
+      attractions
+         .filter(a => a.lat != null && a.lng != null)
+         .forEach(a => {
+            if (!grouped[a.day]) grouped[a.day] = []
+            grouped[a.day].push(a)
+         })
+      return grouped
+   }, [attractions])
+
+   const { segmentsByDay, isRoutesLoading } = useOSRMRoutesQuery(
+      groupedByDayForRoutes,
+      accommodations
+   )
    const { success, error } = useToast()
    const [isExporting, setIsExporting] = useState(false)
 

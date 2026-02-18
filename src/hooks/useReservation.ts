@@ -154,7 +154,7 @@ export function useReservation() {
                for (const country of attractionCountries) {
                   const attractions = queryClient.getQueryData<Attraction[]>(['attractions', country])
                   if (attractions?.some(a => a.id === reservation.attractionId)) {
-                     updateAttractionCacheOnDelete(queryClient, country, reservation.attractionId)
+                     updateAttractionCacheOnDelete(queryClient, reservation.attractionId)
                      break
                   }
                }

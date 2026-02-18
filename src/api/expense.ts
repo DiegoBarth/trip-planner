@@ -72,12 +72,11 @@ export async function deleteExpense(id: number): Promise<void> {
 }
 
 /**
- * Get all expenses
+ * Get all expenses (no country filter; filter on the client)
  */
-export async function getExpenses(country: Country): Promise<Expense[]> {
+export async function getExpenses(): Promise<Expense[]> {
    const response = await apiGet<ApiResponse<Expense[]>>({
-      action: 'getExpenses',
-      country
+      action: 'getExpenses'
    })
 
    if (!response.success || !response.data) {

@@ -8,7 +8,10 @@ import { Loader2 } from 'lucide-react'
  */
 export function GlobalLoading() {
   const isFetching = useIsFetching({
-    predicate: (query) => query.queryKey[0] !== 'osrm-routes',
+    predicate: (query) => {
+      const key = query.queryKey[0]
+      return key !== 'weather' && key !== 'budget_summary'
+    },
   })
   const isMutating = useIsMutating()
   const isLoading = isFetching > 0 || isMutating > 0

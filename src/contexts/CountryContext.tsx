@@ -9,19 +9,16 @@ import { useCurrency } from '@/hooks/useCurrency'
 import { useAccommodation } from '@/hooks/useAccommodation'
 import { useChecklist } from '@/hooks/useChecklist'
 import { useReservation } from '@/hooks/useReservation'
-import { useOSRMRoutesQuery } from '@/hooks/useOSRMRoutesQuery'
 import type { CurrencyRates } from '@/types/Currency'
 import type { Budget, BudgetSummary } from '@/types/Budget'
 import type { Expense } from '@/types/Expense'
-import type { Attraction, Country } from '@/types/Attraction'
+import type { Attraction, CountryFilterValue } from '@/types/Attraction'
 import type { DashboardStats } from '@/types/Dashboard'
 import type { Accommodation } from '@/types/Accommodation'
 import type { ChecklistItem } from '@/types/ChecklistItem'
 import type { Reservation } from '@/types/Reservation'
-import type { TimelineSegment } from '@/types/Timeline'
-
 type DayFilter = number | 'all'
-type CountryFilter = Country | 'all'
+type CountryFilter = CountryFilterValue
 
 interface CountryContextType {
    isReady: boolean
@@ -39,13 +36,6 @@ interface CountryContextType {
    accommodations: Accommodation[]
    checklistItems: ChecklistItem[]
    reservations: Reservation[]
-   /** Rotas OSRM por dia (path para mapa). Cache global; invalida ao editar/remover atrações. */
-   routes: Record<number, [number, number][]>
-   /** Distância total por dia (km). */
-   distances: Record<number, number>
-   /** Segmentos por dia para montar a timeline sem nova chamada OSRM. */
-   segmentsByDay: Record<number, (TimelineSegment | null)[]>
-   isRoutesLoading: boolean
 }
 
 function getInitialFilter(): { country: CountryFilter; day: DayFilter } {
@@ -85,11 +75,7 @@ export const CountryContext = createContext<CountryContextType>({
    availableDays: [],
    accommodations: [],
    checklistItems: [],
-   reservations: [],
-   routes: {},
-   distances: {},
-   segmentsByDay: {},
-   isRoutesLoading: false
+   reservations: []
 })
 
 export function CountryProvider({ children }: { children: ReactNode }) {
@@ -125,40 +111,16 @@ export function CountryProvider({ children }: { children: ReactNode }) {
    }
 
    const availableDays = useMemo(() => {
-      const filtered = country === 'all'
-         ? attractions
-         : attractions.filter(a => a.country === country)
       const uniqueDays = new Set<number>()
-      filtered.forEach(a => { if (a.day) uniqueDays.add(a.day) })
+      attractions.forEach(a => { if (a.day) uniqueDays.add(a.day) })
       return Array.from(uniqueDays).sort((a, b) => a - b)
-   }, [attractions, country])
-
-   const filteredForRoutes = useMemo(
-      () => (country === 'all' ? attractions : attractions.filter(a => a.country === country)),
-      [attractions, country]
-   )
-   const groupedByDay = useMemo(() => {
-      const grouped: Record<number, Attraction[]> = {}
-      filteredForRoutes
-         .filter(a => a.lat != null && a.lng != null)
-         .forEach(a => {
-            if (!grouped[a.day]) grouped[a.day] = []
-            grouped[a.day].push(a)
-         })
-      return grouped
-   }, [filteredForRoutes])
-
-   const { routes, distances, segmentsByDay, isRoutesLoading } = useOSRMRoutesQuery(
-      groupedByDay,
-      accommodations
-   )
+   }, [attractions])
 
    const queryClient = useQueryClient()
    const citiesToPrefetch = useMemo(() => {
       const cities = new Set<string>()
-      filteredForRoutes.forEach(a => { if (a.city) cities.add(a.city) })
-      const byCountry = country === 'all' ? attractions : attractions.filter(a => a.country === country)
-      const withDate = byCountry.filter(a => a.date)
+      attractions.forEach(a => { if (a.city) cities.add(a.city) })
+      const withDate = attractions.filter(a => a.date)
       if (withDate.length > 0) {
          const today = new Date()
          today.setHours(0, 0, 0, 0)
@@ -169,7 +131,7 @@ export function CountryProvider({ children }: { children: ReactNode }) {
          if (todayOrNext?.city) cities.add(todayOrNext.city)
       }
       return Array.from(cities)
-   }, [filteredForRoutes, attractions, country])
+   }, [attractions])
 
    useEffect(() => {
       citiesToPrefetch.forEach(city => {
@@ -179,7 +141,10 @@ export function CountryProvider({ children }: { children: ReactNode }) {
 
    const isReady =
       useIsFetching({
-         predicate: (query) => query.queryKey[0] !== 'osrm-routes',
+         predicate: (query) => {
+            const key = query.queryKey[0]
+            return key !== 'osrm-routes' && key !== 'weather' && key !== 'budget_summary'
+         },
       }) === 0
 
    useEffect(() => { setDay('all') }, [country])
@@ -204,11 +169,7 @@ export function CountryProvider({ children }: { children: ReactNode }) {
             availableDays,
             accommodations,
             checklistItems,
-            reservations,
-            routes,
-            distances,
-            segmentsByDay,
-            isRoutesLoading
+            reservations
          }}
       >
          {children}

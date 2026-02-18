@@ -39,6 +39,12 @@ export function BudgetList({ budgets, isLoading, onUpdate, onCreate, onDelete }:
     )
   })
 
+  const orderedOriginKeys = Object.keys(groupedByOrigin).sort((a, b) => {
+    const labelA = BUDGET_ORIGINS[a as BudgetOrigin]?.label ?? a
+    const labelB = BUDGET_ORIGINS[b as BudgetOrigin]?.label ?? b
+    return labelA.localeCompare(labelB, 'pt-BR')
+  })
+
   const handleCloseModal = () => {
     setEditingBudget(undefined)
     setIsModalOpen(false)
@@ -84,14 +90,15 @@ export function BudgetList({ budgets, isLoading, onUpdate, onCreate, onDelete }:
   return (
     <div>
       <div className="space-y-8">
-        {Object.keys(groupedByOrigin).length === 0 ? (
+        {orderedOriginKeys.length === 0 ? (
           <EmptyState
             icon="💵"
             title="Nenhum orçamento encontrado"
             description="Comece adicionando seu primeiro orçamento!"
           />
         ) : (
-          Object.entries(groupedByOrigin).map(([origin, originBudgets]) => {
+          orderedOriginKeys.map(origin => {
+            const originBudgets = groupedByOrigin[origin as BudgetOrigin]
             const config = BUDGET_ORIGINS[origin as BudgetOrigin]
             return (
               <section key={origin} className="space-y-4">
@@ -105,7 +112,7 @@ export function BudgetList({ budgets, isLoading, onUpdate, onCreate, onDelete }:
                   </span>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {originBudgets.map(budget => (
                     <BudgetItemCard
                       key={budget.id}

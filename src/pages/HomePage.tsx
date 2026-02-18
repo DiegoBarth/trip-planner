@@ -13,7 +13,7 @@ interface Props {
 
 export function HomePage({ onLogout }: Props) {
    return (
-      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 pb-20 md:pb-6">
+      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 pb-20">
          {/* Hero Header */}
          <header className="bg-gradient-to-br from-blue-600 via-purple-600 to-pink-500 text-white">
             <div className="max-w-6xl mx-auto px-4 pt-6 pb-8">
@@ -40,20 +40,22 @@ export function HomePage({ onLogout }: Props) {
                   </div>
                </div>
 
-               <CountryFilter />
+               <CountryFilter hideGeneralOption />
             </div>
          </header>
 
          {/* Main Content */}
          <main className="max-w-6xl mx-auto px-4 md:px-6 py-6 space-y-6">
-            {/* Top row: Next Day (left) + Pendências & Gastos (right) on desktop */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-               <section className="md:col-span-2">
+            {/* Em tela grande: mesma altura; Pendências em cima e Gastos embaixo à direita, base alinhada ao Próximo Dia */}
+            <div className="flex flex-col gap-6 md:flex-row md:items-stretch md:gap-6">
+               <section className="md:min-w-0 md:flex-[2]">
                   <NextDaySummary />
                </section>
-               <section className="flex flex-col gap-6">
+               <section className="flex flex-col gap-6 md:flex-1 md:min-h-0">
                   <TodaysPendencies />
-                  <TodayExpensesCard />
+                  <div className="md:min-h-0 md:flex-1 md:flex md:flex-col md:justify-end">
+                     <TodayExpensesCard />
+                  </div>
                </section>
             </div>
 

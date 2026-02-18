@@ -15,10 +15,8 @@ export function ReservationsPage() {
    const { country, reservations, isReady } = useCountry()
 
    const filteredReservations = useMemo(() => {
-      if (country === 'all') return reservations
-      return reservations.filter(
-         (r) => !r.country || r.country === 'all' || r.country === country
-      )
+      if (country === 'todos') return reservations
+      return reservations.filter((r) => r.country === country)
    }, [reservations, country])
    const { createReservation, updateReservation, deleteReservation } = useReservation()
    const toast = useToast()

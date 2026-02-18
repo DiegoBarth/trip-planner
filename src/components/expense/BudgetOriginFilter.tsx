@@ -3,7 +3,12 @@ import { BUDGET_ORIGINS } from '@/config/constants'
 import { CustomSelect } from '@/components/ui/CustomSelect'
 import { Wallet } from 'lucide-react'
 
-const ORIGIN_OPTIONS = ['Todos', ...Object.values(BUDGET_ORIGINS).map((c) => c.label)]
+const ORIGIN_OPTIONS = [
+   'Todos',
+   ...Object.values(BUDGET_ORIGINS)
+      .map((c) => c.label)
+      .sort((a, b) => a.localeCompare(b)),
+]
 
 function valueToLabel(value: BudgetOrigin | 'all'): string {
    if (value === 'all') return 'Todos'
