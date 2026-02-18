@@ -11,7 +11,7 @@ export type AttractionType =
    | 'entertainment'
    | 'other'
 
-export type BudgetOrigin = 'Diego' | 'Pamela' | 'Casal'
+export type BudgetOrigin = 'Diego' | 'Pamela' | 'Casal' | 'Alimentação' | 'Atrações' | 'Transporte'
 
 export type Period = 'morning' | 'afternoon' | 'evening' | 'night' | 'full-day'
 

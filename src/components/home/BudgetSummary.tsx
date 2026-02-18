@@ -21,7 +21,6 @@ export function BudgetSummary() {
             </h2>
          </div>
 
-         {/* Card principal: saldo */}
          <div
             className={`
                rounded-2xl shadow-lg overflow-hidden mb-4
@@ -72,7 +71,6 @@ export function BudgetSummary() {
             </div>
          </div>
 
-         {/* Cards por origem */}
          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             {Object.entries(byOrigin).map(([origin, totals]) => (
                <BudgetCard

@@ -95,7 +95,10 @@ export function getCategoryFromLabel(label: string): keyof typeof EXPENSE_CATEGO
 export const BUDGET_ORIGINS = {
    Diego: { label: 'Diego', icon: '👨', color: '#3b82f6' },
    Pamela: { label: 'Pamela', icon: '👩', color: '#ec4899' },
-   Casal: { label: 'Casal', icon: '💑', color: '#8b5cf6' }
+   Casal: { label: 'Casal', icon: '💑', color: '#8b5cf6' },
+   Alimentação: { label: 'Alimentação', icon: '🍱', color: '#bd0701ff' },
+   Atrações: { label: 'Atrações', icon: '🎫', color: '#367d86ff' },
+   Transporte: { label: 'Transporte', icon: '🚈', color: '#439e5eff' }
 }
 
 // Helper to get budget origin key from label

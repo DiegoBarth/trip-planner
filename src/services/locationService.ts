@@ -17,14 +17,16 @@ export async function searchPlaces(
 
    const languageMap: Record<string, string> = {
       BR: 'pt-BR',
-      PT: 'pt-PT'
+      PT: 'pt-PT',
+      JP: 'ja,en',
+      KR: 'ko,en'
    }
 
    const language = languageMap[country || ''] || 'en'
 
    const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
       query
-   )}&addressdetails=1&limit=5`
+   )}&addressdetails=1`
 
    const response = await fetch(url, {
       signal,
