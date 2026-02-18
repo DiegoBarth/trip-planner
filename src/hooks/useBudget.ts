@@ -16,12 +16,6 @@ import {
    updateBudgetCacheOnDelete
 } from '@/services/budgetCacheService'
 
-import {
-   updateSummaryAfterBudgetCreate,
-   updateSummaryAfterBudgetUpdate,
-   updateSummaryAfterBudgetDelete
-} from '@/services/budgetSummaryCacheService'
-
 const BUDGET_QUERY_KEY = ['budgets']
 const BUDGET_SUMMARY_QUERY_KEY = ['budget_summary']
 
@@ -47,7 +41,7 @@ export function useBudget() {
       mutationFn: (payload: CreateBudgetPayload) => createBudget(payload),
       onSuccess: (newBudget) => {
          updateBudgetCacheOnCreate(queryClient, newBudget)
-         updateSummaryAfterBudgetCreate(queryClient, newBudget)
+         queryClient.invalidateQueries({ queryKey: BUDGET_SUMMARY_QUERY_KEY })
       }
    })
 
@@ -65,7 +59,7 @@ export function useBudget() {
          if (!previousBudget) return
 
          updateBudgetCacheOnUpdate(queryClient, previousBudget, updatedBudget)
-         updateSummaryAfterBudgetUpdate(queryClient, previousBudget, updatedBudget)
+         queryClient.invalidateQueries({ queryKey: BUDGET_SUMMARY_QUERY_KEY })
       },
    })
 
@@ -83,7 +77,7 @@ export function useBudget() {
          if (!deletedBudget) return
 
          updateBudgetCacheOnDelete(queryClient, deletedId)
-         updateSummaryAfterBudgetDelete(queryClient, deletedBudget)
+         queryClient.invalidateQueries({ queryKey: BUDGET_SUMMARY_QUERY_KEY })
       },
    })
 

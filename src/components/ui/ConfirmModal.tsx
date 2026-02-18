@@ -49,7 +49,7 @@ export function ConfirmModal({
 
    return (
       <div
-         className="fixed inset-0 z-[60] flex justify-center items-end md:items-center"
+         className="fixed inset-0 z-[600] flex justify-center items-end md:items-center"
          role="dialog"
          aria-modal="true"
          aria-labelledby="confirm-modal-title"

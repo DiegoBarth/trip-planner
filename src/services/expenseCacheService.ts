@@ -19,22 +19,45 @@ export function updateExpenseCacheOnCreate(
 
 export function updateExpenseCacheOnUpdate(
    queryClient: QueryClient,
-   country: Country,
    previousExpense: Expense,
    updatedExpense: Expense
 ) {
-   const queryKey = getExpenseQueryKey(country)
+   const prevCountry: Country = previousExpense.country ?? 'all'
+   const nextCountry: Country = updatedExpense.country ?? 'all'
+   const id = previousExpense.id
 
+   if (prevCountry === nextCountry) {
+      const queryKey = getExpenseQueryKey(prevCountry)
+      queryClient.setQueryData<Expense[]>(
+         queryKey,
+         old =>
+            old
+               ? old.map(exp =>
+                  exp.id === id ? updatedExpense : exp
+               )
+               : [updatedExpense]
+      )
+      return
+   }
+
+   // Country changed: remove from previous, add to new
+   const prevKey = getExpenseQueryKey(prevCountry)
+   queryClient.setQueryData<Expense[]>(prevKey, old =>
+      old ? old.filter(exp => exp.id !== id) : []
+   )
+   const nextKey = getExpenseQueryKey(nextCountry)
    queryClient.setQueryData<Expense[]>(
-      queryKey,
-      old =>
-         old
-            ? old.map(expense =>
-               expense.id === previousExpense.id
-                  ? updatedExpense
-                  : expense
-            )
-            : [updatedExpense]
+      nextKey,
+      old => {
+         if (!old) return [updatedExpense]
+         const idx = old.findIndex(exp => exp.id === id)
+         if (idx >= 0) {
+            const next = [...old]
+            next[idx] = updatedExpense
+            return next
+         }
+         return [...old, updatedExpense]
+      }
    )
 }
 

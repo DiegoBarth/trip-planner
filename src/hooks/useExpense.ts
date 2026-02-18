@@ -17,11 +17,8 @@ import {
    updateExpenseCacheOnUpdate,
    updateExpenseCacheOnDelete,
 } from '@/services/expenseCacheService'
-import {
-   updateSummaryAfterExpenseCreate,
-   updateSummaryAfterExpenseUpdate,
-   updateSummaryAfterExpenseDelete,
-} from '@/services/expenseBudgetSummaryCacheService'
+
+const BUDGET_SUMMARY_QUERY_KEY = ['budget_summary']
 
 /**
  * Hook to manage expense operations
@@ -42,8 +39,9 @@ export function useExpense(country: Country) {
       mutationFn: (payload: CreateExpensePayload) =>
          createExpense(payload),
       onSuccess: newExpense => {
-         updateExpenseCacheOnCreate(queryClient, country, newExpense)
-         updateSummaryAfterExpenseCreate(queryClient, newExpense)
+         const targetCountry = newExpense.country ?? country
+         updateExpenseCacheOnCreate(queryClient, targetCountry, newExpense)
+         queryClient.invalidateQueries({ queryKey: BUDGET_SUMMARY_QUERY_KEY })
       },
    })
 
@@ -62,8 +60,8 @@ export function useExpense(country: Country) {
 
          if (!previousExpense) return
 
-         updateExpenseCacheOnUpdate(queryClient, country, previousExpense, updatedExpense)
-         updateSummaryAfterExpenseUpdate(queryClient, previousExpense, updatedExpense)
+         updateExpenseCacheOnUpdate(queryClient, previousExpense, updatedExpense)
+         queryClient.invalidateQueries({ queryKey: BUDGET_SUMMARY_QUERY_KEY })
       },
    })
 
@@ -82,7 +80,7 @@ export function useExpense(country: Country) {
          if (!deletedExpense) return
 
          updateExpenseCacheOnDelete(queryClient, country, deletedId)
-         updateSummaryAfterExpenseDelete(queryClient, deletedExpense)
+         queryClient.invalidateQueries({ queryKey: BUDGET_SUMMARY_QUERY_KEY })
       },
    })
 
