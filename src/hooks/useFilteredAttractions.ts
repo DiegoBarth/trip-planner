@@ -8,7 +8,7 @@ export function useFilteredAttractions(
 ) {
    return useMemo(() => {
       return attractions.filter(a => {
-         const matchesCountry = country === 'all' || a.country === country
+         const matchesCountry = country === 'general' || a.country === country
          const matchesDay = day === 'all' || a.day === Number(day)
          const hasCoords = Number(a.lat) !== 0 && Number(a.lng) !== 0
 

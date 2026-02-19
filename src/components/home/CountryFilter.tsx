@@ -5,10 +5,10 @@ import { MapPin, Calendar } from 'lucide-react'
 import { CustomSelect } from '@/components/ui/CustomSelect'
 
 const FILTER_OPTIONS: { key: CountryFilterValue; label: string }[] = [
-   { key: 'todos', label: 'Todos' },
-   { key: 'all', label: `${COUNTRIES.all.flag} ${COUNTRIES.all.name}` },
+   { key: 'all', label: 'Todos' },
+   { key: 'general', label: `${COUNTRIES.general.flag} ${COUNTRIES.general.name}` },
    ...Object.entries(COUNTRIES)
-      .filter(([key]) => key !== 'all')
+      .filter(([key]) => key !== 'general')
       .map(([key, c]) => ({ key: key as Country, label: `${c.flag} ${c.name}`, name: c.name }))
       .sort((a, b) => a.name.localeCompare(b.name))
       .map(({ key, label }) => ({ key, label })),
@@ -25,20 +25,20 @@ export function CountryFilter({ showDayFilter = true, hideGeneralOption = false 
    const { country, setCountry, day, setDay, availableDays } = useCountry()
 
    const visibleOptions = hideGeneralOption
-      ? FILTER_OPTIONS.filter(o => o.key !== 'all')
+      ? FILTER_OPTIONS.filter(o => o.key !== 'general')
       : FILTER_OPTIONS
 
    const countryOptions = visibleOptions.map(o => o.label)
 
    function countryToLabel(value: CountryFilterValue): string {
-      if (hideGeneralOption && value === 'all') return 'Todos'
+      if (hideGeneralOption && value === 'general') return 'Todos'
       const opt = FILTER_OPTIONS.find(o => o.key === value)
       return opt?.label ?? 'Todos'
    }
 
    function labelToCountry(label: string): CountryFilterValue {
       const opt = visibleOptions.find(o => o.label === label)
-      return opt?.key ?? 'todos'
+      return opt?.key ?? 'all'
    }
 
    const dayOptions = ['Todos os dias', ...availableDays.map((d) => `Dia ${d}`)]

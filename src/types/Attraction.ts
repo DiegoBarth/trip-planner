@@ -1,6 +1,6 @@
-export type Country = 'japan' | 'south-korea' | 'all'
-/** Valor do filtro de país: 'todos' = todos os registros; Country = filtrar por país (all = geral). */
-export type CountryFilterValue = 'todos' | Country
+export type Country = 'japan' | 'south-korea' | 'general'
+/** Valor do filtro de país: 'all' = todos os registros; Country = filtrar por país (general = geral). */
+export type CountryFilterValue = 'all' | Country
 export type Currency = 'JPY' | 'KRW' | 'BRL'
 export type AttractionType =
    | 'temple'

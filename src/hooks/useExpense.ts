@@ -36,9 +36,9 @@ export function useExpense(country: CountryFilterValue) {
    })
 
    const expenses =
-      country === 'todos'
+      country === 'all'
          ? allExpenses
-         : allExpenses.filter(e => (e.country ?? 'all') === country)
+         : allExpenses.filter(e => (e.country ?? 'general') === country)
 
    const createMutation = useMutation({
       mutationFn: (payload: CreateExpensePayload) =>

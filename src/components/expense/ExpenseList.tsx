@@ -9,7 +9,7 @@ import { COUNTRIES } from '@/config/constants'
 import { formatCurrency, dateToInputFormat } from '@/utils/formatters'
 import { Receipt } from 'lucide-react'
 
-const COUNTRY_DISPLAY_ORDER = ['japan', 'south-korea', 'all', 'outros']
+const COUNTRY_DISPLAY_ORDER = ['japan', 'south-korea', 'general', 'outros']
 
 interface ExpenseListProps {
   expenses: Expense[]

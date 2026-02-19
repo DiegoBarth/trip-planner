@@ -43,7 +43,7 @@ export const TOAST_DEFAULT_DURATION_MS = 3000;
 export const TOAST_ID_LENGTH = 9;
 
 export const COUNTRIES = {
-   all: {
+   general: {
       name: 'Geral',
       flag: '🌍',
       currency: 'BRL' as const,

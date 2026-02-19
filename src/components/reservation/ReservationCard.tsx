@@ -83,14 +83,14 @@ export function ReservationCard({ reservation, onClick }: ReservationCardProps) 
               <span>{reservation.time}</span>
             </div>
           )}
-          {(reservation.location || (reservation.country && reservation.country !== 'all')) && (
+          {(reservation.location || (reservation.country && reservation.country !== 'general')) && (
             <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 flex-wrap">
               <MapPin className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
               {reservation.location && (
                 <span className="line-clamp-1">{reservation.location}</span>
               )}
-              {reservation.location && reservation.country && reservation.country !== 'all' && ' - '}
-              {reservation.country && reservation.country !== 'all' && COUNTRIES[reservation.country] && (
+              {reservation.location && reservation.country && reservation.country !== 'general' && ' - '}
+              {reservation.country && reservation.country !== 'general' && COUNTRIES[reservation.country] && (
                 <span className="whitespace-nowrap">
                   {COUNTRIES[reservation.country].name}
                 </span>

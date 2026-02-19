@@ -31,7 +31,7 @@ interface ExpenseFormData {
 
 // Helper to get country from currency
 function getCountryFromCurrency(currency: Currency): Country | undefined {
-   if (currency === 'BRL') return 'all'
+   if (currency === 'BRL') return 'general'
 
    const entry = Object.entries(COUNTRIES).find(
       ([_, config]) => config.currency === currency
@@ -50,7 +50,7 @@ export function ModalExpense({ expense, isOpen, onClose, onSave }: ModalExpenseP
          amountInBRL: 0,
          budgetOrigin: 'Casal',
          date: new Date().toISOString().split('T')[0],
-         country: 'all',
+         country: 'general',
          notes: '',
          receiptUrl: ''
       }
@@ -97,14 +97,14 @@ export function ModalExpense({ expense, isOpen, onClose, onSave }: ModalExpenseP
                amountInBRL: expense.amountInBRL,
                budgetOrigin: budgetOriginKey as BudgetOrigin,
                date: dateToInputFormat(expense.date),
-               country: expense.country ?? (expense.currency === 'BRL' ? 'all' : undefined),
+               country: expense.country ?? (expense.currency === 'BRL' ? 'general' : undefined),
                notes: expense.notes || '',
                receiptUrl: expense.receiptUrl || ''
             })
 
             // Set previous currency to avoid unwanted conversion
             previousCurrency.current = expense.currency
-            previousCountry.current = expense.country ?? (expense.currency === 'BRL' ? 'all' : undefined)
+            previousCountry.current = expense.country ?? (expense.currency === 'BRL' ? 'general' : undefined)
          } else {
             reset({
                category: 'food',
@@ -114,14 +114,14 @@ export function ModalExpense({ expense, isOpen, onClose, onSave }: ModalExpenseP
                amountInBRL: 0,
                budgetOrigin: 'Casal',
                date: new Date().toISOString().split('T')[0],
-               country: 'all',
+               country: 'general',
                notes: '',
                receiptUrl: ''
             })
 
             // Reset previous currency
             previousCurrency.current = 'BRL'
-            previousCountry.current = 'all'
+            previousCountry.current = 'general'
          }
       }
    }, [isOpen, expense, reset])

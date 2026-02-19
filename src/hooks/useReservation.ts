@@ -73,9 +73,9 @@ export function useReservation() {
          if (updatedReservation.attractionId && updatedReservation.status) {
             try {
                // Get all attractions from all countries
-               const attractionCountries: ('japan' | 'south-korea' | 'all')[] = ['japan', 'south-korea', 'all']
+               const attractionCountries: ('japan' | 'south-korea' | 'general')[] = ['japan', 'south-korea', 'general']
                let linkedAttraction: Attraction | null = null
-               let attractionCountry: 'japan' | 'south-korea' | 'all' | null = null
+               let attractionCountry: 'japan' | 'south-korea' | 'general' | null = null
                
                // Find the linked attraction across all countries
                for (const country of attractionCountries) {
@@ -150,7 +150,7 @@ export function useReservation() {
                await deleteAttraction(reservation.attractionId)
                
                // Update attraction cache - find which country and update
-               const attractionCountries: ('japan' | 'south-korea' | 'all')[] = ['japan', 'south-korea', 'all']
+               const attractionCountries: ('japan' | 'south-korea' | 'general')[] = ['japan', 'south-korea', 'general']
                for (const country of attractionCountries) {
                   const attractions = queryClient.getQueryData<Attraction[]>(['attractions', country])
                   if (attractions?.some(a => a.id === reservation.attractionId)) {

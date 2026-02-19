@@ -74,25 +74,25 @@ export function MapView() {
    return (
       <div className="h-[calc(100vh-186px)] md:h-[calc(100vh-147px-4rem)]">
          <MapContainer
-               key={location.pathname}
-               className="h-full w-full"
-               zoom={13}
-               scrollWheelZoom={true}
-            >
-               <TileLayer
-                  attribution="© OpenStreetMap"
-                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-               />
+            key={location.pathname}
+            className="h-full w-full"
+            zoom={13}
+            scrollWheelZoom={true}
+         >
+            <TileLayer
+               attribution="© OpenStreetMap"
+               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
 
-               <FitBounds attractions={mapPoints} />
+            <FitBounds attractions={mapPoints} />
 
-               <MapRoutes
-                  groupedByDay={groupedByDay}
-                  routes={routes}
-                  accommodations={accommodationsForMap}
-                  getColor={getColorForDay}
-                  highlightAttractionId={highlightAttractionId}
-               />
+            <MapRoutes
+               groupedByDay={groupedByDay}
+               routes={routes}
+               accommodations={accommodationsForMap}
+               getColor={getColorForDay}
+               highlightAttractionId={highlightAttractionId}
+            />
          </MapContainer>
       </div>
    )

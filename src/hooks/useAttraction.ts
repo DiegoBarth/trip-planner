@@ -20,7 +20,7 @@ const ATTRACTION_QUERY_KEY = ['attractions']
 
 /**
  * Hook to manage attraction operations. Fetches all attractions; filters by country on the client.
- * 'todos' = todos os registros; 'all' = geral; 'japan' | 'south-korea' = país.
+ * 'all' = todos os registros; 'all' = geral; 'japan' | 'south-korea' = país.
  */
 export function useAttraction(country: CountryFilterValue) {
    const queryClient = useQueryClient()
@@ -32,9 +32,9 @@ export function useAttraction(country: CountryFilterValue) {
    })
 
    const rawFiltered =
-      country === 'todos'
+      country === 'all'
          ? allAttractions
-         : allAttractions.filter(a => (a.country ?? 'all') === country)
+         : allAttractions.filter(a => (a.country ?? 'general') === country)
 
    const attractions = useMemo(
       () => normalizeOrderByDate(applyAutoDays(rawFiltered)),

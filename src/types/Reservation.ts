@@ -31,6 +31,6 @@ export interface Reservation {
   documentFileId?: string // Google Drive file ID for deletion
   status: BookingStatus
   notes?: string
-  country?: 'japan' | 'south-korea' | 'all'
+  country?: 'japan' | 'south-korea' | 'general'
   attractionId?: number // Optional link to an attraction
 }

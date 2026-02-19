@@ -8,7 +8,7 @@ export function MapPage() {
          <PageHeader
             title="Mapa"
             subtitle="Visualize suas atrações no mapa"
-            filter={<CountryFilter />}
+            filter={<CountryFilter hideGeneralOption />}
          />
          <main className="flex-1">
             <MapView />

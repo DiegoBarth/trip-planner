@@ -210,7 +210,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
          setValue('currency', 'JPY')
       } else if (country === 'south-korea') {
          setValue('currency', 'KRW')
-      } else if (country === 'all') {
+      } else if (country === 'general') {
          setValue('currency', 'BRL')
       }
    }
@@ -225,7 +225,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
       } else if (currency === 'KRW') {
          setValue('country', 'south-korea')
       } else if (currency === 'BRL') {
-         setValue('country', 'all')
+         setValue('country', 'general')
       }
    }
 
