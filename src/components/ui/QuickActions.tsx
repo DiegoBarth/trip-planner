@@ -49,7 +49,7 @@ const quickActions: QuickAction[] = [
     bgColor: 'bg-indigo-100',
     hoverColor: 'hover:bg-indigo-100',
   },
-]
+];
 
 export function QuickActions() {
   return (
@@ -84,5 +84,5 @@ export function QuickActions() {
         )
       })}
     </div>
-  )
+  );
 }

@@ -1,29 +1,29 @@
-import type { Attraction } from '@/types/Attraction'
 import { dateToInputFormat } from './formatters'
+import type { Attraction } from '@/types/Attraction'
 
 export function getNextAttractions(attractions: Attraction[]): Attraction[] {
-   if (attractions.length === 0) return []
+  if (attractions.length === 0) return [];
 
-   const today = new Date()
-   today.setHours(0, 0, 0, 0)
+  const today = new Date();
 
-   const futureAttractions = attractions
-      .filter(a => a.date)
-      .map(a => ({
-         ...a,
-         parsedDate: new Date(dateToInputFormat(a.date))
-      }))
-      .filter(a => a.parsedDate >= today)
+  today.setHours(0, 0, 0, 0);
 
-   if (futureAttractions.length === 0) return []
+  const futureAttractions = attractions.filter(a => a.date)
+    .map(a => ({
+      ...a,
+      parsedDate: new Date(dateToInputFormat(a.date))
+    }))
+    .filter(a => a.parsedDate >= today);
 
-   futureAttractions.sort(
-      (a, b) => a.parsedDate.getTime() - b.parsedDate.getTime()
-   )
+  if (futureAttractions.length === 0) return [];
 
-   const nextDate = futureAttractions[0].parsedDate.getTime()
+  futureAttractions.sort(
+    (a, b) => a.parsedDate.getTime() - b.parsedDate.getTime()
+  );
 
-   return futureAttractions
-      .filter(a => a.parsedDate.getTime() === nextDate)
-      .map(({ parsedDate, ...rest }) => rest)
+  const nextDate = futureAttractions[0].parsedDate.getTime();
+
+  return futureAttractions
+    .filter(a => a.parsedDate.getTime() === nextDate)
+    .map(({ parsedDate, ...rest }) => rest);
 }

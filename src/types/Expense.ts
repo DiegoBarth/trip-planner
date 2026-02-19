@@ -1,6 +1,6 @@
 import type { BudgetOrigin, Currency } from './Attraction'
 
-export type ExpenseCategory = 
+export type ExpenseCategory =
   | 'accommodation'
   | 'transport'
   | 'food'

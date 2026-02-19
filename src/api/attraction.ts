@@ -1,118 +1,118 @@
-import { apiGet, apiPost } from './client'
+import { apiGet, apiPost } from '@/api/client'
 import type { Attraction } from '@/types/Attraction'
 
 interface ApiResponse<T> {
-   success: boolean
-   data?: T
-   message?: string
+  success: boolean
+  data?: T
+  message?: string
 }
 
 export interface CreateAttractionPayload {
-   name: string
-   country: Attraction['country']
-   city: string
-   region?: string
-   day: number
-   date: string
-   dayOfWeek: string
-   type: Attraction['type']
-   order: number
-   visited: boolean
-   needsReservation: boolean
-   reservationStatus?: string
-   couplePrice: number
-   currency: Attraction['currency']
-   priceInBRL: number
-   idealPeriod?: Attraction['idealPeriod']
-   isOpen?: boolean
-   openingTime?: string
-   closingTime?: string
-   closedDays?: string
-   ticketLink?: string
-   location?: string
-   duration?: number
-   notes?: string
-   imageUrl?: string
-   reservationId?: number
+  name: string
+  country: Attraction['country']
+  city: string
+  region?: string
+  day: number
+  date: string
+  dayOfWeek: string
+  type: Attraction['type']
+  order: number
+  visited: boolean
+  needsReservation: boolean
+  reservationStatus?: string
+  couplePrice: number
+  currency: Attraction['currency']
+  priceInBRL: number
+  idealPeriod?: Attraction['idealPeriod']
+  isOpen?: boolean
+  openingTime?: string
+  closingTime?: string
+  closedDays?: string
+  ticketLink?: string
+  location?: string
+  duration?: number
+  notes?: string
+  imageUrl?: string
+  reservationId?: number
 }
 
 export interface UpdateAttractionPayload extends CreateAttractionPayload {
-   id: number
+  id: number
 }
 
 /**
  * Create a new attraction entry
  */
 export async function createAttraction(payload: CreateAttractionPayload): Promise<Attraction> {
-   const response = await apiPost<ApiResponse<Attraction>>({
-      action: 'createAttraction',
-      data: payload
-   })
+  const response = await apiPost<ApiResponse<Attraction>>({
+    action: 'createAttraction',
+    data: payload
+  });
 
-   if (!response.success || !response.data) {
-      throw new Error(response.message || 'Failed to create attraction')
-   }
+  if (!response.success || !response.data) {
+    throw new Error(response.message || 'Failed to create attraction');
+  }
 
-   return response.data
+  return response.data;
 }
 
 /**
  * Update an existing attraction entry
  */
 export async function updateAttraction(payload: UpdateAttractionPayload): Promise<Attraction> {
-   const response = await apiPost<ApiResponse<Attraction>>({
-      action: 'updateAttraction',
-      data: payload
-   })
+  const response = await apiPost<ApiResponse<Attraction>>({
+    action: 'updateAttraction',
+    data: payload
+  });
 
-   if (!response.success || !response.data) {
-      throw new Error(response.message || 'Failed to update attraction')
-   }
+  if (!response.success || !response.data) {
+    throw new Error(response.message || 'Failed to update attraction');
+  }
 
-   return response.data
+  return response.data;
 }
 
 /**
  * Delete an attraction entry by ID
  */
 export async function deleteAttraction(id: number): Promise<void> {
-   const response = await apiPost<ApiResponse<null>>({
-      action: 'deleteAttraction',
-      id
-   })
+  const response = await apiPost<ApiResponse<null>>({
+    action: 'deleteAttraction',
+    id
+  });
 
-   if (!response.success) {
-      throw new Error(response.message || 'Failed to delete attraction')
-   }
+  if (!response.success) {
+    throw new Error(response.message || 'Failed to delete attraction');
+  }
 }
 
 /**
  * Get all attractions (no country filter; filter on the client)
  */
 export async function getAttractions(): Promise<Attraction[]> {
-   const response = await apiGet<ApiResponse<Attraction[]>>({
-      action: 'getAttractions'
-   })
+  const response = await apiGet<ApiResponse<Attraction[]>>({
+    action: 'getAttractions'
+  });
 
-   if (!response.success || !response.data) {
-      return []
-   }
+  if (!response.success || !response.data) {
+    return [];
+  }
 
-   return response.data
+  return response.data;
 }
 
 /**
  * Bulk update multiple attractions in a single request
  */
 export async function bulkUpdateAttractions(payload: UpdateAttractionPayload[]): Promise<Attraction[]> {
-   const response = await apiPost<ApiResponse<Attraction[]>>({
-      action: 'bulkUpdateAttractions',
-      data: payload
-   })
+  const response = await apiPost<ApiResponse<Attraction[]>>({
+    action: 'bulkUpdateAttractions',
+    data: payload
+  });
 
-   if (!response.success || !response.data) {
-      throw new Error(response.message || 'Failed to bulk update attractions')
-   }
+  if (!response.success || !response.data) {
+    throw new Error(response.message || 'Failed to bulk update attractions');
+  }
 
-   return response.data
+  return response.data;
 }

@@ -1,22 +1,18 @@
-import { useIsFetching, useIsMutating } from '@tanstack/react-query'
 import { Loader2 } from 'lucide-react'
+import { useIsFetching, useIsMutating } from '@tanstack/react-query'
 
-/**
- * Overlay de loading no centro da tela.
- * Bloqueia cliques e edições no fundo enquanto há queries ou mutations em andamento (React Query).
- * Requisições OSRM (rotas) são ignoradas para não bloquear a UI.
- */
 export function GlobalLoading() {
   const isFetching = useIsFetching({
     predicate: (query) => {
       const key = query.queryKey[0]
       return key !== 'weather' && key !== 'budget_summary'
     },
-  })
-  const isMutating = useIsMutating()
-  const isLoading = isFetching > 0 || isMutating > 0
+  });
 
-  if (!isLoading) return null
+  const isMutating = useIsMutating();
+  const isLoading = isFetching > 0 || isMutating > 0;
+
+  if (!isLoading) return null;
 
   return (
     <div
@@ -30,5 +26,5 @@ export function GlobalLoading() {
         <span className="text-sm font-medium text-white">Aguarde...</span>
       </div>
     </div>
-  )
+  );
 }

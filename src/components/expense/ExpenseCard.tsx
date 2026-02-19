@@ -1,14 +1,8 @@
 import { Calendar } from 'lucide-react'
-import type { Expense } from '@/types/Expense'
-import {
-  EXPENSE_CATEGORIES,
-  BUDGET_ORIGINS,
-  getCategoryFromLabel,
-  getBudgetOriginFromLabel,
-} from '@/config/constants'
 import { formatCurrency, formatDate } from '@/utils/formatters'
+import { EXPENSE_CATEGORIES, BUDGET_ORIGINS, getCategoryFromLabel, getBudgetOriginFromLabel } from '@/config/constants'
+import type { Expense } from '@/types/Expense'
 
-// Cores por categoria - identidade visual da tela de gastos (diferente do orçamento)
 const CATEGORY_TOP_BAR: Record<string, string> = {
   food: 'bg-amber-500',
   attraction: 'bg-violet-500',
@@ -38,15 +32,16 @@ interface ExpenseCardProps {
 export function ExpenseCard({ expense, onClick }: ExpenseCardProps) {
   const categoryKey = EXPENSE_CATEGORIES[expense.category as keyof typeof EXPENSE_CATEGORIES]
     ? expense.category
-    : getCategoryFromLabel(expense.category as string)
+    : getCategoryFromLabel(expense.category as string);
+
   const budgetOriginKey = BUDGET_ORIGINS[expense.budgetOrigin as keyof typeof BUDGET_ORIGINS]
     ? expense.budgetOrigin
-    : getBudgetOriginFromLabel(expense.budgetOrigin as string)
+    : getBudgetOriginFromLabel(expense.budgetOrigin as string);
 
-  const categoryConfig = EXPENSE_CATEGORIES[categoryKey as keyof typeof EXPENSE_CATEGORIES]
-  const originConfig = BUDGET_ORIGINS[budgetOriginKey as keyof typeof BUDGET_ORIGINS]
-  const topBarClass = CATEGORY_TOP_BAR[categoryKey] ?? CATEGORY_TOP_BAR.other
-  const iconBgClass = CATEGORY_ICON_BG[categoryKey] ?? CATEGORY_ICON_BG.other
+  const categoryConfig = EXPENSE_CATEGORIES[categoryKey as keyof typeof EXPENSE_CATEGORIES];
+  const originConfig = BUDGET_ORIGINS[budgetOriginKey as keyof typeof BUDGET_ORIGINS];
+  const topBarClass = CATEGORY_TOP_BAR[categoryKey] ?? CATEGORY_TOP_BAR.other;
+  const iconBgClass = CATEGORY_ICON_BG[categoryKey] ?? CATEGORY_ICON_BG.other;
 
   return (
     <div
@@ -61,7 +56,6 @@ export function ExpenseCard({ expense, onClick }: ExpenseCardProps) {
       }}
       className={`bg-white dark:bg-gray-800 rounded-2xl shadow-md overflow-hidden transition-shadow ${onClick ? 'cursor-pointer hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-rose-500/50' : ''}`}
     >
-      {/* Faixa superior por categoria */}
       <div className={`h-1 ${topBarClass}`} />
 
       <div className="p-4">
@@ -117,5 +111,5 @@ export function ExpenseCard({ expense, onClick }: ExpenseCardProps) {
         </div>
       </div>
     </div>
-  )
+  );
 }

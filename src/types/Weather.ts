@@ -1,4 +1,3 @@
-/** Resumo de um período do dia (manhã, tarde, noite) */
 export interface WeatherPeriodSummary {
   temp: number
   icon: string
@@ -15,9 +14,8 @@ export interface WeatherData {
   icon: string
   humidity: number
   windSpeed: number
-  pop: number // Probability of precipitation (0-1), no dia usa o máximo dos períodos
+  pop: number // Probability of precipitation (0-1)
   rain?: number // Rain volume in mm
-  /** Resumo por período (manhã, tarde, noite) para exibir no card */
   periods?: {
     morning?: WeatherPeriodSummary
     afternoon?: WeatherPeriodSummary
@@ -31,7 +29,7 @@ export interface WeatherForecast {
   forecast: WeatherData[]
 }
 
-export type WeatherCondition = 
+export type WeatherCondition =
   | 'clear'
   | 'clouds'
   | 'rain'

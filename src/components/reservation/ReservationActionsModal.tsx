@@ -1,8 +1,8 @@
 import { useEffect } from 'react'
 import { X, Pencil, Trash2 } from 'lucide-react'
-import type { Reservation } from '@/types/Reservation'
-import { RESERVATION_TYPES, BOOKING_STATUS } from '@/config/constants'
 import { useFocusTrap } from '@/hooks/useFocusTrap'
+import { RESERVATION_TYPES, BOOKING_STATUS } from '@/config/constants'
+import type { Reservation } from '@/types/Reservation'
 
 interface ReservationActionsModalProps {
   reservation: Reservation | null
@@ -12,39 +12,36 @@ interface ReservationActionsModalProps {
   onDelete: (reservation: Reservation) => void
 }
 
-export function ReservationActionsModal({
-  reservation,
-  isOpen,
-  onClose,
-  onEdit,
-  onDelete,
-}: ReservationActionsModalProps) {
-  const trapRef = useFocusTrap(isOpen)
+export function ReservationActionsModal({ reservation, isOpen, onClose, onEdit, onDelete }: ReservationActionsModalProps) {
+  const trapRef = useFocusTrap(isOpen);
 
   useEffect(() => {
-    if (!isOpen) return
+    if (!isOpen) return;
+
     function handleEscape(e: KeyboardEvent) {
-      if (e.key === 'Escape') onClose()
+      if (e.key === 'Escape') onClose();
     }
-    document.addEventListener('keydown', handleEscape)
-    return () => document.removeEventListener('keydown', handleEscape)
-  }, [isOpen, onClose])
 
-  if (!isOpen) return null
-  if (!reservation) return null
+    document.addEventListener('keydown', handleEscape);
 
-  const typeConfig = RESERVATION_TYPES[reservation.type]
-  const statusConfig = BOOKING_STATUS[reservation.status]
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [isOpen, onClose]);
+
+  if (!isOpen) return null;
+  if (!reservation) return null;
+
+  const typeConfig = RESERVATION_TYPES[reservation.type];
+  const statusConfig = BOOKING_STATUS[reservation.status];
 
   const handleEdit = () => {
-    onClose()
-    onEdit(reservation)
-  }
+    onClose();
+    onEdit(reservation);
+  };
 
   const handleDelete = () => {
-    onClose()
-    onDelete(reservation)
-  }
+    onClose();
+    onDelete(reservation);
+  };
 
   return (
     <div
@@ -108,5 +105,5 @@ export function ReservationActionsModal({
         </div>
       </div>
     </div>
-  )
+  );
 }

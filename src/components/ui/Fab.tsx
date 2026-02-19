@@ -1,6 +1,6 @@
+import { type ReactNode } from 'react'
 import { Plus } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { type ReactNode } from 'react'
 
 interface FabProps {
   onClick: () => void
@@ -30,5 +30,5 @@ export function Fab({ onClick, icon, label, className }: FabProps) {
         <span className="font-medium pr-2">{label}</span>
       )}
     </button>
-  )
+  );
 }

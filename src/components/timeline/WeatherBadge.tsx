@@ -1,16 +1,16 @@
 import { Droplets, Wind, ThermometerSun } from 'lucide-react'
-import type { WeatherData } from '@/types/Weather'
 import { getWeatherRecommendation } from '@/services/weatherService'
+import type { WeatherData } from '@/types/Weather'
 
 interface WeatherBadgeProps {
   weather: WeatherData
 }
 
 export function WeatherBadge({ weather }: WeatherBadgeProps) {
-  const recommendation = getWeatherRecommendation(weather)
-  const hasRainWarning = weather.pop > 0.4
-  const periods = weather.periods
-  const hasPeriods = periods && (periods.morning || periods.afternoon || periods.evening)
+  const recommendation = getWeatherRecommendation(weather);
+  const hasRainWarning = weather.pop > 0.4;
+  const periods = weather.periods;
+  const hasPeriods = periods && (periods.morning || periods.afternoon || periods.evening);
 
   return (
     <div className={`
@@ -29,7 +29,7 @@ export function WeatherBadge({ weather }: WeatherBadgeProps) {
             </div>
           </div>
         </div>
-        
+
         <div className="text-sm text-gray-600 dark:text-gray-400 text-right">
           <div className="flex items-center gap-1 justify-end">
             <ThermometerSun className="w-4 h-4" />
@@ -94,5 +94,5 @@ export function WeatherBadge({ weather }: WeatherBadgeProps) {
         {recommendation}
       </div>
     </div>
-  )
+  );
 }

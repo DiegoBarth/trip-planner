@@ -4,39 +4,39 @@ import type { MappableAttraction } from '@/types/MappableAttraction'
 type MarkerType = 'attraction' | 'closed' | 'accommodation'
 
 export function createCustomIcon(
-   color: string,
-   type: MarkerType = 'attraction',
-   attraction?: MappableAttraction
+  color: string,
+  type: MarkerType = 'attraction',
+  attraction?: MappableAttraction
 ) {
-   let isClosedOnVisitDay = false;
+  let isClosedOnVisitDay = false;
 
-   if (attraction) {
-      isClosedOnVisitDay =
-         !!attraction.closedDays &&
-         !!attraction.dayOfWeek &&
-         attraction.closedDays
-            .split(',')
-            .map(d => d.trim())
-            .includes(attraction.dayOfWeek)
-   }
+  if (attraction) {
+    isClosedOnVisitDay =
+      !!attraction.closedDays &&
+      !!attraction.dayOfWeek &&
+      attraction.closedDays
+        .split(',')
+        .map(d => d.trim())
+        .includes(attraction.dayOfWeek);
+  }
 
-   let fillColor = color
+  let fillColor = color;
 
-   if (type === 'accommodation') {
-      fillColor = '#111827'
-   }
+  if (type === 'accommodation') {
+    fillColor = '#111827';
+  }
 
-   if (type === 'closed' || isClosedOnVisitDay) {
-      fillColor = '#ef4444'
-   }
+  if (type === 'closed' || isClosedOnVisitDay) {
+    fillColor = '#ef4444';
+  }
 
-   const innerIcon =
-      type === 'accommodation'
-         ? `<text x="12" y="14" text-anchor="middle" font-size="10" fill="white">🏠</text>`
-         : `<circle cx="12" cy="10" r="3" fill="white"></circle>`
+  const innerIcon =
+    type === 'accommodation'
+      ? `<text x="12" y="14" text-anchor="middle" font-size="10" fill="white">🏠</text>`
+      : `<circle cx="12" cy="10" r="3" fill="white"></circle>`;
 
-   return L.divIcon({
-      html: `
+  return L.divIcon({
+    html: `
       <div style="position: relative;">
         <svg xmlns="http://www.w3.org/2000/svg" width="42" height="42" viewBox="0 0 24 24"
           fill="${fillColor}" stroke="white" stroke-width="2">
@@ -45,8 +45,8 @@ export function createCustomIcon(
         </svg>
       </div>
     `,
-      className: 'custom-marker-icon',
-      iconSize: [42, 42],
-      iconAnchor: [21, 42]
-   })
+    className: 'custom-marker-icon',
+    iconSize: [42, 42],
+    iconAnchor: [21, 42]
+  });
 }

@@ -1,96 +1,78 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import {
-   createBudget,
-   updateBudget,
-   deleteBudget,
-   getBudgets,
-   getBudgetSummary
-} from '@/api/budget'
+import { createBudget, updateBudget, deleteBudget, getBudgets, getBudgetSummary } from '@/api/budget'
+import { updateBudgetCacheOnCreate, updateBudgetCacheOnUpdate, updateBudgetCacheOnDelete } from '@/services/budgetCacheService'
 import { QUERY_STALE_TIME_MS } from '@/config/constants'
 import type { CreateBudgetPayload, UpdateBudgetPayload } from '@/api/budget'
 import type { Budget, BudgetSummary } from '@/types/Budget'
 
-import {
-   updateBudgetCacheOnCreate,
-   updateBudgetCacheOnUpdate,
-   updateBudgetCacheOnDelete
-} from '@/services/budgetCacheService'
 
-const BUDGET_QUERY_KEY = ['budgets']
-const BUDGET_SUMMARY_QUERY_KEY = ['budget_summary']
+const BUDGET_QUERY_KEY = ['budgets'];
+const BUDGET_SUMMARY_QUERY_KEY = ['budget_summary'];
 
 export function useBudget() {
-   const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
 
-   // Summary
-   const { data: budgetSummary } = useQuery<BudgetSummary>({
-      queryKey: BUDGET_SUMMARY_QUERY_KEY,
-      queryFn: getBudgetSummary,
-      staleTime: QUERY_STALE_TIME_MS,
-   })
+  const { data: budgetSummary } = useQuery<BudgetSummary>({
+    queryKey: BUDGET_SUMMARY_QUERY_KEY,
+    queryFn: getBudgetSummary,
+    staleTime: QUERY_STALE_TIME_MS,
+  });
 
-   // Budgets
-   const { data: budgets = [], isLoading, error } = useQuery({
-      queryKey: BUDGET_QUERY_KEY,
-      queryFn: getBudgets,
-      staleTime: QUERY_STALE_TIME_MS,
-   })
+  const { data: budgets = [], isLoading, error } = useQuery({
+    queryKey: BUDGET_QUERY_KEY,
+    queryFn: getBudgets,
+    staleTime: QUERY_STALE_TIME_MS,
+  });
 
-   // Create
-   const createMutation = useMutation({
-      mutationFn: (payload: CreateBudgetPayload) => createBudget(payload),
-      onSuccess: (newBudget) => {
-         updateBudgetCacheOnCreate(queryClient, newBudget)
-         queryClient.invalidateQueries({ queryKey: BUDGET_SUMMARY_QUERY_KEY })
-      }
-   })
+  const createMutation = useMutation({
+    mutationFn: (payload: CreateBudgetPayload) => createBudget(payload),
+    onSuccess: (newBudget) => {
+      updateBudgetCacheOnCreate(queryClient, newBudget);
 
-   // Update
-   const updateMutation = useMutation({
-      mutationFn: (payload: UpdateBudgetPayload) => updateBudget(payload),
-      onSuccess: (updatedBudget) => {
-         const previousBudgets =
-            queryClient.getQueryData<Budget[]>(BUDGET_QUERY_KEY)
+      queryClient.invalidateQueries({ queryKey: BUDGET_SUMMARY_QUERY_KEY });
+    }
+  });
 
-         const previousBudget = previousBudgets?.find(
-            b => b.id === updatedBudget.id
-         )
+  const updateMutation = useMutation({
+    mutationFn: (payload: UpdateBudgetPayload) => updateBudget(payload),
+    onSuccess: (updatedBudget) => {
+      const previousBudgets = queryClient.getQueryData<Budget[]>(BUDGET_QUERY_KEY);
 
-         if (!previousBudget) return
+      const previousBudget = previousBudgets?.find(b => b.id === updatedBudget.id);
 
-         updateBudgetCacheOnUpdate(queryClient, previousBudget, updatedBudget)
-         queryClient.invalidateQueries({ queryKey: BUDGET_SUMMARY_QUERY_KEY })
-      },
-   })
+      if (!previousBudget) return;
 
-   // Delete
-   const deleteMutation = useMutation({
-      mutationFn: (id: number) => deleteBudget(id),
-      onSuccess: (_, deletedId) => {
-         const oldBudgets =
-            queryClient.getQueryData<Budget[]>(BUDGET_QUERY_KEY)
+      updateBudgetCacheOnUpdate(queryClient, previousBudget, updatedBudget);
 
-         const deletedBudget = oldBudgets?.find(
-            b => b.id === deletedId
-         )
+      queryClient.invalidateQueries({ queryKey: BUDGET_SUMMARY_QUERY_KEY });
+    },
+  });
 
-         if (!deletedBudget) return
+  const deleteMutation = useMutation({
+    mutationFn: (id: number) => deleteBudget(id),
+    onSuccess: (_, deletedId) => {
+      const oldBudgets = queryClient.getQueryData<Budget[]>(BUDGET_QUERY_KEY);
 
-         updateBudgetCacheOnDelete(queryClient, deletedId)
-         queryClient.invalidateQueries({ queryKey: BUDGET_SUMMARY_QUERY_KEY })
-      },
-   })
+      const deletedBudget = oldBudgets?.find(b => b.id === deletedId);
 
-   return {
-      budgets,
-      budgetSummary,
-      isLoading,
-      error,
-      createBudget: createMutation.mutateAsync,
-      updateBudget: updateMutation.mutateAsync,
-      deleteBudget: deleteMutation.mutateAsync,
-      isCreating: createMutation.isPending,
-      isUpdating: updateMutation.isPending,
-      isDeleting: deleteMutation.isPending,
-   }
+      if (!deletedBudget) return;
+
+      updateBudgetCacheOnDelete(queryClient, deletedId);
+
+      queryClient.invalidateQueries({ queryKey: BUDGET_SUMMARY_QUERY_KEY });
+    },
+  });
+
+  return {
+    budgets,
+    budgetSummary,
+    isLoading,
+    error,
+    createBudget: createMutation.mutateAsync,
+    updateBudget: updateMutation.mutateAsync,
+    deleteBudget: deleteMutation.mutateAsync,
+    isCreating: createMutation.isPending,
+    isUpdating: updateMutation.isPending,
+    isDeleting: deleteMutation.isPending,
+  }
 }

@@ -1,15 +1,15 @@
 import { useState, useMemo } from 'react'
-import { ExpenseCard } from './ExpenseCard'
-import { ModalExpense } from './ModalExpense'
-import { ExpenseActionsModal } from './ExpenseActionsModal'
+import { Receipt } from 'lucide-react'
+import { ExpenseCard } from '@/components/expense/ExpenseCard'
+import { ModalExpense } from '@/components/expense/ModalExpense'
+import { ExpenseActionsModal } from '@/components/expense/ExpenseActionsModal'
 import { ConfirmModal } from '@/components/ui/ConfirmModal'
 import { EmptyState } from '@/components/ui/EmptyState'
-import type { Expense } from '@/types/Expense'
-import { COUNTRIES } from '@/config/constants'
 import { formatCurrency, dateToInputFormat } from '@/utils/formatters'
-import { Receipt } from 'lucide-react'
+import { COUNTRIES } from '@/config/constants'
+import type { Expense } from '@/types/Expense'
 
-const COUNTRY_DISPLAY_ORDER = ['japan', 'south-korea', 'general', 'outros']
+const COUNTRY_DISPLAY_ORDER = ['japan', 'south-korea', 'general', 'outros'];
 
 interface ExpenseListProps {
   expenses: Expense[]
@@ -19,83 +19,85 @@ interface ExpenseListProps {
   isLoading?: boolean
 }
 
-export function ExpenseList({
-  expenses,
-  onUpdate,
-  onCreate,
-  onDelete,
-  isLoading = false,
-}: ExpenseListProps) {
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const [editingExpense, setEditingExpense] = useState<Expense | undefined>()
-  const [expenseToDelete, setExpenseToDelete] = useState<Expense | null>(null)
-  const [expenseForActions, setExpenseForActions] = useState<Expense | null>(null)
+export function ExpenseList({ expenses, onUpdate, onCreate, onDelete, isLoading = false }: ExpenseListProps) {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingExpense, setEditingExpense] = useState<Expense | undefined>();
+  const [expenseToDelete, setExpenseToDelete] = useState<Expense | null>(null);
+  const [expenseForActions, setExpenseForActions] = useState<Expense | null>(null);
 
   const { groupedByCountry, orderedCountryKeys } = useMemo(() => {
     const grouped = expenses.reduce((acc, expense) => {
-      const country = expense.country ?? 'outros'
-      if (!acc[country]) acc[country] = []
-      acc[country].push(expense)
-      return acc
-    }, {} as Record<string, Expense[]>)
+      const country = expense.country ?? 'outros';
+
+      if (!acc[country]) acc[country] = [];
+
+      acc[country].push(expense);
+
+      return acc;
+    }, {} as Record<string, Expense[]>);
 
     const parseDate = (d: string) => {
-      const s = dateToInputFormat(d || '')
-      return s ? new Date(s).getTime() : 0
-    }
+      const s = dateToInputFormat(d || '');
+
+      return s ? new Date(s).getTime() : 0;
+    };
+
     Object.values(grouped).forEach((list) => {
       list.sort((a, b) => parseDate(a.date) - parseDate(b.date))
-    })
+    });
 
     const ordered = [
       ...COUNTRY_DISPLAY_ORDER.filter((k) => grouped[k]),
       ...Object.keys(grouped).filter((k) => !COUNTRY_DISPLAY_ORDER.includes(k)).sort(),
-    ]
-    return { groupedByCountry: grouped, orderedCountryKeys: ordered }
-  }, [expenses])
+    ];
+
+    return { groupedByCountry: grouped, orderedCountryKeys: ordered };
+  }, [expenses]);
 
   const handleCardClick = (expense: Expense) => {
-    setExpenseForActions(expense)
-  }
+    setExpenseForActions(expense);
+  };
 
   const handleOpenEditFromActions = (expense: Expense) => {
-    setExpenseForActions(null)
-    setEditingExpense(expense)
-    setIsModalOpen(true)
-  }
+    setExpenseForActions(null);
+    setEditingExpense(expense);
+    setIsModalOpen(true);
+  };
 
   const handleOpenDeleteFromActions = (expense: Expense) => {
-    setExpenseForActions(null)
-    setExpenseToDelete(expense)
-  }
+    setExpenseForActions(null);
+    setExpenseToDelete(expense);
+  };
 
   const handleCloseModal = () => {
-    setEditingExpense(undefined)
-    setIsModalOpen(false)
-  }
+    setEditingExpense(undefined);
+    setIsModalOpen(false);
+  };
 
   const handleConfirmDelete = async () => {
-    if (!expenseToDelete) return
-    await onDelete(expenseToDelete.id)
-    setExpenseToDelete(null)
-  }
+    if (!expenseToDelete) return;
+
+    await onDelete(expenseToDelete.id);
+
+    setExpenseToDelete(null);
+  };
 
   const handleSave = async (data: Omit<Expense, 'id'>) => {
     if (editingExpense) {
-      await Promise.resolve(onUpdate({ ...data, id: editingExpense.id } as Expense))
-    } else {
-      await Promise.resolve(onCreate(data))
+      await Promise.resolve(onUpdate({ ...data, id: editingExpense.id } as Expense));
     }
-  }
+    else {
+      await Promise.resolve(onCreate(data));
+    }
+  };
 
-  if (isLoading) return null
+  if (isLoading) return null;
 
-  const totalBRL = expenses.reduce((sum, e) => sum + (e.amountInBRL ?? 0), 0)
-  const hasExpenses = expenses.length > 0
+  const totalBRL = expenses.reduce((sum, e) => sum + (e.amountInBRL ?? 0), 0);
+  const hasExpenses = expenses.length > 0;
 
   return (
     <div>
-      {/* Resumo total - identidade da tela de gastos */}
       {hasExpenses && (
         <div className="mb-6 p-4 rounded-2xl bg-gradient-to-r from-rose-50 to-orange-50 dark:from-rose-900/30 dark:to-orange-900/30 border border-rose-100 dark:border-rose-800">
           <div className="flex items-center gap-3">
@@ -121,20 +123,19 @@ export function ExpenseList({
           />
         ) : (
           orderedCountryKeys.map((country) => {
-            const countryExpenses = groupedByCountry[country]
-            const countryConfig = COUNTRIES[country as keyof typeof COUNTRIES]
-            const countryName =
-              countryConfig?.name ?? (country === 'outros' ? 'Outros' : country)
-            const countryFlag = countryConfig?.flag ?? '🌍'
+            const countryExpenses = groupedByCountry[country];
+            const countryConfig = COUNTRIES[country as keyof typeof COUNTRIES];
+            const countryName = countryConfig?.name ?? (country === 'outros' ? 'Outros' : country);
+            const countryFlag = countryConfig?.flag ?? '🌍';
             const sectionTotal = countryExpenses.reduce(
               (s, e) => s + (e.amountInBRL ?? 0),
               0
-            )
+            );
 
-            if (!countryExpenses?.length) return null
+            if (!countryExpenses?.length) return null;
+
             return (
               <section key={country} className="space-y-4">
-                {/* Cabeçalho por destino - estilo único (pill com fundo) */}
                 <div className="flex items-center justify-between gap-3 flex-wrap">
                   <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white dark:bg-gray-800 shadow-sm border border-gray-200 dark:border-gray-700">
                     <span className="text-xl" aria-hidden>
@@ -195,5 +196,5 @@ export function ExpenseList({
         onConfirm={handleConfirmDelete}
       />
     </div>
-  )
+  );
 }

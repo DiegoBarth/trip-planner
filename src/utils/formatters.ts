@@ -2,147 +2,152 @@ import type { Currency } from "@/types/Attraction"
 import type { CurrencyRates } from "@/types/Currency"
 
 export function convertToBRL(amount: number, currency: Currency, rates?: CurrencyRates | null): number {
-   if (currency === 'BRL') return amount
-   if (!rates) return amount
+  if (currency === 'BRL') return amount;
 
-   const rateKey = `${currency}_BRL` as keyof CurrencyRates
-   const rate = rates[rateKey]
+  if (!rates) return amount;
 
-   if (!rate) return amount
+  const rateKey = `${currency}_BRL` as keyof CurrencyRates;
+  const rate = rates[rateKey];
 
-   return amount * rate
+  if (!rate) return amount;
+
+  return amount * rate;
 }
 
 export function convertCurrency(amount: number, fromCurrency: Currency, toCurrency: Currency, rates?: CurrencyRates | null): number {
-   if (fromCurrency === toCurrency) return amount
-   if (!rates) return amount
+  if (fromCurrency === toCurrency) return amount;
+  if (!rates) return amount;
 
-   const amountInBRL = convertToBRL(amount, fromCurrency, rates)
+  const amountInBRL = convertToBRL(amount, fromCurrency, rates);
 
-   if (toCurrency === 'BRL') return amountInBRL
+  if (toCurrency === 'BRL') return amountInBRL;
 
-   const rateKey = `${toCurrency}_BRL` as keyof CurrencyRates
-   const rate = rates[rateKey]
+  const rateKey = `${toCurrency}_BRL` as keyof CurrencyRates;
+  const rate = rates[rateKey];
 
-   if (!rate) return amount
+  if (!rate) return amount;
 
-   return amountInBRL / rate
+  return amountInBRL / rate;
 }
 
 // Format value while typing - BRL (with decimals)
 export function formatCurrencyInput(value: string): string {
-   // Remove all non-digit characters
-   const numbers = value.replace(/\D/g, '')
-   if (!numbers) return ''
+  // Remove all non-digit characters
+  const numbers = value.replace(/\D/g, '');
 
-   // Convert to number and divide by 100 (cents)
-   const amount = Number(numbers) / 100
+  if (!numbers) return '';
 
-   // Format as Brazilian currency
-   return amount.toLocaleString('pt-BR', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-      style: 'currency',
-      currency: 'BRL'
-   })
+  // Convert to number and divide by 100 (cents)
+  const amount = Number(numbers) / 100;
+
+  // Format as Brazilian currency
+  return amount.toLocaleString('pt-BR', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+    style: 'currency',
+    currency: 'BRL'
+  });
 }
 
 // Format value while typing - JPY (no decimals)
 export function formatCurrencyInputJPY(value: string): string {
-   // Remove all non-digit characters
-   const numbers = value.replace(/\D/g, '')
-   if (!numbers) return ''
+  // Remove all non-digit characters
+  const numbers = value.replace(/\D/g, '');
 
-   // Convert to number (no division, JPY has no decimals)
-   const amount = Number(numbers)
+  if (!numbers) return '';
 
-   // Format as Japanese Yen
-   return `¥ ${amount.toLocaleString('pt-BR')}`
+  // Convert to number (no division, JPY has no decimals)
+  const amount = Number(numbers);
+
+  // Format as Japanese Yen
+  return `¥ ${amount.toLocaleString('pt-BR')}`;
 }
 
 // Format value while typing - KRW (no decimals)
 export function formatCurrencyInputKRW(value: string): string {
-   // Remove all non-digit characters
-   const numbers = value.replace(/\D/g, '')
-   if (!numbers) return ''
+  // Remove all non-digit characters
+  const numbers = value.replace(/\D/g, '');
 
-   // Convert to number (no division, KRW has no decimals)
-   const amount = Number(numbers)
+  if (!numbers) return '';
 
-   // Format as Korean Won
-   return `₩ ${amount.toLocaleString('pt-BR')}`
+  // Convert to number (no division, KRW has no decimals)
+  const amount = Number(numbers);
+
+  // Format as Korean Won
+  return `₩ ${amount.toLocaleString('pt-BR')}`;
 }
 
 // Dispatcher: Format value while typing based on currency
 export function formatCurrencyInputByCurrency(value: string, currency: Currency): string {
-   switch (currency) {
-      case 'BRL':
-         return formatCurrencyInput(value)
-      case 'JPY':
-         return formatCurrencyInputJPY(value)
-      case 'KRW':
-         return formatCurrencyInputKRW(value)
-      default:
-         return value
-   }
+  switch (currency) {
+    case 'BRL':
+      return formatCurrencyInput(value);
+    case 'JPY':
+      return formatCurrencyInputJPY(value);
+    case 'KRW':
+      return formatCurrencyInputKRW(value);
+    default:
+      return value;
+  }
 }
 
 // Convert formatted value back to number
 export function currencyToNumber(value: string, currency: Currency = 'BRL'): number {
-   if (!value) return 0
+  if (!value) return 0;
 
-   // Remove currency symbols, spaces, and thousand separators (dots)
-   // Keep only digits and comma (decimal separator)
-   const cleanValue = value.replace(/[R$¥₩\s.]/g, '')
+  // Remove currency symbols, spaces, and thousand separators (dots)
+  // Keep only digits and comma (decimal separator)
+  const cleanValue = value.replace(/[R$¥₩\s.]/g, '');
 
-   // For BRL, replace comma with dot for decimal conversion
-   // For JPY and KRW, there are no decimals
-   const numericValue = currency === 'BRL' ? cleanValue.replace(',', '.') : cleanValue
+  // For BRL, replace comma with dot for decimal conversion
+  // For JPY and KRW, there are no decimals
+  const numericValue = currency === 'BRL' ? cleanValue.replace(',', '.') : cleanValue;
 
-   const result = Number(numericValue)
+  const result = Number(numericValue);
 
-   return isNaN(result) ? 0 : result
+  return isNaN(result) ? 0 : result;
 }
 
 export function formatCurrency(amount: number, currency: Currency = 'BRL'): string {
-   return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency,
-      minimumFractionDigits: currency === 'BRL' ? 2 : 0,
-      maximumFractionDigits: currency === 'BRL' ? 2 : 0
-   }).format(amount)
+  return new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency,
+    minimumFractionDigits: currency === 'BRL' ? 2 : 0,
+    maximumFractionDigits: currency === 'BRL' ? 2 : 0
+  }).format(amount);
 }
 
 export function formatDate(date: string): string {
-   if (!date) return ''
+  if (!date) return '';
 
-   if (date.includes('/')) return date
+  if (date.includes('/')) return date;
 
-   const dateOnly = date.split('T')[0]
-   const [year, month, day] = dateOnly.split('-')
+  const dateOnly = date.split('T')[0];
+  const [year, month, day] = dateOnly.split('-');
 
-   return `${day}/${month}/${year}`
+  return `${day}/${month}/${year}`;
 }
 
 export function formatWeekday(date: string): string {
-   return new Date(date).toLocaleDateString('pt-BR', {
-      weekday: 'long'
-   })
+  return new Date(date).toLocaleDateString('pt-BR', {
+    weekday: 'long'
+  });
 }
 
 export function dateToInputFormat(date: string): string {
-   if (!date) return ''
+  if (!date) return '';
 
-   if (date.includes('/')) {
-      const [day, month, year] = date.split('/')
-      return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
-   }
+  if (date.includes('/')) {
+    const [day, month, year] = date.split('/');
 
-   return date.split('T')[0]
+    return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+  }
+
+  return date.split('T')[0];
 }
 
 export function formatTime(time: string): string {
-   return time
+  return time;
 }
 
 /**
@@ -151,24 +156,30 @@ export function formatTime(time: string): string {
  * Returns "HH:mm" in local time, or the original value if not an ISO datetime.
  */
 export function normalizeTimeFromSheets(value: string | undefined): string | undefined {
-   if (value == null || value === '') return value
-   const trimmed = value.trim()
-   if (!trimmed.includes('T') || !/\d{2}:\d{2}/.test(trimmed)) return value
-   const date = new Date(trimmed)
-   if (Number.isNaN(date.getTime())) return value
-   const hours = date.getHours()
-   const minutes = date.getMinutes()
-   return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`
+  if (value == null || value === '') return value;
+
+  const trimmed = value.trim();
+
+  if (!trimmed.includes('T') || !/\d{2}:\d{2}/.test(trimmed)) return value;
+
+  const date = new Date(trimmed);
+
+  if (Number.isNaN(date.getTime())) return value;
+
+  const hours = date.getHours();
+  const minutes = date.getMinutes();
+
+  return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
 }
 
 export function formatDuration(minutes: number): string {
-   const hours = Math.floor(minutes / 60)
-   const mins = minutes % 60
+  const hours = Math.floor(minutes / 60);
+  const mins = minutes % 60;
 
-   if (hours === 0) return `${mins}min`
-   if (mins === 0) return `${hours}h`
+  if (hours === 0) return `${mins}min`;
+  if (mins === 0) return `${hours}h`;
 
-   return `${hours}h ${mins}min`
+  return `${hours}h ${mins}min`;
 }
 
 /**
@@ -186,10 +197,11 @@ export function formatDuration(minutes: number): string {
  * @returns A Date object in the local timezone
  */
 export function parseLocalDate(dateString: string): Date {
-   const [year, month, day] = dateString.split("-").map(Number)
-   return new Date(year, month - 1, day)
+  const [year, month, day] = dateString.split("-").map(Number);
+
+  return new Date(year, month - 1, day);
 }
 
 export function dateToYYYYMMDD(d: Date): string {
-   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }

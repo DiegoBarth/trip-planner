@@ -16,7 +16,7 @@ export const colors = {
     800: '#991b1b',
     900: '#7f1d1d',
   },
-  
+
   // Functional colors
   success: {
     light: '#d1fae5',
@@ -38,7 +38,7 @@ export const colors = {
     main: '#3b82f6',
     dark: '#1e40af',
   },
-  
+
   // Neutral colors
   gray: {
     50: '#f9fafb',

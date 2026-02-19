@@ -12,25 +12,25 @@ import { BottomNav } from '@/components/ui/BottomNav'
 import { GlobalLoading } from '@/components/ui/GlobalLoading'
 
 interface AppRouterProps {
-   onLogout: () => void
+  onLogout: () => void
 }
 
 export function AppRouter({ onLogout }: AppRouterProps) {
-   return (
-      <>
-         <GlobalLoading />
-         <Routes>
-            <Route path="/" element={<HomePage onLogout={onLogout} />} />
-            <Route path="/budgets" element={<BudgetPage />} />
-            <Route path="/expenses" element={<ExpensesPage />} />
-            <Route path="/attractions" element={<AttractionsPage />} />
-            <Route path="/map" element={<MapPage />} />
-            <Route path="/dashboard" element={<DashboardPage />} />
-            <Route path="/checklist" element={<ChecklistPage />} />
-            <Route path="/reservations" element={<ReservationsPage />} />
-            <Route path="/timeline" element={<TimelinePage />} />
-         </Routes>
-         <BottomNav />
-      </>
-   )
+  return (
+    <>
+      <GlobalLoading />
+      <Routes>
+        <Route path="/" element={<HomePage onLogout={onLogout} />} />
+        <Route path="/budgets" element={<BudgetPage />} />
+        <Route path="/expenses" element={<ExpensesPage />} />
+        <Route path="/attractions" element={<AttractionsPage />} />
+        <Route path="/map" element={<MapPage />} />
+        <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/checklist" element={<ChecklistPage />} />
+        <Route path="/reservations" element={<ReservationsPage />} />
+        <Route path="/timeline" element={<TimelinePage />} />
+      </Routes>
+      <BottomNav />
+    </>
+  );
 }

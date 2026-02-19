@@ -8,18 +8,18 @@ const navItems = [
   { path: '/map', icon: Map, label: 'Mapa' },
   { path: '/checklist', icon: ListChecks, label: 'Checklist' },
   { path: '/dashboard', icon: BarChart3, label: 'Resumo' },
-]
+];
 
 export function BottomNav() {
-  const location = useLocation()
+  const location = useLocation();
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 safe-area-inset-bottom z-50">
       <div className="flex justify-around items-center h-16 px-2">
         {navItems.map((item) => {
-          const Icon = item.icon
-          const isActive = location.pathname === item.path
-          
+          const Icon = item.icon;
+          const isActive = location.pathname === item.path;
+
           return (
             <Link
               key={item.path}
@@ -31,11 +31,11 @@ export function BottomNav() {
                   : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700/50'
               )}
             >
-              <Icon 
+              <Icon
                 className={cn(
                   'w-6 h-6 transition-transform',
                   isActive && 'scale-110'
-                )} 
+                )}
                 strokeWidth={isActive ? 2.5 : 2}
               />
               <span className={cn(
@@ -49,5 +49,5 @@ export function BottomNav() {
         })}
       </div>
     </nav>
-  )
+  );
 }

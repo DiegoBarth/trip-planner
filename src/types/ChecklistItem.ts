@@ -1,4 +1,4 @@
-export type ChecklistCategory = 
+export type ChecklistCategory =
   | 'documents'
   | 'clothes'
   | 'electronics'

@@ -1,7 +1,7 @@
 import { ExternalLink, FileText, MapPin, Calendar, Clock, Hash } from 'lucide-react'
-import type { Reservation } from '@/types/Reservation'
-import { RESERVATION_TYPES, BOOKING_STATUS, COUNTRIES } from '@/config/constants'
 import { formatDate } from '@/utils/formatters'
+import { RESERVATION_TYPES, BOOKING_STATUS, COUNTRIES } from '@/config/constants'
+import type { Reservation } from '@/types/Reservation'
 
 interface ReservationCardProps {
   reservation: Reservation
@@ -9,16 +9,18 @@ interface ReservationCardProps {
 }
 
 export function ReservationCard({ reservation, onClick }: ReservationCardProps) {
-  const typeConfig = RESERVATION_TYPES[reservation.type]
-  const statusConfig = BOOKING_STATUS[reservation.status]
+  const typeConfig = RESERVATION_TYPES[reservation.type];
+  const statusConfig = BOOKING_STATUS[reservation.status];
 
   const formatDateRange = () => {
-    if (!reservation.date) return null
+    if (!reservation.date) return null;
+
     if (reservation.endDate) {
-      return `${formatDate(reservation.date)} – ${formatDate(reservation.endDate)}`
+      return `${formatDate(reservation.date)} – ${formatDate(reservation.endDate)}`;
     }
-    return formatDate(reservation.date)
-  }
+
+    return formatDate(reservation.date);
+  };
 
   return (
     <div
@@ -33,7 +35,6 @@ export function ReservationCard({ reservation, onClick }: ReservationCardProps) 
       }}
       className={`relative bg-white dark:bg-gray-800 rounded-2xl shadow-md overflow-hidden transition-all ${onClick ? 'cursor-pointer hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-indigo-500/50' : ''}`}
     >
-      {/* Faixa superior por tipo */}
       <div
         className="h-1"
         style={{ backgroundColor: typeConfig.color }}
@@ -59,7 +60,6 @@ export function ReservationCard({ reservation, onClick }: ReservationCardProps) 
             {statusConfig.label}
           </span>
         </div>
-        {/* Linha 2: título em uma linha (rolagem horizontal se muito longo) */}
         <h3 className="font-bold text-gray-900 dark:text-gray-100 text-lg overflow-x-auto whitespace-nowrap mb-3 pr-1" title={reservation.title}>
           {reservation.title}
         </h3>
@@ -142,5 +142,5 @@ export function ReservationCard({ reservation, onClick }: ReservationCardProps) 
         )}
       </div>
     </div>
-  )
+  );
 }

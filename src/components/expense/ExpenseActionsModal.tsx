@@ -1,9 +1,9 @@
 import { useEffect } from 'react'
 import { X, Pencil, Trash2 } from 'lucide-react'
-import { formatCurrency } from '@/utils/formatters'
-import type { Expense } from '@/types/Expense'
-import { BUDGET_ORIGINS, COUNTRIES, getBudgetOriginFromLabel } from '@/config/constants'
 import { useFocusTrap } from '@/hooks/useFocusTrap'
+import { formatCurrency } from '@/utils/formatters'
+import { BUDGET_ORIGINS, COUNTRIES, getBudgetOriginFromLabel } from '@/config/constants'
+import type { Expense } from '@/types/Expense'
 
 interface ExpenseActionsModalProps {
   expense: Expense | null
@@ -13,42 +13,40 @@ interface ExpenseActionsModalProps {
   onDelete: (expense: Expense) => void
 }
 
-export function ExpenseActionsModal({
-  expense,
-  isOpen,
-  onClose,
-  onEdit,
-  onDelete,
-}: ExpenseActionsModalProps) {
-  const trapRef = useFocusTrap(isOpen)
+export function ExpenseActionsModal({ expense, isOpen, onClose, onEdit, onDelete }: ExpenseActionsModalProps) {
+  const trapRef = useFocusTrap(isOpen);
 
   useEffect(() => {
-    if (!isOpen) return
-    function handleEscape(e: KeyboardEvent) {
-      if (e.key === 'Escape') onClose()
-    }
-    document.addEventListener('keydown', handleEscape)
-    return () => document.removeEventListener('keydown', handleEscape)
-  }, [isOpen, onClose])
+    if (!isOpen) return;
 
-  if (!isOpen) return null
-  if (!expense) return null
+    function handleEscape(e: KeyboardEvent) {
+      if (e.key === 'Escape') onClose();
+    }
+
+    document.addEventListener('keydown', handleEscape);
+
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [isOpen, onClose]);
+
+  if (!isOpen) return null;
+  if (!expense) return null;
 
   const originKey = BUDGET_ORIGINS[expense.budgetOrigin as keyof typeof BUDGET_ORIGINS]
     ? expense.budgetOrigin
-    : getBudgetOriginFromLabel(expense.budgetOrigin as string)
-  const originConfig = BUDGET_ORIGINS[originKey as keyof typeof BUDGET_ORIGINS]
-  const countryConfig = expense.country && COUNTRIES[expense.country]
+    : getBudgetOriginFromLabel(expense.budgetOrigin as string);
+
+  const originConfig = BUDGET_ORIGINS[originKey as keyof typeof BUDGET_ORIGINS];
+  const countryConfig = expense.country && COUNTRIES[expense.country];
 
   const handleEdit = () => {
-    onClose()
-    onEdit(expense)
-  }
+    onClose();
+    onEdit(expense);
+  };
 
   const handleDelete = () => {
-    onClose()
-    onDelete(expense)
-  }
+    onClose();
+    onDelete(expense);
+  };
 
   return (
     <div
@@ -119,5 +117,5 @@ export function ExpenseActionsModal({
         </div>
       </div>
     </div>
-  )
+  );
 }

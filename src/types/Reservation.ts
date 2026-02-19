@@ -1,4 +1,4 @@
-export type ReservationType = 
+export type ReservationType =
   | 'document'        // Passport, visa, etc.
   | 'insurance'       // Travel insurance
   | 'flight'          // Flight tickets
@@ -9,7 +9,7 @@ export type ReservationType =
   | 'activity'        // Pre-purchased tickets for attractions
   | 'other'
 
-export type BookingStatus = 
+export type BookingStatus =
   | 'pending'         // Awaiting confirmation
   | 'confirmed'       // Confirmed and ready
   | 'cancelled'       // Cancelled

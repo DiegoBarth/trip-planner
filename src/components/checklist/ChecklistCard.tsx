@@ -9,17 +9,19 @@ interface ChecklistCardProps {
 }
 
 export function ChecklistCard({ item, onClick, onTogglePacked }: ChecklistCardProps) {
-  const category = CHECKLIST_CATEGORIES[item.category as keyof typeof CHECKLIST_CATEGORIES]
-  const color = category?.color ?? '#6b7280'
+  const category = CHECKLIST_CATEGORIES[item.category as keyof typeof CHECKLIST_CATEGORIES];
+  const color = category?.color ?? '#6b7280';
 
   const handleToggle = (e: React.MouseEvent) => {
-    e.stopPropagation()
+    e.stopPropagation();
+
     try {
-      onTogglePacked(item.id, !item.isPacked)
-    } catch (error) {
-      console.error('Error toggling item:', error)
+      onTogglePacked(item.id, !item.isPacked);
     }
-  }
+    catch (error) {
+      console.error('Error toggling item:', error);
+    }
+  };
 
   return (
     <div
@@ -32,22 +34,19 @@ export function ChecklistCard({ item, onClick, onTogglePacked }: ChecklistCardPr
           onClick(item)
         }
       }}
-      className={`group bg-white dark:bg-gray-800 rounded-2xl shadow-md overflow-hidden border-l-4 transition-all ${onClick ? 'cursor-pointer hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/50' : ''} ${
-        item.isPacked ? 'bg-emerald-50/50 dark:bg-emerald-900/30 border-emerald-400' : ''
-      }`}
+      className={`group bg-white dark:bg-gray-800 rounded-2xl shadow-md overflow-hidden border-l-4 transition-all ${onClick ? 'cursor-pointer hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/50' : ''} ${item.isPacked ? 'bg-emerald-50/50 dark:bg-emerald-900/30 border-emerald-400' : ''
+        }`}
       style={!item.isPacked ? { borderLeftColor: color } : undefined}
     >
       <div className="p-4">
-        {/* Linha 1: checkbox + ícone + pill categoria + (espaco) + pill empacotado — sem botões para não quebrar */}
         <div className="flex items-center gap-2">
           <button
             onClick={handleToggle}
             type="button"
-            className={`flex-shrink-0 w-6 h-6 rounded-md border-2 flex items-center justify-center transition-all focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none ${
-              item.isPacked
-                ? 'bg-emerald-500 border-emerald-500'
-                : 'border-gray-300 hover:border-emerald-400'
-            }`}
+            className={`flex-shrink-0 w-6 h-6 rounded-md border-2 flex items-center justify-center transition-all focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none ${item.isPacked
+              ? 'bg-emerald-500 border-emerald-500'
+              : 'border-gray-300 hover:border-emerald-400'
+              }`}
             aria-label={item.isPacked ? 'Desmarcar empacotado' : 'Marcar como empacotado'}
           >
             {item.isPacked && (
@@ -108,5 +107,5 @@ export function ChecklistCard({ item, onClick, onTogglePacked }: ChecklistCardPr
         ) : null}
       </div>
     </div>
-  )
+  );
 }

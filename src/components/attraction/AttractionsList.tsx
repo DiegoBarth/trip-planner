@@ -1,172 +1,178 @@
 import { useState, useEffect } from 'react'
 import { GripVertical } from 'lucide-react'
-import { AttractionsGrid } from './AttractionsGrid'
-import { ModalAttraction } from './ModalAttraction'
+import { AttractionsGrid } from '@/components/attraction/AttractionsGrid'
+import { ModalAttraction } from '@/components/attraction/ModalAttraction'
 import { ConfirmModal } from '@/components/ui/ConfirmModal'
-import type { Attraction } from '@/types/Attraction'
 import { getAutoDayForDate, getNextOrderForDate } from '@/utils/attractionDayUtils'
 import { dateToInputFormat } from '@/utils/formatters'
+import type { Attraction } from '@/types/Attraction'
 
 interface AttractionsListProps {
-   attractions: Attraction[]
-   isLoading?: boolean
-   onUpdate: (attraction: Attraction) => Promise<void>
-   onCreate: (attraction: Omit<Attraction, 'id'>) => Promise<void>
-   onDelete: (id: number) => void
-   onToggleVisited: (id: number) => void
-   onBulkUpdate?: (attractions: Attraction[]) => Promise<void>
+  attractions: Attraction[]
+  isLoading?: boolean
+  onUpdate: (attraction: Attraction) => Promise<void>
+  onCreate: (attraction: Omit<Attraction, 'id'>) => Promise<void>
+  onDelete: (id: number) => void
+  onToggleVisited: (id: number) => void
+  onBulkUpdate?: (attractions: Attraction[]) => Promise<void>
 }
 
 export function AttractionsList({
-   attractions,
-   isLoading,
-   onUpdate,
-   onCreate,
-   onDelete,
-   onToggleVisited,
-   onBulkUpdate
+  attractions,
+  isLoading,
+  onUpdate,
+  onCreate,
+  onDelete,
+  onToggleVisited,
+  onBulkUpdate
 }: AttractionsListProps) {
-   const [isModalOpen, setIsModalOpen] = useState(false)
-   const [editingAttraction, setEditingAttraction] =
-      useState<Attraction | undefined>()
-   const [attractionToDelete, setAttractionToDelete] = useState<Attraction | null>(null)
-   const [isDragEnabled, setIsDragEnabled] = useState(false)
-   const [isMobile, setIsMobile] = useState(() => {
-      if (typeof window !== 'undefined') {
-         return window.innerWidth <= 768
-      }
-      return false
-   })
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [editingAttraction, setEditingAttraction] = useState<Attraction | undefined>()
+  const [attractionToDelete, setAttractionToDelete] = useState<Attraction | null>(null)
+  const [isDragEnabled, setIsDragEnabled] = useState(false)
+  const [isMobile, setIsMobile] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return window.innerWidth <= 768;
+    }
 
-   useEffect(() => {
-      const checkMobile = () => {
-         setIsMobile(window.innerWidth <= 768)
-      }
-      
-      checkMobile()
-      window.addEventListener('resize', checkMobile)
-      return () => window.removeEventListener('resize', checkMobile)
-   }, [])
+    return false;
+  });
 
-   const handleSave = async (data: Omit<Attraction, 'id' | 'day' | 'order'>) => {
-      const autoDay = getAutoDayForDate(
-         attractions,
-         data.country,
-         data.date,
-         editingAttraction?.id
-      )
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    }
 
-      const isSameGroup = editingAttraction
-         ? editingAttraction.country === data.country
-            && dateToInputFormat(editingAttraction.date) === dateToInputFormat(data.date)
-         : false
+    checkMobile();
 
-      const order = isSameGroup
-         ? editingAttraction?.order ?? 1
-         : getNextOrderForDate(attractions, data.country, data.date, editingAttraction?.id)
+    window.addEventListener('resize', checkMobile);
 
-      const payload = { ...data, day: autoDay, order }
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
-      if (editingAttraction) {
-         await onUpdate({ ...payload, id: editingAttraction.id } as Attraction)
-      } else {
-         await onCreate(payload as Omit<Attraction, 'id'>)
-      }
-      setIsModalOpen(false)
-      setEditingAttraction(undefined)
-   }
+  const handleSave = async (data: Omit<Attraction, 'id' | 'day' | 'order'>) => {
+    const autoDay = getAutoDayForDate(
+      attractions,
+      data.country,
+      data.date,
+      editingAttraction?.id
+    );
 
-   const handleReorder = async (reorderedAttractions: Attraction[]) => {
-      if (!onBulkUpdate) return
+    const isSameGroup = editingAttraction
+      ? editingAttraction.country === data.country
+      && dateToInputFormat(editingAttraction.date) === dateToInputFormat(data.date)
+      : false;
 
-      // Find which attractions changed
-      const changedAttractions = reorderedAttractions.filter(updated => {
-         const original = attractions.find(a => a.id === updated.id)
-         return original && (original.day !== updated.day || original.order !== updated.order)
-      })
+    const order = isSameGroup
+      ? editingAttraction?.order ?? 1
+      : getNextOrderForDate(attractions, data.country, data.date, editingAttraction?.id);
 
-      if (changedAttractions.length > 0) {
-         await onBulkUpdate(changedAttractions)
-      }
-   }
+    const payload = { ...data, day: autoDay, order };
 
-   const handleDeleteRequest = (id: number) => {
-      const a = attractions.find(x => x.id === id)
-      if (a) setAttractionToDelete(a)
-   }
+    if (editingAttraction) {
+      await onUpdate({ ...payload, id: editingAttraction.id } as Attraction);
+    }
+    else {
+      await onCreate(payload as Omit<Attraction, 'id'>);
+    }
 
-   const handleConfirmDelete = async () => {
-      if (!attractionToDelete) return
-      await onDelete(attractionToDelete.id)
-      setAttractionToDelete(null)
-   }
+    setIsModalOpen(false);
+    setEditingAttraction(undefined);
+  }
 
-   return (
-      <div>
-         <div className="flex items-center justify-between gap-4 mb-5 flex-wrap">
-            <div className="flex items-center gap-2">
-               <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                  Todas as Atrações
-               </h2>
-               <span className="text-sm text-gray-500 dark:text-gray-400 font-medium">
-                  {attractions.length} {attractions.length === 1 ? 'item' : 'itens'}
-               </span>
-            </div>
+  const handleReorder = async (reorderedAttractions: Attraction[]) => {
+    if (!onBulkUpdate) return;
 
-            {onBulkUpdate && !isMobile && (
-               <button
-                  onClick={() => setIsDragEnabled(!isDragEnabled)}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
-                     isDragEnabled
-                        ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-sm'
-                        : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                  }`}
-                  title={isDragEnabled ? 'Desabilitar reordenação' : 'Habilitar reordenação'}
-               >
-                  <GripVertical className="w-4 h-4" />
-                  {isDragEnabled ? 'Reordenação ativa' : 'Reordenar'}
-               </button>
-            )}
-         </div>
+    const changedAttractions = reorderedAttractions.filter(updated => {
+      const original = attractions.find(a => a.id === updated.id);
 
-         {!isLoading && (
-            <AttractionsGrid
-               attractions={attractions}
-               groupBy="country"
-               onToggleVisited={onToggleVisited}
-               onDelete={handleDeleteRequest}
-               onEdit={(attraction) => {
-                  setEditingAttraction(attraction)
-                  setIsModalOpen(true)
-               }}
-               emptyTitle="Nenhuma atração encontrada"
-               emptyDescription="Comece adicionando sua primeira atração!"
-               enableDragDrop={isMobile ? true : isDragEnabled}
-               onReorder={handleReorder}
-            />
-         )}
+      return original && (original.day !== updated.day || original.order !== updated.order);
+    });
 
-         <ModalAttraction
-            attraction={editingAttraction}
-            isOpen={isModalOpen}
-            onClose={() => {
-               setIsModalOpen(false)
-               setEditingAttraction(undefined)
-            }}
-            onSave={handleSave}
-         />
+    if (changedAttractions.length > 0) {
+      await onBulkUpdate(changedAttractions);
+    }
+  }
 
-         <ConfirmModal
-            isOpen={!!attractionToDelete}
-            onClose={() => setAttractionToDelete(null)}
-            title="Excluir atração"
-            message={
-               attractionToDelete ? (
-                  <>Tem certeza que deseja excluir &quot;{attractionToDelete.name}&quot;?</>
-               ) : null
-            }
-            onConfirm={handleConfirmDelete}
-         />
+  const handleDeleteRequest = (id: number) => {
+    const a = attractions.find(x => x.id === id);
+
+    if (a) setAttractionToDelete(a);
+  }
+
+  const handleConfirmDelete = async () => {
+    if (!attractionToDelete) return;
+
+    await onDelete(attractionToDelete.id);
+
+    setAttractionToDelete(null);
+  }
+
+  return (
+    <div>
+      <div className="flex items-center justify-between gap-4 mb-5 flex-wrap">
+        <div className="flex items-center gap-2">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+            Todas as Atrações
+          </h2>
+          <span className="text-sm text-gray-500 dark:text-gray-400 font-medium">
+            {attractions.length} {attractions.length === 1 ? 'item' : 'itens'}
+          </span>
+        </div>
+
+        {onBulkUpdate && !isMobile && (
+          <button
+            onClick={() => setIsDragEnabled(!isDragEnabled)}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-colors ${isDragEnabled
+              ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-sm'
+              : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+              }`}
+            title={isDragEnabled ? 'Desabilitar reordenação' : 'Habilitar reordenação'}
+          >
+            <GripVertical className="w-4 h-4" />
+            {isDragEnabled ? 'Reordenação ativa' : 'Reordenar'}
+          </button>
+        )}
       </div>
-   )
+
+      {!isLoading && (
+        <AttractionsGrid
+          attractions={attractions}
+          groupBy="country"
+          onToggleVisited={onToggleVisited}
+          onDelete={handleDeleteRequest}
+          onEdit={(attraction) => {
+            setEditingAttraction(attraction)
+            setIsModalOpen(true)
+          }}
+          emptyTitle="Nenhuma atração encontrada"
+          emptyDescription="Comece adicionando sua primeira atração!"
+          enableDragDrop={isMobile ? true : isDragEnabled}
+          onReorder={handleReorder}
+        />
+      )}
+
+      <ModalAttraction
+        attraction={editingAttraction}
+        isOpen={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false)
+          setEditingAttraction(undefined)
+        }}
+        onSave={handleSave}
+      />
+
+      <ConfirmModal
+        isOpen={!!attractionToDelete}
+        onClose={() => setAttractionToDelete(null)}
+        title="Excluir atração"
+        message={
+          attractionToDelete ? (
+            <>Tem certeza que deseja excluir &quot;{attractionToDelete.name}&quot;?</>
+          ) : null
+        }
+        onConfirm={handleConfirmDelete}
+      />
+    </div>
+  );
 }

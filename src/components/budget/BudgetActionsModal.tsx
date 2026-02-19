@@ -1,9 +1,9 @@
 import { useEffect } from 'react'
 import { X, Pencil, Trash2 } from 'lucide-react'
-import { formatCurrency } from '@/utils/formatters'
-import type { Budget } from '@/types/Budget'
-import { BUDGET_ORIGINS } from '@/config/constants'
 import { useFocusTrap } from '@/hooks/useFocusTrap'
+import { formatCurrency } from '@/utils/formatters'
+import { BUDGET_ORIGINS } from '@/config/constants'
+import type { Budget } from '@/types/Budget'
 
 interface BudgetActionsModalProps {
   budget: Budget | null
@@ -13,37 +13,34 @@ interface BudgetActionsModalProps {
   onDelete: (budget: Budget) => void
 }
 
-export function BudgetActionsModal({
-  budget,
-  isOpen,
-  onClose,
-  onEdit,
-  onDelete,
-}: BudgetActionsModalProps) {
-  const trapRef = useFocusTrap(isOpen)
+export function BudgetActionsModal({ budget, isOpen, onClose, onEdit, onDelete }: BudgetActionsModalProps) {
+  const trapRef = useFocusTrap(isOpen);
 
   useEffect(() => {
-    if (!isOpen) return
+    if (!isOpen) return;
+
     function handleEscape(e: KeyboardEvent) {
-      if (e.key === 'Escape') onClose()
+      if (e.key === 'Escape') onClose();
     }
-    document.addEventListener('keydown', handleEscape)
-    return () => document.removeEventListener('keydown', handleEscape)
-  }, [isOpen, onClose])
 
-  if (!isOpen) return null
-  if (!budget) return null
+    document.addEventListener('keydown', handleEscape);
 
-  const originConfig = BUDGET_ORIGINS[budget.origin]
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [isOpen, onClose]);
+
+  if (!isOpen) return null;
+  if (!budget) return null;
+
+  const originConfig = BUDGET_ORIGINS[budget.origin];
 
   const handleEdit = () => {
-    onClose()
-    onEdit(budget)
+    onClose();
+    onEdit(budget);
   }
 
   const handleDelete = () => {
-    onClose()
-    onDelete(budget)
+    onClose();
+    onDelete(budget);
   }
 
   return (
@@ -109,5 +106,5 @@ export function BudgetActionsModal({
         </div>
       </div>
     </div>
-  )
+  );
 }

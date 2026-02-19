@@ -1,14 +1,14 @@
 import { useState } from 'react'
-import { BudgetItemCard } from './BudgetItemCard'
-import { ModalBudget } from './ModalBudget'
-import { BudgetActionsModal } from './BudgetActionsModal'
+import { BudgetItemCard } from '@/components/budget/BudgetItemCard'
+import { ModalBudget } from '@/components/budget/ModalBudget'
+import { BudgetActionsModal } from '@/components/budget/BudgetActionsModal'
 import { ConfirmModal } from '@/components/ui/ConfirmModal'
 import { EmptyState } from '@/components/ui/EmptyState'
+import { useToast } from '@/contexts/toast'
+import { BUDGET_ORIGINS } from '@/config/constants'
 import type { Budget } from '@/types/Budget'
 import type { BudgetOrigin } from '@/types/Attraction'
 import type { CreateBudgetPayload, UpdateBudgetPayload } from '@/api/budget'
-import { BUDGET_ORIGINS } from '@/config/constants'
-import { useToast } from '@/contexts/toast'
 
 interface BudgetListProps {
   budgets: Budget[]
@@ -19,73 +19,81 @@ interface BudgetListProps {
 }
 
 export function BudgetList({ budgets, isLoading, onUpdate, onCreate, onDelete }: BudgetListProps) {
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const [editingBudget, setEditingBudget] = useState<Budget | undefined>()
-  const [budgetToDelete, setBudgetToDelete] = useState<Budget | null>(null)
-  const [budgetForActions, setBudgetForActions] = useState<Budget | null>(null)
-  const toast = useToast()
-  
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingBudget, setEditingBudget] = useState<Budget | undefined>();
+  const [budgetToDelete, setBudgetToDelete] = useState<Budget | null>(null);
+  const [budgetForActions, setBudgetForActions] = useState<Budget | null>(null);
+
+  const toast = useToast();
+
   const groupedByOrigin = budgets.reduce((acc, budget) => {
     if (!acc[budget.origin]) {
-      acc[budget.origin] = []
+      acc[budget.origin] = [];
     }
-    acc[budget.origin].push(budget)
-    return acc
-  }, {} as Record<BudgetOrigin, Budget[]>)
+
+    acc[budget.origin].push(budget);
+
+    return acc;
+  }, {} as Record<BudgetOrigin, Budget[]>);
 
   Object.keys(groupedByOrigin).forEach(origin => {
-    groupedByOrigin[origin as BudgetOrigin].sort((a, b) => 
+    groupedByOrigin[origin as BudgetOrigin].sort((a, b) =>
       new Date(b.date).getTime() - new Date(a.date).getTime()
-    )
-  })
+    );
+  });
 
   const orderedOriginKeys = Object.keys(groupedByOrigin).sort((a, b) => {
-    const labelA = BUDGET_ORIGINS[a as BudgetOrigin]?.label ?? a
-    const labelB = BUDGET_ORIGINS[b as BudgetOrigin]?.label ?? b
-    return labelA.localeCompare(labelB, 'pt-BR')
-  })
+    const labelA = BUDGET_ORIGINS[a as BudgetOrigin]?.label ?? a;
+    const labelB = BUDGET_ORIGINS[b as BudgetOrigin]?.label ?? b;
+
+    return labelA.localeCompare(labelB, 'pt-BR');
+  });
 
   const handleCloseModal = () => {
-    setEditingBudget(undefined)
-    setIsModalOpen(false)
-  }
+    setEditingBudget(undefined);
+    setIsModalOpen(false);
+  };
 
   const handleSave = async (data: Omit<Budget, 'id'>) => {
     try {
       if (editingBudget) {
-        await onUpdate({ id: editingBudget.id, ...data })
-      } else {
-        await onCreate(data)
+        await onUpdate({ id: editingBudget.id, ...data });
       }
-      handleCloseModal()
-    } catch (error) {
-      console.error('Error saving budget:', error)
-      toast.error('Erro ao salvar orçamento')
+      else {
+        await onCreate(data);
+      }
+      handleCloseModal();
     }
-  }
+    catch (error) {
+      console.error('Error saving budget:', error);
+      toast.error('Erro ao salvar orçamento');
+    }
+  };
 
   const handleConfirmDelete = async () => {
-    if (!budgetToDelete) return
-    await onDelete(budgetToDelete.id)
-    setBudgetToDelete(null)
-  }
+    if (!budgetToDelete) return;
+
+    await onDelete(budgetToDelete.id);
+
+    setBudgetToDelete(null);
+  };
 
   const handleCardClick = (budget: Budget) => {
-    setBudgetForActions(budget)
-  }
+    setBudgetForActions(budget);
+  };
 
   const handleOpenEditFromActions = (budget: Budget) => {
-    setBudgetForActions(null)
-    setEditingBudget(budget)
-    setIsModalOpen(true)
-  }
+    setBudgetForActions(null);
+    setEditingBudget(budget);
+    setIsModalOpen(true);
+  };
 
   const handleOpenDeleteFromActions = (budget: Budget) => {
-    setBudgetForActions(null)
-    setBudgetToDelete(budget)
-  }
+    setBudgetForActions(null);
+    setBudgetToDelete(budget);
+  };
 
-  if (isLoading) return null
+  if (isLoading) return null;
 
   return (
     <div>
@@ -154,5 +162,5 @@ export function BudgetList({ budgets, isLoading, onUpdate, onCreate, onDelete }:
         onConfirm={handleConfirmDelete}
       />
     </div>
-  )
+  );
 }

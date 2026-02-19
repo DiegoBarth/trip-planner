@@ -13,19 +13,19 @@ import './index.css'
 import 'leaflet/dist/leaflet.css'
 
 createRoot(document.getElementById('root')!).render(
-   <StrictMode>
-      <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID ?? ''}>
-         <BrowserRouter basename="/trip-planner/">
-            <QueryClientProvider client={createQueryClient}>
-               <ThemeProvider>
-                  <CountryProvider>
-                     <ToastProvider>
-                        <App />
-                     </ToastProvider>
-                  </CountryProvider>
-               </ThemeProvider>
-            </QueryClientProvider>
-         </BrowserRouter>
-      </GoogleOAuthProvider>
-   </StrictMode>,
+  <StrictMode>
+    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID ?? ''}>
+      <BrowserRouter basename="/trip-planner/">
+        <QueryClientProvider client={createQueryClient}>
+          <ThemeProvider>
+            <CountryProvider>
+              <ToastProvider>
+                <App />
+              </ToastProvider>
+            </CountryProvider>
+          </ThemeProvider>
+        </QueryClientProvider>
+      </BrowserRouter>
+    </GoogleOAuthProvider>
+  </StrictMode>,
 )

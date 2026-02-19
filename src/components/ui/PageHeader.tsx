@@ -1,28 +1,20 @@
 import { ArrowLeft } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
-import { type ReactNode } from 'react'
+import { ThemeToggle } from '@/components/ui/ThemeToggle'
 import { cn } from '@/lib/utils'
-import { ThemeToggle } from './ThemeToggle'
+import { type ReactNode } from 'react'
 
 interface PageHeaderProps {
   title: string
   subtitle?: string
   showBack?: boolean
   action?: ReactNode
-  /** Conteúdo extra abaixo do título (ex.: CountryFilter para país/dia) */
   filter?: ReactNode
   className?: string
 }
 
-export function PageHeader({ 
-  title, 
-  subtitle, 
-  showBack = true, 
-  action,
-  filter,
-  className 
-}: PageHeaderProps) {
-  const navigate = useNavigate()
+export function PageHeader({ title, subtitle, showBack = true, action, filter, className }: PageHeaderProps) {
+  const navigate = useNavigate();
 
   return (
     <header className={cn(
@@ -59,5 +51,5 @@ export function PageHeader({
         {filter && <div className="mt-3">{filter}</div>}
       </div>
     </header>
-  )
+  );
 }

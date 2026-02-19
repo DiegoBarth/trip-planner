@@ -1,7 +1,7 @@
 import { Calendar } from 'lucide-react'
 import type { Budget } from '@/types/Budget'
-import { BUDGET_ORIGINS } from '@/config/constants'
 import { formatCurrency, formatDate } from '@/utils/formatters'
+import { BUDGET_ORIGINS } from '@/config/constants'
 
 interface BudgetItemCardProps {
   budget: Budget
@@ -9,7 +9,7 @@ interface BudgetItemCardProps {
 }
 
 export function BudgetItemCard({ budget, onClick }: BudgetItemCardProps) {
-  const originConfig = BUDGET_ORIGINS[budget.origin]
+  const originConfig = BUDGET_ORIGINS[budget.origin];
 
   return (
     <div
@@ -47,5 +47,5 @@ export function BudgetItemCard({ budget, onClick }: BudgetItemCardProps) {
         </div>
       </div>
     </div>
-  )
+  );
 }

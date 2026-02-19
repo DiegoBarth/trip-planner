@@ -1,8 +1,8 @@
 import { useEffect } from 'react'
 import { X, Pencil, Trash2 } from 'lucide-react'
-import type { ChecklistItem } from '@/types/ChecklistItem'
-import { CHECKLIST_CATEGORIES } from '@/config/constants'
 import { useFocusTrap } from '@/hooks/useFocusTrap'
+import { CHECKLIST_CATEGORIES } from '@/config/constants'
+import type { ChecklistItem } from '@/types/ChecklistItem'
 
 interface ChecklistActionsModalProps {
   item: ChecklistItem | null
@@ -12,38 +12,35 @@ interface ChecklistActionsModalProps {
   onDelete: (item: ChecklistItem) => void
 }
 
-export function ChecklistActionsModal({
-  item,
-  isOpen,
-  onClose,
-  onEdit,
-  onDelete,
-}: ChecklistActionsModalProps) {
-  const trapRef = useFocusTrap(isOpen)
+export function ChecklistActionsModal({ item, isOpen, onClose, onEdit, onDelete }: ChecklistActionsModalProps) {
+  const trapRef = useFocusTrap(isOpen);
 
   useEffect(() => {
-    if (!isOpen) return
+    if (!isOpen) return;
+
     function handleEscape(e: KeyboardEvent) {
-      if (e.key === 'Escape') onClose()
+      if (e.key === 'Escape') onClose();
     }
-    document.addEventListener('keydown', handleEscape)
-    return () => document.removeEventListener('keydown', handleEscape)
-  }, [isOpen, onClose])
 
-  if (!isOpen) return null
-  if (!item) return null
+    document.addEventListener('keydown', handleEscape);
 
-  const categoryConfig = CHECKLIST_CATEGORIES[item.category as keyof typeof CHECKLIST_CATEGORIES]
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [isOpen, onClose]);
+
+  if (!isOpen) return null;
+  if (!item) return null;
+
+  const categoryConfig = CHECKLIST_CATEGORIES[item.category as keyof typeof CHECKLIST_CATEGORIES];
 
   const handleEdit = () => {
-    onClose()
-    onEdit(item)
-  }
+    onClose();
+    onEdit(item);
+  };
 
   const handleDelete = () => {
-    onClose()
-    onDelete(item)
-  }
+    onClose();
+    onDelete(item);
+  };
 
   return (
     <div
@@ -103,5 +100,5 @@ export function ChecklistActionsModal({
         </div>
       </div>
     </div>
-  )
+  );
 }

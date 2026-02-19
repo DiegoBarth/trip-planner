@@ -17,164 +17,183 @@ import type { DashboardStats } from '@/types/Dashboard'
 import type { Accommodation } from '@/types/Accommodation'
 import type { ChecklistItem } from '@/types/ChecklistItem'
 import type { Reservation } from '@/types/Reservation'
+
 type DayFilter = number | 'all'
 type CountryFilter = CountryFilterValue
 
 interface CountryContextType {
-   isReady: boolean
-   country: CountryFilter
-   setCountry: (country: CountryFilter) => void
-   day: DayFilter
-   setDay: (day: DayFilter) => void
-   rates: CurrencyRates | null
-   budgets: Budget[]
-   budgetSummary: BudgetSummary
-   expenses: Expense[]
-   attractions: Attraction[]
-   dashboard: DashboardStats
-   availableDays: number[]
-   accommodations: Accommodation[]
-   checklistItems: ChecklistItem[]
-   reservations: Reservation[]
+  isReady: boolean
+  country: CountryFilter
+  setCountry: (country: CountryFilter) => void
+  day: DayFilter
+  setDay: (day: DayFilter) => void
+  rates: CurrencyRates | null
+  budgets: Budget[]
+  budgetSummary: BudgetSummary
+  expenses: Expense[]
+  attractions: Attraction[]
+  dashboard: DashboardStats
+  availableDays: number[]
+  accommodations: Accommodation[]
+  checklistItems: ChecklistItem[]
+  reservations: Reservation[]
 }
 
 function getInitialFilter(): { country: CountryFilter; day: DayFilter } {
-   const saved = sessionStorage.getItem('trip_filter')
-   if (!saved) return { country: 'all', day: 'all' }
-   try {
-      const parsed = JSON.parse(saved)
-      if (parsed && typeof parsed.country !== 'undefined' && typeof parsed.day !== 'undefined') {
-         return parsed
-      }
-   } catch {
-      sessionStorage.removeItem('trip_filter')
-   }
-   return { country: 'all', day: 'all' }
+  const saved = sessionStorage.getItem('trip_filter');
+
+  if (!saved) return { country: 'all', day: 'all' };
+
+  try {
+    const parsed = JSON.parse(saved);
+
+    if (parsed && typeof parsed.country !== 'undefined' && typeof parsed.day !== 'undefined') {
+      return parsed;
+    }
+  }
+  catch {
+    sessionStorage.removeItem('trip_filter');
+  }
+
+  return { country: 'all', day: 'all' };
 }
 
 export const CountryContext = createContext<CountryContextType>({
-   isReady: false,
-   country: 'all',
-   setCountry: () => { },
-   day: 'all',
-   setDay: () => { },
-   rates: null,
-   budgets: [],
-   budgetSummary: { totalBudget: 0, totalSpent: 0, remainingBalance: 0, byOrigin: {} },
-   expenses: [],
-   attractions: [],
-   dashboard: {
-      totalBudget: 0,
-      totalSpent: 0,
-      remaining: 0,
-      daysOfTrip: 0,
-      expensesByCategory: [],
-      budgetByOrigin: [],
-      attractionStatus: { total: 0, visited: 0, pendingReservation: 0, visitedPercentage: 0 },
-   },
-   availableDays: [],
-   accommodations: [],
-   checklistItems: [],
-   reservations: []
+  isReady: false,
+  country: 'all',
+  setCountry: () => { },
+  day: 'all',
+  setDay: () => { },
+  rates: null,
+  budgets: [],
+  budgetSummary: { totalBudget: 0, totalSpent: 0, remainingBalance: 0, byOrigin: {} },
+  expenses: [],
+  attractions: [],
+  dashboard: {
+    totalBudget: 0,
+    totalSpent: 0,
+    remaining: 0,
+    daysOfTrip: 0,
+    expensesByCategory: [],
+    budgetByOrigin: [],
+    attractionStatus: { total: 0, visited: 0, pendingReservation: 0, visitedPercentage: 0 },
+  },
+  availableDays: [],
+  accommodations: [],
+  checklistItems: [],
+  reservations: []
 })
 
 export function CountryProvider({ children }: { children: ReactNode }) {
-   const initialFilter = getInitialFilter()
-   const [country, setCountry] = useState<CountryFilter>(initialFilter.country)
-   const [day, setDay] = useState<DayFilter>(initialFilter.day)
+  const initialFilter = getInitialFilter();
+  const [country, setCountry] = useState<CountryFilter>(initialFilter.country);
+  const [day, setDay] = useState<DayFilter>(initialFilter.day);
 
-   const { budgets, budgetSummary: rawBudgetSummary } = useBudget()
-   const { expenses } = useExpense(country)
-   const { attractions } = useAttraction(country)
-   const { rates } = useCurrency()
-   const { accommodations } = useAccommodation()
-   const { items: checklistItems } = useChecklist()
-   const { reservations } = useReservation()
+  const { budgets, budgetSummary: rawBudgetSummary } = useBudget();
+  const { expenses } = useExpense(country);
+  const { attractions } = useAttraction(country);
+  const { rates } = useCurrency();
+  const { accommodations } = useAccommodation();
+  const { items: checklistItems } = useChecklist();
+  const { reservations } = useReservation();
 
-   const dashboardData = useDashboard({ budgets, expenses, attractions })
+  const dashboardData = useDashboard({ budgets, expenses, attractions });
 
-   const budgetSummary: BudgetSummary = rawBudgetSummary ?? {
-      totalBudget: 0,
-      totalSpent: 0,
-      remainingBalance: 0,
-      byOrigin: {}
-   }
+  const budgetSummary: BudgetSummary = rawBudgetSummary ?? {
+    totalBudget: 0,
+    totalSpent: 0,
+    remainingBalance: 0,
+    byOrigin: {}
+  };
 
-   const dashboard: DashboardStats = dashboardData?.stats ?? {
-      totalBudget: 0,
-      totalSpent: 0,
-      remaining: 0,
-      daysOfTrip: 0,
-      expensesByCategory: [],
-      budgetByOrigin: [],
-      attractionStatus: { total: 0, visited: 0, pendingReservation: 0, visitedPercentage: 0 }
-   }
+  const dashboard: DashboardStats = dashboardData?.stats ?? {
+    totalBudget: 0,
+    totalSpent: 0,
+    remaining: 0,
+    daysOfTrip: 0,
+    expensesByCategory: [],
+    budgetByOrigin: [],
+    attractionStatus: { total: 0, visited: 0, pendingReservation: 0, visitedPercentage: 0 }
+  };
 
-   const availableDays = useMemo(() => {
-      const uniqueDays = new Set<number>()
-      attractions.forEach(a => { if (a.day) uniqueDays.add(a.day) })
-      return Array.from(uniqueDays).sort((a, b) => a - b)
-   }, [attractions])
+  const availableDays = useMemo(() => {
+    const uniqueDays = new Set<number>();
 
-   const queryClient = useQueryClient()
-   const citiesToPrefetch = useMemo(() => {
-      const cities = new Set<string>()
-      attractions.forEach(a => { if (a.city) cities.add(a.city) })
-      const withDate = attractions.filter(a => a.date)
-      if (withDate.length > 0) {
-         const today = new Date()
-         today.setHours(0, 0, 0, 0)
-         const sorted = [...withDate]
-            .map(a => ({ ...a, parsed: new Date(a.date) }))
-            .sort((a, b) => a.parsed.getTime() - b.parsed.getTime())
-         const todayOrNext = sorted.find(a => a.parsed >= today) ?? sorted[0]
-         if (todayOrNext?.city) cities.add(todayOrNext.city)
-      }
-      return Array.from(cities)
-   }, [attractions])
+    attractions.forEach(a => { if (a.day) uniqueDays.add(a.day) });
 
-   useEffect(() => {
-      citiesToPrefetch.forEach(city => {
-         queryClient.prefetchQuery({ queryKey: ['weather', city] })
-      })
-   }, [citiesToPrefetch, queryClient])
+    return Array.from(uniqueDays).sort((a, b) => a - b);
+  }, [attractions]);
 
-   const isReady =
-      useIsFetching({
-         predicate: (query) => {
-            const key = query.queryKey[0]
-            return key !== 'osrm-routes' && key !== 'weather' && key !== 'budget_summary'
-         },
-      }) === 0
+  const queryClient = useQueryClient();
 
-   useEffect(() => { setDay('all') }, [country])
-   useEffect(() => {
-      sessionStorage.setItem('trip_filter', JSON.stringify({ country, day }))
-   }, [country, day])
+  const citiesToPrefetch = useMemo(() => {
+    const cities = new Set<string>();
 
-   return (
-      <CountryContext.Provider
-         value={{
-            isReady,
-            country,
-            setCountry,
-            day,
-            setDay,
-            rates,
-            budgets,
-            budgetSummary,
-            expenses,
-            attractions,
-            dashboard,
-            availableDays,
-            accommodations,
-            checklistItems,
-            reservations
-         }}
-      >
-         {children}
-      </CountryContext.Provider>
-   )
+    attractions.forEach(a => { if (a.city) cities.add(a.city) });
+
+    const withDate = attractions.filter(a => a.date);
+
+    if (withDate.length > 0) {
+      const today = new Date();
+
+      today.setHours(0, 0, 0, 0);
+
+      const sorted = [...withDate]
+        .map(a => ({ ...a, parsed: new Date(a.date) }))
+        .sort((a, b) => a.parsed.getTime() - b.parsed.getTime());
+
+      const todayOrNext = sorted.find(a => a.parsed >= today) ?? sorted[0];
+
+      if (todayOrNext?.city) cities.add(todayOrNext.city);
+    }
+
+    return Array.from(cities);
+  }, [attractions]);
+
+  useEffect(() => {
+    citiesToPrefetch.forEach(city => {
+      queryClient.prefetchQuery({ queryKey: ['weather', city] });
+    })
+  }, [citiesToPrefetch, queryClient]);
+
+  const isReady =
+    useIsFetching({
+      predicate: (query) => {
+        const key = query.queryKey[0];
+
+        return key !== 'osrm-routes' && key !== 'weather' && key !== 'budget_summary';
+      },
+    }) === 0;
+
+  useEffect(() => { setDay('all') }, [country]);
+
+  useEffect(() => {
+    sessionStorage.setItem('trip_filter', JSON.stringify({ country, day }));
+  }, [country, day]);
+
+  return (
+    <CountryContext.Provider
+      value={{
+        isReady,
+        country,
+        setCountry,
+        day,
+        setDay,
+        rates,
+        budgets,
+        budgetSummary,
+        expenses,
+        attractions,
+        dashboard,
+        availableDays,
+        accommodations,
+        checklistItems,
+        reservations
+      }}
+    >
+      {children}
+    </CountryContext.Provider>
+  );
 }
 
 export const useCountry = () => useContext(CountryContext)

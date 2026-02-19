@@ -18,70 +18,74 @@ import { useEffect, useRef } from 'react'
  * return <div ref={trapRef}>...</div>
  */
 export function useFocusTrap(isActive: boolean) {
-   const containerRef = useRef<HTMLDivElement>(null)
-   const previousActiveElement = useRef<HTMLElement | null>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const previousActiveElement = useRef<HTMLElement | null>(null)
 
-   useEffect(() => {
-      if (!isActive) return
+  useEffect(() => {
+    if (!isActive) return;
 
-      // Save element that had focus before modal opened
-      previousActiveElement.current = document.activeElement as HTMLElement
+    // Save element that had focus before modal opened
+    previousActiveElement.current = document.activeElement as HTMLElement;
 
-      const container = containerRef.current
-      if (!container) return
+    const container = containerRef.current;
 
-      // Focusable elements selector
-      const focusableSelector =
-         'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+    if (!container) return;
 
-      // Focus first focusable element in modal
-      const firstFocusable = container.querySelector<HTMLElement>(focusableSelector)
-      firstFocusable?.focus()
+    // Focusable elements selector
+    const focusableSelector = 'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
-      /**
-       * Keyboard handler to cycle focus
-       * 
-       * Behavior:
-       * - Tab: Move to next element
-       * - Shift+Tab: Move to previous element
-       * - On last element + Tab: Return to first
-       * - On first element + Shift+Tab: Go to last
-       */
-      function handleKeyDown(e: KeyboardEvent) {
-         if (e.key !== 'Tab' || !container) return
+    // Focus first focusable element in modal
+    const firstFocusable = container.querySelector<HTMLElement>(focusableSelector);
 
-         const focusableElements = Array.from(
-            container.querySelectorAll<HTMLElement>(focusableSelector)
-         )
+    firstFocusable?.focus();
 
-         if (focusableElements.length === 0) return
+    /**
+     * Keyboard handler to cycle focus
+     * 
+     * Behavior:
+     * - Tab: Move to next element
+     * - Shift+Tab: Move to previous element
+     * - On last element + Tab: Return to first
+     * - On first element + Shift+Tab: Go to last
+     */
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key !== 'Tab' || !container) return;
 
-         const firstElement = focusableElements[0]
-         const lastElement = focusableElements[focusableElements.length - 1]
+      const focusableElements = Array.from(
+        container.querySelectorAll<HTMLElement>(focusableSelector)
+      );
 
-         // Shift + Tab on first element → go to last
-         if (e.shiftKey && document.activeElement === firstElement) {
-            e.preventDefault()
-            lastElement.focus()
-            return
-         }
+      if (focusableElements.length === 0) return;
 
-         // Tab on last element → go to first
-         if (!e.shiftKey && document.activeElement === lastElement) {
-            e.preventDefault()
-            firstElement.focus()
-            return
-         }
+      const firstElement = focusableElements[0];
+      const lastElement = focusableElements[focusableElements.length - 1];
+
+      // Shift + Tab on first element → go to last
+      if (e.shiftKey && document.activeElement === firstElement) {
+        e.preventDefault();
+        lastElement.focus();
+
+        return;
       }
 
-      document.addEventListener('keydown', handleKeyDown)
+      // Tab on last element → go to first
+      if (!e.shiftKey && document.activeElement === lastElement) {
+        e.preventDefault();
+        firstElement.focus();
 
-      // Cleanup: restore focus to previous element
-      return () => {
-         document.removeEventListener('keydown', handleKeyDown)
-         previousActiveElement.current?.focus()
+        return;
       }
-   }, [isActive])
+    }
 
-   return containerRef
+    document.addEventListener('keydown', handleKeyDown);
+
+    // Cleanup: restore focus to previous element
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+
+      previousActiveElement.current?.focus();
+    }
+  }, [isActive]);
+
+  return containerRef;
 }
