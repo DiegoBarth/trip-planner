@@ -13,8 +13,8 @@ interface TimelineCardProps {
   onToggleVisited?: (id: number) => void
 }
 
-function openInMaps(lat: number, lng: number, name: string) {
-  const url = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}&query_place_id=${encodeURIComponent(name)}`;
+function openInMaps(lat: number, lng: number) {
+  const url = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
 
   window.open(url, '_blank');
 }
@@ -27,123 +27,118 @@ export function TimelineCard({ attraction, arrivalTime, departureTime, duration,
   const isAccommodation = attraction.id === -999;
   const hasLocation = attraction.lat && attraction.lng;
 
-  const bgClass = hasError
-    ? 'bg-red-50 dark:bg-red-900/30'
-    : isVisited && !hasError && !hasWarning
-      ? 'bg-green-50/60 dark:bg-green-900/30'
-      : 'bg-white dark:bg-gray-800';
-
   return (
     <div className="relative">
-      <div className={`
-        absolute left-0 top-6 w-3 h-3 md:w-3.5 md:h-3.5 rounded-full border-2 border-white dark:border-gray-800 shadow z-10 -translate-x-1/2
-        ${isVisited ? 'bg-emerald-500' : 'bg-slate-500 dark:bg-slate-400'}
-      `} />
+      <div
+        className={`
+          absolute left-0 top-6 w-3 h-3 md:w-3.5 md:h-3.5 rounded-full border-2 border-white shadow z-20 -translate-x-1/2
+          ${isVisited ? 'bg-emerald-500' : 'bg-slate-400'}
+        `}
+      />
 
       <div
         className={`
-          ml-4 md:ml-6 rounded-2xl shadow-md overflow-hidden transition-all border-l-4
-          ${bgClass}
+          relative ml-4 md:ml-6 rounded-2xl shadow-xl overflow-hidden transition-all border-l-4
           ${hasError ? 'border-l-red-500' : ''}
           ${hasWarning && !hasError ? 'border-l-amber-500' : ''}
           ${isVisited && !hasError && !hasWarning ? 'border-l-emerald-500' : ''}
-          ${!hasError && !hasWarning && !isVisited ? 'border-l-slate-500 dark:border-l-slate-400' : ''}
-          ${isVisited ? 'opacity-90' : ''}
+          ${!hasError && !hasWarning && !isVisited ? 'border-l-slate-400' : ''}
+          ${isVisited ? 'opacity-95' : ''}
         `}
       >
-        {!isAccommodation && (
-          attraction.imageUrl ? (
-            <div className="h-20 bg-cover bg-center bg-gray-100 dark:bg-gray-700" style={{ backgroundImage: `url(${attraction.imageUrl})` }} />
-          ) : (
-            <div className="h-20 flex items-center justify-center gap-2 bg-gradient-to-br from-slate-500 to-slate-600 dark:from-slate-600 dark:to-slate-700">
-              <span className="text-3xl">{typeConfig?.icon}</span>
-              <span className="text-xs font-medium text-white/90 uppercase tracking-wide">{typeConfig?.label}</span>
-            </div>
-          )
-        )}
+        <div
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: `url(${attraction.imageUrl})` }}
+        />
 
-        <div className="p-3">
-          <div className="flex items-center gap-2 mb-3 pb-2 border-b border-gray-200 dark:border-gray-700">
-            <Clock className="w-4 h-4 text-gray-600 dark:text-gray-400 flex-shrink-0" />
-            <div className="flex items-center gap-2 text-sm flex-1">
-              <span className="font-bold text-gray-900 dark:text-gray-100">{arrivalTime}</span>
-              <span className="text-gray-400 dark:text-gray-500">→</span>
-              <span className="font-bold text-gray-900 dark:text-gray-100">{departureTime}</span>
-              <span className="text-xs text-gray-500 dark:text-gray-400">({duration}min)</span>
+        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-black/50" />
+
+        <div className="relative z-10 p-4 text-white">
+
+          <div className="flex items-center gap-2 mb-3 pb-2 border-b border-white/20">
+            <Clock className="w-4 h-4 text-white/80 flex-shrink-0" />
+
+            <div className="flex items-center gap-2 text-sm font-medium flex-1 text-shadow">
+              <span className="font-bold">{arrivalTime}</span>
+              <span className="text-white/60">→</span>
+              <span className="font-bold">{departureTime}</span>
+              <span className="text-xs text-white/70">({duration}min)</span>
             </div>
 
             {hasLocation && (
               <button
                 onClick={(e) => {
-                  e.stopPropagation();
-                  openInMaps(attraction.lat!, attraction.lng!, attraction.name);
+                  e.stopPropagation()
+                  openInMaps(attraction.lat!, attraction.lng!)
                 }}
-                className="p-1.5 rounded-full transition-all flex-shrink-0 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600 focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none"
+                className="p-1.5 rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-sm transition-all"
                 title="Abrir no Google Maps"
               >
-                <Navigation className="w-5 h-5" />
+                <Navigation className="w-5 h-5 text-white" />
               </button>
             )}
 
             {!isAccommodation && (
               <button
                 onClick={(e) => {
-                  e.stopPropagation();
-                  onToggleVisited?.(attraction.id);
+                  e.stopPropagation()
+                  onToggleVisited?.(attraction.id)
                 }}
                 className={`
-                  p-1.5 rounded-full transition-all flex-shrink-0
-                  focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none
+                  p-1.5 rounded-full backdrop-blur-sm transition-all
                   ${isVisited
-                    ? 'bg-green-100 dark:bg-green-900/50 text-green-600 dark:text-green-400'
-                    : 'bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-600'
-                  }
+                    ? 'bg-emerald-500/30 hover:bg-emerald-500/40'
+                    : 'bg-white/20 hover:bg-white/30'}
                 `}
                 title={isVisited ? 'Marcar como não visitado' : 'Marcar como visitado'}
               >
-                <CheckCircle2 className="w-5 h-5" />
+                <CheckCircle2 className={`w-5 h-5 ${isVisited ? 'text-emerald-300' : 'text-white'}`} />
               </button>
             )}
           </div>
 
-          <div className="mb-2">
-            <h3 className="text-base font-bold text-gray-900 dark:text-gray-100 mb-1.5 line-clamp-2">
-              {attraction.name}
-            </h3>
-            <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
-              <MapPin className="w-3.5 h-3.5 flex-shrink-0" />
-              <span>{attraction.region ? `${attraction.region}, ` : ''}{attraction.city}</span>
-            </div>
-            {!isAccommodation && (
-              <div className="flex items-center gap-2 text-sm mt-1.5">
-                <Banknote className="w-3.5 h-3.5 text-green-600 dark:text-green-400 flex-shrink-0" />
-                {attraction.couplePrice ? (
-                  <>
-                    <span className="font-semibold text-green-600 dark:text-green-400">
-                      {formatCurrency(attraction.couplePrice, attraction.currency)}
-                    </span>
-                    <span className="text-gray-500 dark:text-gray-400 text-xs">({formatCurrency(attraction.priceInBRL)})</span>
-                  </>
-                ) : (
-                  <span className="font-semibold text-green-600 dark:text-green-400">Gratuito</span>
-                )}
-              </div>
-            )}
+          <h3 className="text-lg font-bold mb-2 line-clamp-2 drop-shadow-md text-shadow">
+            {attraction.name}
+          </h3>
+
+          <div className="flex items-center gap-2 text-sm text-white/80 mb-2 text-shadow">
+            <MapPin className="w-3.5 h-3.5 flex-shrink-0" />
+            <span>
+              {attraction.region ? `${attraction.region}, ` : ''}
+              {attraction.city}
+            </span>
           </div>
 
           {!isAccommodation && (
-            <div className="flex flex-wrap gap-1.5 mb-2">
+            <div className="flex items-center gap-2 text-sm mb-3">
+              <Banknote className="w-3.5 h-3.5 text-emerald-300 flex-shrink-0" />
+              {attraction.couplePrice ? (
+                <>
+                  <span className="font-semibold text-emerald-300">
+                    {formatCurrency(attraction.couplePrice, attraction.currency)}
+                  </span>
+                  <span className="text-white/70 text-xs">
+                    ({formatCurrency(attraction.priceInBRL)})
+                  </span>
+                </>
+              ) : (
+                <span className="font-semibold text-emerald-300">
+                  Gratuito
+                </span>
+              )}
+            </div>
+          )}
+
+          {!isAccommodation && (
+            <div className="flex flex-wrap gap-2 mb-3">
               {typeConfig && (
-                <span className="px-2 py-0.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs rounded-md font-medium">
+                <span className="px-2 py-1 bg-white/20 text-white text-xs rounded-md backdrop-blur-sm">
                   {typeConfig.label}
                 </span>
               )}
+
               {attraction.needsReservation && attraction.reservationStatus && (
-                <span className={`px-2 py-0.5 text-xs rounded-md font-medium flex items-center gap-1 ${attraction.reservationStatus === 'confirmed' ? 'bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300' :
-                  attraction.reservationStatus === 'pending' ? 'bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-300' :
-                    attraction.reservationStatus === 'cancelled' ? 'bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300' :
-                      'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
-                  }`}>
+                <span className="px-2 py-1 bg-white/20 text-white text-xs rounded-md backdrop-blur-sm flex items-center gap-1">
                   <span>{RESERVATION_STATUS[attraction.reservationStatus].icon}</span>
                   <span>{RESERVATION_STATUS[attraction.reservationStatus].label}</span>
                 </span>
@@ -157,8 +152,10 @@ export function TimelineCard({ attraction, arrivalTime, departureTime, duration,
                 <div
                   key={index}
                   className={`
-                    flex items-start gap-2 text-sm p-2.5 rounded-lg border
-                    ${conflict.severity === 'error' ? 'bg-red-50/80 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-800 dark:text-red-200' : 'bg-amber-50/80 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-200'}
+                    flex items-start gap-2 text-sm p-2.5 rounded-lg backdrop-blur-sm border
+                    ${conflict.severity === 'error'
+                      ? 'bg-red-500/20 border-red-400/40 text-red-200'
+                      : 'bg-amber-500/20 border-amber-400/40 text-amber-200'}
                   `}
                 >
                   <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
@@ -169,7 +166,7 @@ export function TimelineCard({ attraction, arrivalTime, departureTime, duration,
           )}
 
           {attraction.notes && (
-            <div className="text-sm text-gray-700 dark:text-gray-300 bg-slate-50 dark:bg-slate-800/80 p-3 rounded-xl border border-slate-200 dark:border-slate-600">
+            <div className="text-sm bg-white/10 p-3 rounded-xl backdrop-blur-sm border border-white/20">
               <span className="font-semibold">💡</span> {attraction.notes}
             </div>
           )}

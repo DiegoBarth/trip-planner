@@ -24,46 +24,51 @@ export function AttractionCard({ attraction, onCheckVisited, onDelete, onClick }
     attraction.dayOfWeek &&
     attraction.closedDays.split(',').map(d => d.trim()).includes(attraction.dayOfWeek);
 
-  const borderClass = isClosedOnVisitDay
-    ? 'border-l-red-500'
+  const borderClass = isClosedOnVisitDay ? 'border-l-red-500'
     : attraction.visited
-      ? 'border-l-green-500'
+      ? 'border-l-emerald-500'
       : 'border-l-blue-500';
-
-  const bgClass = isClosedOnVisitDay
-    ? 'bg-red-50 dark:bg-red-900/30'
-    : attraction.visited
-      ? 'bg-green-50/60 dark:bg-green-900/30'
-      : 'bg-white dark:bg-gray-800';
 
   return (
     <div
       className={`
-        relative rounded-2xl shadow-md overflow-hidden transition-all cursor-pointer border-l-4
-        hover:shadow-lg active:scale-[0.99]
-        ${borderClass} ${bgClass}
+        relative rounded-2xl shadow-xl overflow-hidden transition-all cursor-pointer border-l-4
+        hover:shadow-2xl hover:-translate-y-0.5 active:scale-[0.99]
+        ${borderClass}
       `}
       onClick={onClick}
     >
-
       {attraction.imageUrl ? (
-        <div className="h-28 bg-cover bg-center" style={{ backgroundImage: `url(${attraction.imageUrl})` }} />
+        <div
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: `url(${attraction.imageUrl})` }}
+        />
       ) : (
-        <div className="h-28 bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center">
-          <span className="text-5xl">{attractionType.icon}</span>
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+          <span className="text-5xl opacity-30">{attractionType.icon}</span>
         </div>
       )}
 
-      <div className="p-4">
-        <div className="flex items-start justify-between gap-2 mb-2">
+      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-black/50" />
+      <div className="relative z-10 p-4 text-white">
+        <div className="flex items-start justify-between gap-2 mb-3">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
-              <span className="text-xs font-medium text-gray-500 dark:text-gray-400">#{attraction.order}</span>
-              <h3 className="font-bold text-base leading-tight text-gray-900 dark:text-gray-100 truncate">{attraction.name}</h3>
+              <span className="text-xs font-medium text-white/70">
+                #{attraction.order}
+              </span>
+
+              <h3 className="font-bold text-base leading-tight truncate drop-shadow-md text-shadow">
+                {attraction.name}
+              </h3>
             </div>
-            <div className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-300">
-              <MapPin className="w-3.5 h-3.5 flex-shrink-0" />
-              <span className="truncate">{attraction.region ? `${attraction.region}, ` : ''}{attraction.city}</span>
+
+            <div className="flex items-center gap-1 text-sm text-white/90 text-shadow">
+              <MapPin className="w-3.5 h-3.5 flex-shrink-0 opacity-90" />
+              <span className="truncate">
+                {attraction.region ? `${attraction.region}, ` : ''}
+                {attraction.city}
+              </span>
             </div>
           </div>
 
@@ -71,96 +76,105 @@ export function AttractionCard({ attraction, onCheckVisited, onDelete, onClick }
             {onDelete && (
               <button
                 onClick={(e) => {
-                  e.stopPropagation()
-                  onDelete(attraction.id)
+                  e.stopPropagation();
+                  onDelete(attraction.id);
                 }}
-                className="p-2 rounded-xl transition-all text-gray-400 dark:text-gray-500 hover:bg-red-50 dark:hover:bg-red-900/40 hover:text-red-600 dark:hover:text-red-400"
+                className="p-2 rounded-xl backdrop-blur-sm bg-white/10 hover:bg-red-500/30 transition-all"
                 aria-label="Excluir"
               >
-                <Trash2 className="w-4 h-4" />
+                <Trash2 className="w-4 h-4 text-white drop-shadow" />
               </button>
             )}
             <button
               onClick={(e) => {
-                e.stopPropagation()
-                onCheckVisited?.(attraction.id)
+                e.stopPropagation();
+                onCheckVisited?.(attraction.id);
               }}
-              className={`p-2 rounded-xl transition-all ${attraction.visited
-                ? 'bg-green-100 dark:bg-green-900/40 text-green-600 dark:text-green-400'
-                : 'text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-600 dark:hover:text-gray-300'
-                }`}
+              className={`
+                p-2 rounded-xl backdrop-blur-sm transition-all
+                ${attraction.visited
+                  ? 'bg-emerald-500/30 hover:bg-emerald-500/40'
+                  : 'bg-white/10 hover:bg-white/20'}
+              `}
               aria-label={attraction.visited ? 'Marcar como não visitado' : 'Marcar como visitado'}
             >
-              <CheckCircle2 className="w-4 h-4" />
+              <CheckCircle2 className={`w-4 h-4 ${attraction.visited ? 'text-emerald-300' : 'text-white'} drop-shadow`} />
             </button>
           </div>
         </div>
 
-        <div className="space-y-1.5">
-          <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
-            <Clock className="w-3.5 h-3.5 text-blue-500 dark:text-blue-400 flex-shrink-0" />
+        <div className="space-y-2 text-sm">
+          <div className="flex items-center gap-2 text-white font-medium drop-shadow-sm text-shadow">
+            <Clock className="w-3.5 h-3.5 text-blue-300 flex-shrink-0" />
             <span>
               {attraction.openingTime
                 ? `${formatTime(attraction.openingTime)}${attraction.closingTime ? ` – ${formatTime(attraction.closingTime)}` : ''}`
-                : '24h'
-              }
+                : '24h'}
               {attraction.duration ? ` · ${formatDuration(attraction.duration)}` : ''}
             </span>
           </div>
 
-          <div className="flex items-center gap-2 text-sm">
-            <Banknote className="w-3.5 h-3.5 text-green-600 dark:text-green-400 flex-shrink-0" />
+          <div className="flex items-center gap-2">
+            <Banknote className="w-3.5 h-3.5 text-emerald-300 flex-shrink-0" />
             {attraction.couplePrice ? (
               <>
-                <span className="font-semibold text-green-600 dark:text-green-400">
+                <span className="font-semibold text-emerald-300 drop-shadow-sm text-shadow">
                   {formatCurrency(attraction.couplePrice, attraction.currency)}
                 </span>
-                <span className="text-gray-500 dark:text-gray-400 text-xs">({formatCurrency(attraction.priceInBRL)})</span>
+                <span className="text-white/80 text-xs text-shadow">
+                  ({formatCurrency(attraction.priceInBRL)})
+                </span>
               </>
             ) : (
-              <span className="font-semibold text-green-600 dark:text-green-400">Gratuito</span>
+              <span className="font-semibold text-emerald-300 drop-shadow-sm text-shadow">
+                Gratuito
+              </span>
             )}
           </div>
+        </div>
+        <div className="flex flex-wrap gap-2 mt-3">
 
-          <div className="flex flex-wrap gap-1.5 mt-2">
-            {isClosedOnVisitDay && (
-              <span className="px-2 py-0.5 bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300 text-xs rounded-md font-medium flex items-center gap-1">
-                <AlertTriangle className="w-3 h-3" />
-                Fechado neste dia
-              </span>
-            )}
-            <span className="px-2 py-0.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs rounded-md font-medium">
-              {attractionType.label}
+          {isClosedOnVisitDay && (
+            <span className="px-2 py-1 bg-red-500/30 text-red-200 text-xs rounded-md font-medium flex items-center gap-1 backdrop-blur-sm border border-red-400/40">
+              <AlertTriangle className="w-3 h-3" />
+              Fechado neste dia
             </span>
-            {attraction.needsReservation && attraction.reservationStatus && (
-              <span className={`px-2 py-0.5 text-xs rounded-md font-medium flex items-center gap-1 ${attraction.reservationStatus === 'confirmed' ? 'bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300' :
-                attraction.reservationStatus === 'pending' ? 'bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-300' :
-                  attraction.reservationStatus === 'cancelled' ? 'bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300' :
-                    'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
-                }`}>
-                {RESERVATION_STATUS[attraction.reservationStatus].icon} {RESERVATION_STATUS[attraction.reservationStatus].label}
-              </span>
-            )}
-            {attraction.idealPeriod && (
-              <span className="px-2 py-0.5 bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 text-xs rounded-md font-medium">
-                {PERIODS[attraction.idealPeriod].label}
-              </span>
-            )}
-          </div>
+          )}
+
+          <span className="px-2 py-1 bg-white/15 text-white text-xs rounded-md backdrop-blur-sm">
+            {attractionType.label}
+          </span>
+
+          {attraction.needsReservation && attraction.reservationStatus && (
+            <span className="px-2 py-1 bg-white/15 text-white text-xs rounded-md backdrop-blur-sm flex items-center gap-1">
+              {RESERVATION_STATUS[attraction.reservationStatus].icon}
+              {RESERVATION_STATUS[attraction.reservationStatus].label}
+            </span>
+          )}
+
+          {attraction.idealPeriod && (
+            <span className="px-2 py-1 bg-blue-500/30 text-blue-200 text-xs rounded-md backdrop-blur-sm">
+              {PERIODS[attraction.idealPeriod].label}
+            </span>
+          )}
+
         </div>
       </div>
 
       {(attraction.location || (attraction.lat && attraction.lng)) && (
         <a
-          href={attraction.location || `https://www.google.com/maps/search/?api=1&query=${attraction.lat},${attraction.lng}`}
+          href={
+            attraction.location ||
+            `https://www.google.com/maps/search/?api=1&query=${attraction.lat},${attraction.lng}`
+          }
           target="_blank"
           rel="noopener noreferrer"
           onClick={(e) => e.stopPropagation()}
-          className="absolute bottom-3 right-3 p-2 rounded-xl bg-blue-500 text-white dark:text-white shadow-md hover:bg-blue-600 transition-colors"
+          className="absolute bottom-4 right-4 p-2 rounded-xl bg-blue-500 hover:bg-blue-600 text-white shadow-lg transition-all"
           title="Abrir no mapa"
           aria-label="Abrir no mapa"
         >
-          <Map className="w-4 h-4" />
+          <Map className="w-4 h-4 drop-shadow" />
         </a>
       )}
 
