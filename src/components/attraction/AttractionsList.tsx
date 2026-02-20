@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { GripVertical } from 'lucide-react'
 import { AttractionsGrid } from '@/components/attraction/AttractionsGrid'
 import { ModalAttraction } from '@/components/attraction/ModalAttraction'
 import { ConfirmModal } from '@/components/ui/ConfirmModal'
 import { getAutoDayForDate, getNextOrderForDate } from '@/utils/attractionDayUtils'
-import { dateToInputFormat } from '@/utils/formatters'
+import { dateToInputFormat, formatCurrency } from '@/utils/formatters'
 import type { Attraction } from '@/types/Attraction'
 
 interface AttractionsListProps {
@@ -108,16 +108,48 @@ export function AttractionsList({
     setAttractionToDelete(null);
   }
 
+  const countriesCount = useMemo(() => {
+    const unique = new Set(attractions.map(a => a.country ?? 'outros'));
+
+    return unique.size;;
+  }, [attractions]);
+
+  const shouldShowGlobalTotal = countriesCount > 1;
+  const globalTotal = useMemo(() => {
+    if (!attractions.length) {
+      return 0;
+    }
+
+    let totalBrl = 0;
+
+    for (const attr of attractions) {
+      totalBrl += Number(attr.priceInBRL) || 0;
+    }
+
+    return totalBrl;
+  }, [attractions]);
+
   return (
     <div>
       <div className="flex items-center justify-between gap-4 mb-5 flex-wrap">
-        <div className="flex items-center gap-2">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-            Todas as Atrações
-          </h2>
-          <span className="text-sm text-gray-500 dark:text-gray-400 font-medium">
-            {attractions.length} {attractions.length === 1 ? 'item' : 'itens'}
-          </span>
+        <div className="flex items-center justify-between gap-4 flex-wrap w-full">
+          <div className="flex items-center gap-2 flex-wrap">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+              Todas as Atrações
+            </h2>
+
+            <span className="text-sm text-gray-500 dark:text-gray-400 font-medium">
+              {attractions.length} {attractions.length === 1 ? 'item' : 'itens'}
+            </span>
+          </div>
+
+          {shouldShowGlobalTotal && globalTotal && (
+            <div className="flex flex-col text-right">
+              <span className="text-lg font-semibold text-emerald-600 dark:text-emerald-400">
+                {formatCurrency(globalTotal)}
+              </span>
+            </div>
+          )}
         </div>
 
         {onBulkUpdate && !isMobile && (
@@ -138,7 +170,6 @@ export function AttractionsList({
       {!isLoading && (
         <AttractionsGrid
           attractions={attractions}
-          groupBy="country"
           onToggleVisited={onToggleVisited}
           onDelete={handleDeleteRequest}
           onEdit={(attraction) => {
