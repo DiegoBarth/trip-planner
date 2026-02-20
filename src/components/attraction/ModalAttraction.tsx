@@ -47,36 +47,37 @@ interface AttractionFormData {
 
 export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAttractionProps) {
   const [saving, setSaving] = useState(false);
-  const { register, control, handleSubmit, watch, setValue, reset } = useForm<AttractionFormData>({
-    defaultValues: {
-      name: '',
-      country: 'japan',
-      city: '',
-      region: '',
-      date: '',
-      dayOfWeek: '',
-      type: 'other',
-      visited: false,
-      needsReservation: false,
-      reservationStatus: undefined,
-      reservationId: undefined,
-      couplePrice: 0,
-      currency: 'JPY',
-      priceInBRL: 0,
-      idealPeriod: undefined,
-      isOpen: undefined,
-      openingTime: '',
-      closingTime: '',
-      closedDays: '',
-      ticketLink: '',
-      location: '',
-      duration: 0,
-      notes: '',
-      imageUrl: '',
-      lat: 0,
-      lng: 0
-    }
-  });
+  const { register, control, handleSubmit, watch, setValue, reset, getValues } =
+    useForm<AttractionFormData>({
+      defaultValues: {
+        name: '',
+        country: 'japan',
+        city: '',
+        region: '',
+        date: '',
+        dayOfWeek: '',
+        type: 'other',
+        visited: false,
+        needsReservation: false,
+        reservationStatus: undefined,
+        reservationId: undefined,
+        couplePrice: 0,
+        currency: 'JPY',
+        priceInBRL: 0,
+        idealPeriod: undefined,
+        isOpen: undefined,
+        openingTime: '',
+        closingTime: '',
+        closedDays: '',
+        ticketLink: '',
+        location: '',
+        duration: 0,
+        notes: '',
+        imageUrl: '',
+        lat: 0,
+        lng: 0
+      }
+    });
 
   const formData = watch();
   const previousCurrency = useRef<Currency>(formData.currency);
@@ -384,11 +385,8 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
               control={control}
               register={register}
               setValue={setValue}
-              nameValue={formData.name}
-              cityValue={formData.city}
-              countryValue={formData.country}
+              getValues={getValues}
             />
-
           </div>
         </section>
 
