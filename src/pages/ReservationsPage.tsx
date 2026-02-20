@@ -10,7 +10,7 @@ import { useToast } from '@/contexts/toast'
 import { ModalReservation } from '@/components/reservation/ModalReservation'
 import type { Reservation } from '@/types/Reservation'
 
-export function ReservationsPage() {
+export default function ReservationsPage() {
   const [showModal, setShowModal] = useState(false);
   const { country, reservations, isReady } = useCountry();
 

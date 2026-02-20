@@ -6,7 +6,7 @@ import { PageHeader } from '@/components/ui/PageHeader'
 import { useCountry } from '@/contexts/CountryContext'
 import { formatCurrency } from '@/utils/formatters'
 
-export function DashboardPage() {
+export default function DashboardPage() {
   const { dashboard, isReady } = useCountry();
 
   if (!isReady) {

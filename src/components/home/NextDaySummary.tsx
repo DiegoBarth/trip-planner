@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { Calendar, MapPin, Clock, ChevronRight, Navigation, CheckCircle2, Circle } from 'lucide-react'
 import { useCountry } from '@/contexts/CountryContext'
 import { useAttraction } from '@/hooks/useAttraction'
+import { dateToInputFormat } from '@/utils/formatters'
 
 function openInMaps(lat: number, lng: number, name: string) {
   const url = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}&query_place_id=${encodeURIComponent(name)}`;
@@ -22,7 +23,7 @@ export function NextDaySummary() {
       .filter(a => a.date && a.lat && a.lng)
       .map(a => ({
         ...a,
-        parsedDate: new Date(a.date)
+        parsedDate: new Date(dateToInputFormat(a.date) + 'T12:00:00')
       }))
       .sort((a, b) => a.parsedDate.getTime() - b.parsedDate.getTime());
 

@@ -8,6 +8,8 @@ import { dateToInputFormat, formatDate } from '@/utils/formatters'
 import { COUNTRIES } from '@/config/constants'
 import type { Attraction } from '@/types/Attraction'
 import type { DragEndEvent } from '@dnd-kit/core'
+import { useMediaQuery } from '@/hooks/useMediaQuery'
+import { VirtualizedAttractionsList } from '@/components/attraction/VirtualizedAttractionsList'
 
 type GroupMode = 'country' | 'none';
 
@@ -35,6 +37,8 @@ export function AttractionsGrid({
   enableDragDrop = false
 }: AttractionsGridProps) {
   const [displayAttractions, setDisplayAttractions] = useState<Attraction[]>(attractions);
+  const isMobile = useMediaQuery('(max-width: 768px)')
+
 
   useEffect(() => {
     setDisplayAttractions(attractions)
@@ -168,19 +172,32 @@ export function AttractionsGrid({
             onEdit={onEdit}
           />
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-            {dayAttractions.map(attraction => (
-              <AttractionCard
-                key={attraction.id}
-                attraction={attraction}
-                onCheckVisited={onToggleVisited}
-                onDelete={onDelete}
-                onClick={() => onEdit?.(attraction)}
-              />
-            ))}
-          </div>
-        )}
-      </section>
+
+          isMobile ? (
+            <VirtualizedAttractionsList
+              attractions={dayAttractions}
+              onToggleVisited={onToggleVisited}
+              onDelete={onDelete}
+              onEdit={onEdit}
+            />
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+              {dayAttractions.map((attraction, index) => (
+                <AttractionCard
+                  key={attraction.id}
+                  attraction={attraction}
+                  priority={index === 0}
+                  onCheckVisited={onToggleVisited}
+                  onDelete={onDelete}
+                  onClick={() => onEdit?.(attraction)}
+                />
+              ))
+              }
+            </div>
+          )
+        )
+        }
+      </section >
     ));
 
     return enableDragDrop && onReorder ? (
@@ -285,17 +302,27 @@ export function AttractionsGrid({
                   onEdit={onEdit}
                 />
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                  {dayAttractions.map(attraction => (
-                    <AttractionCard
-                      key={attraction.id}
-                      attraction={attraction}
-                      onCheckVisited={onToggleVisited}
-                      onDelete={onDelete}
-                      onClick={() => onEdit?.(attraction)}
-                    />
-                  ))}
-                </div>
+                isMobile ? (
+                  <VirtualizedAttractionsList
+                    attractions={dayAttractions}
+                    onToggleVisited={onToggleVisited}
+                    onDelete={onDelete}
+                    onEdit={onEdit}
+                  />
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {dayAttractions.map((attraction, index) => (
+                      <AttractionCard
+                        key={attraction.id}
+                        attraction={attraction}
+                        priority={index === 0}
+                        onCheckVisited={onToggleVisited}
+                        onDelete={onDelete}
+                        onClick={() => onEdit?.(attraction)}
+                      />
+                    ))}
+                  </div>
+                )
               )}
             </section>
           ))}

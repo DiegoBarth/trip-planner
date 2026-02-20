@@ -11,7 +11,7 @@ interface Props {
   onLogout: () => void
 }
 
-export function HomePage({ onLogout }: Props) {
+export default function HomePage({ onLogout }: Props) {
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 pb-20">
       <header className="bg-gradient-to-br from-blue-600 via-purple-600 to-pink-500 text-white">

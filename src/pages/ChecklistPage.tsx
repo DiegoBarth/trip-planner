@@ -9,7 +9,7 @@ import { useToast } from '@/contexts/toast'
 import { ModalChecklistItem } from '@/components/checklist/ModalChecklistItem'
 import type { ChecklistItem } from '@/types/ChecklistItem'
 
-export function ChecklistPage() {
+export default function ChecklistPage() {
   const [showModal, setShowModal] = useState(false);
   const { checklistItems: items, isReady } = useCountry();
   const { createItem, updateItem, deleteItem, togglePacked } = useChecklist();

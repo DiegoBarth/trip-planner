@@ -11,7 +11,7 @@ import { useToast } from '@/contexts/toast'
 import type { BudgetOrigin } from '@/types/Attraction'
 import type { CreateBudgetPayload, UpdateBudgetPayload } from '@/api/budget'
 
-export function BudgetPage() {
+export default function BudgetPage() {
   const [showModal, setShowModal] = useState(false);
   const [budgetOrigin, setBudgetOrigin] = useState<BudgetOrigin | 'all'>('all');
   const { createBudget, updateBudget, deleteBudget } = useBudget();

@@ -12,7 +12,7 @@ import { useCountry } from '@/contexts/CountryContext'
 import type { Expense } from '@/types/Expense'
 import type { BudgetOrigin } from '@/types/Attraction'
 
-export function ExpensesPage() {
+export default function ExpensesPage() {
   const [showModal, setShowModal] = useState(false);
   const [budgetOrigin, setBudgetOrigin] = useState<BudgetOrigin | 'all'>('all');
   const { country, expenses, isReady } = useCountry();

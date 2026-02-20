@@ -49,7 +49,7 @@ function addAccommodationToDay(dayAttractions: Attraction[], accommodations: Acc
   return [accAttraction, ...dayAttractions];
 }
 
-export function TimelinePage() {
+export default function TimelinePage() {
   const { country, day, accommodations, attractions, isReady } = useCountry();
   const { toggleVisited } = useAttraction(country);
 

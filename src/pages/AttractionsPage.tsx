@@ -10,7 +10,7 @@ import { useCountry } from '@/contexts/CountryContext'
 import { ModalAttraction } from '@/components/attraction/ModalAttraction'
 import type { Attraction } from '@/types/Attraction'
 
-export function AttractionsPage() {
+export default function AttractionsPage() {
   const [showModal, setShowModal] = useState(false);
   const { country, day, attractions, isReady } = useCountry();
 
