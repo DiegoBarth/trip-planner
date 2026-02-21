@@ -49,20 +49,20 @@ export const AttractionCard = memo(function AttractionCard({
       `}
       onClick={onClick}
     >
-      <div className="relative w-full aspect-[2/1] min-h-[96px]">
+      <div className="relative w-full aspect-[2/1] min-h-[96px] bg-gradient-to-br from-blue-500 to-purple-600">
         {imageSrc ? (
           <img
             src={imageSrc}
             alt={attraction.name}
             referrerPolicy="no-referrer"
-            loading={priority ? 'eager' : 'lazy'}
+            loading="eager"
             fetchPriority={priority ? 'high' : 'low'}
             sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
             decoding="async"
             className="absolute inset-0 z-0 w-full h-full object-cover"
           />
         ) : (
-          <div className="absolute inset-0 z-0 bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+          <div className="absolute inset-0 z-0 flex items-center justify-center">
             <span className="text-5xl opacity-30">{attractionType.icon}</span>
           </div>
         )}
