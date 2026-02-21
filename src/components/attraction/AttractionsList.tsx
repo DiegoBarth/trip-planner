@@ -22,6 +22,9 @@ interface AttractionsListProps {
   onDelete: (id: number) => void
   onToggleVisited: (id: number) => void
   onBulkUpdate?: (attractions: Attraction[]) => Promise<void>
+  /** When provided (e.g. from page header), reorder button is not rendered here */
+  isDragEnabled?: boolean
+  onToggleDragEnabled?: (value: boolean) => void
 }
 
 export function AttractionsList({
@@ -31,12 +34,16 @@ export function AttractionsList({
   onCreate,
   onDelete,
   onToggleVisited,
-  onBulkUpdate
+  onBulkUpdate,
+  isDragEnabled: isDragEnabledProp,
+  onToggleDragEnabled
 }: AttractionsListProps) {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingAttraction, setEditingAttraction] = useState<Attraction | undefined>()
   const [attractionToDelete, setAttractionToDelete] = useState<Attraction | null>(null)
-  const [isDragEnabled, setIsDragEnabled] = useState(false)
+  const [isDragEnabledLocal, setIsDragEnabledLocal] = useState(false)
+  const isDragEnabled = isDragEnabledProp ?? isDragEnabledLocal
+  const setDragEnabled = onToggleDragEnabled ?? setIsDragEnabledLocal
 
   const handleSave = async (data: Omit<Attraction, 'id' | 'day' | 'order'>) => {
     const autoDay = getAutoDayForDate(
@@ -140,9 +147,9 @@ export function AttractionsList({
           )}
         </div>
 
-        {onBulkUpdate && (
+        {onBulkUpdate && onToggleDragEnabled === undefined && (
           <button
-            onClick={() => setIsDragEnabled(!isDragEnabled)}
+            onClick={() => setDragEnabled(!isDragEnabled)}
             className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-colors ${isDragEnabled
               ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-sm'
               : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'

@@ -79,8 +79,8 @@ export function AttractionsGrid({
 
             return (
               <section key={`${country}-${day}`}>
-                <div className="flex items-center justify-between gap-3 flex-wrap">
-                  <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm mb-3 w-fit">
+                <div className="flex items-center justify-between flex-wrap">
+                  <div className="flex items-center gap-2 px-2 py-2 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm mb-3 w-fit">
                     <span className="text-lg" aria-hidden>📅</span>
                     <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">
                       Dia {day}
