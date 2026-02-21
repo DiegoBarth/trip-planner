@@ -41,7 +41,8 @@ export const AttractionCard = memo(function AttractionCard({
   return (
     <div
       className={`
-        relative rounded-2xl shadow-xl overflow-hidden transition-all cursor-pointer border-l-4
+        relative rounded-2xl shadow-xl overflow-hidden cursor-pointer border-l-4
+        transition-[box-shadow,transform] duration-200 ease-out
         hover:shadow-2xl hover:-translate-y-0.5 active:scale-[0.99]
         ${borderClass}
       `}

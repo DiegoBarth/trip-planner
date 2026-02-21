@@ -5,8 +5,6 @@ import { EmptyState } from '@/components/ui/EmptyState'
 import { DroppableDay } from '@/components/attraction/DroppableDay'
 import { AttractionCard } from '@/components/attraction/AttractionCard'
 import { dateToInputFormat, formatDate, formatCurrency } from '@/utils/formatters'
-import { useMediaQuery } from '@/hooks/useMediaQuery'
-import { VirtualizedAttractionsList } from '@/components/attraction/VirtualizedAttractionsList'
 import { useCountry } from '@/contexts/CountryContext'
 import { COUNTRIES } from '@/config/constants'
 import type { Attraction } from '@/types/Attraction'
@@ -35,7 +33,6 @@ export function AttractionsGrid({
 }: AttractionsGridProps) {
   const [displayAttractions, setDisplayAttractions] = useState<Attraction[]>(attractions);
   const { day } = useCountry();
-  const isMobile = useMediaQuery('(max-width: 768px)');
 
   const isAllDaysView = day === 'all';
   const isReadyForTotals = isAllDaysView && attractions.length === displayAttractions.length;
@@ -248,14 +245,6 @@ export function AttractionsGrid({
                       onToggleVisited={onToggleVisited}
                       onDelete={onDelete}
                       onEdit={onEdit}
-                    />
-                  ) : (isMobile) ? (
-                    <VirtualizedAttractionsList
-                      attractions={dayAttractions}
-                      onToggleVisited={onToggleVisited}
-                      onDelete={onDelete}
-                      onEdit={onEdit}
-                      height={'80vh'}
                     />
                   ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
