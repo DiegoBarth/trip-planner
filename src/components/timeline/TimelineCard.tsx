@@ -46,55 +46,61 @@ export function TimelineCard({ attraction, arrivalTime, departureTime, duration,
           ${isVisited ? 'opacity-95' : ''}
         `}
       >
-        <div
-          className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: attraction.thumbnailUrl || attraction.imageUrl ? `url(${attraction.thumbnailUrl || attraction.imageUrl})` : undefined }}
-        />
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-purple-600">
+          {(attraction.thumbnailUrl || attraction.imageUrl)?.trim() ? (
+            <img
+              src={(attraction.thumbnailUrl || attraction.imageUrl || '').trim()}
+              alt={attraction.name}
+              referrerPolicy="no-referrer"
+              loading="eager"
+              decoding="async"
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+          ) : null}
+        </div>
 
-        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-black/50" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-black/50 pointer-events-none" />
 
-        <div className="relative z-10 p-4 text-white">
-
-          <div className="flex items-center gap-2 mb-3 pb-2 border-b border-white/20">
-            <Clock className="w-4 h-4 text-white/80 flex-shrink-0" />
-
-            <div className="flex items-center gap-2 text-sm font-medium flex-1 text-shadow">
+        <div className="relative z-10 pl-4 pr-5 pt-4 pb-4 text-white">
+          <div className="flex items-center gap-3 mb-3 pb-2 border-b border-white/20 min-w-0">
+            <Clock className="w-4 h-4 text-white/80 flex-shrink-0 self-start mt-0.5" />
+            <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 text-sm font-medium flex-1 min-w-0 text-shadow">
               <span className="font-bold">{arrivalTime}</span>
               <span className="text-white/60">→</span>
               <span className="font-bold">{departureTime}</span>
-              <span className="text-xs text-white/70">({duration}min)</span>
+              <span className="text-xs text-white/70 whitespace-nowrap">({duration}min)</span>
             </div>
-
-            {hasLocation && (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation()
-                  openInMaps(attraction.lat!, attraction.lng!)
-                }}
-                className="p-1.5 rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-sm transition-all"
-                title="Abrir no Google Maps"
-              >
-                <Navigation className="w-5 h-5 text-white" />
-              </button>
-            )}
-
-            {!isAccommodation && (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation()
-                  onToggleVisited?.(attraction.id)
-                }}
-                className={`
-                  p-1.5 rounded-full backdrop-blur-sm transition-all
-                  ${isVisited
-                    ? 'bg-emerald-500/30 hover:bg-emerald-500/40'
-                    : 'bg-white/20 hover:bg-white/30'}
-                `}
-                title={isVisited ? 'Marcar como não visitado' : 'Marcar como visitado'}
-              >
-                <CheckCircle2 className={`w-5 h-5 ${isVisited ? 'text-emerald-300' : 'text-white'}`} />
-              </button>
-            )}
+            <div className="flex items-center gap-2 flex-shrink-0">
+              {hasLocation && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    openInMaps(attraction.lat!, attraction.lng!)
+                  }}
+                  className="p-1.5 rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-sm transition-all"
+                  title="Abrir no Google Maps"
+                >
+                  <Navigation className="w-5 h-5 text-white" />
+                </button>
+              )}
+              {!isAccommodation && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    onToggleVisited?.(attraction.id)
+                  }}
+                  className={`
+                    p-1.5 rounded-full backdrop-blur-sm transition-all
+                    ${isVisited
+                      ? 'bg-emerald-500/30 hover:bg-emerald-500/40'
+                      : 'bg-white/20 hover:bg-white/30'}
+                  `}
+                  title={isVisited ? 'Marcar como não visitado' : 'Marcar como visitado'}
+                >
+                  <CheckCircle2 className={`w-5 h-5 ${isVisited ? 'text-emerald-300' : 'text-white'}`} />
+                </button>
+              )}
+            </div>
           </div>
 
           <h3 className="text-lg font-bold mb-2 line-clamp-2 drop-shadow-md text-shadow">
