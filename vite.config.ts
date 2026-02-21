@@ -2,8 +2,40 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from 'path'
 
+function deferCssPlugin() {
+  return {
+    name: 'defer-css',
+    enforce: 'post' as const,
+    transformIndexHtml(html: string) {
+      return html.replace(
+        /<link(\s+[^>]*?href="([^"]+\.css)"[^>]*)>/gi,
+        (_full, attrs, href) =>
+          `<link${attrs} media="print" onload="this.media='all'"><noscript><link rel="stylesheet" href="${href}"></noscript>`
+      )
+    },
+  }
+}
+
+// Remove modulepreload de chunks que só são usados em rotas específicas (lazy)
+function removeLazyModulePreload() {
+  const LAZY_CHUNKS = ['recharts', 'dnd-kit', 'google-oauth', 'leaflet']
+  return {
+    name: 'remove-lazy-modulepreload',
+    enforce: 'post' as const,
+    transformIndexHtml(html: string) {
+      return html.replace(
+        /<link rel="modulepreload" crossorigin href="([^"]+)">\n?/gi,
+        (match, href: string) => {
+          if (LAZY_CHUNKS.some(chunk => href.includes(`/${chunk}-`))) return ''
+          return match
+        }
+      )
+    },
+  }
+}
+
 export default defineConfig({
-   plugins: [react()],
+   plugins: [react(), deferCssPlugin(), removeLazyModulePreload()],
    base: '/trip-planner/',
    build: {
       outDir: 'docs',

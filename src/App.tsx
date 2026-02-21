@@ -1,10 +1,15 @@
-import { useEffect, useState } from "react";
-import { GoogleLogin, googleLogout, type CredentialResponse } from "@react-oauth/google";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { useToast } from '@/contexts/toast';
 import { verifyEmailAuthorization } from "@/api/home";
 import { createQueryClient } from '@/lib/queryClient';
 import { AppRouter } from "@/AppRouter";
 import { AUTH_TIMEOUT_MS, AUTH_REFRESH_INTERVAL_MS } from "@/config/constants";
+
+const LoginScreen = lazy(() => import('./LoginScreen'))
+
+interface CredentialResponse {
+  credential?: string
+}
 
 function App() {
   const toast = useToast();
@@ -55,7 +60,9 @@ function App() {
   }
 
   const handleLogout = () => {
-    googleLogout();
+    // Revoga a sessão Google sem necessitar do pacote carregado
+    (window as unknown as { google?: { accounts?: { id?: { disableAutoSelect?: () => void } } } })
+      .google?.accounts?.id?.disableAutoSelect?.();
 
     localStorage.removeItem("user_email");
     localStorage.removeItem("login_time");
@@ -81,26 +88,16 @@ function App() {
 
   if (!userEmail) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-slate-50 p-4">
-        <div className="w-full max-w-sm bg-white shadow-lg rounded-xl border border-slate-200 p-6 sm:p-10 text-center">
-          <h1 className="text-2xl sm:text-3xl font-bold mb-2 text-slate-800">
-            Fintrack
-          </h1>
-          <p className="mb-6 sm:mb-8 text-sm sm:text-base text-slate-500">
-            Acesse com sua conta Google para gerenciar seus dados
-          </p>
-
-          <GoogleLogin
-            onSuccess={handleLoginSuccess}
-            onError={() => toast.error('Erro no login Google')}
-            useOneTap
-          />
-
-          <p className="mt-4 text-xs sm:text-sm text-slate-400">
-            Apenas e-mails autorizados terão acesso.
-          </p>
+      <Suspense fallback={
+        <div className="flex items-center justify-center min-h-screen bg-slate-50">
+          <div className="animate-pulse text-sm text-slate-400">Carregando…</div>
         </div>
-      </div>
+      }>
+        <LoginScreen
+          onSuccess={handleLoginSuccess}
+          onError={() => toast.error('Erro no login Google')}
+        />
+      </Suspense>
     );
   }
 

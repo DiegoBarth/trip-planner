@@ -44,6 +44,10 @@ export function AttractionsGrid({
     )
   }
 
+  // Os primeiros ABOVE_FOLD_LIMIT cards na ordem de renderização recebem eager + fetchpriority=high
+  const ABOVE_FOLD_LIMIT = 6
+  let globalCardIndex = 0
+
   const countryContent = sortedCountryEntries.map(([country, days]) => {
     const countryTotalCouple = getCountryTotalCouplePrice(days)
     const countryTotalBrl = getCountryTotalPriceBrl(days)
@@ -107,16 +111,20 @@ export function AttractionsGrid({
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                  {dayAttractions.map((attraction, index) => (
-                    <AttractionCard
-                      key={attraction.id}
-                      attraction={attraction}
-                      priority={index === 0}
-                      onCheckVisited={onToggleVisited}
-                      onDelete={onDelete}
-                      onClick={() => onEdit?.(attraction)}
-                    />
-                  ))}
+                  {dayAttractions.map((attraction) => {
+                    const isAboveFold = globalCardIndex < ABOVE_FOLD_LIMIT
+                    globalCardIndex++
+                    return (
+                      <AttractionCard
+                        key={attraction.id}
+                        attraction={attraction}
+                        priority={isAboveFold}
+                        onCheckVisited={onToggleVisited}
+                        onDelete={onDelete}
+                        onClick={() => onEdit?.(attraction)}
+                      />
+                    )
+                  })}
                 </div>
               </section>
             )
