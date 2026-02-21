@@ -1,4 +1,5 @@
 import { apiGet, apiPost } from '@/api/client'
+import { parseReservations } from '@/api/schemas'
 import { normalizeTimeFromSheets } from '@/utils/formatters'
 import type { Reservation } from '@/types/Reservation'
 
@@ -97,7 +98,8 @@ export async function getReservations(): Promise<Reservation[]> {
     return [];
   }
 
-  return response.data.map((r: Reservation) => ({
+  const list = parseReservations(response.data) as Reservation[];
+  return list.map((r) => ({
     ...r,
     time: normalizeTimeFromSheets(r.time) ?? r.time
   }));

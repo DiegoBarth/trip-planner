@@ -1,7 +1,7 @@
 import { lazy, Suspense, useEffect, useState } from "react";
+import { useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@/contexts/toast';
 import { verifyEmailAuthorization } from "@/api/home";
-import { createQueryClient } from '@/lib/queryClient';
 import { AppRouter } from "@/AppRouter";
 import { AUTH_TIMEOUT_MS, AUTH_REFRESH_INTERVAL_MS } from "@/config/constants";
 
@@ -13,7 +13,7 @@ interface CredentialResponse {
 
 function App() {
   const toast = useToast();
-  const [queryClient] = useState(createQueryClient);
+  const queryClient = useQueryClient();
 
   const [userEmail, setUserEmail] = useState<string | null>(() => {
     const saved = localStorage.getItem("user_email");

@@ -5,7 +5,7 @@ import { ToastProvider } from '@/contexts/toast'
 import { QueryClientProvider } from '@tanstack/react-query'
 import { CountryProvider } from './contexts/CountryContext.tsx'
 import { ThemeProvider } from './contexts/ThemeContext.tsx'
-import { createQueryClient } from '@/lib/queryClient'
+import { queryClient } from '@/lib/queryClient'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
 import App from './App.tsx'
 import './index.css'
@@ -14,7 +14,7 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ErrorBoundary>
       <BrowserRouter basename="/trip-planner/">
-        <QueryClientProvider client={createQueryClient}>
+        <QueryClientProvider client={queryClient}>
           <ThemeProvider>
             <CountryProvider>
               <ToastProvider>

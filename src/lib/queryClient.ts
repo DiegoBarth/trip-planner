@@ -3,16 +3,19 @@ import { QueryClient } from '@tanstack/react-query'
 const CACHE_PREFIX = 'rq_v1_'
 const CACHE_MAX_AGE_MS = 60 * 60 * 1000 // 1 hora
 
-export const createQueryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: 1,
-      refetchOnWindowFocus: false,
+/** Creates a new QueryClient instance (e.g. for tests or SSR). */
+export function createQueryClient(): QueryClient {
+  return new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: 1,
+        refetchOnWindowFocus: false,
+      }
     }
-  }
-})
+  })
+}
 
-function loadCache() {
+function loadCache(client: QueryClient) {
   try {
     for (const storageKey of Object.keys(localStorage)) {
       if (!storageKey.startsWith(CACHE_PREFIX)) continue
@@ -23,14 +26,14 @@ function loadCache() {
         localStorage.removeItem(storageKey)
         continue
       }
-      createQueryClient.setQueryData(queryKey, data, { updatedAt: dataUpdatedAt })
+      client.setQueryData(queryKey, data, { updatedAt: dataUpdatedAt })
     }
   } catch {
   }
 }
 
-function persistCache() {
-  createQueryClient.getQueryCache().subscribe((event) => {
+function persistCache(client: QueryClient) {
+  client.getQueryCache().subscribe((event) => {
     if (event.type !== 'updated') return
     const action = event.action as { type: string }
     if (action.type !== 'success') return
@@ -48,5 +51,8 @@ function persistCache() {
   })
 }
 
-loadCache()
-persistCache()
+const queryClient = createQueryClient()
+loadCache(queryClient)
+persistCache(queryClient)
+
+export { queryClient }

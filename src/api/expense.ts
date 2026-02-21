@@ -1,4 +1,5 @@
 import { apiGet, apiPost } from '@/api/client'
+import { parseExpenses } from '@/api/schemas'
 import type { Expense } from '@/types/Expense'
 import type { Country } from '@/types/Attraction'
 
@@ -83,5 +84,5 @@ export async function getExpenses(): Promise<Expense[]> {
     return [];
   }
 
-  return response.data;
+  return parseExpenses(response.data) as Expense[];
 }

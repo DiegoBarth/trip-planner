@@ -1,4 +1,5 @@
 import { apiGet, apiPost } from '@/api/client'
+import { parseChecklistItems } from '@/api/schemas'
 import type { ChecklistItem } from '@/types/ChecklistItem'
 
 interface ApiResponse<T> {
@@ -77,7 +78,7 @@ export async function getChecklistItems(): Promise<ChecklistItem[]> {
     return [];
   }
 
-  return response.data;
+  return parseChecklistItems(response.data) as ChecklistItem[];
 }
 
 /**
