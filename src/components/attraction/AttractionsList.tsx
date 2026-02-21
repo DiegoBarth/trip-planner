@@ -1,10 +1,11 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useMemo } from 'react'
 import { GripVertical } from 'lucide-react'
 import { AttractionsGrid } from '@/components/attraction/AttractionsGrid'
 import { ModalAttraction } from '@/components/attraction/ModalAttraction'
 import { ConfirmModal } from '@/components/ui/ConfirmModal'
 import { getAutoDayForDate, getNextOrderForDate } from '@/utils/attractionDayUtils'
 import { dateToInputFormat, formatCurrency } from '@/utils/formatters'
+import { useMediaQuery } from '@/hooks/useMediaQuery'
 import type { Attraction } from '@/types/Attraction'
 
 interface AttractionsListProps {
@@ -30,25 +31,7 @@ export function AttractionsList({
   const [editingAttraction, setEditingAttraction] = useState<Attraction | undefined>()
   const [attractionToDelete, setAttractionToDelete] = useState<Attraction | null>(null)
   const [isDragEnabled, setIsDragEnabled] = useState(false)
-  const [isMobile, setIsMobile] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return window.innerWidth <= 768;
-    }
-
-    return false;
-  });
-
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth <= 768);
-    }
-
-    checkMobile();
-
-    window.addEventListener('resize', checkMobile);
-
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
+  const isMobile = useMediaQuery('(max-width: 768px)')
 
   const handleSave = async (data: Omit<Attraction, 'id' | 'day' | 'order'>) => {
     const autoDay = getAutoDayForDate(
@@ -111,7 +94,7 @@ export function AttractionsList({
   const countriesCount = useMemo(() => {
     const unique = new Set(attractions.map(a => a.country ?? 'outros'));
 
-    return unique.size;;
+    return unique.size;
   }, [attractions]);
 
   const shouldShowGlobalTotal = countriesCount > 1;

@@ -58,6 +58,7 @@ export const AttractionCard = memo(function AttractionCard({
             width={600}
             height={400}
             className="w-full h-full object-cover"
+            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
           />
         </div>
       ) : (

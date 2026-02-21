@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { GripVertical } from 'lucide-react'
 import { CSS } from '@dnd-kit/utilities'
 import { useSortable } from '@dnd-kit/sortable'
 import { AttractionCard } from '@/components/attraction/AttractionCard'
+import { useMediaQuery } from '@/hooks/useMediaQuery'
 import type { Attraction } from '@/types/Attraction'
 
 interface DraggableAttractionCardProps {
@@ -13,27 +14,8 @@ interface DraggableAttractionCardProps {
 }
 
 export function DraggableAttractionCard({ attraction, onCheckVisited, onDelete, onClick }: DraggableAttractionCardProps) {
-  const [isMobile, setIsMobile] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return window.innerWidth <= 768;
-    }
-
-    return false;
-  })
-
-  const [isPressing, setIsPressing] = useState(false);
-
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth <= 768);
-    }
-
-    checkMobile();
-
-    window.addEventListener('resize', checkMobile);
-
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
+  const isMobile = useMediaQuery('(max-width: 768px)')
+  const [isPressing, setIsPressing] = useState(false)
 
   const {
     attributes,

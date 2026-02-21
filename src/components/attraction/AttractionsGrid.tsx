@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import { arrayMove } from '@dnd-kit/sortable'
 import { DndContext, closestCenter, TouchSensor, MouseSensor, useSensor, useSensors } from '@dnd-kit/core'
 import { EmptyState } from '@/components/ui/EmptyState'
@@ -41,52 +41,33 @@ export function AttractionsGrid({
   const isReadyForTotals = isAllDaysView && attractions.length === displayAttractions.length;
 
   useEffect(() => {
-    setDisplayAttractions(attractions)
+    setDisplayAttractions(attractions);
   }, [attractions]);
 
-  const getCountryTotalCouplePrice = (days: Record<number, Attraction[]>): string | null => {
+  const getCountryTotalCouplePrice = useCallback((days: Record<number, Attraction[]>): string | null => {
     const allAttractions = Object.values(days).flat();
-
     if (!allAttractions.length) return null;
-
-    const total = allAttractions.reduce((sum, attr) => {
-      return sum + (Number(attr.couplePrice) || 0);
-    }, 0);
-
+    const total = allAttractions.reduce((sum, attr) => sum + (Number(attr.couplePrice) || 0), 0);
     if (!total) return null;
-
     const currency = allAttractions.find(a => a.currency)?.currency || 'BRL';
-
     return formatCurrency(total, currency);
-  };
+  }, []);
 
-  const getCountryTotalPriceBrl = (days: Record<number, Attraction[]>): number => {
-    const allAttractions = Object.values(days).flat();
+  const getCountryTotalPriceBrl = useCallback((days: Record<number, Attraction[]>): number => {
+    return Object.values(days).flat().reduce((sum, attr) => sum + (Number(attr.priceInBRL) || 0), 0);
+  }, []);
 
-    return allAttractions.reduce((sum, attr) => {
-      return sum + (Number(attr.priceInBRL) || 0);
-    }, 0);
-  };
-
-  const getDayTotalCouplePrice = (attractions: Attraction[]): string | null => {
-    if (!attractions.length) return null;
-
-    const total = attractions.reduce((sum, attr) => {
-      return sum + (Number(attr.couplePrice) || 0);
-    }, 0);
-
+  const getDayTotalCouplePrice = useCallback((dayAttractions: Attraction[]): string | null => {
+    if (!dayAttractions.length) return null;
+    const total = dayAttractions.reduce((sum, attr) => sum + (Number(attr.couplePrice) || 0), 0);
     if (!total) return null;
-
-    const currency = attractions.find(a => a.currency)?.currency || 'BRL';
-
+    const currency = dayAttractions.find(a => a.currency)?.currency || 'BRL';
     return formatCurrency(total, currency);
-  };
+  }, []);
 
-  const getDayTotalPriceBrl = (attractions: Attraction[]): number => {
-    return attractions.reduce((sum, attr) => {
-      return sum + (Number(attr.priceInBRL) || 0);
-    }, 0);
-  };
+  const getDayTotalPriceBrl = useCallback((dayAttractions: Attraction[]): number => {
+    return dayAttractions.reduce((sum, attr) => sum + (Number(attr.priceInBRL) || 0), 0);
+  }, []);
 
   const sensors = useSensors(
     useSensor(TouchSensor, {
@@ -101,6 +82,16 @@ export function AttractionsGrid({
       },
     })
   );
+
+  if (displayAttractions.length === 0) {
+    return (
+      <EmptyState
+        icon="🗺️"
+        title={emptyTitle}
+        description={emptyDescription}
+      />
+    );
+  }
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
@@ -146,66 +137,46 @@ export function AttractionsGrid({
     onReorder(updatedAttractions);
   };
 
-  if (displayAttractions.length === 0) {
-    return (
-      <EmptyState
-        icon="🗺️"
-        title={emptyTitle}
-        description={emptyDescription}
-      />
-    );
-  }
-
-  const groupedByCountry = displayAttractions.reduce((acc, attraction) => {
-    const country = attraction.country ?? 'outros';
-    const day = attraction.day;
-
-    if (!acc[country]) acc[country] = {};
-
-    if (!acc[country][day]) acc[country][day] = [];
-
-    acc[country][day].push(attraction);
-
+  const groupedByCountry = useMemo(() => {
+    const acc: Record<string, Record<number, Attraction[]>> = {};
+    for (const attraction of displayAttractions) {
+      const country = attraction.country ?? 'outros';
+      const d = attraction.day;
+      if (!acc[country]) acc[country] = {};
+      if (!acc[country][d]) acc[country][d] = [];
+      acc[country][d].push(attraction);
+    }
+    Object.values(acc).forEach(days => {
+      Object.keys(days).forEach(d => {
+        days[Number(d)].sort((a, b) => a.order - b.order);
+      });
+    });
     return acc;
-  }, {} as Record<string, Record<number, Attraction[]>>)
+  }, [displayAttractions]);
 
-  const countryEarliestDate = (country: string): number => {
+  const countryEarliestDate = useCallback((country: string): number => {
     const attractionsByDay = groupedByCountry[country];
-
     if (!attractionsByDay) return Number.POSITIVE_INFINITY;
-
     const dates: string[] = [];
-
     Object.values(attractionsByDay).forEach(dayAttractions => {
       dayAttractions.forEach(attraction => {
-        if (!attraction.date) return
-        dates.push(dateToInputFormat(attraction.date))
-      })
+        if (attraction.date) dates.push(dateToInputFormat(attraction.date));
+      });
     });
-
     if (dates.length === 0) return Number.POSITIVE_INFINITY;
+    return new Date(`${dates.sort()[0]}T12:00:00`).getTime();
+  }, [groupedByCountry]);
 
-    const earliestKey = dates.sort()[0];
-
-    return new Date(`${earliestKey}T12:00:00`).getTime();
-  };
-
-  Object.values(groupedByCountry).forEach(days => {
-    Object.keys(days).forEach(day => {
-      days[Number(day)].sort((a, b) => a.order - b.order)
-    });
-  });
-
-  const countryContent = Object.entries(groupedByCountry)
-    .sort(([countryA], [countryB]) => {
+  const sortedCountryEntries = useMemo(() => {
+    return Object.entries(groupedByCountry).sort(([countryA], [countryB]) => {
       const earliestA = countryEarliestDate(countryA);
       const earliestB = countryEarliestDate(countryB);
-
       if (earliestA === earliestB) return countryA.localeCompare(countryB);
-
       return earliestA - earliestB;
-    })
-    .map(([country, days]) => {
+    });
+  }, [groupedByCountry, countryEarliestDate]);
+
+  const countryContent = sortedCountryEntries.map(([country, days]) => {
       const countryTotalCouple = getCountryTotalCouplePrice(days);
       const countryTotalBrl = getCountryTotalPriceBrl(days);
 
@@ -278,28 +249,27 @@ export function AttractionsGrid({
                       onDelete={onDelete}
                       onEdit={onEdit}
                     />
+                  ) : (isMobile) ? (
+                    <VirtualizedAttractionsList
+                      attractions={dayAttractions}
+                      onToggleVisited={onToggleVisited}
+                      onDelete={onDelete}
+                      onEdit={onEdit}
+                      height={'80vh'}
+                    />
                   ) : (
-                    isMobile ? (
-                      <VirtualizedAttractionsList
-                        attractions={dayAttractions}
-                        onToggleVisited={onToggleVisited}
-                        onDelete={onDelete}
-                        onEdit={onEdit}
-                      />
-                    ) : (
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                        {dayAttractions.map((attraction, index) => (
-                          <AttractionCard
-                            key={attraction.id}
-                            attraction={attraction}
-                            priority={index === 0}
-                            onCheckVisited={onToggleVisited}
-                            onDelete={onDelete}
-                            onClick={() => onEdit?.(attraction)}
-                          />
-                        ))}
-                      </div>
-                    )
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                      {dayAttractions.map((attraction, index) => (
+                        <AttractionCard
+                          key={attraction.id}
+                          attraction={attraction}
+                          priority={index === 0}
+                          onCheckVisited={onToggleVisited}
+                          onDelete={onDelete}
+                          onClick={() => onEdit?.(attraction)}
+                        />
+                      ))}
+                    </div>
                   )}
                 </section>
               )

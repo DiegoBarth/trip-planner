@@ -12,10 +12,11 @@
     <meta name="apple-mobile-web-app-title" content="Trip Planner" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     
-    <!-- Google Fonts -->
+    <!-- Google Fonts: carregamento assíncrono para não bloquear FCP/LCP -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap"></noscript>
     
     <title>Trip Planner - Japan & Korea</title>
     <!-- Aplica tema salvo antes do React para evitar flash -->
@@ -32,10 +33,10 @@
         }
       })();
     </script>
-    <script type="module" crossorigin src="/trip-planner/assets/index-C69zWTxP.js"></script>
-    <link rel="stylesheet" crossorigin href="/trip-planner/assets/index-CwgtJIZh.css">
+    <script type="module" crossorigin src="/trip-planner/assets/index-2qo3wSHW.js"></script>
+    <link rel="stylesheet" crossorigin href="/trip-planner/assets/index-DJbvQ_9p.css">
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root"></div>
   </body>
 </html>

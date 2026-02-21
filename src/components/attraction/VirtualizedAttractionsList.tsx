@@ -8,6 +8,8 @@ interface Props {
   onToggleVisited?: (id: number) => void
   onDelete?: (id: number) => void
   onEdit?: (attraction: Attraction) => void
+  /** Altura do viewport (mobile: 80vh, desktop em seção: 50vh). */
+  height?: string
 }
 
 const CARD_HEIGHT = 364
@@ -17,7 +19,8 @@ export function VirtualizedAttractionsList({
   attractions,
   onToggleVisited,
   onDelete,
-  onEdit
+  onEdit,
+  height = '80vh'
 }: Props) {
   const parentRef = useRef<HTMLDivElement>(null)
 
@@ -25,13 +28,14 @@ export function VirtualizedAttractionsList({
     count: attractions.length,
     getScrollElement: () => parentRef.current,
     estimateSize: () => CARD_HEIGHT + GAP,
-    overscan: 4
+    overscan: 5
   })
 
   return (
     <div
       ref={parentRef}
-      className="h-[80vh] overflow-auto"
+      className="overflow-auto"
+      style={{ height }}
     >
       <div
         style={{
