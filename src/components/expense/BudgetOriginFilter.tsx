@@ -1,5 +1,6 @@
 import { Wallet } from 'lucide-react'
 import { CustomSelect } from '@/components/ui/CustomSelect'
+import { useFilterSheet } from '@/contexts/FilterSheetContext'
 import { BUDGET_ORIGINS } from '@/config/constants'
 import type { BudgetOrigin } from '@/types/Attraction'
 
@@ -30,6 +31,7 @@ interface BudgetOriginFilterProps {
 }
 
 export function BudgetOriginFilter({ value, onChange }: BudgetOriginFilterProps) {
+  const dropdownPosition = useFilterSheet()
   return (
     <div className="flex-1 min-w-[140px] md:max-w-[200px]">
       <CustomSelect
@@ -40,8 +42,8 @@ export function BudgetOriginFilter({ value, onChange }: BudgetOriginFilterProps)
         variant="glass"
         leftIcon={<Wallet className="w-4 h-4" />}
         placeholder="Origem"
-        dropdownPosition="below"
+        dropdownPosition={dropdownPosition}
       />
     </div>
-  );
+  )
 }

@@ -1,5 +1,6 @@
 import { MapPin, Calendar } from 'lucide-react'
 import { useCountry } from '@/contexts/CountryContext'
+import { useFilterSheet } from '@/contexts/FilterSheetContext'
 import { CustomSelect } from '@/components/ui/CustomSelect'
 import { COUNTRIES } from '@/config/constants'
 import type { Country, CountryFilterValue } from '@/types/Attraction'
@@ -20,7 +21,8 @@ interface CountryFilterProps {
 };
 
 export function CountryFilter({ showDayFilter = true, hideGeneralOption = false }: CountryFilterProps) {
-  const { country, setCountry, day, setDay, availableDays } = useCountry();
+  const { country, setCountry, day, setDay, availableDays } = useCountry()
+  const dropdownPosition = useFilterSheet()
 
   const visibleOptions = hideGeneralOption
     ? FILTER_OPTIONS.filter(o => o.key !== 'general')
@@ -61,7 +63,7 @@ export function CountryFilter({ showDayFilter = true, hideGeneralOption = false 
           variant="glass"
           leftIcon={<MapPin />}
           placeholder="País"
-          dropdownPosition="below"
+          dropdownPosition={dropdownPosition}
         />
       </div>
       {showDayFilter && (
@@ -75,10 +77,10 @@ export function CountryFilter({ showDayFilter = true, hideGeneralOption = false 
             leftIcon={<Calendar />}
             placeholder="Dia"
             disabled={availableDays.length === 0}
-            dropdownPosition="below"
+            dropdownPosition={dropdownPosition}
           />
         </div>
       )}
     </div>
-  );
+  )
 }

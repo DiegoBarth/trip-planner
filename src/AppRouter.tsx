@@ -1,7 +1,15 @@
-import { lazy, Suspense } from 'react'
-import { Routes, Route } from 'react-router-dom'
+import { lazy, Suspense, useEffect } from 'react'
+import { Routes, Route, useLocation } from 'react-router-dom'
 import { BottomNav } from '@/components/ui/BottomNav'
 import { GlobalLoading } from '@/components/ui/GlobalLoading'
+
+function ScrollToTop() {
+  const { pathname } = useLocation()
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [pathname])
+  return null
+}
 
 interface AppRouterProps {
   onLogout: () => void
@@ -21,6 +29,7 @@ export function AppRouter({ onLogout }: AppRouterProps) {
   return (
     <>
       <GlobalLoading />
+      <ScrollToTop />
 
       <Suspense
         fallback={
