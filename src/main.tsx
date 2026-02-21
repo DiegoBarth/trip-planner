@@ -10,7 +10,6 @@ import { GOOGLE_CLIENT_ID } from '@/config/constants'
 import { createQueryClient } from '@/lib/queryClient'
 import App from './App.tsx'
 import './index.css'
-import 'leaflet/dist/leaflet.css'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

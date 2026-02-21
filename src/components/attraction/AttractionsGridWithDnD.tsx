@@ -1,27 +1,34 @@
+import { arrayMove } from '@dnd-kit/sortable'
+import { DndContext, closestCenter, TouchSensor, MouseSensor, useSensor, useSensors } from '@dnd-kit/core'
 import { EmptyState } from '@/components/ui/EmptyState'
-import { AttractionCard } from '@/components/attraction/AttractionCard'
+import { DroppableDay } from '@/components/attraction/DroppableDay'
 import { useAttractionsGrouped } from '@/hooks/useAttractionsGrouped'
+import { dateToInputFormat } from '@/utils/formatters'
 import type { Attraction } from '@/types/Attraction'
+import type { DragEndEvent } from '@dnd-kit/core'
 
-interface AttractionsGridProps {
+interface AttractionsGridWithDnDProps {
   attractions: Attraction[]
   emptyTitle: string
   emptyDescription: string
   onToggleVisited?: (id: number) => void
   onDelete?: (id: number) => void
   onEdit?: (attraction: Attraction) => void
+  onReorder: (attractions: Attraction[]) => void
 }
 
-export function AttractionsGrid({
+export function AttractionsGridWithDnD({
   attractions,
   emptyTitle,
   emptyDescription,
   onToggleVisited,
   onDelete,
   onEdit,
-}: AttractionsGridProps) {
+  onReorder,
+}: AttractionsGridWithDnDProps) {
   const {
     displayAttractions,
+    setDisplayAttractions,
     isAllDaysView,
     isReadyForTotals,
     getCountryTotalCouplePrice,
@@ -34,6 +41,13 @@ export function AttractionsGrid({
     formatCurrency,
   } = useAttractionsGrouped(attractions)
 
+  const sensors = useSensors(
+    useSensor(TouchSensor, {
+      activationConstraint: { delay: 1000, tolerance: 5 },
+    }),
+    useSensor(MouseSensor, { activationConstraint: { distance: 10 } })
+  )
+
   if (displayAttractions.length === 0) {
     return (
       <EmptyState
@@ -42,6 +56,42 @@ export function AttractionsGrid({
         description={emptyDescription}
       />
     )
+  }
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event
+    if (!over) return
+
+    const activeId = active.id as number
+    const overId = over.id as number
+    if (activeId === overId) return
+
+    const activeAttraction = displayAttractions.find(a => a.id === activeId)
+    const overAttraction = displayAttractions.find(a => a.id === overId)
+    if (!activeAttraction || !overAttraction) return
+
+    const activeDateKey = dateToInputFormat(activeAttraction.date)
+    const overDateKey = dateToInputFormat(overAttraction.date)
+    if (activeAttraction.country !== overAttraction.country) return
+    if (!activeDateKey || activeDateKey !== overDateKey) return
+
+    const dayAttractions = displayAttractions
+      .filter(a => a.country === activeAttraction.country && dateToInputFormat(a.date) === activeDateKey)
+      .sort((a, b) => a.order - b.order)
+
+    const oldIndex = dayAttractions.findIndex(a => a.id === activeId)
+    const newIndex = dayAttractions.findIndex(a => a.id === overId)
+    const reorderedDay = arrayMove(dayAttractions, oldIndex, newIndex)
+
+    const updatedAttractions = displayAttractions.map(attr => {
+      if (attr.country !== activeAttraction.country) return attr
+      if (dateToInputFormat(attr.date) !== activeDateKey) return attr
+      const newPosition = reorderedDay.findIndex(a => a.id === attr.id)
+      return { ...attr, order: newPosition + 1 }
+    })
+
+    setDisplayAttractions(updatedAttractions)
+    onReorder(updatedAttractions)
   }
 
   const countryContent = sortedCountryEntries.map(([country, days]) => {
@@ -106,18 +156,13 @@ export function AttractionsGrid({
                   )}
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                  {dayAttractions.map((attraction, index) => (
-                    <AttractionCard
-                      key={attraction.id}
-                      attraction={attraction}
-                      priority={index === 0}
-                      onCheckVisited={onToggleVisited}
-                      onDelete={onDelete}
-                      onClick={() => onEdit?.(attraction)}
-                    />
-                  ))}
-                </div>
+                <DroppableDay
+                  day={Number(day)}
+                  attractions={dayAttractions}
+                  onToggleVisited={onToggleVisited}
+                  onDelete={onDelete}
+                  onEdit={onEdit}
+                />
               </section>
             )
           })}
@@ -125,5 +170,13 @@ export function AttractionsGrid({
     )
   })
 
-  return <div className="space-y-10">{countryContent}</div>
+  return (
+    <DndContext
+      sensors={sensors}
+      collisionDetection={closestCenter}
+      onDragEnd={handleDragEnd}
+    >
+      <div className="space-y-10">{countryContent}</div>
+    </DndContext>
+  )
 }

@@ -1,3 +1,4 @@
+import 'leaflet/dist/leaflet.css'
 import { useMemo } from 'react'
 import { useLocation } from 'react-router-dom'
 import { MapContainer, TileLayer } from 'react-leaflet'

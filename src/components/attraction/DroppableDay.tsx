@@ -18,10 +18,11 @@ export function DroppableDay({ day: _, attractions, onToggleVisited, onDelete, o
         strategy={verticalListSortingStrategy}
       >
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {attractions.map(attraction => (
+          {attractions.map((attraction, index) => (
             <DraggableAttractionCard
               key={attraction.id}
               attraction={attraction}
+              priority={index === 0}
               onCheckVisited={onToggleVisited}
               onDelete={onDelete}
               onClick={() => onEdit?.(attraction)}

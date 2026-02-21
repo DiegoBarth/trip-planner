@@ -1,11 +1,17 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, lazy, Suspense } from 'react'
 import { GripVertical } from 'lucide-react'
 import { AttractionsGrid } from '@/components/attraction/AttractionsGrid'
-import { ModalAttraction } from '@/components/attraction/ModalAttraction'
 import { ConfirmModal } from '@/components/ui/ConfirmModal'
+
+const ModalAttraction = lazy(() =>
+  import('@/components/attraction/ModalAttraction').then((m) => ({ default: m.ModalAttraction }))
+)
+
+const AttractionsGridWithDnD = lazy(() =>
+  import('@/components/attraction/AttractionsGridWithDnD').then((m) => ({ default: m.AttractionsGridWithDnD }))
+)
 import { getAutoDayForDate, getNextOrderForDate } from '@/utils/attractionDayUtils'
 import { dateToInputFormat, formatCurrency } from '@/utils/formatters'
-import { useMediaQuery } from '@/hooks/useMediaQuery'
 import type { Attraction } from '@/types/Attraction'
 
 interface AttractionsListProps {
@@ -31,7 +37,6 @@ export function AttractionsList({
   const [editingAttraction, setEditingAttraction] = useState<Attraction | undefined>()
   const [attractionToDelete, setAttractionToDelete] = useState<Attraction | null>(null)
   const [isDragEnabled, setIsDragEnabled] = useState(false)
-  const isMobile = useMediaQuery('(max-width: 768px)')
 
   const handleSave = async (data: Omit<Attraction, 'id' | 'day' | 'order'>) => {
     const autoDay = getAutoDayForDate(
@@ -135,7 +140,7 @@ export function AttractionsList({
           )}
         </div>
 
-        {onBulkUpdate && !isMobile && (
+        {onBulkUpdate && (
           <button
             onClick={() => setIsDragEnabled(!isDragEnabled)}
             className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-colors ${isDragEnabled
@@ -143,6 +148,7 @@ export function AttractionsList({
               : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
               }`}
             title={isDragEnabled ? 'Desabilitar reordenação' : 'Habilitar reordenação'}
+            aria-pressed={isDragEnabled}
           >
             <GripVertical className="w-4 h-4" />
             {isDragEnabled ? 'Reordenação ativa' : 'Reordenar'}
@@ -150,31 +156,70 @@ export function AttractionsList({
         )}
       </div>
 
-      {!isLoading && (
-        <AttractionsGrid
-          attractions={attractions}
-          onToggleVisited={onToggleVisited}
-          onDelete={handleDeleteRequest}
-          onEdit={(attraction) => {
-            setEditingAttraction(attraction)
-            setIsModalOpen(true)
-          }}
-          emptyTitle="Nenhuma atração encontrada"
-          emptyDescription="Comece adicionando sua primeira atração!"
-          enableDragDrop={isMobile ? true : isDragEnabled}
-          onReorder={handleReorder}
-        />
+      {isLoading && (
+        <div className="space-y-6 animate-pulse" aria-hidden>
+          <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded-lg w-64" />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <div key={i} className="aspect-[3/2] rounded-2xl bg-gray-200 dark:bg-gray-700 min-h-[120px]" />
+            ))}
+          </div>
+        </div>
       )}
+      {!isLoading &&
+        (isDragEnabled && onBulkUpdate ? (
+          <Suspense
+            fallback={
+              <div className="space-y-6 animate-pulse">
+                <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded-xl w-48" />
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="aspect-[3/2] rounded-2xl bg-gray-200 dark:bg-gray-700" />
+                  ))}
+                </div>
+              </div>
+            }
+          >
+            <AttractionsGridWithDnD
+              attractions={attractions}
+              onToggleVisited={onToggleVisited}
+              onDelete={handleDeleteRequest}
+              onEdit={(attraction) => {
+                setEditingAttraction(attraction)
+                setIsModalOpen(true)
+              }}
+              emptyTitle="Nenhuma atração encontrada"
+              emptyDescription="Comece adicionando sua primeira atração!"
+              onReorder={handleReorder}
+            />
+          </Suspense>
+        ) : (
+          <AttractionsGrid
+            attractions={attractions}
+            onToggleVisited={onToggleVisited}
+            onDelete={handleDeleteRequest}
+            onEdit={(attraction) => {
+              setEditingAttraction(attraction)
+              setIsModalOpen(true)
+            }}
+            emptyTitle="Nenhuma atração encontrada"
+            emptyDescription="Comece adicionando sua primeira atração!"
+          />
+        ))}
 
-      <ModalAttraction
-        attraction={editingAttraction}
-        isOpen={isModalOpen}
-        onClose={() => {
-          setIsModalOpen(false)
-          setEditingAttraction(undefined)
-        }}
-        onSave={handleSave}
-      />
+      {isModalOpen && (
+        <Suspense fallback={null}>
+          <ModalAttraction
+            attraction={editingAttraction}
+            isOpen={isModalOpen}
+            onClose={() => {
+              setIsModalOpen(false)
+              setEditingAttraction(undefined)
+            }}
+            onSave={handleSave}
+          />
+        </Suspense>
+      )}
 
       <ConfirmModal
         isOpen={!!attractionToDelete}

@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, lazy, Suspense } from 'react'
 import { Plus } from 'lucide-react'
 import { PageHeader } from '@/components/ui/PageHeader'
 import { CountryFilter } from '@/components/home/CountryFilter'
@@ -7,8 +7,11 @@ import { AttractionsList } from '@/components/attraction/AttractionsList'
 import { useAttraction } from '@/hooks/useAttraction'
 import { useToast } from '@/contexts/toast'
 import { useCountry } from '@/contexts/CountryContext'
-import { ModalAttraction } from '@/components/attraction/ModalAttraction'
 import type { Attraction } from '@/types/Attraction'
+
+const ModalAttraction = lazy(() =>
+  import('@/components/attraction/ModalAttraction').then((m) => ({ default: m.ModalAttraction }))
+)
 
 export default function AttractionsPage() {
   const [showModal, setShowModal] = useState(false);
@@ -122,14 +125,16 @@ export default function AttractionsPage() {
       />
 
       {showModal && (
-        <ModalAttraction
-          isOpen={showModal}
-          onClose={() => setShowModal(false)}
-          onSave={async (data) => {
-            await handleCreate(data as any)
-            setShowModal(false)
-          }}
-        />
+        <Suspense fallback={null}>
+          <ModalAttraction
+            isOpen={showModal}
+            onClose={() => setShowModal(false)}
+            onSave={async (data) => {
+              await handleCreate(data as any)
+              setShowModal(false)
+            }}
+          />
+        </Suspense>
       )}
     </div>
   );

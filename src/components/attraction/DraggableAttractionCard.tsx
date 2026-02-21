@@ -8,12 +8,13 @@ import type { Attraction } from '@/types/Attraction'
 
 interface DraggableAttractionCardProps {
   attraction: Attraction
+  priority?: boolean
   onCheckVisited?: (id: number) => void
   onDelete?: (id: number) => void
   onClick?: () => void
 }
 
-export function DraggableAttractionCard({ attraction, onCheckVisited, onDelete, onClick }: DraggableAttractionCardProps) {
+export function DraggableAttractionCard({ attraction, priority = false, onCheckVisited, onDelete, onClick }: DraggableAttractionCardProps) {
   const isMobile = useMediaQuery('(max-width: 768px)')
   const [isPressing, setIsPressing] = useState(false)
 
@@ -88,6 +89,7 @@ export function DraggableAttractionCard({ attraction, onCheckVisited, onDelete, 
       <div className={isMobile ? '' : 'pt-12'}>
         <AttractionCard
           attraction={attraction}
+          priority={priority}
           onCheckVisited={onCheckVisited}
           onDelete={onDelete}
           onClick={onClick}
