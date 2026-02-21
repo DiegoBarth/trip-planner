@@ -1,7 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { useCountry } from '@/contexts/CountryContext'
+import { useToast } from '@/contexts/toast'
 import { ModalBase } from '@/components/ui/ModalBase'
+import { validateWithToast } from '@/schemas/validateWithToast'
+import { attractionCreateSchema } from '@/schemas/attractionSchema'
 import { CustomSelect } from '@/components/ui/CustomSelect'
 import { DateField } from '@/components/ui/DateField'
 import { LocationField } from '@/components/attraction/LocationField'
@@ -46,6 +49,7 @@ interface AttractionFormData {
 }
 
 export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAttractionProps) {
+  const toast = useToast()
   const [saving, setSaving] = useState(false);
   const { register, control, handleSubmit, watch, setValue, reset, getValues } =
     useForm<AttractionFormData>({
@@ -261,13 +265,13 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
       ? currencyToNumber(values.couplePrice as string, values.currency as Currency)
       : (values.couplePrice as number);
 
+    const payload = { ...values, couplePrice } as Omit<Attraction, 'id' | 'day' | 'order'>
+    if (!validateWithToast(payload, attractionCreateSchema, toast)) return
+
     setSaving(true);
 
     try {
-      await Promise.resolve(onSave({
-        ...values,
-        couplePrice
-      } as Omit<Attraction, 'id' | 'day' | 'order'>));
+      await Promise.resolve(onSave(payload));
 
       onClose();
     }
@@ -302,7 +306,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
                 type="text"
                 required
                 autoComplete="off"
-                {...register('name', { required: true })}
+                {...register('name')}
                 className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none transition-colors placeholder-gray-500 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
                 placeholder="Ex: Templo Senso-ji"
               />
@@ -315,7 +319,6 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
               <Controller
                 name="country"
                 control={control}
-                rules={{ required: true }}
                 render={({ field }) => (
                   <CustomSelect
                     value={formData.country ? `${COUNTRIES[formData.country].flag} ${COUNTRIES[formData.country].name}` : ''}
@@ -341,7 +344,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
                 type="text"
                 required
                 autoComplete="off"
-                {...register('city', { required: true })}
+                {...register('city')}
                 className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none transition-colors placeholder-gray-500 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
                 placeholder="Ex: Tóquio"
               />
@@ -367,7 +370,6 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
               <Controller
                 name="type"
                 control={control}
-                rules={{ required: true }}
                 render={({ field }) => (
                   <CustomSelect
                     value={formData.type ? `${ATTRACTION_TYPES[formData.type].icon} ${ATTRACTION_TYPES[formData.type].label}` : ''}
@@ -403,7 +405,6 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
               <Controller
                 name="date"
                 control={control}
-                rules={{ required: true }}
                 render={({ field }) => (
                   <DateField
                     value={field.value ? parseLocalDate(field.value) : undefined}
@@ -536,7 +537,6 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
               <Controller
                 name="couplePrice"
                 control={control}
-                rules={{ required: true }}
                 render={({ field }) => (
                   <input
                     type="text"

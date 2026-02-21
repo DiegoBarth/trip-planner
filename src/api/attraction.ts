@@ -1,4 +1,5 @@
 import { apiGet, apiPost } from '@/api/client'
+import { parseAttractions } from '@/api/schemas'
 import type { Attraction } from '@/types/Attraction'
 
 interface ApiResponse<T> {
@@ -98,7 +99,7 @@ export async function getAttractions(): Promise<Attraction[]> {
     return [];
   }
 
-  return response.data;
+  return parseAttractions(response.data) as Attraction[];
 }
 
 /**

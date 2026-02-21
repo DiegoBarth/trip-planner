@@ -21,7 +21,7 @@ Web application for planning trips to Japan and South Korea, with budget control
   - Images
 - Advanced filters (country, city, day, type, visited)
 - Mark attractions as visited
-- Drag-and-drop sorting (future)
+- Drag-and-drop sorting
 
 ### 💸 Expenses Control
 - Expense registration by category
@@ -79,15 +79,7 @@ src/
 
 ## 💱 Currency Conversion
 
-Conversion rates are in `src/config/constants.ts`:
-
-```typescript
-export const CURRENCY_RATES = {
-  JPY_BRL: 0.033,  // 1 yen = R$ 0.033
-  KRW_BRL: 0.0038, // 1 won = R$ 0.0038
-  BRL_BRL: 1.0
-}
-```
+Exchange rates (JPY/KRW → BRL) are fetched from the backend API and cached by the app. Configuration for countries and categories lives in `src/config/constants.ts`.
 
 ## 🚀 Getting Started
 
@@ -109,9 +101,10 @@ npm run preview
 
 ### Configuration
 
-1. Update exchange rates in `src/config/constants.ts`
-2. Configure your backend API (if any)
-3. Adjust environment variables in `.env`
+1. Copy `.env.example` to `.env` and set:
+   - `VITE_API_URL` – backend API URL (e.g. Google Apps Script deploy URL)
+   - `VITE_GOOGLE_CLIENT_ID` – Google OAuth client ID for login
+2. Adjust countries and categories in `src/config/constants.ts` if needed.
 
 ## 🌐 Deploy (GitHub Pages)
 
@@ -139,13 +132,7 @@ In the repository settings, enable GitHub Pages pointing to the `/docs` folder.
 
 ## 📱 Upcoming Features
 
-- [ ] Context/Provider for global state management
-- [ ] Google Sheets or backend integration
-- [ ] Drag-and-drop to reorder attractions
-- [ ] PWA (installable app)
 - [ ] Offline mode
-- [ ] Export itinerary to PDF
-- [ ] Google Maps integration
 - [ ] Pending reservation notifications
 - [ ] Multi-language (PT/EN/JP/KR)
 

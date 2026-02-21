@@ -1,11 +1,14 @@
 import { useEffect, useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { deleteFile } from '@/api/reservation'
+import { useToast } from '@/contexts/toast'
 import { ModalBase } from '@/components/ui/ModalBase'
 import { CustomSelect } from '@/components/ui/CustomSelect'
 import { FileUpload } from '@/components/reservation/FileUpload'
 import { DateField } from '@/components/ui/DateField'
 import { useCountry } from '@/contexts/CountryContext'
+import { validateWithToast } from '@/schemas/validateWithToast'
+import { reservationCreateSchema } from '@/schemas/reservationSchema'
 import { dateToInputFormat, parseLocalDate, dateToYYYYMMDD } from '@/utils/formatters'
 import { RESERVATION_TYPES, BOOKING_STATUS, COUNTRIES } from '@/config/constants'
 import type { Reservation, ReservationType, BookingStatus } from '@/types/Reservation'
@@ -37,6 +40,7 @@ interface ReservationFormData {
 }
 
 export function ModalReservation({ reservation, isOpen, onClose, onSave }: ModalReservationProps) {
+  const toast = useToast()
   const [saving, setSaving] = useState(false);
   const [documentFileId, setDocumentFileId] = useState<string>('');
   const [initialDocumentFileId, setInitialDocumentFileId] = useState<string>('');
@@ -129,27 +133,30 @@ export function ModalReservation({ reservation, isOpen, onClose, onSave }: Modal
   }
 
   const onSubmit = async (values: ReservationFormData) => {
+    const payload = {
+      type: values.type,
+      title: values.title.trim(),
+      description: values.description.trim() || undefined,
+      confirmationCode: values.confirmationCode.trim() || undefined,
+      date: values.date || undefined,
+      endDate: values.endDate || undefined,
+      time: values.time || undefined,
+      location: values.location.trim() || '',
+      provider: values.provider.trim() || '',
+      bookingUrl: values.bookingUrl.trim() || undefined,
+      documentUrl: values.documentUrl.trim() || undefined,
+      documentFileId: documentFileId || undefined,
+      status: values.status,
+      notes: values.notes.trim() || undefined,
+      country: values.country,
+      attractionId: values.attractionId
+    };
+    if (!validateWithToast(payload, reservationCreateSchema, toast)) return
+
     setSaving(true);
 
     try {
-      await Promise.resolve(onSave({
-        type: values.type,
-        title: values.title.trim(),
-        description: values.description.trim() || undefined,
-        confirmationCode: values.confirmationCode.trim() || undefined,
-        date: values.date || undefined,
-        endDate: values.endDate || undefined,
-        time: values.time || undefined,
-        location: values.location.trim() || undefined,
-        provider: values.provider.trim() || undefined,
-        bookingUrl: values.bookingUrl.trim() || undefined,
-        documentUrl: values.documentUrl.trim() || undefined,
-        documentFileId: documentFileId || undefined,
-        status: values.status,
-        notes: values.notes.trim() || undefined,
-        country: values.country,
-        attractionId: values.attractionId
-      }));
+      await Promise.resolve(onSave(payload));
 
       onClose();
     }
@@ -208,7 +215,7 @@ export function ModalReservation({ reservation, isOpen, onClose, onSave }: Modal
             type="text"
             required
             autoComplete="off"
-            {...register('title', { required: true })}
+            {...register('title')}
             className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none placeholder:text-gray-400 dark:placeholder:text-gray-500 text-gray-900 dark:text-gray-100"
             placeholder="Ex: Voo São Paulo → Tóquio"
           />
@@ -232,7 +239,7 @@ export function ModalReservation({ reservation, isOpen, onClose, onSave }: Modal
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                Data
+                Data *
               </label>
               <Controller
                 name="date"
@@ -248,7 +255,7 @@ export function ModalReservation({ reservation, isOpen, onClose, onSave }: Modal
 
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                Data Fim
+                Data Fim *
               </label>
               <Controller
                 name="endDate"
@@ -281,7 +288,7 @@ export function ModalReservation({ reservation, isOpen, onClose, onSave }: Modal
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                Provedor
+                Provedor *
               </label>
               <input
                 type="text"
@@ -312,7 +319,7 @@ export function ModalReservation({ reservation, isOpen, onClose, onSave }: Modal
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                Local
+                Local *
               </label>
               <input
                 type="text"
@@ -326,7 +333,7 @@ export function ModalReservation({ reservation, isOpen, onClose, onSave }: Modal
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                  País
+                  País *
                 </label>
                 <CustomSelect
                   value={formData.country ? `${COUNTRIES[formData.country].flag} ${COUNTRIES[formData.country].name}` : ''}

@@ -18,7 +18,7 @@ export function useBudget() {
     staleTime: QUERY_STALE_TIME_MS,
   });
 
-  const { data: budgets = [], isLoading, error } = useQuery({
+  const { data: budgets = [], isLoading, error, refetch } = useQuery({
     queryKey: BUDGET_QUERY_KEY,
     queryFn: getBudgets,
     staleTime: QUERY_STALE_TIME_MS,
@@ -68,6 +68,7 @@ export function useBudget() {
     budgetSummary,
     isLoading,
     error,
+    refetch,
     createBudget: createMutation.mutateAsync,
     updateBudget: updateMutation.mutateAsync,
     deleteBudget: deleteMutation.mutateAsync,

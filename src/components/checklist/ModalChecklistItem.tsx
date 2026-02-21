@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { useToast } from '@/contexts/toast'
 import { ModalBase } from '@/components/ui/ModalBase'
+import { validateWithToast } from '@/schemas/validateWithToast'
+import { checklistItemCreateSchema } from '@/schemas/checklistSchema'
 import { CHECKLIST_CATEGORIES } from '@/config/constants'
 import type { ChecklistItem, ChecklistCategory } from '@/types/ChecklistItem'
 
@@ -20,6 +23,7 @@ interface ChecklistFormData {
 }
 
 export function ModalChecklistItem({ item, isOpen, onClose, onSave }: ModalChecklistItemProps) {
+  const toast = useToast()
   const [saving, setSaving] = useState(false);
 
   const { register, handleSubmit, watch, setValue, reset } = useForm<ChecklistFormData>({
@@ -64,9 +68,11 @@ export function ModalChecklistItem({ item, isOpen, onClose, onSave }: ModalCheck
       category: values.category,
       description: values.description.trim(),
       isPacked: values.isPacked,
-      quantity: quantity > 1 ? quantity : undefined,
-      notes: values.notes.trim() || undefined
+      quantity: quantity > 1 ? quantity : 1,
+      notes: values.notes.trim() || ''
     };
+
+    if (!validateWithToast(payload, checklistItemCreateSchema, toast)) return
 
     setSaving(true);
     try {
@@ -124,7 +130,7 @@ export function ModalChecklistItem({ item, isOpen, onClose, onSave }: ModalCheck
             type="text"
             required
             autoComplete="off"
-            {...register('description', { required: true })}
+            {...register('description')}
             className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none"
             placeholder="Ex: Passaporte, Adaptador de tomada, etc."
           />

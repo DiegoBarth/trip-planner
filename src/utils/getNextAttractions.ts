@@ -25,5 +25,5 @@ export function getNextAttractions(attractions: Attraction[]): Attraction[] {
 
   return futureAttractions
     .filter(a => a.parsedDate.getTime() === nextDate)
-    .map(({ parsedDate, ...rest }) => rest);
+    .map(({ parsedDate: _parsedDate, ...rest }) => rest);
 }

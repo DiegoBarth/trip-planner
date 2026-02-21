@@ -1,4 +1,5 @@
 import { apiGet, apiPost } from '@/api/client'
+import { parseBudgets } from '@/api/schemas'
 import type { Budget, BudgetSummary } from '@/types/Budget'
 
 interface ApiResponse<T> {
@@ -76,7 +77,7 @@ export async function getBudgets(): Promise<Budget[]> {
     throw new Error(response.message || 'Failed to fetch budgets');
   }
 
-  return response.data;
+  return parseBudgets(response.data) as Budget[];
 }
 
 /**

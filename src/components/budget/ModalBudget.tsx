@@ -1,7 +1,10 @@
 import { useEffect, useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
+import { useToast } from '@/contexts/toast'
 import { ModalBase } from '@/components/ui/ModalBase'
 import { DateField } from '@/components/ui/DateField'
+import { validateWithToast } from '@/schemas/validateWithToast'
+import { budgetCreateSchema } from '@/schemas/budgetSchema'
 import { currencyToNumber, formatCurrencyInput, dateToInputFormat, parseLocalDate, dateToYYYYMMDD } from '@/utils/formatters'
 import { BUDGET_ORIGINS } from '@/config/constants'
 import type { Budget } from '@/types/Budget'
@@ -27,6 +30,7 @@ const defaultValues: BudgetFormData = {
 }
 
 export function ModalBudget({ budget, isOpen, onClose, onSave }: ModalBudgetProps) {
+  const toast = useToast()
   const [saving, setSaving] = useState(false);
   const { control, register, handleSubmit, reset, setValue, watch } = useForm<BudgetFormData>({
     defaultValues
@@ -63,6 +67,8 @@ export function ModalBudget({ budget, isOpen, onClose, onSave }: ModalBudgetProp
       amount: amount || 0,
       date: values.date
     };
+
+    if (!validateWithToast(budgetData, budgetCreateSchema, toast)) return
 
     setSaving(true);
 

@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import { createContext, useContext, useEffect, useState, useMemo } from 'react'
 import { useIsFetching, useQueryClient } from '@tanstack/react-query'
+import { QueryErrorView } from '@/components/ui/QueryErrorView'
 import { useBudget } from '@/hooks/useBudget'
 import { useExpense } from '@/hooks/useExpense'
 import { useAttraction } from '@/hooks/useAttraction'
@@ -89,7 +90,7 @@ export function CountryProvider({ children }: { children: ReactNode }) {
   const [country, setCountry] = useState<CountryFilter>(initialFilter.country);
   const [day, setDay] = useState<DayFilter>(initialFilter.day);
 
-  const { budgets, budgetSummary: rawBudgetSummary } = useBudget();
+  const { budgets, budgetSummary: rawBudgetSummary, error: budgetError } = useBudget();
   const { expenses } = useExpense(country);
   const { attractions } = useAttraction(country);
   const { rates } = useCurrency();
@@ -125,6 +126,11 @@ export function CountryProvider({ children }: { children: ReactNode }) {
   }, [attractions]);
 
   const queryClient = useQueryClient();
+
+  const dataError = budgetError;
+  const handleRetryData = () => {
+    queryClient.invalidateQueries();
+  };
 
   const citiesToPrefetch = useMemo(() => {
     const cities = new Set<string>();
@@ -170,6 +176,43 @@ export function CountryProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     sessionStorage.setItem('trip_filter', JSON.stringify({ country, day }));
   }, [country, day]);
+
+  if (dataError) {
+    return (
+      <CountryContext.Provider
+        value={{
+          isReady: false,
+          country,
+          setCountry,
+          day,
+          setDay,
+          rates: null,
+          budgets: [],
+          budgetSummary: { totalBudget: 0, totalSpent: 0, remainingBalance: 0, byOrigin: {} },
+          expenses: [],
+          attractions: [],
+          dashboard: {
+            totalBudget: 0,
+            totalSpent: 0,
+            remaining: 0,
+            daysOfTrip: 0,
+            expensesByCategory: [],
+            budgetByOrigin: [],
+            attractionStatus: { total: 0, visited: 0, pendingReservation: 0, visitedPercentage: 0 },
+          },
+          availableDays: [],
+          accommodations: [],
+          checklistItems: [],
+          reservations: [],
+        }}
+      >
+        <QueryErrorView
+          message={dataError instanceof Error ? dataError.message : 'Não foi possível carregar os dados.'}
+          onRetry={handleRetryData}
+        />
+      </CountryContext.Provider>
+    );
+  }
 
   return (
     <CountryContext.Provider

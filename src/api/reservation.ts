@@ -107,7 +107,7 @@ export async function getReservations(): Promise<Reservation[]> {
  * Upload file to Google Drive
  */
 export async function uploadFile(fileName: string, fileData: string, mimeType: string): Promise<UploadFileResponse> {
-  const response = await apiPost<UploadFileResponse>({
+  const response = await apiPost<ApiResponse<UploadFileResponse>>({
     action: 'uploadFile',
     data: {
       fileName,
@@ -120,7 +120,7 @@ export async function uploadFile(fileName: string, fileData: string, mimeType: s
     throw new Error(response.message || 'Failed to upload file');
   }
 
-  return response;
+  return response.data! ?? {};
 }
 
 /**

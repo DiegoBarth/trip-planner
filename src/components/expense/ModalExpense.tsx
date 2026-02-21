@@ -1,9 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
+import { useToast } from '@/contexts/toast'
 import { ModalBase } from '@/components/ui/ModalBase'
 import { CustomSelect } from '@/components/ui/CustomSelect'
 import { useCurrency } from '@/hooks/useCurrency'
 import { DateField } from '@/components/ui/DateField'
+import { validateWithToast } from '@/schemas/validateWithToast'
+import { expenseCreateSchema } from '@/schemas/expenseSchema'
 import type { Expense, ExpenseCategory } from '@/types/Expense'
 import { convertToBRL, convertCurrency, formatCurrencyInputByCurrency, currencyToNumber, dateToInputFormat, parseLocalDate, dateToYYYYMMDD } from '@/utils/formatters'
 import { EXPENSE_CATEGORIES, BUDGET_ORIGINS, COUNTRIES, getCategoryFromLabel, getBudgetOriginFromLabel } from '@/config/constants'
@@ -40,6 +43,7 @@ function getCountryFromCurrency(currency: Currency): Country | undefined {
 }
 
 export function ModalExpense({ expense, isOpen, onClose, onSave }: ModalExpenseProps) {
+  const toast = useToast()
   const [saving, setSaving] = useState(false);
 
   const { register, control, handleSubmit, watch, setValue, reset } = useForm<ExpenseFormData>({
@@ -194,15 +198,18 @@ export function ModalExpense({ expense, isOpen, onClose, onSave }: ModalExpenseP
       ? currencyToNumber(values.amount, values.currency)
       : values.amount;
 
+    const payload = {
+      ...values,
+      amount,
+      amountInBRL: values.amountInBRL,
+      country: values.country
+    };
+    if (!validateWithToast(payload, expenseCreateSchema, toast)) return
+
     setSaving(true);
 
     try {
-      await Promise.resolve(onSave({
-        ...values,
-        amount,
-        amountInBRL: values.amountInBRL,
-        country: values.country
-      }));
+      await Promise.resolve(onSave(payload));
 
       onClose();
     }
@@ -251,9 +258,8 @@ export function ModalExpense({ expense, isOpen, onClose, onSave }: ModalExpenseP
           <input
             id="expense-description"
             type="text"
-            required
             autoComplete="off"
-            {...register('description', { required: true })}
+            {...register('description')}
             className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none placeholder:text-gray-400 dark:placeholder:text-gray-500 text-gray-900 dark:text-gray-100"
             placeholder="Ex: Almoço no restaurante"
           />
@@ -299,12 +305,10 @@ export function ModalExpense({ expense, isOpen, onClose, onSave }: ModalExpenseP
           <Controller
             name="amount"
             control={control}
-            rules={{ required: true }}
             render={({ field }) => (
               <input
                 id="expense-amount"
                 type="text"
-                required
                 autoComplete="off"
                 value={typeof field.value === 'number'
                   ? formatCurrencyInputByCurrency(field.value.toString(), formData.currency)
@@ -329,7 +333,6 @@ export function ModalExpense({ expense, isOpen, onClose, onSave }: ModalExpenseP
               <DateField
                 value={field.value ? parseLocalDate(field.value) : undefined}
                 onChange={(date: Date | undefined) => field.onChange(date ? dateToYYYYMMDD(date) : '')}
-                required
               />
             )}
           />

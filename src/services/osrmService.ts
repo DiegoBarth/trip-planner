@@ -59,7 +59,7 @@ export async function fetchOSRMRoute(coordinates: Coordinate[]): Promise<OSRMRes
 
     return { path, distanceKm, legs };
   }
-  catch (error) {
+  catch (_error) {
     console.warn('OSRM unavailable. Showing only markers.');
 
     return null;
