@@ -56,24 +56,26 @@ export function DraggableAttractionCard({ attraction, onCheckVisited, onDelete, 
     <div
       ref={setNodeRef}
       style={style}
-      className={`relative group ${isMobile && isPressing ? 'scale-[0.98] transition-transform' : ''}`}
+      className={`
+        relative group
+        focus:outline-none [-webkit-tap-highlight-color:transparent]
+        ${isMobile && isPressing ? 'scale-[0.98] transition-transform' : ''}
+      `}
       {...cardListeners}
     >
-      {isMobile && isPressing && !isDragging && (
-        <div className="absolute inset-0 bg-blue-500 bg-opacity-20 rounded-lg z-10 pointer-events-none border-2 border-blue-400 animate-pulse" />
-      )}
 
       {!isMobile && (
         <div
           {...handleListeners}
           className={`
-                  absolute top-0 left-0 right-0 h-14 z-20 flex items-center gap-2 px-3 
-                  bg-gradient-to-b from-gray-900 to-gray-800 bg-opacity-60 
-                  hover:bg-opacity-90 group-hover:bg-opacity-80
-                  rounded-t-lg transition-all
-                  cursor-grab active:cursor-grabbing
-                  ${isDragging ? 'bg-opacity-90 ring-2 ring-blue-500' : ''}
-               `}
+            absolute top-0 left-0 right-0 h-14 z-20 flex items-center gap-2 px-3
+            bg-gradient-to-b from-gray-900 to-gray-800 bg-opacity-60
+            hover:bg-opacity-90 group-hover:bg-opacity-80
+            rounded-t-lg transition-all
+            cursor-grab active:cursor-grabbing
+            focus:outline-none [-webkit-tap-highlight-color:transparent]
+            ${isDragging ? 'bg-opacity-90 ring-2 ring-blue-500' : ''}
+          `}
           title="Clique e arraste para reordenar esta atração"
         >
           <div className="flex flex-col gap-0.5">

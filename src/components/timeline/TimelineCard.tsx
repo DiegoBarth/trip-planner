@@ -48,7 +48,7 @@ export function TimelineCard({ attraction, arrivalTime, departureTime, duration,
       >
         <div
           className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: `url(${attraction.imageUrl})` }}
+          style={{ backgroundImage: attraction.thumbnailUrl || attraction.imageUrl ? `url(${attraction.thumbnailUrl || attraction.imageUrl})` : undefined }}
         />
 
         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-black/50" />

@@ -10,7 +10,7 @@ interface AttractionCardProps {
   onCheckVisited?: (id: number) => void
   onDelete?: (id: number) => void
   onClick?: () => void
-  priority?: boolean // ⭐ NOVO
+  priority?: boolean
 }
 
 export const AttractionCard = memo(function AttractionCard({
@@ -42,16 +42,15 @@ export const AttractionCard = memo(function AttractionCard({
     <div
       className={`
         relative rounded-2xl shadow-xl overflow-hidden cursor-pointer border-l-4
-        transition-[box-shadow,transform] duration-200 ease-out
-        hover:shadow-2xl hover:-translate-y-0.5 active:scale-[0.99]
+        select-none [-webkit-tap-highlight-color:transparent]
         ${borderClass}
       `}
       onClick={onClick}
     >
-      {attraction.imageUrl ? (
+      {(attraction.thumbnailUrl ?? attraction.imageUrl) ? (
         <div className="absolute inset-0">
           <img
-            src={attraction.imageUrl}
+            src={attraction.thumbnailUrl ?? attraction.imageUrl}
             alt={attraction.name}
             loading={priority ? 'eager' : 'lazy'}
             fetchPriority={priority ? 'high' : 'low'}
@@ -99,7 +98,7 @@ export const AttractionCard = memo(function AttractionCard({
                   e.stopPropagation()
                   onDelete(attraction.id)
                 }}
-                className="p-2 rounded-xl backdrop-blur-sm bg-white/10 hover:bg-red-500/30 transition-all"
+                className="p-2 rounded-xl backdrop-blur-sm bg-white/10 active:bg-red-500/30"
                 aria-label="Excluir"
               >
                 <Trash2 className="w-4 h-4 text-white drop-shadow" />
@@ -114,8 +113,8 @@ export const AttractionCard = memo(function AttractionCard({
               className={`
                 p-2 rounded-xl backdrop-blur-sm transition-all
                 ${attraction.visited
-                  ? 'bg-emerald-500/30 hover:bg-emerald-500/40'
-                  : 'bg-white/10 hover:bg-white/20'}
+                  ? 'bg-emerald-500/30 active:bg-emerald-500/40'
+                  : 'bg-white/10 active:bg-white/20'}
               `}
               aria-label={attraction.visited ? 'Marcar como não visitado' : 'Marcar como visitado'}
             >
