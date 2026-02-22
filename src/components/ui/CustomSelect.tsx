@@ -43,6 +43,7 @@ export function CustomSelect({
   const [coords, setCoords] = useState({ top: 0, left: 0, width: 0, height: 0 });
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const containerRef = useRef<HTMLDivElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const selectedItemRef = useRef<HTMLDivElement>(null);
   const listboxId = id ? `${id}-listbox` : 'select-listbox';
 
@@ -79,6 +80,17 @@ export function CustomSelect({
 
       return () => clearTimeout(timer);
     }
+  }, [isOpen]);
+
+  // Close on page scroll only (not when scrolling inside the dropdown options list)
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleScroll = (e: Event) => {
+      if (dropdownRef.current?.contains(e.target as Node)) return;
+      setIsOpen(false);
+    };
+    window.addEventListener('scroll', handleScroll, true);
+    return () => window.removeEventListener('scroll', handleScroll, true);
   }, [isOpen]);
 
   // Close on click outside
@@ -207,6 +219,7 @@ export function CustomSelect({
 
       {isOpen && createPortal(
         <div
+          ref={dropdownRef}
           style={{
             position: 'fixed',
             top: dropdownPosition === 'below' ? coords.top + coords.height + 4 : coords.top,
@@ -216,9 +229,8 @@ export function CustomSelect({
             zIndex: 10000
           }}
           className={cn(
-            'overflow-hidden rounded-xl shadow-xl backdrop-blur-md',
-            variant === 'default' && 'border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800',
-            variant === 'glass' && 'border border-white/20 bg-white/15'
+            'overflow-hidden rounded-xl shadow-xl',
+            'border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800'
           )}
         >
           <div
@@ -245,22 +257,15 @@ export function CustomSelect({
                   onMouseEnter={() => setHighlightedIndex(index)}
                   className={cn(
                     'flex cursor-pointer items-center justify-between rounded-lg px-3 py-2 text-sm transition-colors',
-                    variant === 'default' && [
-                      (isHighlighted || isSelected) && 'bg-gray-100 dark:bg-gray-700',
-                      !isHighlighted && !isSelected && 'hover:bg-gray-50 dark:hover:bg-gray-700',
-                      isSelected ? 'font-semibold text-gray-900 dark:text-gray-100' : 'text-gray-700 dark:text-gray-300'
-                    ],
-                    variant === 'glass' && [
-                      'text-white',
-                      (isHighlighted || isSelected) && 'bg-white/25',
-                      !isHighlighted && !isSelected && 'hover:bg-white/20'
-                    ]
+                    (isHighlighted || isSelected) && 'bg-gray-100 dark:bg-gray-700',
+                    !isHighlighted && !isSelected && 'hover:bg-gray-50 dark:hover:bg-gray-700',
+                    isSelected ? 'font-semibold text-gray-900 dark:text-gray-100' : 'text-gray-700 dark:text-gray-300'
                   )}
                 >
                   <span className="truncate">{option}</span>
                   {isSelected && (
                     <Check
-                      className={cn('h-4 w-4 flex-shrink-0 ml-2', variant === 'glass' ? 'text-white' : 'text-blue-600')}
+                      className="h-4 w-4 flex-shrink-0 ml-2 text-blue-600 dark:text-blue-400"
                       aria-hidden="true"
                     />
                   )}

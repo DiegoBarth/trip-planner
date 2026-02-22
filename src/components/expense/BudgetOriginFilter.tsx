@@ -32,6 +32,7 @@ interface BudgetOriginFilterProps {
 
 export function BudgetOriginFilter({ value, onChange }: BudgetOriginFilterProps) {
   const dropdownPosition = useFilterSheet()
+  const inSheet = dropdownPosition === 'above'
   return (
     <div className="flex-1 min-w-[140px] md:max-w-[200px]">
       <CustomSelect
@@ -39,8 +40,8 @@ export function BudgetOriginFilter({ value, onChange }: BudgetOriginFilterProps)
         value={valueToLabel(value)}
         onChange={(val) => onChange(labelToValue(val))}
         options={ORIGIN_OPTIONS}
-        variant="glass"
-        leftIcon={<Wallet className="w-4 h-4" />}
+        variant={inSheet ? 'default' : 'glass'}
+        leftIcon={inSheet ? undefined : <Wallet className="w-4 h-4" />}
         placeholder="Origem"
         dropdownPosition={dropdownPosition}
       />

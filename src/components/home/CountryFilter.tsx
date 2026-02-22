@@ -23,6 +23,7 @@ interface CountryFilterProps {
 export function CountryFilter({ showDayFilter = true, hideGeneralOption = false }: CountryFilterProps) {
   const { country, setCountry, day, setDay, availableDays } = useCountry()
   const dropdownPosition = useFilterSheet()
+  const inSheet = dropdownPosition === 'above'
 
   const visibleOptions = hideGeneralOption
     ? FILTER_OPTIONS.filter(o => o.key !== 'general')
@@ -60,8 +61,8 @@ export function CountryFilter({ showDayFilter = true, hideGeneralOption = false 
           value={countryToLabel(country)}
           onChange={(val) => setCountry(labelToCountry(val))}
           options={countryOptions}
-          variant="glass"
-          leftIcon={<MapPin />}
+          variant={inSheet ? 'default' : 'glass'}
+          leftIcon={inSheet ? undefined : <MapPin />}
           placeholder="País"
           dropdownPosition={dropdownPosition}
         />
@@ -73,8 +74,8 @@ export function CountryFilter({ showDayFilter = true, hideGeneralOption = false 
             value={dayValue}
             onChange={handleDayChange}
             options={dayOptions}
-            variant="glass"
-            leftIcon={<Calendar />}
+            variant={inSheet ? 'default' : 'glass'}
+            leftIcon={inSheet ? undefined : <Calendar />}
             placeholder="Dia"
             disabled={availableDays.length === 0}
             dropdownPosition={dropdownPosition}

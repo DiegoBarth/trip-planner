@@ -101,16 +101,16 @@ export function PageHeader({ title, subtitle, showBack = true, action, filter, c
           />
           <div
             ref={filterSheetRef}
-            className="fixed inset-x-0 bottom-0 z-[70] max-h-[85vh] flex flex-col rounded-t-2xl bg-white dark:bg-gray-800 shadow-2xl md:hidden"
+            className="fixed inset-x-0 bottom-0 z-[70] max-h-[85vh] flex flex-col rounded-t-2xl bg-gray-50 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 shadow-2xl md:hidden"
             role="dialog"
             aria-label="Filtros"
           >
-            <div className="flex items-center justify-between flex-shrink-0 p-4 pb-2">
-              <span className="text-sm font-semibold text-gray-700 dark:text-gray-200">Filtros</span>
+            <div className="flex items-center justify-between flex-shrink-0 p-4 pb-2 border-b border-gray-200 dark:border-gray-700">
+              <span className="text-sm font-semibold text-gray-900 dark:text-gray-200">Filtros</span>
               <button
                 type="button"
                 onClick={() => setFilterOpen(false)}
-                className="p-2 rounded-xl text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 focus:ring-2 focus:ring-gray-300 focus:outline-none"
+                className="p-2 rounded-xl text-gray-500 hover:text-gray-900 dark:hover:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none"
                 aria-label="Fechar"
               >
                 <X className="w-5 h-5" />
