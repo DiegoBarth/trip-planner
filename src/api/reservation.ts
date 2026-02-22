@@ -52,7 +52,10 @@ export async function createReservation(payload: CreateReservationPayload): Prom
     throw new Error(response.message || 'Failed to create reservation');
   }
 
-  return response.data;
+  return {
+    ...response.data,
+    time: normalizeTimeFromSheets(response.data.time) ?? response.data.time
+  };
 }
 
 /**
@@ -68,7 +71,10 @@ export async function updateReservation(payload: UpdateReservationPayload): Prom
     throw new Error(response.message || 'Failed to update reservation');
   }
 
-  return response.data;
+  return {
+    ...response.data,
+    time: normalizeTimeFromSheets(response.data.time) ?? response.data.time
+  };
 }
 
 /**

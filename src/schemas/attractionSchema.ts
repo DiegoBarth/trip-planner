@@ -24,7 +24,7 @@ export const attractionCreateSchema = z.object({
   visited: z.boolean(),
   needsReservation: z.boolean(),
   reservationStatus: z.string().optional(),
-  couplePrice: z.number().positive('O Valor (casal) é obrigatório'),
+  couplePrice: z.number().optional(),
   currency,
   priceInBRL: z.number().min(0),
   idealPeriod: z.string().optional(),
