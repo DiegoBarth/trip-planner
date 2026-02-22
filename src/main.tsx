@@ -7,6 +7,7 @@ import { CountryProvider } from './contexts/CountryContext.tsx'
 import { ThemeProvider } from './contexts/ThemeContext.tsx'
 import { queryClient } from '@/lib/queryClient'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
+import { PWAUpdatePrompt } from '@/components/PWAUpdatePrompt'
 import App from './App.tsx'
 import './index.css'
 
@@ -19,6 +20,7 @@ createRoot(document.getElementById('root')!).render(
             <CountryProvider>
               <ToastProvider>
                 <App />
+                <PWAUpdatePrompt />
               </ToastProvider>
             </CountryProvider>
           </ThemeProvider>

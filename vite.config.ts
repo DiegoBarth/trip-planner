@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import { VitePWA } from 'vite-plugin-pwa'
 import path from 'path'
 
 function deferCssPlugin() {
@@ -35,7 +36,32 @@ function removeLazyModulePreload() {
 }
 
 export default defineConfig({
-   plugins: [react(), deferCssPlugin(), removeLazyModulePreload()],
+   plugins: [
+     react(),
+     deferCssPlugin(),
+     removeLazyModulePreload(),
+     VitePWA({
+       registerType: 'prompt',
+       scope: '/trip-planner/',
+       manifest: {
+         name: 'Trip Planner - Japan & Korea',
+         short_name: 'Trip Planner',
+         description: 'Plan your dream trip to Japan and South Korea',
+         theme_color: '#6366f1',
+         background_color: '#ffffff',
+         display: 'standalone',
+         start_url: '/trip-planner/',
+         scope: '/trip-planner/',
+         icons: [
+           { src: '/trip-planner/icon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any maskable' },
+         ],
+       },
+       workbox: {
+         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+         navigateFallback: '/trip-planner/index.html',
+       },
+     }),
+   ],
    base: '/trip-planner/',
    build: {
       outDir: 'docs',
