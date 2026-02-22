@@ -66,7 +66,7 @@ export const AttractionCard = memo(function AttractionCard({
             <span className="text-5xl opacity-30">{attractionType.icon}</span>
           </div>
         )}
-        <div className="absolute inset-0 z-[1] bg-gradient-to-t from-black/90 via-black/60 to-black/50 pointer-events-none" />
+        <div className="absolute inset-0 z-[1] bg-gradient-to-t from-black/70 via-black/50 to-black/40 pointer-events-none" />
         <div className="absolute inset-0 z-10 p-3 text-white flex flex-col justify-between">
           <div className="flex items-start justify-between gap-2 mb-2">
             <div className="flex-1 min-w-0">
