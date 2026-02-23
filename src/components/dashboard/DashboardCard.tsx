@@ -14,8 +14,8 @@ export function DashboardCard({ label, value, subValue, icon, iconClass }: Dashb
       </div>
       <div className="min-w-0 flex-1">
         <p className="text-gray-500 dark:text-gray-400 text-sm font-medium">{label}</p>
-        <h4 className="text-xl md:text-2xl font-bold text-gray-800 dark:text-gray-100 truncate">{value}</h4>
-        {subValue && <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{subValue}</p>}
+        <p className="text-xl md:text-2xl font-bold text-gray-800 dark:text-gray-100 truncate">{value}</p>
+        {subValue && <p className="text-xs text-gray-600 dark:text-gray-400 mt-0.5">{subValue}</p>}
       </div>
     </div>
   );

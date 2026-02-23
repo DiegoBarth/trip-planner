@@ -1,6 +1,30 @@
 import Package from 'lucide-react/dist/esm/icons/package';
 import type { ChecklistItem } from '@/types/ChecklistItem'
 import { CHECKLIST_CATEGORIES } from '@/config/constants'
+import { cn } from '@/lib/utils'
+
+/* Badge e ícone por categoria com contraste WCAG em tema claro e escuro */
+const CATEGORY_BADGE_CLASS: Record<string, string> = {
+  documents: 'bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-300',
+  clothes: 'bg-pink-100 dark:bg-pink-900/50 text-pink-800 dark:text-pink-300',
+  electronics: 'bg-indigo-100 dark:bg-indigo-900/50 text-indigo-800 dark:text-indigo-300',
+  hygiene: 'bg-teal-100 dark:bg-teal-900/50 text-teal-800 dark:text-teal-300',
+  medicines: 'bg-red-100 dark:bg-red-900/50 text-red-800 dark:text-red-300',
+  accessories: 'bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-300',
+  entertainment: 'bg-violet-100 dark:bg-violet-900/50 text-violet-800 dark:text-violet-300',
+  other: 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300',
+}
+
+const CATEGORY_ICON_BG_CLASS: Record<string, string> = {
+  documents: 'bg-blue-100 dark:bg-blue-900/50',
+  clothes: 'bg-pink-100 dark:bg-pink-900/50',
+  electronics: 'bg-indigo-100 dark:bg-indigo-900/50',
+  hygiene: 'bg-teal-100 dark:bg-teal-900/50',
+  medicines: 'bg-red-100 dark:bg-red-900/50',
+  accessories: 'bg-amber-100 dark:bg-amber-900/50',
+  entertainment: 'bg-violet-100 dark:bg-violet-900/50',
+  other: 'bg-gray-100 dark:bg-gray-700',
+}
 
 interface ChecklistCardProps {
   item: ChecklistItem
@@ -44,7 +68,7 @@ export function ChecklistCard({ item, onClick, onTogglePacked }: ChecklistCardPr
             onClick={handleToggle}
             type="button"
             className={`flex-shrink-0 w-6 h-6 rounded-md border-2 flex items-center justify-center transition-all focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none ${item.isPacked
-              ? 'bg-emerald-500 border-emerald-500'
+              ? 'bg-emerald-700 border-emerald-700'
               : 'border-gray-300 hover:border-emerald-400'
               }`}
             aria-label={item.isPacked ? 'Desmarcar empacotado' : 'Marcar como empacotado'}
@@ -64,20 +88,24 @@ export function ChecklistCard({ item, onClick, onTogglePacked }: ChecklistCardPr
             )}
           </button>
           <div
-            className="w-10 h-10 rounded-xl flex items-center justify-center text-lg flex-shrink-0"
-            style={{ backgroundColor: `${color}18` }}
+            className={cn(
+              'w-10 h-10 rounded-xl flex items-center justify-center text-lg flex-shrink-0',
+              CATEGORY_ICON_BG_CLASS[item.category] ?? CATEGORY_ICON_BG_CLASS.other
+            )}
           >
             {category?.icon ?? '📦'}
           </div>
           <span
-            className="text-xs font-medium px-2 py-0.5 rounded-md flex-shrink-0"
-            style={{ backgroundColor: `${color}20`, color }}
+            className={cn(
+              'text-xs font-medium px-2 py-0.5 rounded-md flex-shrink-0',
+              CATEGORY_BADGE_CLASS[item.category] ?? CATEGORY_BADGE_CLASS.other
+            )}
           >
             {category?.label ?? item.category}
           </span>
           <div className="flex-1 min-w-0" aria-hidden />
           {item.isPacked && (
-            <span className="px-2 py-0.5 rounded-md text-xs font-semibold text-white bg-emerald-500 flex-shrink-0">
+            <span className="px-2 py-0.5 rounded-md text-xs font-semibold text-white bg-emerald-700 flex-shrink-0">
               ✓ Empacotado
             </span>
           )}

@@ -80,13 +80,14 @@ export function getCategoryFromLabel(label: string): keyof typeof EXPENSE_CATEGO
   return (entry?.[0] as keyof typeof EXPENSE_CATEGORIES) || 'other';
 };
 
+/* Cores com contraste WCAG AA (texto legível em fundo claro e escuro) */
 export const BUDGET_ORIGINS = {
-  Diego: { label: 'Diego', icon: '👨', color: '#3b82f6' },
-  Pamela: { label: 'Pamela', icon: '👩', color: '#ec4899' },
-  Casal: { label: 'Casal', icon: '💑', color: '#8b5cf6' },
-  Alimentação: { label: 'Alimentação', icon: '🍱', color: '#bd0701ff' },
-  Atrações: { label: 'Atrações', icon: '🎫', color: '#367d86ff' },
-  Transporte: { label: 'Transporte', icon: '🚈', color: '#439e5eff' }
+  Diego: { label: 'Diego', icon: '👨', color: '#1d4ed8' },
+  Pamela: { label: 'Pamela', icon: '👩', color: '#be185d' },
+  Casal: { label: 'Casal', icon: '💑', color: '#5b21b6' },
+  Alimentação: { label: 'Alimentação', icon: '🍱', color: '#991b1b' },
+  Atrações: { label: 'Atrações', icon: '🎫', color: '#155e75' },
+  Transporte: { label: 'Transporte', icon: '🚈', color: '#14532d' }
 };
 
 export function getBudgetOriginFromLabel(label: string): keyof typeof BUDGET_ORIGINS {
@@ -129,15 +130,16 @@ export const BUDGET_CATEGORIES = [
   'Outros'
 ];
 
+/* Cores com contraste WCAG AA para badges em fundo claro */
 export const CHECKLIST_CATEGORIES = {
-  documents: { label: 'Documentos', icon: '📄', color: '#3b82f6' },
-  clothes: { label: 'Roupas', icon: '👕', color: '#ec4899' },
-  electronics: { label: 'Eletrônicos', icon: '🔌', color: '#6366f1' },
-  hygiene: { label: 'Higiene', icon: '🧴', color: '#14b8a6' },
-  medicines: { label: 'Medicamentos', icon: '💊', color: '#ef4444' },
-  accessories: { label: 'Acessórios', icon: '🎒', color: '#f59e0b' },
-  entertainment: { label: 'Entretenimento', icon: '🎮', color: '#8b5cf6' },
-  other: { label: 'Outros', icon: '📦', color: '#6b7280' }
+  documents: { label: 'Documentos', icon: '📄', color: '#1d4ed8' },
+  clothes: { label: 'Roupas', icon: '👕', color: '#be185d' },
+  electronics: { label: 'Eletrônicos', icon: '🔌', color: '#4f46e5' },
+  hygiene: { label: 'Higiene', icon: '🧴', color: '#0f766e' },
+  medicines: { label: 'Medicamentos', icon: '💊', color: '#b91c1c' },
+  accessories: { label: 'Acessórios', icon: '🎒', color: '#b45309' },
+  entertainment: { label: 'Entretenimento', icon: '🎮', color: '#5b21b6' },
+  other: { label: 'Outros', icon: '📦', color: '#4b5563' }
 };
 
 export const RESERVATION_TYPES = {
@@ -152,11 +154,12 @@ export const RESERVATION_TYPES = {
   other: { label: 'Outro', icon: '📋', color: '#6b7280' }
 };
 
+/* Cores com contraste WCAG AA para texto branco no badge */
 export const BOOKING_STATUS = {
-  pending: { label: 'Pendente', icon: '⏳', color: '#f59e0b' },
-  confirmed: { label: 'Confirmado', icon: '✅', color: '#10b981' },
-  cancelled: { label: 'Cancelado', icon: '❌', color: '#ef4444' },
-  completed: { label: 'Concluído', icon: '✓', color: '#6b7280' }
+  pending: { label: 'Pendente', icon: '⏳', color: '#b45309' },
+  confirmed: { label: 'Confirmado', icon: '✅', color: '#047857' },
+  cancelled: { label: 'Cancelado', icon: '❌', color: '#b91c1c' },
+  completed: { label: 'Concluído', icon: '✓', color: '#4b5563' }
 };
 
 export const LABELS = {

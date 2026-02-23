@@ -9,14 +9,29 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
+  <!-- Preload fontes críticas (latin) para reduzir CLS no título e no corpo -->
+  <link rel="preload" href="https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="https://fonts.gstatic.com/s/poppins/v24/pxiByp8kv8JHgFVrLEj6Z1xlFd2JQEk.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="https://fonts.gstatic.com/s/poppins/v24/pxiByp8kv8JHgFVrLCz7Z1xlFd2JQEk.woff2" as="font" type="font/woff2" crossorigin>
   <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap"
-    rel="stylesheet" media="all">
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=optional"
+    rel="stylesheet"
+    media="print"
+    onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=optional"></noscript>
 
   <title>Trip Planner</title>
 
   <style>
+    /* Fallback com métricas da Inter: evita CLS em spans quando a fonte da Web carrega */
+    @font-face {
+      font-family: 'Inter Fallback';
+      ascent-override: 90%;
+      descent-override: 22%;
+      size-adjust: 107%;
+      src: local('Arial');
+    }
+
     /* Esqueleto Crítico para evitar CLS e melhorar FCP */
     :root {
       --bg: #f8fafc;
@@ -34,16 +49,60 @@
       font-family: sans-serif;
     }
 
-    /* Renderiza um bloco de cor no lugar do header antes do JS carregar */
-    #root:empty::before {
-      content: "";
-      display: block;
-      height: 280px;
-      background: linear-gradient(135deg, var(--header), #9333ea);
-      width: 100%;
+    /* Header fixo: LCP (h1) no primeiro paint; React monta em #app-root e injeta só os controles */
+    .app-header {
+      background: linear-gradient(135deg, #2563eb, #9333ea, #ec4899);
+      color: #fff;
     }
+    .app-header__inner {
+      max-width: 72rem;
+      margin: 0 auto;
+      padding: 1.5rem 1rem 2rem;
+    }
+    .app-header__row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .app-header h1 {
+      margin: 0;
+      font-family: 'Poppins', 'Inter', sans-serif;
+      font-size: 1.875rem;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      line-height: 1.2;
+    }
+    .app-header__subtitle {
+      margin: 0.5rem 0 0;
+      font-size: 0.875rem;
+      opacity: 0.9;
+    }
+    @media (min-width: 768px) {
+      .app-header h1 { font-size: 2.25rem; }
+      .app-header__subtitle { font-size: 1rem; }
+    }
+    .app-header.hidden { display: none !important; }
   </style>
+</head>
 
+<body>
+  <div id="root">
+    <header class="app-header">
+      <div class="app-header__inner">
+        <div class="app-header__row">
+          <div style="flex: 1; min-width: 0;">
+            <h1>Japão & Coreia</h1>
+            <p class="app-header__subtitle">Planeje cada momento da sua aventura</p>
+          </div>
+          <div id="header-actions"></div>
+        </div>
+        <div id="header-filter"></div>
+      </div>
+    </header>
+    <main id="app-root"></main>
+  </div>
   <script>
     (function () {
       var theme = localStorage.getItem('theme');
@@ -54,10 +113,6 @@
       }
     })();
   </script>
-</head>
-
-<body>
-  <div id="root"></div>
   <script type="module" src="/src/main.tsx"></script>
 </body>
 

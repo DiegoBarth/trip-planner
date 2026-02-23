@@ -152,10 +152,10 @@ export function ReservationList({ reservations, onUpdate, onCreate, onDelete, is
               <section className="space-y-3">
                 <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white dark:bg-gray-800 border border-indigo-200 dark:border-indigo-800 shadow-sm w-fit">
                   <div className="w-2 h-2 rounded-full bg-indigo-500" />
-                  <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">
+                  <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100">
                     Pré-Viagem
-                  </h3>
-                  <span className="text-sm text-gray-500 dark:text-gray-400">
+                  </h2>
+                  <span className="text-sm text-gray-600 dark:text-gray-400">
                     {groupedReservations.preTripItems.length} {groupedReservations.preTripItems.length === 1 ? 'item' : 'itens'}
                   </span>
                 </div>
@@ -177,10 +177,10 @@ export function ReservationList({ reservations, onUpdate, onCreate, onDelete, is
                 <section key={date} className="space-y-3">
                   <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm w-fit mb-3">
                     <span className="text-lg" aria-hidden>📅</span>
-                    <span className="text-base font-semibold text-gray-900 dark:text-gray-100">
+                    <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100">
                       {formatDate(date)}
-                    </span>
-                    <span className="text-sm text-gray-400 dark:text-gray-500">
+                    </h2>
+                    <span className="text-sm text-gray-600 dark:text-gray-400">
                       · {items.length} {items.length === 1 ? 'reserva' : 'reservas'}
                     </span>
                   </div>

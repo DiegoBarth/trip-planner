@@ -1,7 +1,11 @@
 import { lazy, Suspense, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { Routes, Route, useLocation } from 'react-router-dom'
+import LogOut from 'lucide-react/dist/esm/icons/log-out'
 import { BottomNav } from '@/components/ui/BottomNav'
 import { GlobalLoading } from '@/components/ui/GlobalLoading'
+import { ThemeToggle } from '@/components/ui/ThemeToggle'
+import { CountryFilter } from '@/components/home/CountryFilter'
 
 function ScrollToTop() {
   const { pathname } = useLocation()
@@ -11,11 +15,55 @@ function ScrollToTop() {
   return null
 }
 
+function HomeHeaderVisibility() {
+  const { pathname } = useLocation()
+  useEffect(() => {
+    const header = document.querySelector('.app-header')
+    if (!header) return
+    if (pathname === '/') {
+      header.classList.remove('hidden')
+    } else {
+      header.classList.add('hidden')
+    }
+  }, [pathname])
+  return null
+}
+
+function HeaderPortals({ onLogout }: { onLogout: () => void }) {
+  const location = useLocation()
+  const isHome = location.pathname === '/'
+  const actionsEl = typeof document !== 'undefined' ? document.getElementById('header-actions') : null
+  const filterEl = typeof document !== 'undefined' ? document.getElementById('header-filter') : null
+
+  if (!actionsEl) return null
+
+  const actions = (
+    <div className="flex items-center gap-2">
+      <ThemeToggle />
+      <button
+        type="button"
+        onClick={onLogout}
+        className="p-2 rounded-lg hover:bg-white/20 transition-colors"
+        aria-label="Sair da conta"
+      >
+        <LogOut className="w-5 h-5" />
+      </button>
+    </div>
+  )
+
+  return (
+    <>
+      {createPortal(actions, actionsEl)}
+      {isHome && filterEl && createPortal(<CountryFilter hideGeneralOption />, filterEl)}
+    </>
+  )
+}
+
 interface AppRouterProps {
   onLogout: () => void
 }
 
-const HomePage = lazy(() => import('@/pages/HomePage'))
+import HomePage from '@/pages/HomePage'
 const BudgetPage = lazy(() => import('@/pages/BudgetPage'))
 const ExpensesPage = lazy(() => import('@/pages/ExpensesPage'))
 const AttractionsPage = lazy(() => import('@/pages/AttractionsPage'))
@@ -28,18 +76,12 @@ const TimelinePage = lazy(() => import('@/pages/TimelinePage'))
 export default function AppRouter({ onLogout }: AppRouterProps) {
   return (
     <>
+      <HomeHeaderVisibility />
+      <HeaderPortals onLogout={onLogout} />
       <GlobalLoading />
       <ScrollToTop />
 
-      <Suspense
-        fallback={
-          <div className="min-h-screen flex items-center justify-center">
-            <div className="animate-pulse text-sm text-gray-500">
-              Carregando…
-            </div>
-          </div>
-        }
-      >
+      <Suspense fallback={null}>
         <Routes>
           <Route path="/" element={<HomePage onLogout={onLogout} />} />
           <Route path="/budgets" element={<BudgetPage />} />

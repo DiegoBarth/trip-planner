@@ -5,13 +5,13 @@ import { ErrorBoundary } from '@/components/ErrorBoundary'
 import App from './App'
 import './index.css'
 
-const rootElement = document.getElementById('root')
+const appRoot = document.getElementById('app-root')
 
-if (!rootElement) {
-  throw new Error('Root element not found')
+if (!appRoot) {
+  throw new Error('app-root element not found')
 }
 
-createRoot(rootElement).render(
+createRoot(appRoot).render(
   <StrictMode>
     <BrowserRouter basename="/trip-planner/">
       <ErrorBoundary>

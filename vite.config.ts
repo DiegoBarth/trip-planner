@@ -1,8 +1,9 @@
-import { defineConfig } from 'vite'
+import { defineConfig, type PluginOption } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 import path from 'path'
 import UnpluginFonts from 'unplugin-fonts/vite'
+import { visualizer } from 'rollup-plugin-visualizer'
 
 function deferCssPlugin() {
   return {
@@ -76,6 +77,15 @@ export default defineConfig({
         navigateFallback: '/trip-planner/index.html',
       },
     }),
+    ...(process.env.ANALYZE
+      ? [
+          visualizer({
+            filename: 'stats.html',
+            gzipSize: true,
+            open: false,
+          }) as PluginOption,
+        ]
+      : []),
   ],
   base: '/trip-planner/',
   build: {
@@ -83,11 +93,14 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: (id) => {
+          if (id.includes('node_modules/react/') || id.includes('node_modules/react-dom/')) return 'react-vendor'
           if (id.includes('node_modules/@tanstack/react-query')) return 'react-query'
           if (id.includes('node_modules/react-router')) return 'router'
           if (id.includes('node_modules/@react-oauth/google')) return 'google-oauth'
-          if (id.includes('src/GoogleLoginButton')) return 'google-login-button';
+          if (id.includes('src/GoogleLoginButton')) return 'google-login-button'
           if (id.includes('node_modules/lucide-react')) return 'ui-icons'
+          if (id.includes('node_modules/date-fns')) return 'date-fns'
+          if (id.includes('node_modules/zod')) return 'zod'
         },
       },
     },

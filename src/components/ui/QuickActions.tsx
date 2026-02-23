@@ -16,13 +16,14 @@ interface QuickAction {
   hoverColor: string
 }
 
+/* Cores com contraste WCAG AA: texto mais escuro no claro, mais claro no escuro */
 const quickActions: QuickAction[] = [
   {
     to: '/budgets',
     icon: TrendingUp,
     label: 'Orçamento',
-    color: 'text-emerald-600',
-    darkColor: 'dark:text-emerald-400',
+    color: 'text-emerald-800',
+    darkColor: 'dark:text-emerald-300',
     bgColor: 'bg-emerald-100',
     hoverColor: 'hover:bg-emerald-100',
   },
@@ -30,8 +31,8 @@ const quickActions: QuickAction[] = [
     to: '/expenses',
     icon: TrendingDown,
     label: 'Gastos',
-    color: 'text-rose-600',
-    darkColor: 'dark:text-rose-400',
+    color: 'text-rose-800',
+    darkColor: 'dark:text-rose-300',
     bgColor: 'bg-rose-100',
     hoverColor: 'hover:bg-rose-100',
   },
@@ -39,8 +40,8 @@ const quickActions: QuickAction[] = [
     to: '/attractions',
     icon: Plus,
     label: 'Atrações',
-    color: 'text-purple-600',
-    darkColor: 'dark:text-purple-400',
+    color: 'text-purple-700',
+    darkColor: 'dark:text-purple-300',
     bgColor: 'bg-purple-100',
     hoverColor: 'hover:bg-purple-100',
   },
@@ -48,8 +49,8 @@ const quickActions: QuickAction[] = [
     to: '/reservations',
     icon: Ticket,
     label: 'Reservas',
-    color: 'text-indigo-600',
-    darkColor: 'dark:text-indigo-400',
+    color: 'text-indigo-700',
+    darkColor: 'dark:text-indigo-300',
     bgColor: 'bg-indigo-100',
     hoverColor: 'hover:bg-indigo-100',
   },

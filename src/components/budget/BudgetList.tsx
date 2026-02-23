@@ -112,9 +112,9 @@ export function BudgetList({ budgets, isLoading, onUpdate, onCreate, onDelete }:
               <section key={origin} className="space-y-4">
                 <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm w-fit">
                   <span className="text-xl">{config.icon}</span>
-                  <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">
+                  <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100">
                     {config.label}
-                  </h3>
+                  </h2>
                   <span className="text-sm text-gray-500 dark:text-gray-400">
                     {originBudgets.length} {originBudgets.length === 1 ? 'item' : 'itens'}
                   </span>

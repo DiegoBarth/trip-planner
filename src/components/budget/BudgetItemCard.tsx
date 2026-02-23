@@ -36,7 +36,7 @@ export function BudgetItemCard({ budget, onClick }: BudgetItemCardProps) {
           <h3 className="font-semibold text-gray-900 dark:text-gray-100 truncate min-w-0 flex-1" title={budget.description}>
             {budget.description}
           </h3>
-          <span className="text-lg font-bold tabular-nums flex-shrink-0 text-emerald-500 dark:text-emerald-400">
+          <span className="text-lg font-bold tabular-nums flex-shrink-0 text-emerald-700 dark:text-emerald-300">
             {formatCurrency(budget.amount)}
           </span>
         </div>

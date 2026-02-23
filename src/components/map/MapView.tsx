@@ -1,6 +1,8 @@
 import { useMemo, useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 import { MapContainer, TileLayer } from 'react-leaflet'
+import 'leaflet.markercluster/dist/MarkerCluster.css'
+import 'leaflet.markercluster/dist/MarkerCluster.Default.css'
 import { useCountry } from '@/contexts/CountryContext'
 import { FitBounds } from '@/components/map/FitBounds'
 import { MapRoutes } from '@/components/map/MapRoutes'

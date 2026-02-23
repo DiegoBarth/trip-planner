@@ -1,11 +1,6 @@
-import { lazy, Suspense, useEffect, useState, useCallback } from "react";
-import { verifyEmailAuthorization } from "@/api/home";
-import { AUTH_TIMEOUT_MS, AUTH_REFRESH_INTERVAL_MS } from "@/config/constants";
-
-const AuthenticatedApp = lazy(() => import('./AuthenticatedApp'));
-interface CredentialResponse {
-  credential?: string
-}
+import { useEffect, useState, useCallback } from "react";
+import { AUTH_TIMEOUT_MS, AUTH_REFRESH_INTERVAL_MS } from "@/config/authConstants";
+import AuthenticatedApp from "./AuthenticatedApp";
 
 export default function App() {
   const [userEmail, setUserEmail] = useState<string | null>(() => {
@@ -20,30 +15,6 @@ export default function App() {
     return null;
   });
 
-  async function handleLoginSuccess(credentialResponse: CredentialResponse) {
-    try {
-      if (!credentialResponse.credential) return;
-
-      const decoded = JSON.parse(
-        atob(credentialResponse.credential.split(".")[1])
-      );
-
-      const email = decoded.email;
-      const autorizado = await verifyEmailAuthorization(email);
-
-      if (!autorizado) {
-        alert('E-mail não autorizado!');
-        return;
-      }
-
-      localStorage.setItem("user_email", email);
-      localStorage.setItem("login_time", Date.now().toString());
-      setUserEmail(email);
-    } catch (err) {
-      console.error("Erro ao decodificar login:", err);
-      alert('Erro ao fazer login');
-    }
-  }
 
   const handleLogout = useCallback(() => {
     (window as any)?.google?.accounts?.id?.disableAutoSelect?.();
@@ -62,19 +33,15 @@ export default function App() {
     return () => clearInterval(interval);
   }, [userEmail]);
 
-  if (!userEmail) {
-    // Carregamos o LoginScreen APENAS aqui dentro
-    const LoginScreen = lazy(() => import('./LoginScreen'));
-    return (
-      <Suspense fallback={<div className="h-screen bg-white" />}>
-        <LoginScreen onSuccess={handleLoginSuccess} onError={() => { }} />
-      </Suspense>
-    );
-  }
+  // if (!userEmail) {
+  //   // Carregamos o LoginScreen APENAS aqui dentro
+  //   const LoginScreen = lazy(() => import('./LoginScreen'));
+  //   return (
+  //     <Suspense fallback={<div className="h-screen bg-white" />}>
+  //       <LoginScreen onSuccess={handleLoginSuccess} onError={() => { }} />
+  //     </Suspense>
+  //   );
+  // }
 
-  return (
-    <Suspense fallback={<div className="h-screen flex items-center justify-center">Carregando...</div>}>
-      <AuthenticatedApp onLogout={handleLogout} />
-    </Suspense>
-  );
+  return <AuthenticatedApp onLogout={handleLogout} />;
 }

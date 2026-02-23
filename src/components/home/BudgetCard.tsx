@@ -31,17 +31,17 @@ export function BudgetCard({ origin, total, spent, remaining }: BudgetCardProps)
           </div>
           <div className="flex justify-between items-baseline text-sm">
             <span className="text-gray-500 dark:text-gray-400">Gasto</span>
-            <span className="font-semibold text-red-600">{formatCurrency(spent)}</span>
+            <span className="font-semibold text-red-600 dark:text-red-400">{formatCurrency(spent)}</span>
           </div>
           <div className="flex justify-between items-baseline text-sm">
             <span className="text-gray-500 dark:text-gray-400">Restante</span>
-            <span className="font-semibold text-emerald-600">{formatCurrency(remaining)}</span>
+            <span className="font-semibold text-emerald-600 dark:text-emerald-400">{formatCurrency(remaining)}</span>
           </div>
         </div>
 
         <div className="pt-3 border-gray-100 dark:border-gray-700">
           <div className="flex justify-between items-center">
-            <span className="text-xs text-gray-400 dark:text-gray-500">Utilizado</span>
+            <span className="text-xs text-gray-600 dark:text-gray-400">Utilizado</span>
             <span className="text-xs font-medium text-gray-600 dark:text-gray-400">{percentSpent.toFixed(1)}%</span>
           </div>
           <div className="mt-1.5 h-1.5 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">

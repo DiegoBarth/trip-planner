@@ -102,7 +102,7 @@ export function ExpenseList({ expenses, onUpdate, onCreate, onDelete, isLoading 
         <div className="mb-6 p-4 rounded-2xl bg-gradient-to-r from-rose-50 to-orange-50 dark:from-rose-900/30 dark:to-orange-900/30 border border-rose-100 dark:border-rose-800">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-rose-100 dark:bg-rose-900/50 flex items-center justify-center">
-              <Receipt className="w-5 h-5 text-rose-600 dark:text-rose-400" />
+              <Receipt className="w-5 h-5 text-rose-700 dark:text-rose-300" />
             </div>
             <div>
               <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total em gastos</p>
@@ -149,7 +149,7 @@ export function ExpenseList({ expenses, onUpdate, onCreate, onDelete, isLoading 
                       {countryExpenses.length === 1 ? 'gasto' : 'gastos'}
                     </span>
                   </div>
-                  <span className="text-sm font-semibold text-rose-600 tabular-nums">
+                  <span className="text-sm font-semibold text-rose-800 dark:text-rose-300 tabular-nums">
                     {formatCurrency(sectionTotal)}
                   </span>
                 </div>

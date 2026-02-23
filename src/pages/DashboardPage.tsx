@@ -94,7 +94,7 @@ export default function DashboardPage() {
           </div>
           <div className="bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl p-6 text-white shadow-lg flex flex-col justify-between">
             <div>
-              <h3 className="font-bold text-lg mb-2">Próxima Parada?</h3>
+              <h2 className="font-bold text-lg mb-2">Próxima Parada?</h2>
               <p className="text-white/90 text-sm">
                 Você tem{' '}
                 {stats.attractionStatus.total - stats.attractionStatus.visited}{' '}
