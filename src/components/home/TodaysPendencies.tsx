@@ -1,9 +1,12 @@
 import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
-import { CheckSquare, AlertCircle, FileText, ChevronRight } from 'lucide-react'
+import CheckSquare from 'lucide-react/dist/esm/icons/check-square';
+import AlertCircle from 'lucide-react/dist/esm/icons/alert-circle';
+import FileText from 'lucide-react/dist/esm/icons/file-text';
+import ChevronRight from 'lucide-react/dist/esm/icons/chevron-right';
 import { useCountry } from '@/contexts/CountryContext'
 
-export function TodaysPendencies() {
+export default function TodaysPendencies() {
   const { checklistItems, reservations } = useCountry();
 
   const pendencies = useMemo(() => {

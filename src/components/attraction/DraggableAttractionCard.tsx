@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { GripVertical } from 'lucide-react'
+import GripVertical from 'lucide-react/dist/esm/icons/grip-vertical';
 import { CSS } from '@dnd-kit/utilities'
 import { useSortable } from '@dnd-kit/sortable'
 import { AttractionCard } from '@/components/attraction/AttractionCard'

@@ -1,5 +1,9 @@
 import { Link, useLocation } from 'react-router-dom'
-import { Home, Map, BarChart3, Calendar, ListChecks } from 'lucide-react'
+import Home from 'lucide-react/dist/esm/icons/home';
+import Map from 'lucide-react/dist/esm/icons/map';
+import BarChart3 from 'lucide-react/dist/esm/icons/bar-chart-3';
+import Calendar from 'lucide-react/dist/esm/icons/calendar';
+import ListChecks from 'lucide-react/dist/esm/icons/list-checks';
 import { cn } from '@/lib/utils'
 
 const navItems = [

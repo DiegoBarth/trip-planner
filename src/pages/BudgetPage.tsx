@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react'
-import { Plus } from 'lucide-react'
+import Plus from 'lucide-react/dist/esm/icons/plus';
 import { BudgetList } from '@/components/budget/BudgetList'
 import { PageHeader } from '@/components/ui/PageHeader'
 import { BudgetOriginFilter } from '@/components/expense/BudgetOriginFilter'

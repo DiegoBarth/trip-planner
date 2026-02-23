@@ -1,5 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
-import { ArrowLeft, SlidersHorizontal, X } from 'lucide-react'
+import ArrowLeft from 'lucide-react/dist/esm/icons/arrow-left';
+import SlidersHorizontal from 'lucide-react/dist/esm/icons/sliders-horizontal';
+import X from 'lucide-react/dist/esm/icons/x';
 import { useNavigate } from 'react-router-dom'
 import { ThemeToggle } from '@/components/ui/ThemeToggle'
 import { FilterSheetProvider } from '@/contexts/FilterSheetContext'

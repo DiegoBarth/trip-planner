@@ -1,4 +1,7 @@
-import { ArrowDown, Car, TrendingUp, Clock } from 'lucide-react'
+import ArrowDown from 'lucide-react/dist/esm/icons/arrow-down';
+import Car from 'lucide-react/dist/esm/icons/car';
+import TrendingUp from 'lucide-react/dist/esm/icons/trending-up';
+import Clock from 'lucide-react/dist/esm/icons/clock';
 import type { TimelineSegment as TimelineSegmentType } from '@/types/Timeline'
 
 interface TimelineSegmentProps {

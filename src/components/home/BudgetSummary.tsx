@@ -1,9 +1,9 @@
-import { Wallet } from 'lucide-react'
+import Wallet from 'lucide-react/dist/esm/icons/wallet';
 import { BudgetCard } from '@/components/home/BudgetCard'
 import { useCountry } from '@/contexts/CountryContext'
 import type { BudgetOrigin } from '@/types/Attraction'
 
-export function BudgetSummary() {
+export default function BudgetSummary() {
   const { budgetSummary } = useCountry();
 
   if (!budgetSummary) return null;
@@ -45,10 +45,10 @@ export function BudgetSummary() {
               <span>Gasto</span>
               <span>Restante</span>
             </div>
-            <div className="h-1.5 bg-white/25 rounded-full overflow-hidden">
+            <div className="h-full bg-white rounded-full overflow-hidden">
               <div
-                className="h-full bg-white rounded-full transition-all duration-500"
-                style={{ width: `${Math.min(percentSpent, 100)}%` }}
+                className="h-full bg-white origin-left transition-transform duration-500"
+                style={{ transform: `scaleX(${Math.min(percentSpent, 100) / 100})` }}
               />
             </div>
             <div className="flex justify-between mt-2 text-xs opacity-85">

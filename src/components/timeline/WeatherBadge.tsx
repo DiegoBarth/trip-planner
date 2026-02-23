@@ -1,4 +1,6 @@
-import { Droplets, Wind, ThermometerSun } from 'lucide-react'
+import Droplets from 'lucide-react/dist/esm/icons/droplets';
+import Wind from 'lucide-react/dist/esm/icons/wind';
+import ThermometerSun from 'lucide-react/dist/esm/icons/thermometer-sun';
 import { getWeatherRecommendation } from '@/services/weatherService'
 import type { WeatherData } from '@/types/Weather'
 

@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react'
-import { Plus } from 'lucide-react'
+import Plus from 'lucide-react/dist/esm/icons/plus';
 import { ReservationList } from '@/components/reservation/ReservationList'
 import { PageHeader } from '@/components/ui/PageHeader'
 import { CountryFilter } from '@/components/home/CountryFilter'

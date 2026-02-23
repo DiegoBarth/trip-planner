@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react'
-import { Receipt } from 'lucide-react'
+import Receipt from 'lucide-react/dist/esm/icons/receipt';
 import { ExpenseCard } from '@/components/expense/ExpenseCard'
 import { ModalExpense } from '@/components/expense/ModalExpense'
 import { ExpenseActionsModal } from '@/components/expense/ExpenseActionsModal'

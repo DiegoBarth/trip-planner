@@ -1,4 +1,3 @@
-import L from 'leaflet'
 import type { MappableAttraction } from '@/types/MappableAttraction'
 
 type MarkerType = 'attraction' | 'closed' | 'accommodation'
@@ -8,6 +7,9 @@ export function createCustomIcon(
   type: MarkerType = 'attraction',
   attraction?: MappableAttraction
 ) {
+  const L = window.L;
+  if (!L) return undefined as any;
+
   let isClosedOnVisitDay = false;
 
   if (attraction) {
@@ -22,13 +24,8 @@ export function createCustomIcon(
 
   let fillColor = color;
 
-  if (type === 'accommodation') {
-    fillColor = '#111827';
-  }
-
-  if (type === 'closed' || isClosedOnVisitDay) {
-    fillColor = '#ef4444';
-  }
+  if (type === 'accommodation') fillColor = '#111827';
+  if (type === 'closed' || isClosedOnVisitDay) fillColor = '#ef4444';
 
   const innerIcon =
     type === 'accommodation'
@@ -47,6 +44,6 @@ export function createCustomIcon(
     `,
     className: 'custom-marker-icon',
     iconSize: [42, 42],
-    iconAnchor: [21, 42]
+    iconAnchor: [21, 42],
   });
 }

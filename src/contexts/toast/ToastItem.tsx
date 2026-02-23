@@ -1,4 +1,9 @@
-import { CheckCircle, XCircle, Info, AlertTriangle, X } from 'lucide-react'
+import CheckCircle from 'lucide-react/dist/esm/icons/check-circle';
+import XCircle from 'lucide-react/dist/esm/icons/x-circle';
+import Info from 'lucide-react/dist/esm/icons/info';
+import AlertTriangle from 'lucide-react/dist/esm/icons/alert-triangle';
+import X from 'lucide-react/dist/esm/icons/x';
+
 import type { Toast } from '@/contexts/toast/ToastContext'
 
 interface ToastItemProps {

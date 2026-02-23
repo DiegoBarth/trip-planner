@@ -1,4 +1,5 @@
-import { MapPin, Calendar } from 'lucide-react'
+import MapPin from 'lucide-react/dist/esm/icons/map-pin';
+import Calendar from 'lucide-react/dist/esm/icons/calendar';
 import { useCountry } from '@/contexts/CountryContext'
 import { useFilterSheet } from '@/contexts/FilterSheetContext'
 import { CustomSelect } from '@/components/ui/CustomSelect'

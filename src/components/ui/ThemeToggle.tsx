@@ -1,5 +1,6 @@
 import { useCallback, useContext, useEffect, useState } from 'react'
-import { Moon, Sun } from 'lucide-react'
+import Moon from 'lucide-react/dist/esm/icons/moon';
+import Sun from 'lucide-react/dist/esm/icons/sun';
 import { ThemeContext } from '@/contexts/ThemeContext'
 
 function getThemeFromDOM(): 'light' | 'dark' {

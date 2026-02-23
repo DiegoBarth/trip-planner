@@ -1,4 +1,4 @@
-import { Package } from 'lucide-react'
+import Package from 'lucide-react/dist/esm/icons/package';
 import type { ChecklistItem } from '@/types/ChecklistItem'
 import { CHECKLIST_CATEGORIES } from '@/config/constants'
 

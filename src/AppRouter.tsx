@@ -25,7 +25,7 @@ const ChecklistPage = lazy(() => import('@/pages/ChecklistPage'))
 const ReservationsPage = lazy(() => import('@/pages/ReservationsPage'))
 const TimelinePage = lazy(() => import('@/pages/TimelinePage'))
 
-export function AppRouter({ onLogout }: AppRouterProps) {
+export default function AppRouter({ onLogout }: AppRouterProps) {
   return (
     <>
       <GlobalLoading />

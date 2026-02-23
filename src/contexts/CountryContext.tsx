@@ -5,7 +5,6 @@ import { QueryErrorView } from '@/components/ui/QueryErrorView'
 import { useBudget } from '@/hooks/useBudget'
 import { useExpense } from '@/hooks/useExpense'
 import { useAttraction } from '@/hooks/useAttraction'
-import { useDashboard } from '@/hooks/useDashboard'
 import { useCurrency } from '@/hooks/useCurrency'
 import { useAccommodation } from '@/hooks/useAccommodation'
 import { useChecklist } from '@/hooks/useChecklist'
@@ -14,7 +13,6 @@ import type { CurrencyRates } from '@/types/Currency'
 import type { Budget, BudgetSummary } from '@/types/Budget'
 import type { Expense } from '@/types/Expense'
 import type { Attraction, CountryFilterValue } from '@/types/Attraction'
-import type { DashboardStats } from '@/types/Dashboard'
 import type { Accommodation } from '@/types/Accommodation'
 import type { ChecklistItem } from '@/types/ChecklistItem'
 import type { Reservation } from '@/types/Reservation'
@@ -33,7 +31,6 @@ interface CountryContextType {
   budgetSummary: BudgetSummary
   expenses: Expense[]
   attractions: Attraction[]
-  dashboard: DashboardStats
   availableDays: number[]
   accommodations: Accommodation[]
   checklistItems: ChecklistItem[]
@@ -70,15 +67,6 @@ export const CountryContext = createContext<CountryContextType>({
   budgetSummary: { totalBudget: 0, totalSpent: 0, remainingBalance: 0, byOrigin: {} },
   expenses: [],
   attractions: [],
-  dashboard: {
-    totalBudget: 0,
-    totalSpent: 0,
-    remaining: 0,
-    daysOfTrip: 0,
-    expensesByCategory: [],
-    budgetByOrigin: [],
-    attractionStatus: { total: 0, visited: 0, pendingReservation: 0, visitedPercentage: 0 },
-  },
   availableDays: [],
   accommodations: [],
   checklistItems: [],
@@ -98,23 +86,11 @@ export function CountryProvider({ children }: { children: ReactNode }) {
   const { items: checklistItems } = useChecklist();
   const { reservations } = useReservation();
 
-  const dashboardData = useDashboard({ budgets, expenses, attractions });
-
   const budgetSummary: BudgetSummary = rawBudgetSummary ?? {
     totalBudget: 0,
     totalSpent: 0,
     remainingBalance: 0,
     byOrigin: {}
-  };
-
-  const dashboard: DashboardStats = dashboardData?.stats ?? {
-    totalBudget: 0,
-    totalSpent: 0,
-    remaining: 0,
-    daysOfTrip: 0,
-    expensesByCategory: [],
-    budgetByOrigin: [],
-    attractionStatus: { total: 0, visited: 0, pendingReservation: 0, visitedPercentage: 0 }
   };
 
   const availableDays = useMemo(() => {
@@ -191,15 +167,6 @@ export function CountryProvider({ children }: { children: ReactNode }) {
           budgetSummary: { totalBudget: 0, totalSpent: 0, remainingBalance: 0, byOrigin: {} },
           expenses: [],
           attractions: [],
-          dashboard: {
-            totalBudget: 0,
-            totalSpent: 0,
-            remaining: 0,
-            daysOfTrip: 0,
-            expensesByCategory: [],
-            budgetByOrigin: [],
-            attractionStatus: { total: 0, visited: 0, pendingReservation: 0, visitedPercentage: 0 },
-          },
           availableDays: [],
           accommodations: [],
           checklistItems: [],
@@ -227,7 +194,6 @@ export function CountryProvider({ children }: { children: ReactNode }) {
         budgetSummary,
         expenses,
         attractions,
-        dashboard,
         availableDays,
         accommodations,
         checklistItems,

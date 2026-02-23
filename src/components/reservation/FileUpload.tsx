@@ -1,5 +1,8 @@
 import { useState } from 'react'
-import { Upload, File, X, Loader2 } from 'lucide-react'
+import Upload from 'lucide-react/dist/esm/icons/upload';
+import File from 'lucide-react/dist/esm/icons/file';
+import X from 'lucide-react/dist/esm/icons/x';
+import Loader2 from 'lucide-react/dist/esm/icons/loader-2';
 import { uploadFile, deleteFile } from '@/api/reservation'
 
 interface FileUploadProps {

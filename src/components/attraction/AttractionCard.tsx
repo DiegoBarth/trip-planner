@@ -1,5 +1,12 @@
 import { memo } from 'react'
-import { MapPin, Clock, Banknote, CheckCircle2, Trash2, Map, AlertTriangle } from 'lucide-react'
+import MapPin from 'lucide-react/dist/esm/icons/map-pin';
+import Clock from 'lucide-react/dist/esm/icons/clock';
+import Banknote from 'lucide-react/dist/esm/icons/banknote';
+import CheckCircle2 from 'lucide-react/dist/esm/icons/check-circle-2';
+import Trash2 from 'lucide-react/dist/esm/icons/trash-2';
+import Map from 'lucide-react/dist/esm/icons/map';
+import AlertTriangle from 'lucide-react/dist/esm/icons/alert-triangle';
+
 import { formatCurrency, formatTime, formatDuration } from '@/utils/formatters'
 import { ATTRACTION_TYPES, PERIODS, RESERVATION_STATUS } from '@/config/constants'
 import type { Attraction } from '@/types/Attraction'

@@ -1,5 +1,5 @@
 import { type ReactNode } from 'react'
-import { ArrowLeft } from 'lucide-react'
+import ArrowLeft from 'lucide-react/dist/esm/icons/arrow-left';
 import { cn } from '@/lib/utils'
 
 interface LayoutProps {

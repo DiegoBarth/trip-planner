@@ -1,31 +1,22 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
-import { ToastProvider } from '@/contexts/toast'
-import { QueryClientProvider } from '@tanstack/react-query'
-import { CountryProvider } from './contexts/CountryContext.tsx'
-import { ThemeProvider } from './contexts/ThemeContext.tsx'
-import { queryClient } from '@/lib/queryClient'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
-import { PWAUpdatePrompt } from '@/components/PWAUpdatePrompt'
-import App from './App.tsx'
+import App from './App'
 import './index.css'
 
-createRoot(document.getElementById('root')!).render(
+const rootElement = document.getElementById('root')
+
+if (!rootElement) {
+  throw new Error('Root element not found')
+}
+
+createRoot(rootElement).render(
   <StrictMode>
-    <ErrorBoundary>
-      <BrowserRouter basename="/trip-planner/">
-        <QueryClientProvider client={queryClient}>
-          <ThemeProvider>
-            <CountryProvider>
-              <ToastProvider>
-                <App />
-                <PWAUpdatePrompt />
-              </ToastProvider>
-            </CountryProvider>
-          </ThemeProvider>
-        </QueryClientProvider>
-      </BrowserRouter>
-    </ErrorBoundary>
-  </StrictMode>,
+    <BrowserRouter basename="/trip-planner/">
+      <ErrorBoundary>
+        <App />
+      </ErrorBoundary>
+    </BrowserRouter>
+  </StrictMode>
 )

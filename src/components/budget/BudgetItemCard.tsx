@@ -1,4 +1,4 @@
-import { Calendar } from 'lucide-react'
+import Calendar from 'lucide-react/dist/esm/icons/Calendar';
 import type { Budget } from '@/types/Budget'
 import { formatCurrency, formatDate } from '@/utils/formatters'
 import { BUDGET_ORIGINS } from '@/config/constants'

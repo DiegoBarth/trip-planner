@@ -1,5 +1,9 @@
 import { Link } from 'react-router-dom'
-import { DollarSign, Plus, Ticket, TrendingDown, TrendingUp } from 'lucide-react'
+import DollarSign from 'lucide-react/dist/esm/icons/dollar-sign';
+import Plus from 'lucide-react/dist/esm/icons/plus';
+import Ticket from 'lucide-react/dist/esm/icons/ticket';
+import TrendingDown from 'lucide-react/dist/esm/icons/trending-down';
+import TrendingUp from 'lucide-react/dist/esm/icons/trending-up';
 import { cn } from '@/lib/utils'
 
 interface QuickAction {

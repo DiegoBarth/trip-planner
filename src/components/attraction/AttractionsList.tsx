@@ -1,5 +1,5 @@
 import { useState, useMemo, lazy, Suspense } from 'react'
-import { GripVertical } from 'lucide-react'
+import GripVertical from 'lucide-react/dist/esm/icons/grip-vertical';
 import { AttractionsGrid } from '@/components/attraction/AttractionsGrid'
 import { ConfirmModal } from '@/components/ui/ConfirmModal'
 

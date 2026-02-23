@@ -1,4 +1,9 @@
-import { ExternalLink, FileText, MapPin, Calendar, Clock, Hash } from 'lucide-react'
+import ExternalLink from 'lucide-react/dist/esm/icons/external-link';
+import FileText from 'lucide-react/dist/esm/icons/file-text';
+import MapPin from 'lucide-react/dist/esm/icons/map-pin';
+import Calendar from 'lucide-react/dist/esm/icons/calendar';
+import Clock from 'lucide-react/dist/esm/icons/clock';
+import Hash from 'lucide-react/dist/esm/icons/hash';
 import { formatDate } from '@/utils/formatters'
 import { RESERVATION_TYPES, BOOKING_STATUS, COUNTRIES } from '@/config/constants'
 import type { Reservation } from '@/types/Reservation'

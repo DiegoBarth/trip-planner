@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { createPortal } from 'react-dom'
-import { ChevronDown, Check } from 'lucide-react'
+import ChevronDown from 'lucide-react/dist/esm/icons/chevron-down';
+import Check from 'lucide-react/dist/esm/icons/check';
 import { cn } from '@/lib/utils'
 
 interface CustomSelectProps {

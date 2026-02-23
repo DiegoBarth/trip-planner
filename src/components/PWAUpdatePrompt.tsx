@@ -3,7 +3,7 @@ import { useRegisterSW } from 'virtual:pwa-register/react'
 /**
  * Registers the PWA service worker and shows a banner when a new version is available.
  */
-export function PWAUpdatePrompt() {
+export default function PWAUpdatePrompt() {
   const {
     needRefresh: [needRefresh, setNeedRefresh],
     updateServiceWorker,

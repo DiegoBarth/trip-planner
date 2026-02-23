@@ -10,7 +10,7 @@ const capitalize = (s?: string) => {
   return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
 };
 
-export function ExpensesByCategoryChart({ data }: { data: ExpenseByCategory[] }) {
+export default function ExpensesByCategoryChart({ data }: { data: ExpenseByCategory[] }) {
   return (
     <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md transition-shadow duration-300">
       <h3 className="text-gray-700 dark:text-gray-200 font-bold text-lg mb-6 flex items-center gap-2">

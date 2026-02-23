@@ -1,5 +1,4 @@
-import 'leaflet/dist/leaflet.css'
-import { useMemo } from 'react'
+import { useMemo, useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 import { MapContainer, TileLayer } from 'react-leaflet'
 import { useCountry } from '@/contexts/CountryContext'
@@ -77,6 +76,9 @@ export function MapView() {
     return [...filtered, ...accs];
   }, [filtered, accommodationsForMap]);
 
+  useEffect(() => {
+    import('leaflet/dist/leaflet.css')
+  }, [])
 
   return (
     <div className="h-[calc(100vh-186px)] md:h-[calc(100vh-147px-4rem)]">

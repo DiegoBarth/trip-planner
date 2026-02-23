@@ -1,4 +1,4 @@
-import { Wallet } from 'lucide-react'
+import Wallet from 'lucide-react/dist/esm/icons/wallet';
 import { CustomSelect } from '@/components/ui/CustomSelect'
 import { useFilterSheet } from '@/contexts/FilterSheetContext'
 import { BUDGET_ORIGINS } from '@/config/constants'

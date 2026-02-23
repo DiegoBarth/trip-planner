@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { X } from 'lucide-react'
+import X from 'lucide-react/dist/esm/icons/x';
 import { useFocusTrap } from '@/hooks/useFocusTrap'
 import { cn } from '@/lib/utils'
 

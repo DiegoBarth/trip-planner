@@ -1,5 +1,10 @@
 import { useState, useMemo } from 'react'
-import { ListChecks, FileDown, Luggage, CheckCircle } from 'lucide-react'
+
+import ListChecks from 'lucide-react/dist/esm/icons/list-checks';
+import FileDown from 'lucide-react/dist/esm/icons/file-down';
+import Luggage from 'lucide-react/dist/esm/icons/luggage';
+import CheckCircle from 'lucide-react/dist/esm/icons/check-circle';
+
 import { ConfirmModal } from '@/components/ui/ConfirmModal'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { ChecklistCard } from '@/components/checklist/ChecklistCard'

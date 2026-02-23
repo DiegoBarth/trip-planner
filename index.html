@@ -1,38 +1,64 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#6366f1" />
-    <meta name="description" content="Plan your dream trip to Japan and South Korea" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="apple-mobile-web-app-title" content="Trip Planner" />
-    <link rel="apple-touch-icon" href="/trip-planner/icon.svg" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://script.googleusercontent.com" crossorigin>
-    <link rel="preconnect" href="https://lh3.googleusercontent.com" crossorigin>
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap"></noscript>
-    
-    <title>Trip Planner - Japan & Korea</title>
-    <script>
-      (function() {
-        var theme = localStorage.getItem('theme');
-        var root = document.documentElement;
-        if (theme === 'dark') {
-          root.classList.add('dark');
-          root.setAttribute('data-theme', 'dark');
-        } else {
-          root.classList.remove('dark');
-          root.setAttribute('data-theme', 'light');
-        }
-      })();
-    </script>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#6366f1" />
+  <meta name="description" content="Plan your dream trip to Japan and South Korea" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap"
+    rel="stylesheet" media="all">
+
+  <title>Trip Planner</title>
+
+  <style>
+    /* Esqueleto Crítico para evitar CLS e melhorar FCP */
+    :root {
+      --bg: #f8fafc;
+      --header: #4f46e5;
+    }
+
+    .dark {
+      --bg: #0f172a;
+      --header: #312e81;
+    }
+
+    body {
+      margin: 0;
+      background-color: var(--bg);
+      font-family: sans-serif;
+    }
+
+    /* Renderiza um bloco de cor no lugar do header antes do JS carregar */
+    #root:empty::before {
+      content: "";
+      display: block;
+      height: 280px;
+      background: linear-gradient(135deg, var(--header), #9333ea);
+      width: 100%;
+    }
+  </style>
+
+  <script>
+    (function () {
+      var theme = localStorage.getItem('theme');
+      var root = document.documentElement;
+      if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        root.classList.add('dark');
+        root.setAttribute('data-theme', 'dark');
+      }
+    })();
+  </script>
+</head>
+
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.tsx"></script>
+</body>
+
 </html>

@@ -1,4 +1,8 @@
-import { Calendar, MapPin, Clock, AlertCircle, TrendingUp } from 'lucide-react'
+import Calendar from 'lucide-react/dist/esm/icons/calendar';
+import MapPin from 'lucide-react/dist/esm/icons/map-pin';
+import Clock from 'lucide-react/dist/esm/icons/clock';
+import AlertCircle from 'lucide-react/dist/esm/icons/alert-circle';
+import TrendingUp from 'lucide-react/dist/esm/icons/trending-up';
 import { TimelineCard } from '@/components/timeline/TimelineCard'
 import { TimelineSegment } from '@/components/timeline/TimelineSegment'
 import { WeatherBadge } from '@/components/timeline/WeatherBadge'

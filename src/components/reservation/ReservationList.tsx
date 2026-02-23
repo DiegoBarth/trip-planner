@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react'
-import { FileCheck } from 'lucide-react'
+import FileCheck from 'lucide-react/dist/esm/icons/file-check';
 import { ReservationCard } from '@/components/reservation/ReservationCard'
 import { ModalReservation } from '@/components/reservation/ModalReservation'
 import { ReservationActionsModal } from '@/components/reservation/ReservationActionsModal'

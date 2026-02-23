@@ -1,5 +1,6 @@
 import { Component, type ErrorInfo, type ReactNode } from 'react'
-import { AlertTriangle, RefreshCw } from 'lucide-react'
+import AlertTriangle from 'lucide-react/dist/esm/icons/alert-triangle';
+import RefreshCw from 'lucide-react/dist/esm/icons/refresh-cw';
 
 interface Props {
   children: ReactNode

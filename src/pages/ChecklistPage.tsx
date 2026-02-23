@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Plus } from 'lucide-react'
+import Plus from 'lucide-react/dist/esm/icons/plus';
 import { ChecklistList } from '@/components/checklist/ChecklistList'
 import { PageHeader } from '@/components/ui/PageHeader'
 import { Fab } from '@/components/ui/Fab'

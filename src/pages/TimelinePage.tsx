@@ -1,5 +1,7 @@
 import { useMemo, useState, useEffect } from 'react'
-import { Calendar, CloudSun, FileDown } from 'lucide-react'
+import Calendar from 'lucide-react/dist/esm/icons/calendar';
+import CloudSun from 'lucide-react/dist/esm/icons/cloud-sun';
+import FileDown from 'lucide-react/dist/esm/icons/file-down';
 import { Link } from 'react-router-dom'
 import { Timeline } from '@/components/timeline/Timeline'
 import { PageHeader } from '@/components/ui/PageHeader'

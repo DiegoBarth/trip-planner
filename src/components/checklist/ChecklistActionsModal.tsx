@@ -1,5 +1,8 @@
 import { useEffect } from 'react'
-import { X, Pencil, Trash2 } from 'lucide-react'
+import X from 'lucide-react/dist/esm/icons/x';
+import Pencil from 'lucide-react/dist/esm/icons/pencil';
+import Trash2 from 'lucide-react/dist/esm/icons/trash-2';
+
 import { useFocusTrap } from '@/hooks/useFocusTrap'
 import { CHECKLIST_CATEGORIES } from '@/config/constants'
 import type { ChecklistItem } from '@/types/ChecklistItem'

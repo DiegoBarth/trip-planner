@@ -1,4 +1,9 @@
-import { MapPin, Clock, Banknote, AlertTriangle, CheckCircle2, Navigation } from 'lucide-react'
+import MapPin from 'lucide-react/dist/esm/icons/map-pin';
+import Clock from 'lucide-react/dist/esm/icons/clock';
+import Banknote from 'lucide-react/dist/esm/icons/banknote';
+import AlertTriangle from 'lucide-react/dist/esm/icons/alert-triangle';
+import CheckCircle2 from 'lucide-react/dist/esm/icons/check-circle-2';
+import Navigation from 'lucide-react/dist/esm/icons/navigation';
 import { formatCurrency } from '@/utils/formatters'
 import { ATTRACTION_TYPES, RESERVATION_STATUS } from '@/config/constants'
 import type { Attraction } from '@/types/Attraction'

@@ -2,6 +2,7 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 import path from 'path'
+import UnpluginFonts from 'unplugin-fonts/vite'
 
 function deferCssPlugin() {
   return {
@@ -36,53 +37,64 @@ function removeLazyModulePreload() {
 }
 
 export default defineConfig({
-   plugins: [
-     react(),
-     deferCssPlugin(),
-     removeLazyModulePreload(),
-     VitePWA({
-       registerType: 'prompt',
-       scope: '/trip-planner/',
-       manifest: {
-         name: 'Trip Planner - Japan & Korea',
-         short_name: 'Trip Planner',
-         description: 'Plan your dream trip to Japan and South Korea',
-         theme_color: '#6366f1',
-         background_color: '#ffffff',
-         display: 'standalone',
-         start_url: '/trip-planner/',
-         scope: '/trip-planner/',
-         icons: [
-           { src: '/trip-planner/icon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any maskable' },
-         ],
-       },
-       workbox: {
-         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
-         navigateFallback: '/trip-planner/index.html',
-       },
-     }),
-   ],
-   base: '/trip-planner/',
-   build: {
-      outDir: 'docs',
-      rollupOptions: {
-         output: {
-            manualChunks: (id) => {
-               if (id.includes('node_modules/react/') || id.includes('node_modules/react-dom/')) return 'react'
-               if (id.includes('node_modules/@tanstack/react-query')) return 'react-query'
-               if (id.includes('node_modules/react-router')) return 'router'
-               if (id.includes('node_modules/leaflet') || id.includes('node_modules/react-leaflet')) return 'leaflet'
-               if (id.includes('node_modules/@dnd-kit')) return 'dnd-kit'
-               if (id.includes('node_modules/@react-oauth/google')) return 'google-oauth'
-               if (id.includes('node_modules/recharts')) return 'recharts'
-               if (id.includes('node_modules/lucide-react')) return 'lucide'
-            },
-         },
+  plugins: [
+    UnpluginFonts({
+      google: {
+        families: [
+          {
+            name: 'Inter',
+            styles: 'wght@400;500;600;700',
+          },
+          {
+            name: 'Poppins',
+            styles: 'wght@600;700',
+          },
+        ],
       },
-   },
-   resolve: {
-      alias: {
-         "@": path.resolve(__dirname, "./src"),
+    }),
+    react(),
+    deferCssPlugin(),
+    removeLazyModulePreload(),
+    VitePWA({
+      registerType: 'prompt',
+      scope: '/trip-planner/',
+      manifest: {
+        name: 'Trip Planner - Japan & Korea',
+        short_name: 'Trip Planner',
+        description: 'Plan your dream trip to Japan and South Korea',
+        theme_color: '#6366f1',
+        background_color: '#ffffff',
+        display: 'standalone',
+        start_url: '/trip-planner/',
+        scope: '/trip-planner/',
+        icons: [
+          { src: '/trip-planner/icon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any maskable' },
+        ],
       },
-   }
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+        navigateFallback: '/trip-planner/index.html',
+      },
+    }),
+  ],
+  base: '/trip-planner/',
+  build: {
+    outDir: 'docs',
+    rollupOptions: {
+      output: {
+        manualChunks: (id) => {
+          if (id.includes('node_modules/@tanstack/react-query')) return 'react-query'
+          if (id.includes('node_modules/react-router')) return 'router'
+          if (id.includes('node_modules/@react-oauth/google')) return 'google-oauth'
+          if (id.includes('src/GoogleLoginButton')) return 'google-login-button';
+          if (id.includes('node_modules/lucide-react')) return 'ui-icons'
+        },
+      },
+    },
+  },
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+    },
+  }
 })

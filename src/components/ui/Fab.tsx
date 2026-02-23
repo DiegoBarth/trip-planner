@@ -1,5 +1,5 @@
 import { type ReactNode } from 'react'
-import { Plus } from 'lucide-react'
+import Plus from 'lucide-react/dist/esm/icons/plus';
 import { cn } from '@/lib/utils'
 
 interface FabProps {

@@ -1,6 +1,12 @@
 import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
-import { Calendar, MapPin, Clock, ChevronRight, Navigation, CheckCircle2, Circle } from 'lucide-react'
+import Calendar from 'lucide-react/dist/esm/icons/calendar';
+import MapPin from 'lucide-react/dist/esm/icons/map-pin';
+import Clock from 'lucide-react/dist/esm/icons/clock';
+import ChevronRight from 'lucide-react/dist/esm/icons/chevron-right';
+import Navigation from 'lucide-react/dist/esm/icons/navigation';
+import CheckCircle2 from 'lucide-react/dist/esm/icons/check-circle-2';
+import Circle from 'lucide-react/dist/esm/icons/circle';
 import { useCountry } from '@/contexts/CountryContext'
 import { useAttraction } from '@/hooks/useAttraction'
 import { dateToInputFormat } from '@/utils/formatters'
@@ -11,7 +17,7 @@ function openInMaps(lat: number, lng: number, name: string) {
   window.open(url, '_blank');
 }
 
-export function NextDaySummary() {
+export default function NextDaySummary() {
   const { attractions, country } = useCountry();
   const { toggleVisited } = useAttraction(country);
 
