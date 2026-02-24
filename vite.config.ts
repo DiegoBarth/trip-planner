@@ -1,9 +1,8 @@
-import { defineConfig, type PluginOption } from 'vite'
+import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 import path from 'path'
 import UnpluginFonts from 'unplugin-fonts/vite'
-import { visualizer } from 'rollup-plugin-visualizer'
 
 function deferCssPlugin() {
   return {
@@ -76,16 +75,7 @@ export default defineConfig({
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
         navigateFallback: '/trip-planner/index.html',
       },
-    }),
-    ...(process.env.ANALYZE
-      ? [
-          visualizer({
-            filename: 'stats.html',
-            gzipSize: true,
-            open: false,
-          }) as PluginOption,
-        ]
-      : []),
+    })
   ],
   base: '/trip-planner/',
   build: {

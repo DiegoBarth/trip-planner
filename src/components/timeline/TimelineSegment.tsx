@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import ArrowDown from 'lucide-react/dist/esm/icons/arrow-down';
 import Car from 'lucide-react/dist/esm/icons/car';
 import TrendingUp from 'lucide-react/dist/esm/icons/trending-up';
@@ -8,7 +9,7 @@ interface TimelineSegmentProps {
   segment: TimelineSegmentType
 }
 
-export function TimelineSegment({ segment }: TimelineSegmentProps) {
+export const TimelineSegment = memo(function TimelineSegment({ segment }: TimelineSegmentProps) {
   const getTravelIcon = () => {
     switch (segment.travelMode) {
       case 'walking':
@@ -64,4 +65,4 @@ export function TimelineSegment({ segment }: TimelineSegmentProps) {
       </div>
     </div>
   );
-}
+})

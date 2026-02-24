@@ -18,10 +18,9 @@ interface TimelineProps {
   onToggleVisited?: (id: number) => void
 }
 
-export function Timeline({ timeline, city: cityProp, date: dateProp, onToggleVisited }: TimelineProps) {
+export default function Timeline({ timeline, city: cityProp, date: dateProp, onToggleVisited }: TimelineProps) {
   const city = cityProp ?? timeline?.attractions[0]?.city ?? '';
   const dateForWeather = dateProp ?? timeline?.date ?? '';
-
   const { forecast } = useWeather(city);
 
   const weather =
@@ -43,15 +42,13 @@ export function Timeline({ timeline, city: cityProp, date: dateProp, onToggleVis
 
   return (
     <div className="space-y-6">
-      {dateForWeather && (
-        weather ? (
-          <WeatherBadge weather={weather} />
-        ) : (
-          <div className="rounded-lg border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/20 p-4 text-amber-800 dark:text-amber-200 text-sm">
-            Clima não disponível para esta data. A previsão cobre apenas os próximos 5 dias.
+      <div className="h-[207px] flex items-start">
+        {dateForWeather && (
+          <div className="h-full w-full">
+            <WeatherBadge weather={weather} />
           </div>
-        )
-      )}
+        )}
+      </div>
 
       <div className="bg-gradient-to-br from-slate-600 to-slate-700 dark:from-slate-700 dark:to-slate-800 text-white rounded-2xl p-5 md:p-6 shadow-lg">
         <div className="space-y-4">

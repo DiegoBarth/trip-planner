@@ -1,9 +1,8 @@
-import { useMemo, useState, useEffect } from 'react'
+import { useMemo, useState, useEffect, lazy, Suspense, useCallback, startTransition } from 'react'
 import Calendar from 'lucide-react/dist/esm/icons/calendar';
 import CloudSun from 'lucide-react/dist/esm/icons/cloud-sun';
 import FileDown from 'lucide-react/dist/esm/icons/file-down';
 import { Link } from 'react-router-dom'
-import { Timeline } from '@/components/timeline/Timeline'
 import { PageHeader } from '@/components/ui/PageHeader'
 import { CountryFilter } from '@/components/home/CountryFilter'
 import { useAttraction } from '@/hooks/useAttraction'
@@ -14,6 +13,8 @@ import { buildDayTimeline } from '@/services/timelineService'
 import type { Attraction, Country } from '@/types/Attraction'
 import type { Accommodation } from '@/types/Accommodation'
 import type { TimelineDay } from '@/types/Timeline'
+
+const Timeline = lazy(() => import('@/components/timeline/Timeline'))
 
 function addAccommodationToDay(dayAttractions: Attraction[], accommodations: Accommodation[]): Attraction[] {
   if (dayAttractions.length === 0 || accommodations.length === 0) return dayAttractions;
@@ -70,17 +71,15 @@ export default function TimelinePage() {
   const { success, error } = useToast();
   const [isExporting, setIsExporting] = useState(false);
 
-  const handleToggleVisited = async (id: number) => {
+  const handleToggleVisited = useCallback(async (id: number) => {
     try {
-      await toggleVisited(id);
-
-      success('Status da atração atualizado');
+      await toggleVisited(id)
+      success('Status da atração atualizado')
+    } catch (err) {
+      error('Erro ao atualizar atração')
+      console.error(err)
     }
-    catch (err) {
-      error('Erro ao atualizar atração');
-      console.error(err);
-    }
-  };
+  }, [toggleVisited, success, error])
 
   const mappableAttractions = useMemo(
     () => attractions.filter(a => a.lat && a.lng),
@@ -136,14 +135,24 @@ export default function TimelinePage() {
 
   const timelineBuildKey = useMemo(() => {
     if (day === 'all') {
-      return JSON.stringify(dayGroups.map((g) => ({ day: g.day, ids: g.attractions.map((a) => a.id) })));
+      return JSON.stringify(dayGroups.map((g) => ({
+        day: g.day, ids: g.attractions.map((a) => ({
+          id: a.id,
+          visited: a.visited
+        }))
+      })));
     }
-    return JSON.stringify(timelineAttractions.map((a) => a.id));
+    return JSON.stringify(
+      timelineAttractions.map((a) => ({
+        id: a.id,
+        visited: a.visited
+      }))
+    );
+
   }, [day, dayGroups, timelineAttractions]);
 
   const [singleTimeline, setSingleTimeline] = useState<TimelineDay | null>(null);
   const [dayTimelines, setDayTimelines] = useState<(TimelineDay | null)[]>([]);
-  const [isTimelineLoading, setIsTimelineLoading] = useState(false);
 
   useEffect(() => {
     if (isRoutesLoading) {
@@ -153,25 +162,26 @@ export default function TimelinePage() {
     if (day !== 'all') {
       if (timelineAttractions.length === 0) {
         setSingleTimeline(null);
-        setIsTimelineLoading(false);
 
         return;
       }
 
       let cancelled = false;
 
-      setIsTimelineLoading(true);
-      setDayTimelines([]);
+      startTransition(() => {
+        setDayTimelines([]);
+      });
 
       const cached = segmentsByDay[Number(day)];
       const precomputed = cached && cached.length === timelineAttractions.length - 1 ? cached : undefined;
 
       buildDayTimeline(timelineAttractions, precomputed)
         .then((t) => {
-          if (!cancelled) setSingleTimeline(t);
-        })
-        .finally(() => {
-          if (!cancelled) setIsTimelineLoading(false);
+          if (!cancelled) {
+            startTransition(() => {
+              setSingleTimeline(t);
+            });
+          }
         })
       return () => {
         cancelled = true;
@@ -181,30 +191,30 @@ export default function TimelinePage() {
     if (dayGroups.length === 0) {
       setDayTimelines([]);
       setSingleTimeline(null);
-      setIsTimelineLoading(false);
 
       return;
     }
 
     let cancelled = false;
 
-    setIsTimelineLoading(true);
     setSingleTimeline(null);
 
     Promise.all(
-      dayGroups.map((g) => {
+      dayGroups.map(async (g) => {
+        await new Promise(r => setTimeout(r, 0))
+
         const cached = segmentsByDay[g.day];
         const precomputed = cached && cached.length === g.attractions.length - 1 ? cached : undefined;
 
         return buildDayTimeline(g.attractions, precomputed);
       })
-    )
-      .then((results) => {
-        if (!cancelled) setDayTimelines(results);
-      })
-      .finally(() => {
-        if (!cancelled) setIsTimelineLoading(false);
-      })
+    ).then((results) => {
+      if (!cancelled) {
+        startTransition(() => {
+          setDayTimelines(results);
+        });
+      }
+    })
     return () => {
       cancelled = true;
     }
@@ -295,7 +305,7 @@ export default function TimelinePage() {
         }
       />
 
-      <main className="max-w-6xl mx-auto px-4 md:px-6 py-6">
+      <main className="max-w-6xl mx-auto px-4 md:px-6 py-6 min-h-screen">
         {!import.meta.env.VITE_OPENWEATHER_API_KEY && (
           <div className="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6 rounded-lg">
             <div className="flex items-start gap-3">
@@ -344,52 +354,44 @@ export default function TimelinePage() {
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-8 text-center">
             <p className="text-gray-500 dark:text-gray-400 text-sm">Carregando rotas em segundo plano...</p>
           </div>
-        ) : isTimelineLoading ? (
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-12 flex items-center justify-center min-h-[200px]">
-            <div className="animate-spin rounded-full h-12 w-12 border-2 border-gray-200 dark:border-gray-700 border-t-slate-600 dark:border-t-slate-400" />
-          </div>
         ) : day === 'all' ? (
           <div className="space-y-10">
-            {dayGroups.map((group, idx) => (
-              <div key={group.day} className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
-                <Timeline
-                  timeline={dayTimelines[idx] ?? null}
-                  city={group.attractions[0]?.city}
-                  date={group.date}
-                  onToggleVisited={handleToggleVisited}
-                />
-              </div>
-            ))}
+            <Suspense
+              fallback={
+                <div className="space-y-6">
+                  <div className="h-650 bg-gray-200 dark:bg-gray-700 animate-pulse rounded-2xl" />
+                </div>
+              }
+            >
+              {dayGroups.map((group, idx) => (
+                <div key={group.day} className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 min-h-[calc(100dvh-160px)]">
+                  <Timeline
+                    timeline={dayTimelines[idx] ?? null}
+                    city={group.attractions[0]?.city}
+                    date={group.date}
+                    onToggleVisited={handleToggleVisited}
+                  />
+                </div>
+              ))}
+            </Suspense>
           </div>
         ) : (
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
-            <Timeline
-              timeline={singleTimeline}
-              city={timelineAttractions[0]?.city}
-              date={timelineAttractions[0]?.date}
-              onToggleVisited={handleToggleVisited}
-            />
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 min-h-[420px]">
+            <Suspense
+              fallback={
+                <div className="h-40 bg-gray-200 dark:bg-gray-700 animate-pulse rounded-2xl" />
+              }
+            >
+              <Timeline
+                timeline={singleTimeline}
+                city={timelineAttractions[0]?.city}
+                date={timelineAttractions[0]?.date}
+                onToggleVisited={handleToggleVisited}
+              />
+            </Suspense>
           </div>
         )}
       </main>
-
-      {(day === 'all' ? dayGroups.length > 0 : timelineAttractions.length > 0) && (
-        <div className="max-w-6xl mx-auto px-6 pb-6">
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <h4 className="font-semibold text-blue-900 mb-2 flex items-center gap-2">
-              <Calendar className="w-4 h-4" />
-              Como funciona a Timeline
-            </h4>
-            <ul className="text-sm text-blue-800 space-y-1">
-              <li>• Rotas calculadas automaticamente usando OSRM</li>
-              <li>• Tempo de deslocamento estimado com base na distância</li>
-              <li>• Conflitos detectados automaticamente (horários, fechamentos)</li>
-              <li>• Duração: use o campo "Duração" da atração (padrão: 60min se não informado)</li>
-              <li>• Use o filtro na home para selecionar o dia da timeline</li>
-            </ul>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

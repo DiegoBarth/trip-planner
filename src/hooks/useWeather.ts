@@ -8,7 +8,9 @@ export function useWeather(city: string) {
     queryFn: () => fetchWeatherForecast(city),
     staleTime: 1000 * 60 * 30, // 30 minutes
     enabled: !!city,
-    retry: 1
+    retry: 1,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false
   });
 
   return {

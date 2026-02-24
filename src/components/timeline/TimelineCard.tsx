@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import MapPin from 'lucide-react/dist/esm/icons/map-pin';
 import Clock from 'lucide-react/dist/esm/icons/clock';
 import Banknote from 'lucide-react/dist/esm/icons/banknote';
@@ -24,7 +25,14 @@ function openInMaps(lat: number, lng: number) {
   window.open(url, '_blank');
 }
 
-export function TimelineCard({ attraction, arrivalTime, departureTime, duration, conflicts, onToggleVisited }: TimelineCardProps) {
+export const TimelineCard = memo(function TimelineCard({
+  attraction,
+  arrivalTime,
+  departureTime,
+  duration,
+  conflicts,
+  onToggleVisited
+}: TimelineCardProps) {
   const typeConfig = ATTRACTION_TYPES[attraction.type];
   const hasError = conflicts.some(c => c.severity === 'error');
   const hasWarning = conflicts.some(c => c.severity === 'warning');
@@ -43,7 +51,8 @@ export function TimelineCard({ attraction, arrivalTime, departureTime, duration,
 
       <div
         className={`
-          relative ml-4 md:ml-6 rounded-2xl shadow-xl overflow-hidden transition-all border-l-4
+          relative ml-4 md:ml-6 rounded-2xl shadow-xl overflow-hidden border-l-4
+          min-h-[180px] md:min-h-[200px]
           ${hasError ? 'border-l-red-500' : ''}
           ${hasWarning && !hasError ? 'border-l-amber-500' : ''}
           ${isVisited && !hasError && !hasWarning ? 'border-l-emerald-500' : ''}
@@ -57,8 +66,10 @@ export function TimelineCard({ attraction, arrivalTime, departureTime, duration,
               src={(attraction.thumbnailUrl || attraction.imageUrl || '').trim()}
               alt={attraction.name}
               referrerPolicy="no-referrer"
-              loading="eager"
+              loading="lazy"
               decoding="async"
+              width={800}
+              height={400}
               className="absolute inset-0 w-full h-full object-cover"
             />
           ) : null}
@@ -185,4 +196,4 @@ export function TimelineCard({ attraction, arrivalTime, departureTime, duration,
       </div>
     </div>
   );
-}
+})
