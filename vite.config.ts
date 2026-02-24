@@ -21,7 +21,7 @@ function deferCssPlugin() {
 
 // Remove modulepreload de chunks que só são usados em rotas específicas (lazy)
 function removeLazyModulePreload() {
-  const LAZY_CHUNKS = ['recharts', 'dnd-kit', 'google-oauth', 'leaflet']
+  const LAZY_CHUNKS = ['dnd-kit', 'google-oauth', 'leaflet']
   return {
     name: 'remove-lazy-modulepreload',
     enforce: 'post' as const,

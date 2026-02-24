@@ -10,7 +10,6 @@ import { EmptyState } from '@/components/ui/EmptyState'
 import { ChecklistCard } from '@/components/checklist/ChecklistCard'
 import { ModalChecklistItem } from '@/components/checklist/ModalChecklistItem'
 import { ChecklistActionsModal } from '@/components/checklist/ChecklistActionsModal'
-import { exportChecklistToPDF } from '@/utils/exportChecklistToPDF'
 import { CHECKLIST_CATEGORIES } from '@/config/constants'
 import type { ChecklistItem } from '@/types/ChecklistItem'
 
@@ -28,6 +27,7 @@ export function ChecklistList({ items, onUpdate, onCreate, onDelete, onTogglePac
   const [editingItem, setEditingItem] = useState<ChecklistItem | undefined>();
   const [itemToDelete, setItemToDelete] = useState<ChecklistItem | null>(null);
   const [itemForActions, setItemForActions] = useState<ChecklistItem | null>(null);
+  const [isExportingPDF, setIsExportingPDF] = useState(false);
 
   const groupedByCategory = useMemo(() => {
     const grouped = items.reduce((acc, item) => {
@@ -74,8 +74,14 @@ export function ChecklistList({ items, onUpdate, onCreate, onDelete, onTogglePac
     }
   };
 
-  const handleExportPDF = () => {
-    exportChecklistToPDF({ items });
+  const handleExportPDF = async () => {
+    setIsExportingPDF(true);
+    try {
+      const { exportChecklistToPDF } = await import('@/utils/exportChecklistToPDF');
+      exportChecklistToPDF({ items });
+    } finally {
+      setIsExportingPDF(false);
+    }
   };
 
   const handleConfirmDelete = async () => {
@@ -124,12 +130,14 @@ export function ChecklistList({ items, onUpdate, onCreate, onDelete, onTogglePac
               </div>
               {stats.total > 0 && (
                 <button
+                  type="button"
                   onClick={handleExportPDF}
-                  className="flex items-center gap-2 px-4 py-2.5 bg-white text-emerald-700 rounded-xl font-semibold hover:bg-white/90 transition-colors shadow-md focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none"
+                  disabled={isExportingPDF}
+                  className="flex items-center gap-2 px-4 py-2.5 bg-white text-emerald-700 rounded-xl font-semibold hover:bg-white/90 transition-colors shadow-md focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none disabled:opacity-70 disabled:cursor-wait"
                   title="Exportar para PDF"
                 >
                   <FileDown className="w-5 h-5" />
-                  Exportar PDF
+                  {isExportingPDF ? 'Preparando…' : 'Exportar PDF'}
                 </button>
               )}
             </div>

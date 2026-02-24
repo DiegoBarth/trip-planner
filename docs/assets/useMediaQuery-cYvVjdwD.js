@@ -1,1 +1,0 @@
-import{D as e}from"./react-query-1UW459iL.js";var t=e();function n(e){let[n,r]=(0,t.useState)(!1);return(0,t.useEffect)(()=>{let t=window.matchMedia(e);r(t.matches);let n=()=>r(t.matches);return t.addEventListener(`change`,n),()=>t.removeEventListener(`change`,n)},[e]),n}export{n as t};

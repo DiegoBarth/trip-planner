@@ -11,7 +11,6 @@ import { useOSRMRoutesQuery } from '@/hooks/useOSRMRoutesQuery'
 import { useCountry } from '@/contexts/CountryContext'
 import { useToast } from '@/contexts/toast'
 import { buildDayTimeline } from '@/services/timelineService'
-import { exportTimelineToPDF } from '@/utils/exportTimelineToPDF'
 import type { Attraction, Country } from '@/types/Attraction'
 import type { Accommodation } from '@/types/Accommodation'
 import type { TimelineDay } from '@/types/Timeline'
@@ -217,6 +216,8 @@ export default function TimelinePage() {
     setIsExporting(true);
 
     try {
+      const { exportTimelineToPDF } = await import('@/utils/exportTimelineToPDF');
+
       if (day === 'all') {
         const timelineDays = dayTimelines.length === dayGroups.length
           ? dayTimelines
