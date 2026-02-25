@@ -22,7 +22,11 @@ export default function TodaysPendencies() {
 
   if (pendencies.total === 0) {
     return (
-      <div className="bg-gradient-to-br from-green-500 to-emerald-600 text-white rounded-2xl shadow-md p-6 focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none">
+      <div
+        className="bg-gradient-to-br from-green-500 to-emerald-600 text-white rounded-2xl shadow-md
+          p-6 focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none
+        "
+      >
         <div className="flex items-center gap-3">
           <CheckSquare className="w-8 h-8" />
           <div>

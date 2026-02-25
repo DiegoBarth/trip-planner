@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { Routes, Route, useLocation } from 'react-router-dom'
 import LogOut from 'lucide-react/dist/esm/icons/log-out'
@@ -15,27 +15,20 @@ function ScrollToTop() {
   return null
 }
 
-function HomeHeaderVisibility() {
-  const { pathname } = useLocation()
-  useEffect(() => {
-    const header = document.querySelector('.app-header')
-    if (!header) return
-    if (pathname === '/') {
-      header.classList.remove('hidden')
-    } else {
-      header.classList.add('hidden')
-    }
-  }, [pathname])
-  return null
-}
-
 function HeaderPortals({ onLogout }: { onLogout: () => void }) {
   const location = useLocation()
   const isHome = location.pathname === '/'
-  const actionsEl = typeof document !== 'undefined' ? document.getElementById('header-actions') : null
-  const filterEl = typeof document !== 'undefined' ? document.getElementById('header-filter') : null
+  const [headerEls, setHeaderEls] = useState<{ actionsEl: HTMLElement | null; filterEl: HTMLElement | null }>({
+    actionsEl: null,
+    filterEl: null,
+  })
 
-  if (!actionsEl) return null
+  useEffect(() => {
+    const actionsEl = document.getElementById('header-actions')
+    const filterEl = document.getElementById('header-filter')
+    setHeaderEls({ actionsEl, filterEl })
+  }, [])
+  if (!headerEls.actionsEl) return null
 
   const actions = (
     <div className="flex items-center gap-2">
@@ -53,8 +46,8 @@ function HeaderPortals({ onLogout }: { onLogout: () => void }) {
 
   return (
     <>
-      {createPortal(actions, actionsEl)}
-      {isHome && filterEl && createPortal(<CountryFilter hideGeneralOption />, filterEl)}
+      {createPortal(actions, headerEls.actionsEl)}
+      {isHome && headerEls.filterEl && createPortal(<CountryFilter hideGeneralOption />, headerEls.filterEl)}
     </>
   )
 }
@@ -74,9 +67,26 @@ const ReservationsPage = lazy(() => import('@/pages/ReservationsPage'))
 const TimelinePage = lazy(() => import('@/pages/TimelinePage'))
 
 export default function AppRouter({ onLogout }: AppRouterProps) {
+  const { pathname } = useLocation();
+  const isHome = pathname === '/';
+
   return (
     <>
-      <HomeHeaderVisibility />
+      {isHome && (
+        <header className="app-header">
+          <div className="app-header__inner">
+            <div className="app-header__row">
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <h1>Japão & Coreia</h1>
+                <p className="app-header__subtitle">Planeje cada momento da sua aventura</p>
+              </div>
+              <div id="header-actions"></div>
+            </div>
+            <div id="header-filter"></div>
+          </div>
+        </header>
+      )}
+
       <HeaderPortals onLogout={onLogout} />
       <GlobalLoading />
       <ScrollToTop />

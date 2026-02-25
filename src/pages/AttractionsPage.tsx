@@ -4,7 +4,6 @@ import GripVertical from 'lucide-react/dist/esm/icons/grip-vertical';
 import { PageHeader } from '@/components/ui/PageHeader'
 import { CountryFilter } from '@/components/home/CountryFilter'
 import { Fab } from '@/components/ui/Fab'
-import { AttractionsList } from '@/components/attraction/AttractionsList'
 import { useAttraction } from '@/hooks/useAttraction'
 import { useToast } from '@/contexts/toast'
 import { useCountry } from '@/contexts/CountryContext'
@@ -13,6 +12,8 @@ import type { Attraction } from '@/types/Attraction'
 const ModalAttraction = lazy(() =>
   import('@/components/attraction/ModalAttraction').then((m) => ({ default: m.ModalAttraction }))
 )
+
+const AttractionsList = lazy(() => import('@/components/attraction/AttractionsList'))
 
 export default function AttractionsPage() {
   const [showModal, setShowModal] = useState(false)
@@ -110,11 +111,10 @@ export default function AttractionsPage() {
           <button
             type="button"
             onClick={() => setIsDragEnabled((v) => !v)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-sm font-medium transition-colors ${
-              isDragEnabled
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-sm font-medium transition-colors ${isDragEnabled
                 ? 'bg-white/25 text-white hover:bg-white/30'
                 : 'bg-white/15 text-white/95 hover:bg-white/20'
-            }`}
+              }`}
             title={isDragEnabled ? 'Desabilitar reordenação' : 'Habilitar reordenação'}
             aria-pressed={isDragEnabled}
           >
@@ -125,17 +125,19 @@ export default function AttractionsPage() {
       />
 
       <main className="max-w-6xl mx-auto px-4 md:px-6 py-6 mb-12">
-        <AttractionsList
-          attractions={filteredAttractions}
-          isLoading={!isReady}
-          onCreate={handleCreate}
-          onUpdate={handleUpdate}
-          onDelete={handleDelete}
-          onToggleVisited={handleToggleVisited}
-          onBulkUpdate={handleBulkUpdate}
-          isDragEnabled={isDragEnabled}
-          onToggleDragEnabled={setIsDragEnabled}
-        />
+        <Suspense fallback={null}>
+          <AttractionsList
+            attractions={filteredAttractions}
+            isLoading={!isReady}
+            onCreate={handleCreate}
+            onUpdate={handleUpdate}
+            onDelete={handleDelete}
+            onToggleVisited={handleToggleVisited}
+            onBulkUpdate={handleBulkUpdate}
+            isDragEnabled={isDragEnabled}
+            onToggleDragEnabled={setIsDragEnabled}
+          />
+        </Suspense>
       </main>
 
       <Fab

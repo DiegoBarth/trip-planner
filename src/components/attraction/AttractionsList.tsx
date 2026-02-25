@@ -27,7 +27,7 @@ interface AttractionsListProps {
   onToggleDragEnabled?: (value: boolean) => void
 }
 
-export function AttractionsList({
+export default function AttractionsList({
   attractions,
   isLoading,
   onUpdate,
@@ -140,7 +140,7 @@ export function AttractionsList({
 
           {shouldShowGlobalTotal && globalTotal && (
             <div className="flex flex-col text-right">
-              <span className="text-lg font-semibold text-emerald-600 dark:text-emerald-400">
+              <span className="text-lg font-semibold text-emerald-700 dark:text-emerald-400">
                 {formatCurrency(globalTotal)}
               </span>
             </div>

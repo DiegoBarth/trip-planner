@@ -16,7 +16,7 @@ export default function App() {
       if (saved && savedTime && (Date.now() - savedTime < AUTH_TIMEOUT_MS)) {
         return saved;
       }
-    } catch { /* Ignora erro de storage */ }
+    } catch { }
     return null;
   });
 
@@ -47,7 +47,7 @@ export default function App() {
 
   const handleLogout = useCallback(() => {
     (window as any)?.google?.accounts?.id?.disableAutoSelect?.();
-    localStorage.clear(); // Limpeza mais rápida
+    localStorage.clear();
     sessionStorage.removeItem("period");
     setUserEmail(null);
   }, []);

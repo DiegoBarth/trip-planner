@@ -35,7 +35,7 @@ export function BudgetCard({ origin, total, spent, remaining }: BudgetCardProps)
           </div>
           <div className="flex justify-between items-baseline text-sm">
             <span className="text-gray-500 dark:text-gray-400">Restante</span>
-            <span className="font-semibold text-emerald-600 dark:text-emerald-400">{formatCurrency(remaining)}</span>
+            <span className="font-semibold text-emerald-700 dark:text-emerald-400">{formatCurrency(remaining)}</span>
           </div>
         </div>
 

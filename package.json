@@ -5,8 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "node --max-old-space-size=6144 ./node_modules/typescript/bin/tsc -b && vite build",
-    "build:analyze": "node --max-old-space-size=6144 ./node_modules/typescript/bin/tsc -b && cross-env ANALYZE=true vite build",
+    "build": "tsc -b && vite build && cp docs/index.html docs/404.html",
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest run",

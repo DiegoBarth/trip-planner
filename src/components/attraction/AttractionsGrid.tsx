@@ -65,7 +65,7 @@ export function AttractionsGrid({
           </div>
           {isAllDaysView && isReadyForTotals && countryTotalCouple && (
             <div className="flex flex-col">
-              <span className="text-md font-semibold text-emerald-600 dark:text-emerald-400">
+              <span className="text-md font-semibold text-emerald-700 dark:text-emerald-400">
                 {countryTotalCouple}
               </span>
               <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
@@ -94,13 +94,13 @@ export function AttractionsGrid({
                         {formatDate(dayAttractions[0].date)}
                       </span>
                     )}
-                    <span className="text-sm text-gray-400 dark:text-gray-500">
+                    <span className="text-sm text-gray-500 dark:text-gray-400">
                       · {dayAttractions.length} {dayAttractions.length === 1 ? 'atração' : 'atrações'}
                     </span>
                   </div>
                   {totalCouplePrice && (
                     <div className="flex flex-col h-[58px]">
-                      <span className="text-md font-medium text-emerald-600 dark:text-emerald-400">
+                      <span className="text-md font-medium text-emerald-700 dark:text-emerald-400">
                         {totalCouplePrice}
                       </span>
                       <span className="text-sm font-medium">

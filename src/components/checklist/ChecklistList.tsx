@@ -22,7 +22,7 @@ interface ChecklistListProps {
   isLoading?: boolean
 }
 
-export function ChecklistList({ items, onUpdate, onCreate, onDelete, onTogglePacked, isLoading = false }: ChecklistListProps) {
+export default function ChecklistList({ items, onUpdate, onCreate, onDelete, onTogglePacked, isLoading = false }: ChecklistListProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<ChecklistItem | undefined>();
   const [itemToDelete, setItemToDelete] = useState<ChecklistItem | null>(null);

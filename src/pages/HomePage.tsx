@@ -21,10 +21,10 @@ export default function HomePage(_props: { onLogout: () => void }) {
           {/* Sidebar-like Content */}
           <div className="space-y-6">
             <h2 className="sr-only">Pendências e Gastos de Hoje</h2>
-            <Suspense fallback={<div className="h-32 rounded-xl bg-gray-100 animate-pulse" />}>
+            <Suspense fallback={<div className="h-56 rounded-xl bg-gray-100 animate-pulse" />}>
               <TodaysPendencies />
             </Suspense>
-            <Suspense fallback={<div className="h-32 rounded-xl bg-gray-100 animate-pulse" />}>
+            <Suspense fallback={<div className="h-20 rounded-xl bg-gray-100 animate-pulse" />}>
               <TodayExpensesCard />
             </Suspense>
           </div>

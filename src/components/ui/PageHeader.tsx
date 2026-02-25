@@ -64,7 +64,7 @@ export function PageHeader({ title, subtitle, showBack = true, action, filter, c
               <h1
                 className={cn(
                   'font-bold font-display truncate',
-                  isMobile ? 'text-base' : 'text-xl sm:text-2xl md:text-3xl'
+                  isMobile ? 'text-base text-xl' : 'text-xl sm:text-2xl md:text-3xl'
                 )}
               >
                 {title}

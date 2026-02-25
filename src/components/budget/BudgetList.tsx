@@ -18,7 +18,7 @@ interface BudgetListProps {
   onDelete: (id: number) => Promise<void>
 }
 
-export function BudgetList({ budgets, isLoading, onUpdate, onCreate, onDelete }: BudgetListProps) {
+export default function BudgetList({ budgets, isLoading, onUpdate, onCreate, onDelete }: BudgetListProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingBudget, setEditingBudget] = useState<Budget | undefined>();
   const [budgetToDelete, setBudgetToDelete] = useState<Budget | null>(null);

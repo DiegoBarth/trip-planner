@@ -16,7 +16,7 @@ interface ReservationListProps {
   isLoading?: boolean
 }
 
-export function ReservationList({ reservations, onUpdate, onCreate, onDelete, isLoading = false }: ReservationListProps) {
+export default function ReservationList({ reservations, onUpdate, onCreate, onDelete, isLoading = false }: ReservationListProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingReservation, setEditingReservation] = useState<Reservation | undefined>();
   const [reservationToDelete, setReservationToDelete] = useState<Reservation | null>(null);

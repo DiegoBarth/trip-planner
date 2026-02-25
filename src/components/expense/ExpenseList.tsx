@@ -19,7 +19,7 @@ interface ExpenseListProps {
   isLoading?: boolean
 }
 
-export function ExpenseList({ expenses, onUpdate, onCreate, onDelete, isLoading = false }: ExpenseListProps) {
+export default function ExpenseList({ expenses, onUpdate, onCreate, onDelete, isLoading = false }: ExpenseListProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingExpense, setEditingExpense] = useState<Expense | undefined>();
   const [expenseToDelete, setExpenseToDelete] = useState<Expense | null>(null);

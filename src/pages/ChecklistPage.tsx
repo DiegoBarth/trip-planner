@@ -1,6 +1,5 @@
-import { useState } from 'react'
+import { useState, lazy, Suspense } from 'react'
 import Plus from 'lucide-react/dist/esm/icons/plus';
-import { ChecklistList } from '@/components/checklist/ChecklistList'
 import { PageHeader } from '@/components/ui/PageHeader'
 import { Fab } from '@/components/ui/Fab'
 import { useChecklist } from '@/hooks/useChecklist'
@@ -8,6 +7,8 @@ import { useCountry } from '@/contexts/CountryContext'
 import { useToast } from '@/contexts/toast'
 import { ModalChecklistItem } from '@/components/checklist/ModalChecklistItem'
 import type { ChecklistItem } from '@/types/ChecklistItem'
+
+const ChecklistList = lazy(() => import('@/components/checklist/ChecklistList'))
 
 export default function ChecklistPage() {
   const [showModal, setShowModal] = useState(false);
@@ -73,14 +74,16 @@ export default function ChecklistPage() {
       />
 
       <main className="max-w-6xl mx-auto px-4 md:px-6 py-6 mb-12">
-        <ChecklistList
-          items={items}
-          onCreate={handleCreate}
-          onUpdate={handleUpdate}
-          onDelete={handleDelete}
-          onTogglePacked={handleTogglePacked}
-          isLoading={!isReady}
-        />
+        <Suspense fallback={null}>
+          <ChecklistList
+            items={items}
+            onCreate={handleCreate}
+            onUpdate={handleUpdate}
+            onDelete={handleDelete}
+            onTogglePacked={handleTogglePacked}
+            isLoading={!isReady}
+          />
+        </Suspense>
       </main>
 
       <Fab
@@ -90,14 +93,16 @@ export default function ChecklistPage() {
       />
 
       {showModal && (
-        <ModalChecklistItem
-          isOpen={showModal}
-          onClose={() => setShowModal(false)}
-          onSave={async (data) => {
-            await handleCreate(data as any)
-            setShowModal(false)
-          }}
-        />
+        <Suspense fallback={null}>
+          <ModalChecklistItem
+            isOpen={showModal}
+            onClose={() => setShowModal(false)}
+            onSave={async (data) => {
+              await handleCreate(data as any)
+              setShowModal(false)
+            }}
+          />
+        </Suspense>
       )}
     </div>
   );

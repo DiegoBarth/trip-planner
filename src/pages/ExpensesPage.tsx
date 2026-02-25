@@ -1,6 +1,5 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, lazy, Suspense } from 'react'
 import Plus from 'lucide-react/dist/esm/icons/plus';
-import { ExpenseList } from '@/components/expense/ExpenseList'
 import { PageHeader } from '@/components/ui/PageHeader'
 import { CountryFilter } from '@/components/home/CountryFilter'
 import { BudgetOriginFilter } from '@/components/expense/BudgetOriginFilter'
@@ -11,6 +10,8 @@ import { useToast } from '@/contexts/toast'
 import { useCountry } from '@/contexts/CountryContext'
 import type { Expense } from '@/types/Expense'
 import type { BudgetOrigin } from '@/types/Attraction'
+
+const ExpenseList = lazy(() => import('@/components/expense/ExpenseList'))
 
 export default function ExpensesPage() {
   const [showModal, setShowModal] = useState(false);
@@ -76,13 +77,15 @@ export default function ExpensesPage() {
       />
 
       <main className="max-w-6xl mx-auto px-4 md:px-6 py-6 mb-12">
-        <ExpenseList
-          expenses={filteredExpenses}
-          onCreate={handleCreate}
-          onUpdate={handleUpdate}
-          onDelete={handleDelete}
-          isLoading={!isReady}
-        />
+        <Suspense fallback={null}>
+          <ExpenseList
+            expenses={filteredExpenses}
+            onCreate={handleCreate}
+            onUpdate={handleUpdate}
+            onDelete={handleDelete}
+            isLoading={!isReady}
+          />
+        </Suspense>
       </main>
 
       <Fab
@@ -92,14 +95,16 @@ export default function ExpensesPage() {
       />
 
       {showModal && (
-        <ModalExpense
-          isOpen={showModal}
-          onClose={() => setShowModal(false)}
-          onSave={async (data) => {
-            await handleCreate(data)
-            setShowModal(false)
-          }}
-        />
+        <Suspense fallback={null}>
+          <ModalExpense
+            isOpen={showModal}
+            onClose={() => setShowModal(false)}
+            onSave={async (data) => {
+              await handleCreate(data)
+              setShowModal(false)
+            }}
+          />
+        </Suspense>
       )}
     </div>
   );

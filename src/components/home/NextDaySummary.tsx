@@ -77,9 +77,11 @@ export default function NextDaySummary() {
 
   if (!nextDayData) {
     return (
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-md p-6 text-center">
-        <Calendar className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-        <p className="text-gray-600 dark:text-gray-400">Nenhum dia planejado</p>
+      <div className="h-[309px] bg-white dark:bg-gray-800 rounded-2xl shadow-md p-6 flex flex-col items-center justify-center text-center">
+        <Calendar className="w-12 h-12 text-gray-400 mb-3" />
+        <p className="text-gray-600 dark:text-gray-400">
+          Nenhum dia planejado
+        </p>
       </div>
     );
   }
@@ -100,7 +102,7 @@ export default function NextDaySummary() {
               {nextDayData.isToday ? 'Hoje' : 'Próximo Dia'}
             </span>
           </div>
-          <h3 className="text-2xl font-bold capitalize">
+          <h3 className="text-xl font-bold capitalize">
             {dateStr}
           </h3>
           <p className="text-sm opacity-90 mt-1">Dia {nextDayData.day} da viagem</p>
