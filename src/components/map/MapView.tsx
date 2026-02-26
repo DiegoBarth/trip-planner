@@ -83,7 +83,7 @@ export function MapView() {
   }, [])
 
   return (
-    <div className="h-[calc(100vh-186px)] md:h-[calc(100vh-147px-4rem)]">
+    <div className="h-[calc(100vh-122px)] md:h-[calc(100vh-147px-4rem)]">
       <MapContainer
         key={location.pathname}
         className="h-full w-full"
