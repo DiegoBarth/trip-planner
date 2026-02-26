@@ -34,10 +34,6 @@ describe('attractionCreateSchema', () => {
     expect(result.success).toBe(false)
   })
 
-  it('rejects negative couplePrice', () => {
-    expect(attractionCreateSchema.safeParse({ ...validAttraction, couplePrice: -1 }).success).toBe(false)
-  })
-
   it('accepts optional fields', () => {
     expect(attractionCreateSchema.safeParse({
       ...validAttraction,

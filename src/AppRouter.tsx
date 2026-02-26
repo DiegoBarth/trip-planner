@@ -6,6 +6,7 @@ import { BottomNav } from '@/components/ui/BottomNav'
 import { GlobalLoading } from '@/components/ui/GlobalLoading'
 import { ThemeToggle } from '@/components/ui/ThemeToggle'
 import { CountryFilter } from '@/components/home/CountryFilter'
+import { SwipeLayout } from '@/components/layout/SwipeLayout';
 
 function ScrollToTop() {
   const { pathname } = useLocation()
@@ -94,15 +95,17 @@ export default function AppRouter({ onLogout }: AppRouterProps) {
 
       <Suspense fallback={null}>
         <Routes>
-          <Route path="/" element={<HomePage onLogout={onLogout} />} />
-          <Route path="/budgets" element={<BudgetPage />} />
-          <Route path="/expenses" element={<ExpensesPage />} />
-          <Route path="/attractions" element={<AttractionsPage />} />
-          <Route path="/map" element={<MapPage />} />
-          <Route path="/dashboard" element={<DashboardPage />} />
-          <Route path="/checklist" element={<ChecklistPage />} />
-          <Route path="/reservations" element={<ReservationsPage />} />
-          <Route path="/timeline" element={<TimelinePage />} />
+          <Route element={<SwipeLayout />}>
+            <Route path="/" element={<HomePage onLogout={onLogout} />} />
+            <Route path="/budgets" element={<BudgetPage />} />
+            <Route path="/expenses" element={<ExpensesPage />} />
+            <Route path="/attractions" element={<AttractionsPage />} />
+            <Route path="/map" element={<MapPage />} />
+            <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/checklist" element={<ChecklistPage />} />
+            <Route path="/reservations" element={<ReservationsPage />} />
+            <Route path="/timeline" element={<TimelinePage />} />
+          </Route>
         </Routes>
       </Suspense>
 

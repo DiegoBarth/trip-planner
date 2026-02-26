@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import { useSwipeable } from 'react-swipeable'
 import { EDGE_ZONE, SWIPE_DELTA_PX, SWIPE_MIN_DISTANCE_PX } from '@/config/constants'
 
-const SWIPE_ROUTES = ['/', '/budget', '/expenses', '/attractions', '/dashboard'];
+const SWIPE_ROUTES = ['/reservations', '/attractions', '/expenses', '/', '/timeline', '/checklist', '/dashboard'];
 
 export function useSwipeNavigation() {
   const navigate = useNavigate();
