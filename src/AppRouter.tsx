@@ -27,7 +27,8 @@ function HeaderPortals({ onLogout }: { onLogout: () => void }) {
     const actionsEl = document.getElementById('header-actions')
     const filterEl = document.getElementById('header-filter')
     setHeaderEls({ actionsEl, filterEl })
-  }, [])
+  }, [location.pathname])
+
   if (!headerEls.actionsEl) return null
 
   const actions = (
