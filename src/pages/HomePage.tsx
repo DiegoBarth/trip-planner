@@ -1,13 +1,34 @@
-import { lazy, Suspense } from 'react'
+import { useEffect, lazy, Suspense } from 'react'
+import { useQueryClient } from '@tanstack/react-query';
 import { QuickActions } from '@/components/ui/QuickActions'
 import { LazySection } from '@/components/LazySection'
 import NextDaySummary from '@/components/home/NextDaySummary'
+import { useCountry } from '@/contexts/CountryContext'
+import { useAttraction } from '@/hooks/useAttraction'
+import { getBudgetsQueryOptions, getBudgetSummaryQueryOptions } from '@/services/budgetQueryService';
+import { getAccommodationsQueryOptions } from '@/services/accommodationQueryService';
+import { getExchangeRatesQueryOptions } from '@/services/currencyQueryService';
+import { getWeatherQueryOptions } from '@/services/weatherQueryService';
 
 const TodaysPendencies = lazy(() => import('@/components/home/TodaysPendencies'))
 const TodayExpensesCard = lazy(() => import('@/components/home/TodayExpensesCard'))
 const BudgetSummary = lazy(() => import('@/components/home/BudgetSummary'))
 
 export default function HomePage(_props: { onLogout: () => void }) {
+  const { country } = useCountry()
+  const { citiesToPrefetch } = useAttraction(country)
+
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    queryClient.prefetchQuery(getBudgetsQueryOptions());
+    queryClient.prefetchQuery(getBudgetSummaryQueryOptions());
+    queryClient.prefetchQuery(getAccommodationsQueryOptions());
+    queryClient.prefetchQuery(getExchangeRatesQueryOptions());
+
+    citiesToPrefetch.forEach(city => queryClient.prefetchQuery(getWeatherQueryOptions(city)));
+  }, [citiesToPrefetch]);
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 pb-20">
       <main className="max-w-6xl mx-auto px-4 md:px-6 py-6 space-y-8">

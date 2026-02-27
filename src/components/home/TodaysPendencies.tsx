@@ -4,13 +4,15 @@ import CheckSquare from 'lucide-react/dist/esm/icons/check-square';
 import AlertCircle from 'lucide-react/dist/esm/icons/alert-circle';
 import FileText from 'lucide-react/dist/esm/icons/file-text';
 import ChevronRight from 'lucide-react/dist/esm/icons/chevron-right';
-import { useCountry } from '@/contexts/CountryContext'
+import { useReservation } from '@/hooks/useReservation'
+import { useChecklist } from '@/hooks/useChecklist';
 
 export default function TodaysPendencies() {
-  const { checklistItems, reservations } = useCountry();
+  const { reservations } = useReservation();
+  const { items } = useChecklist();
 
   const pendencies = useMemo(() => {
-    const unpackedItems = checklistItems.filter(item => !item.isPacked);
+    const unpackedItems = items.filter(item => !item.isPacked);
     const pendingReservations = reservations.filter(r => r.status === 'pending');
 
     return {
@@ -18,7 +20,7 @@ export default function TodaysPendencies() {
       reservations: pendingReservations.length,
       total: unpackedItems.length + pendingReservations.length
     };
-  }, [checklistItems, reservations]);
+  }, [items, reservations]);
 
   if (pendencies.total === 0) {
     return (

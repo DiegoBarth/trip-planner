@@ -33,6 +33,44 @@ export function useAttraction(country: CountryFilterValue) {
     [rawFiltered]
   );
 
+  const availableDays = useMemo(() => {
+    const uniqueDays = new Set<number>();
+
+    attractions.forEach(a => {
+      if (a.day) uniqueDays.add(a.day);
+    });
+
+    return Array.from(uniqueDays).sort((a, b) => a - b);
+  }, [attractions]);
+
+  const citiesToPrefetch = useMemo(() => {
+    const cities = new Set<string>();
+
+    attractions.forEach(a => {
+      if (a.city) cities.add(a.city);
+    });
+
+    const withDate = attractions.filter(a => a.date);
+
+    if (withDate.length > 0) {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const sorted = [...withDate]
+        .map(a => ({ ...a, parsed: new Date(a.date) }))
+        .sort((a, b) => a.parsed.getTime() - b.parsed.getTime());
+
+      const todayOrNext =
+        sorted.find(a => a.parsed >= today) ?? sorted[0];
+
+      if (todayOrNext?.city) {
+        cities.add(todayOrNext.city);
+      }
+    }
+
+    return Array.from(cities);
+  }, [attractions]);
+
   const createMutation = useMutation({
     mutationFn: (payload: CreateAttractionPayload) => createAttraction(payload),
     onSuccess: newAttraction => {
@@ -160,6 +198,8 @@ export function useAttraction(country: CountryFilterValue) {
 
   return {
     attractions,
+    availableDays,
+    citiesToPrefetch,
     isLoading,
     error,
     createAttraction: createMutation.mutateAsync,

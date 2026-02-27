@@ -13,7 +13,8 @@ const ReservationList = lazy(() => import('@/components/reservation/ReservationL
 
 export default function ReservationsPage() {
   const [showModal, setShowModal] = useState(false);
-  const { country, reservations, isReady } = useCountry();
+  const { country } = useCountry();
+  const { reservations, isLoading } = useReservation()
 
   const filteredReservations = useMemo(() => {
     if (country === 'all') return reservations;
@@ -75,7 +76,7 @@ export default function ReservationsPage() {
             onCreate={handleCreate}
             onUpdate={handleUpdate}
             onDelete={handleDelete}
-            isLoading={!isReady}
+            isLoading={isLoading}
           />
         </Suspense>
       </main>

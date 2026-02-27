@@ -16,25 +16,18 @@ const ModalAttraction = lazy(() =>
 const AttractionsList = lazy(() => import('@/components/attraction/AttractionsList'))
 
 export default function AttractionsPage() {
+  const { country, day } = useCountry()
+  const { attractions, isLoading, createAttraction, updateAttraction, deleteAttraction, toggleVisited, bulkUpdate } = useAttraction(country);
+  const { success, error } = useToast();
+
   const [showModal, setShowModal] = useState(false)
   const [isDragEnabled, setIsDragEnabled] = useState(false)
-  const { country, day, attractions, isReady } = useCountry()
 
   const filteredAttractions = useMemo(() => {
     if (day === 'all') return attractions;
 
     return attractions.filter((a) => a.day === day);
   }, [attractions, day]);
-
-  const {
-    createAttraction,
-    updateAttraction,
-    deleteAttraction,
-    toggleVisited,
-    bulkUpdate
-  } = useAttraction(country);
-
-  const { success, error } = useToast();
 
   const handleCreate = async (data: Omit<Attraction, 'id'>) => {
     try {
@@ -112,8 +105,8 @@ export default function AttractionsPage() {
             type="button"
             onClick={() => setIsDragEnabled((v) => !v)}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-sm font-medium transition-colors ${isDragEnabled
-                ? 'bg-white/25 text-white hover:bg-white/30'
-                : 'bg-white/15 text-white/95 hover:bg-white/20'
+              ? 'bg-white/25 text-white hover:bg-white/30'
+              : 'bg-white/15 text-white/95 hover:bg-white/20'
               }`}
             title={isDragEnabled ? 'Desabilitar reordenação' : 'Habilitar reordenação'}
             aria-pressed={isDragEnabled}
@@ -128,7 +121,7 @@ export default function AttractionsPage() {
         <Suspense fallback={null}>
           <AttractionsList
             attractions={filteredAttractions}
-            isLoading={!isReady}
+            isLoading={isLoading}
             onCreate={handleCreate}
             onUpdate={handleUpdate}
             onDelete={handleDelete}

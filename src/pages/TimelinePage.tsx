@@ -8,6 +8,7 @@ import { CountryFilter } from '@/components/home/CountryFilter'
 import { useAttraction } from '@/hooks/useAttraction'
 import { useOSRMRoutesQuery } from '@/hooks/useOSRMRoutesQuery'
 import { useCountry } from '@/contexts/CountryContext'
+import { useAccommodation } from '@/hooks/useAccommodation';
 import { useToast } from '@/contexts/toast'
 import { buildDayTimeline } from '@/services/timelineService'
 import type { Attraction, Country } from '@/types/Attraction'
@@ -52,8 +53,9 @@ function addAccommodationToDay(dayAttractions: Attraction[], accommodations: Acc
 }
 
 export default function TimelinePage() {
-  const { country, day, accommodations, attractions, isReady } = useCountry();
-  const { toggleVisited } = useAttraction(country);
+  const { country, day } = useCountry();
+  const { attractions, isLoading, toggleVisited } = useAttraction(country);
+  const { accommodations } = useAccommodation()
 
   const groupedByDayForRoutes = useMemo(() => {
     const grouped: Record<number, Attraction[]> = {};
@@ -275,7 +277,7 @@ export default function TimelinePage() {
     }
   };
 
-  if (!isReady) {
+  if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>

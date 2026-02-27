@@ -3,6 +3,9 @@ import { AttractionStatusCards } from '@/components/dashboard/AttractionStatusCa
 import { PageHeader } from '@/components/ui/PageHeader'
 import { useCountry } from '@/contexts/CountryContext'
 import { formatCurrency } from '@/utils/formatters'
+import { useAttraction } from '@/hooks/useAttraction'
+import { useBudget } from '@/hooks/useBudget'
+import { useExpense } from '@/hooks/useExpense';
 import { useDashboard } from '@/hooks/useDashboard'
 
 import { lazy } from 'react'
@@ -18,7 +21,10 @@ const BudgetByOriginChart = lazy(() =>
 
 
 export default function DashboardPage() {
-  const { budgets, expenses, attractions, isReady } = useCountry()
+  const { country } = useCountry()
+  const { attractions, isLoading } = useAttraction(country);
+  const { budgets } = useBudget()
+  const { expenses } = useExpense(country)
 
   const dashboardData = useDashboard({
     budgets,
@@ -26,7 +32,7 @@ export default function DashboardPage() {
     attractions,
   })
 
-  if (!isReady || !dashboardData) {
+  if (isLoading || !dashboardData) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-20 md:pb-6">
         <PageHeader title="Dashboard" subtitle="Resumo da sua viagem" />

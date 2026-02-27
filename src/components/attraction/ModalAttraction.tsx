@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
-import { useCountry } from '@/contexts/CountryContext'
+import { useReservation } from '@/hooks/useReservation'
+import { useCurrency } from '@/hooks/useCurrency'
 import { useToast } from '@/contexts/toast'
 import { ModalBase } from '@/components/ui/ModalBase'
 import { validateWithToast } from '@/schemas/validateWithToast'
@@ -85,7 +86,8 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
 
   const formData = watch();
   const previousCurrency = useRef<Currency>(formData.currency);
-  const { rates, reservations } = useCountry();
+  const { rates } = useCurrency();
+  const { reservations } = useReservation();
 
   // Reset form when modal opens or attraction changes (explicit fields so no stale values when switching attractions)
   useEffect(() => {

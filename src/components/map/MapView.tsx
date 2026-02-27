@@ -4,6 +4,8 @@ import { MapContainer, TileLayer } from 'react-leaflet'
 import 'leaflet.markercluster/dist/MarkerCluster.css'
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css'
 import { useCountry } from '@/contexts/CountryContext'
+import { useAttraction } from '@/hooks/useAttraction'
+import { useAccommodation } from '@/hooks/useAccommodation'
 import { FitBounds } from '@/components/map/FitBounds'
 import { MapRoutes } from '@/components/map/MapRoutes'
 import { useOSRMRoutesQuery } from '@/hooks/useOSRMRoutesQuery'
@@ -18,7 +20,9 @@ function getColorForDay(day: number) {
 }
 
 export function MapView() {
-  const { attractions, accommodations, day } = useCountry();
+  const { country, day } = useCountry();
+  const { accommodations } = useAccommodation();
+  const { attractions } = useAttraction(country);
   const location = useLocation();
 
   const mappable = useMemo(() => attractions.filter(isMappableAttraction), [attractions]);

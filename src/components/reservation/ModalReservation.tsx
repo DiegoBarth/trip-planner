@@ -7,6 +7,7 @@ import { CustomSelect } from '@/components/ui/CustomSelect'
 import { FileUpload } from '@/components/reservation/FileUpload'
 import { DateField } from '@/components/ui/DateField'
 import { useCountry } from '@/contexts/CountryContext'
+import { useAttraction } from '@/hooks/useAttraction'
 import { validateWithToast } from '@/schemas/validateWithToast'
 import { reservationCreateSchema } from '@/schemas/reservationSchema'
 import { dateToInputFormat, parseLocalDate, dateToYYYYMMDD } from '@/utils/formatters'
@@ -66,7 +67,8 @@ export function ModalReservation({ reservation, isOpen, onClose, onSave }: Modal
   });
 
   const formData = watch();
-  const { attractions } = useCountry();
+  const { country } = useCountry();
+  const { attractions } = useAttraction(country);
 
   useEffect(() => {
     if (isOpen) {

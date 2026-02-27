@@ -5,18 +5,20 @@ import { CountryFilter } from '@/components/home/CountryFilter'
 import { BudgetOriginFilter } from '@/components/expense/BudgetOriginFilter'
 import { Fab } from '@/components/ui/Fab'
 import { ModalExpense } from '@/components/expense/ModalExpense'
+import { useCountry } from '@/contexts/CountryContext'
 import { useExpense } from '@/hooks/useExpense'
 import { useToast } from '@/contexts/toast'
-import { useCountry } from '@/contexts/CountryContext'
 import type { Expense } from '@/types/Expense'
 import type { BudgetOrigin } from '@/types/Attraction'
 
 const ExpenseList = lazy(() => import('@/components/expense/ExpenseList'))
 
 export default function ExpensesPage() {
+  const { country } = useCountry();
+  const { expenses, isLoading, createExpense, updateExpense, deleteExpense } = useExpense(country);
+
   const [showModal, setShowModal] = useState(false);
   const [budgetOrigin, setBudgetOrigin] = useState<BudgetOrigin | 'all'>('all');
-  const { country, expenses, isReady } = useCountry();
 
   const filteredExpenses = useMemo(() => {
     if (budgetOrigin === 'all') return expenses;
@@ -24,7 +26,6 @@ export default function ExpensesPage() {
     return expenses.filter((e) => e.budgetOrigin === budgetOrigin);
   }, [expenses, budgetOrigin]);
 
-  const { createExpense, updateExpense, deleteExpense } = useExpense(country);
   const toast = useToast();
 
   const handleCreate = async (data: Omit<Expense, 'id'>) => {
@@ -83,7 +84,7 @@ export default function ExpensesPage() {
             onCreate={handleCreate}
             onUpdate={handleUpdate}
             onDelete={handleDelete}
-            isLoading={!isReady}
+            isLoading={isLoading}
           />
         </Suspense>
       </main>

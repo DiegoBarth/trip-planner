@@ -1,10 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { createBudget, updateBudget, deleteBudget, getBudgets, getBudgetSummary } from '@/api/budget'
+import { createBudget, updateBudget, deleteBudget } from '@/api/budget'
 import { updateBudgetCacheOnCreate, updateBudgetCacheOnUpdate, updateBudgetCacheOnDelete } from '@/services/budgetCacheService'
-import { QUERY_STALE_TIME_MS } from '@/config/constants'
+import { getBudgetsQueryOptions, getBudgetSummaryQueryOptions } from '@/services/budgetQueryService'
 import type { CreateBudgetPayload, UpdateBudgetPayload } from '@/api/budget'
 import type { Budget, BudgetSummary } from '@/types/Budget'
-
 
 const BUDGET_QUERY_KEY = ['budgets'];
 const BUDGET_SUMMARY_QUERY_KEY = ['budget_summary'];
@@ -12,17 +11,8 @@ const BUDGET_SUMMARY_QUERY_KEY = ['budget_summary'];
 export function useBudget() {
   const queryClient = useQueryClient();
 
-  const { data: budgetSummary } = useQuery<BudgetSummary>({
-    queryKey: BUDGET_SUMMARY_QUERY_KEY,
-    queryFn: getBudgetSummary,
-    staleTime: QUERY_STALE_TIME_MS,
-  });
-
-  const { data: budgets = [], isLoading, error, refetch } = useQuery({
-    queryKey: BUDGET_QUERY_KEY,
-    queryFn: getBudgets,
-    staleTime: QUERY_STALE_TIME_MS,
-  });
+  const { data: budgets = [], isLoading, error, refetch } = useQuery(getBudgetsQueryOptions());
+  const { data: budgetSummary } = useQuery<BudgetSummary>(getBudgetSummaryQueryOptions());
 
   const createMutation = useMutation({
     mutationFn: (payload: CreateBudgetPayload) => createBudget(payload),

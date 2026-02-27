@@ -1,6 +1,7 @@
 import MapPin from 'lucide-react/dist/esm/icons/map-pin';
 import Calendar from 'lucide-react/dist/esm/icons/calendar';
 import { useCountry } from '@/contexts/CountryContext'
+import { useAttraction } from '@/hooks/useAttraction';
 import { useFilterSheet } from '@/contexts/FilterSheetContext'
 import { CustomSelect } from '@/components/ui/CustomSelect'
 import { COUNTRIES } from '@/config/constants'
@@ -22,7 +23,8 @@ interface CountryFilterProps {
 };
 
 export function CountryFilter({ showDayFilter = true, hideGeneralOption = false }: CountryFilterProps) {
-  const { country, setCountry, day, setDay, availableDays } = useCountry()
+  const { country, setCountry, day, setDay } = useCountry()
+  const { availableDays } = useAttraction(country)
   const dropdownPosition = useFilterSheet()
   const inSheet = dropdownPosition === 'above'
 

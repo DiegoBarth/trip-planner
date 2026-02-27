@@ -1,10 +1,10 @@
 import Wallet from 'lucide-react/dist/esm/icons/wallet';
 import { BudgetCard } from '@/components/home/BudgetCard'
-import { useCountry } from '@/contexts/CountryContext'
+import { useBudget } from '@/hooks/useBudget'
 import type { BudgetOrigin } from '@/types/Attraction'
 
 export default function BudgetSummary() {
-  const { budgetSummary } = useCountry();
+  const { budgetSummary } = useBudget();
 
   if (!budgetSummary) return null;
 

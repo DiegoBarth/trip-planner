@@ -4,8 +4,7 @@ import { PageHeader } from '@/components/ui/PageHeader'
 import { BudgetOriginFilter } from '@/components/expense/BudgetOriginFilter'
 import { Fab } from '@/components/ui/Fab'
 import { ModalBudget } from '@/components/budget/ModalBudget'
-import { useBudget } from '@/hooks/useBudget'
-import { useCountry } from '@/contexts/CountryContext'
+import { useBudget } from '@/hooks/useBudget';
 import { useToast } from '@/contexts/toast'
 import type { BudgetOrigin } from '@/types/Attraction'
 import type { CreateBudgetPayload, UpdateBudgetPayload } from '@/api/budget'
@@ -15,8 +14,7 @@ const BudgetList = lazy(() => import('@/components/budget/BudgetList'))
 export default function BudgetPage() {
   const [showModal, setShowModal] = useState(false);
   const [budgetOrigin, setBudgetOrigin] = useState<BudgetOrigin | 'all'>('all');
-  const { createBudget, updateBudget, deleteBudget } = useBudget();
-  const { budgets, isReady } = useCountry();
+  const { budgets, isLoading, createBudget, updateBudget, deleteBudget } = useBudget();
   const toast = useToast();
 
   const filteredBudgets = useMemo(() => {
@@ -83,7 +81,7 @@ export default function BudgetPage() {
         <Suspense fallback={null}>
           <BudgetList
             budgets={filteredBudgets}
-            isLoading={!isReady}
+            isLoading={isLoading}
             onCreate={handleCreate}
             onUpdate={handleUpdate}
             onDelete={handleDelete}

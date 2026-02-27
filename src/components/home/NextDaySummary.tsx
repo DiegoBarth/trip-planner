@@ -18,8 +18,8 @@ function openInMaps(lat: number, lng: number, name: string) {
 }
 
 export default function NextDaySummary() {
-  const { attractions, country } = useCountry();
-  const { toggleVisited } = useAttraction(country);
+  const { country } = useCountry();
+  const { attractions, toggleVisited } = useAttraction(country);
 
   const nextDayData = useMemo(() => {
     const today = new Date();

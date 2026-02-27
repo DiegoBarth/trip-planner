@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import Wallet from 'lucide-react/dist/esm/icons/wallet';
 import ChevronRight from 'lucide-react/dist/esm/icons/chevron-right';
 import { useCountry } from '@/contexts/CountryContext'
+import { useExpense } from '@/hooks/useExpense';
 import { formatCurrency } from '@/utils/formatters'
 
 function toYYYYMMDD(dateStr: string): string {
@@ -18,7 +19,8 @@ function toYYYYMMDD(dateStr: string): string {
 }
 
 export default function TodayExpensesCard() {
-  const { expenses } = useCountry();
+  const { country } = useCountry();
+  const { expenses } = useExpense(country);
 
   const todaySummary = useMemo(() => {
     const today = new Date();

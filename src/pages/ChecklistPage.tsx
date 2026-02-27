@@ -3,7 +3,6 @@ import Plus from 'lucide-react/dist/esm/icons/plus';
 import { PageHeader } from '@/components/ui/PageHeader'
 import { Fab } from '@/components/ui/Fab'
 import { useChecklist } from '@/hooks/useChecklist'
-import { useCountry } from '@/contexts/CountryContext'
 import { useToast } from '@/contexts/toast'
 import { ModalChecklistItem } from '@/components/checklist/ModalChecklistItem'
 import type { ChecklistItem } from '@/types/ChecklistItem'
@@ -12,8 +11,7 @@ const ChecklistList = lazy(() => import('@/components/checklist/ChecklistList'))
 
 export default function ChecklistPage() {
   const [showModal, setShowModal] = useState(false);
-  const { checklistItems: items, isReady } = useCountry();
-  const { createItem, updateItem, deleteItem, togglePacked } = useChecklist();
+  const { items, isLoading, createItem, updateItem, deleteItem, togglePacked } = useChecklist();
   const toast = useToast();
 
   const handleCreate = async (data: Omit<ChecklistItem, 'id'>) => {
@@ -81,7 +79,7 @@ export default function ChecklistPage() {
             onUpdate={handleUpdate}
             onDelete={handleDelete}
             onTogglePacked={handleTogglePacked}
-            isLoading={!isReady}
+            isLoading={isLoading}
           />
         </Suspense>
       </main>
