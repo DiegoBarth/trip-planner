@@ -35,7 +35,7 @@ export default function HomePage(_props: { onLogout: () => void }) {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 pb-20">
-      <main className="max-w-6xl mx-auto px-4 md:px-6 py-6 space-y-8">
+      <main className="max-w-6xl mx-auto px-4 md:px-6 py-6 flex flex-col gap-6">
         <Link
           to="/converter"
           className="md:hidden flex items-center gap-3 w-full p-4 rounded-2xl bg-amber-100 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-800 text-amber-900 dark:text-amber-100 hover:bg-amber-200/80 dark:hover:bg-amber-800/30 active:scale-[0.98] transition-all focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-gray-50 dark:focus:ring-offset-gray-900 focus:outline-none"
@@ -56,12 +56,12 @@ export default function HomePage(_props: { onLogout: () => void }) {
           </div>
 
           {/* Sidebar-like Content */}
-          <div className="space-y-6">
+          <div className="flex flex-col gap-6">
             <h2 className="sr-only">Pendências e Gastos de Hoje</h2>
-            <Suspense fallback={<div className="h-56 rounded-xl bg-gray-100 animate-pulse" />}>
+            <Suspense fallback={<div className="h-56 rounded-xl bg-gray-100 dark:bg-gray-700 animate-pulse" />}>
               <TodaysPendencies />
             </Suspense>
-            <Suspense fallback={<div className="h-20 rounded-xl bg-gray-100 animate-pulse" />}>
+            <Suspense fallback={<div className="h-20 rounded-xl bg-gray-100 dark:bg-gray-700 animate-pulse" />}>
               <TodayExpensesCard />
             </Suspense>
           </div>
