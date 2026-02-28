@@ -22,18 +22,21 @@ export default function TodayExpensesCard() {
   const { country } = useCountry();
   const { expenses } = useExpense(country);
 
-  const todaySummary = useMemo(() => {
+  const todayStr = useMemo(() => {
     const today = new Date();
-    const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+    return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+  }, []);
+
+  const todaySummary = useMemo(() => {
     const todayExpenses = expenses.filter(e => toYYYYMMDD(e.date) === todayStr);
     const total = todayExpenses.reduce((sum, e) => sum + e.amountInBRL, 0);
 
     return { total, count: todayExpenses.length };
-  }, [expenses]);
+  }, [expenses, todayStr]);
 
   return (
     <Link
-      to="/expenses"
+      to={`/expenses?date=${todayStr}`}
       className="flex items-center justify-between bg-white dark:bg-gray-800 rounded-2xl shadow-md p-4 hover:shadow-lg transition-shadow focus:ring-2 focus:ring-blue-500 focus:outline-none"
     >
       <div className="flex items-center gap-3">

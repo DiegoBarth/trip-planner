@@ -1,5 +1,7 @@
 import { useState, useMemo, lazy, Suspense } from 'react'
 import Plus from 'lucide-react/dist/esm/icons/plus';
+import { Link, useSearchParams } from 'react-router-dom'
+import X from 'lucide-react/dist/esm/icons/x';
 import { PageHeader } from '@/components/ui/PageHeader'
 import { CountryFilter } from '@/components/home/CountryFilter'
 import { BudgetOriginFilter } from '@/components/expense/BudgetOriginFilter'
@@ -7,24 +9,42 @@ import { Fab } from '@/components/ui/Fab'
 import { ModalExpense } from '@/components/expense/ModalExpense'
 import { useCountry } from '@/contexts/CountryContext'
 import { useExpense } from '@/hooks/useExpense'
+import { formatDate } from '@/utils/formatters'
 import { useToast } from '@/contexts/toast'
 import type { Expense } from '@/types/Expense'
 import type { BudgetOrigin } from '@/types/Attraction'
 
 const ExpenseList = lazy(() => import('@/components/expense/ExpenseList'))
 
+function toYYYYMMDD(dateStr: string): string {
+  if (!dateStr) return '';
+  if (dateStr.includes('/')) {
+    const [d, m, y] = dateStr.split('/');
+    return `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`;
+  }
+  return dateStr.split('T')[0];
+}
+
 export default function ExpensesPage() {
+  const [searchParams] = useSearchParams();
   const { country } = useCountry();
   const { expenses, isLoading, createExpense, updateExpense, deleteExpense } = useExpense(country);
 
   const [showModal, setShowModal] = useState(false);
   const [budgetOrigin, setBudgetOrigin] = useState<BudgetOrigin | 'all'>('all');
 
-  const filteredExpenses = useMemo(() => {
-    if (budgetOrigin === 'all') return expenses;
+  const dateFilter = searchParams.get('date');
 
-    return expenses.filter((e) => e.budgetOrigin === budgetOrigin);
-  }, [expenses, budgetOrigin]);
+  const filteredExpenses = useMemo(() => {
+    let result = expenses;
+    if (dateFilter) {
+      result = result.filter((e) => toYYYYMMDD(e.date) === dateFilter);
+    }
+    if (budgetOrigin !== 'all') {
+      result = result.filter((e) => e.budgetOrigin === budgetOrigin);
+    }
+    return result;
+  }, [expenses, budgetOrigin, dateFilter]);
 
   const toast = useToast();
 
@@ -68,9 +88,18 @@ export default function ExpensesPage() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-20 md:pb-6">
       <PageHeader
         title="Gastos"
-        subtitle="Registre e acompanhe seus gastos"
+        subtitle={dateFilter ? `Filtrando por ${formatDate(dateFilter)}` : 'Registre e acompanhe seus gastos'}
         filter={
-          <div className="flex gap-2 flex-wrap md:flex-nowrap">
+          <div className="flex gap-2 flex-wrap md:flex-nowrap items-center">
+            {dateFilter && (
+              <Link
+                to="/expenses"
+                className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-200 text-sm font-medium hover:bg-amber-200 dark:hover:bg-amber-800/50 transition-colors"
+              >
+                <X className="w-4 h-4" />
+                Limpar filtro de data
+              </Link>
+            )}
             <CountryFilter showDayFilter={false} />
             <BudgetOriginFilter value={budgetOrigin} onChange={setBudgetOrigin} />
           </div>
