@@ -67,6 +67,7 @@ const DashboardPage = lazy(() => import('@/pages/DashboardPage'))
 const ChecklistPage = lazy(() => import('@/pages/ChecklistPage'))
 const ReservationsPage = lazy(() => import('@/pages/ReservationsPage'))
 const TimelinePage = lazy(() => import('@/pages/TimelinePage'))
+const ConverterPage = lazy(() => import('@/pages/ConverterPage'))
 
 export default function AppRouter({ onLogout }: AppRouterProps) {
   const { pathname } = useLocation();
@@ -105,6 +106,7 @@ export default function AppRouter({ onLogout }: AppRouterProps) {
             <Route path="/checklist" element={<ChecklistPage />} />
             <Route path="/reservations" element={<ReservationsPage />} />
             <Route path="/timeline" element={<TimelinePage />} />
+            <Route path="/converter" element={<ConverterPage />} />
           </Route>
         </Routes>
       </Suspense>

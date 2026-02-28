@@ -1,14 +1,15 @@
 import { Link } from 'react-router-dom'
-import DollarSign from 'lucide-react/dist/esm/icons/dollar-sign';
+import Banknote from 'lucide-react/dist/esm/icons/banknote';
 import Plus from 'lucide-react/dist/esm/icons/plus';
 import Ticket from 'lucide-react/dist/esm/icons/ticket';
 import TrendingDown from 'lucide-react/dist/esm/icons/trending-down';
 import TrendingUp from 'lucide-react/dist/esm/icons/trending-up';
+import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { cn } from '@/lib/utils'
 
 interface QuickAction {
   to: string
-  icon: typeof DollarSign
+  icon: typeof Banknote
   label: string
   color: string
   darkColor: string
@@ -16,7 +17,6 @@ interface QuickAction {
   hoverColor: string
 }
 
-/* Cores com contraste WCAG AA: texto mais escuro no claro, mais claro no escuro */
 const quickActions: QuickAction[] = [
   {
     to: '/budgets',
@@ -54,12 +54,23 @@ const quickActions: QuickAction[] = [
     bgColor: 'bg-indigo-100',
     hoverColor: 'hover:bg-indigo-100',
   },
+  {
+    to: '/converter',
+    icon: Banknote,
+    label: 'Conversor',
+    color: 'text-amber-800',
+    darkColor: 'dark:text-amber-300',
+    bgColor: 'bg-amber-100',
+    hoverColor: 'hover:bg-amber-100',
+  },
 ];
 
 export function QuickActions() {
+  const isDesktop = useMediaQuery('(min-width: 768px)')
+  const actions = isDesktop ? quickActions : quickActions.filter((a) => a.to !== '/converter')
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-      {quickActions.map((action) => {
+      {actions.map((action) => {
         const Icon = action.icon
         return (
           <Link

@@ -1,4 +1,3 @@
-import Wallet from 'lucide-react/dist/esm/icons/wallet';
 import { BudgetCard } from '@/components/home/BudgetCard'
 import { useBudget } from '@/hooks/useBudget'
 import type { BudgetOrigin } from '@/types/Attraction'
@@ -14,13 +13,6 @@ export default function BudgetSummary() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-          <Wallet className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-          Resumo Financeiro
-        </h2>
-      </div>
-
       <div
         className={`
                rounded-2xl shadow-lg overflow-hidden mb-4
