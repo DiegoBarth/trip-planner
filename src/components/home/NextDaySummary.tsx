@@ -123,7 +123,7 @@ export default function NextDaySummary() {
   return (
     <div className="bg-gradient-to-br from-blue-500 to-purple-600 text-white rounded-2xl shadow-lg p-6 focus-within:ring-2 focus-within:ring-white/50 focus-within:outline-none">
       <Link
-        to="/timeline"
+        to={`/timeline?day=${nextDayData.day}`}
         className="block hover:opacity-95 transition-opacity focus:outline-none"
       >
         {cardContent}

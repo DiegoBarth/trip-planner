@@ -2,7 +2,7 @@ import { useMemo, useState, useEffect, lazy, Suspense, useCallback, startTransit
 import Calendar from 'lucide-react/dist/esm/icons/calendar';
 import CloudSun from 'lucide-react/dist/esm/icons/cloud-sun';
 import FileDown from 'lucide-react/dist/esm/icons/file-down';
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { PageHeader } from '@/components/ui/PageHeader'
 import { CountryFilter } from '@/components/home/CountryFilter'
 import { useAttraction } from '@/hooks/useAttraction'
@@ -53,8 +53,17 @@ function addAccommodationToDay(dayAttractions: Attraction[], accommodations: Acc
 }
 
 export default function TimelinePage() {
-  const { country, day } = useCountry();
+  const [searchParams] = useSearchParams();
+  const { country, day, setDay } = useCountry();
   const { attractions, isLoading, toggleVisited } = useAttraction(country);
+
+  useEffect(() => {
+    const dayParam = searchParams.get('day');
+    if (dayParam) {
+      const dayNum = Number(dayParam);
+      if (Number.isInteger(dayNum) && dayNum > 0) setDay(dayNum);
+    }
+  }, [searchParams, setDay]);
   const { accommodations } = useAccommodation()
 
   const groupedByDayForRoutes = useMemo(() => {

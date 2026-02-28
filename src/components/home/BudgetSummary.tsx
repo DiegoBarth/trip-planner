@@ -64,7 +64,9 @@ export default function BudgetSummary() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-        {Object.entries(byOrigin).map(([origin, totals]) => (
+        {Object.entries(byOrigin)
+          .sort(([a], [b]) => a.localeCompare(b, 'pt-BR'))
+          .map(([origin, totals]) => (
           <BudgetCard
             key={origin}
             origin={origin as BudgetOrigin}
