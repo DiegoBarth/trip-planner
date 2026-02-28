@@ -19,7 +19,6 @@ function formatTick(val: number) {
 
 export default function BudgetByOriginChart({ data }: { data: BudgetByOrigin[] }) {
   const [hoverBar, setHoverBar] = useState<{ index: number; key: 'totalBudget' | 'spent' } | null>(null);
-  const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
 
   const { maxVal, yTicks } = useMemo(() => {
     const max = data.length
@@ -34,14 +33,12 @@ export default function BudgetByOriginChart({ data }: { data: BudgetByOrigin[] }
   const groupWidth = INNER_WIDTH / data.length;
   const yScale = (val: number) => INNER_HEIGHT - (val / maxVal) * INNER_HEIGHT;
 
-  const handleMouse = (
-    e: React.MouseEvent<SVGGElement>,
-    index: number,
-    key: 'totalBudget' | 'spent'
-  ) => {
+  const handleMouseEnter = (index: number, key: 'totalBudget' | 'spent') => {
     setHoverBar({ index, key });
-    const rect = e.currentTarget.closest('.chart-container')?.getBoundingClientRect();
-    if (rect) setTooltipPos({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+  };
+
+  const handleMouseLeave = () => {
+    setHoverBar(null);
   };
 
   return (
@@ -85,7 +82,7 @@ export default function BudgetByOriginChart({ data }: { data: BudgetByOrigin[] }
               const isBudgetHover = hoverBar?.index === i && hoverBar?.key === 'totalBudget';
               const isSpentHover = hoverBar?.index === i && hoverBar?.key === 'spent';
               return (
-                <g key={d.origin}>
+                <g key={d.origin} onMouseLeave={handleMouseLeave}>
                   <rect
                     x={gx}
                     y={yScale(d.totalBudget)}
@@ -95,9 +92,7 @@ export default function BudgetByOriginChart({ data }: { data: BudgetByOrigin[] }
                     fill={BAR_COLORS.budget}
                     className="cursor-pointer transition-opacity"
                     opacity={isBudgetHover ? 0.9 : 1}
-                    onMouseEnter={(e) => handleMouse(e, i, 'totalBudget')}
-                    onMouseMove={(e) => handleMouse(e, i, 'totalBudget')}
-                    onMouseLeave={() => setHoverBar(null)}
+                    onMouseEnter={() => handleMouseEnter(i, 'totalBudget')}
                   />
                   <rect
                     x={gx + BAR_WIDTH + BAR_GROUP_GAP}
@@ -108,9 +103,7 @@ export default function BudgetByOriginChart({ data }: { data: BudgetByOrigin[] }
                     fill={BAR_COLORS.spent}
                     className="cursor-pointer transition-opacity"
                     opacity={isSpentHover ? 0.9 : 1}
-                    onMouseEnter={(e) => handleMouse(e, i, 'spent')}
-                    onMouseMove={(e) => handleMouse(e, i, 'spent')}
-                    onMouseLeave={() => setHoverBar(null)}
+                    onMouseEnter={() => handleMouseEnter(i, 'spent')}
                   />
                   <text
                     x={gx + (BAR_GROUP_GAP + BAR_WIDTH * 2) / 2 + BAR_WIDTH / 2}
@@ -127,12 +120,11 @@ export default function BudgetByOriginChart({ data }: { data: BudgetByOrigin[] }
         </svg>
         {hoverBar !== null && data[hoverBar.index] && (
           <div
-            className="pointer-events-none absolute z-10 px-3 py-2 text-sm font-medium text-gray-900 bg-white dark:bg-gray-700 dark:text-gray-100 rounded-lg shadow-md border border-gray-200 dark:border-gray-600"
-            style={{ left: tooltipPos.x + 12, top: tooltipPos.y + 8 }}
+            className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10 px-3 py-2 text-sm font-medium text-gray-900 bg-white dark:bg-gray-700 dark:text-gray-100 rounded-lg shadow-md border border-gray-200 dark:border-gray-600"
           >
-            {hoverBar.key === 'totalBudget'
+            {`${data[hoverBar.index].origin} — ${hoverBar.key === 'totalBudget'
               ? `Orçado: ${formatCurrency(data[hoverBar.index].totalBudget)}`
-              : `Gasto: ${formatCurrency(data[hoverBar.index].spent)}`}
+              : `Gasto: ${formatCurrency(data[hoverBar.index].spent)}`}`}
           </div>
         )}
         <div className="flex justify-end gap-4 mt-1 text-xs text-gray-600 dark:text-gray-400">
