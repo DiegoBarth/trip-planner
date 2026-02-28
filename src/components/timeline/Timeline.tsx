@@ -1,3 +1,4 @@
+import { useRef, useEffect } from 'react';
 import Calendar from 'lucide-react/dist/esm/icons/calendar';
 import MapPin from 'lucide-react/dist/esm/icons/map-pin';
 import Clock from 'lucide-react/dist/esm/icons/clock';
@@ -22,6 +23,20 @@ export default function Timeline({ timeline, city: cityProp, date: dateProp, onT
   const city = cityProp ?? timeline?.attractions[0]?.city ?? '';
   const dateForWeather = dateProp ?? timeline?.date ?? '';
   const { forecast } = useWeather(city);
+  const lastVisitedRef = useRef<HTMLDivElement | null>(null);
+
+  const lastVisitedIndex = timeline
+    ? (() => {
+      let idx = -1;
+      timeline.attractions.forEach((a, i) => { if (a.visited) idx = i; });
+      return idx;
+    })()
+    : -1;
+
+  useEffect(() => {
+    if (lastVisitedIndex < 0 || !lastVisitedRef.current) return;
+    lastVisitedRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, [lastVisitedIndex, timeline?.dayNumber]);
 
   const weather =
     dateForWeather && forecast.length > 0
@@ -115,9 +130,14 @@ export default function Timeline({ timeline, city: cityProp, date: dateProp, onT
             const arrivalTime = (attraction as any).arrivalTime || timeline.startTime
             const departureTime = (attraction as any).departureTime || timeline.startTime
             const duration = attraction.duration || 60
+            const isLastVisited = index === lastVisitedIndex
 
             return (
-              <div key={attraction.id} className="relative">
+              <div
+                key={attraction.id}
+                ref={isLastVisited ? lastVisitedRef : undefined}
+                className="relative"
+              >
                 {segment && <TimelineSegment segment={segment} />}
                 <TimelineCard
                   attraction={attraction}

@@ -130,7 +130,17 @@ export function useAttraction(country: CountryFilterValue) {
 
       updateAttractionCacheOnUpdate(queryClient, previous, updatedAttraction);
 
-      queryClient.invalidateQueries({ queryKey: ['osrm-routes'] });
+      const onlyVisitedChanged =
+        previous.visited !== updatedAttraction.visited &&
+        previous.lat === updatedAttraction.lat &&
+        previous.lng === updatedAttraction.lng &&
+        previous.date === updatedAttraction.date &&
+        previous.order === updatedAttraction.order &&
+        previous.day === updatedAttraction.day;
+        
+      if (!onlyVisitedChanged) {
+        queryClient.invalidateQueries({ queryKey: ['osrm-routes'] });
+      }
     }
   });
 
