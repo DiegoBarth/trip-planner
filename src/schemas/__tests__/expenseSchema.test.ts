@@ -25,6 +25,11 @@ describe('expenseCreateSchema', () => {
     }
   })
 
+  it('accepts all categories including cosmetics and electronics', () => {
+    expect(expenseCreateSchema.safeParse({ ...validExpense, category: 'cosmetics' }).success).toBe(true)
+    expect(expenseCreateSchema.safeParse({ ...validExpense, category: 'electronics' }).success).toBe(true)
+  })
+
   it('rejects invalid category', () => {
     const result = expenseCreateSchema.safeParse({ ...validExpense, category: 'invalid' })
     expect(result.success).toBe(false)

@@ -1,7 +1,7 @@
 import { z } from 'zod'
 
 const category = z.enum(
-  ['accommodation', 'transport', 'food', 'attraction', 'shopping', 'other'],
+  ['accommodation', 'transport', 'food', 'attraction', 'shopping', 'cosmetics', 'electronics', 'other'],
   { message: 'Categoria é obrigatória.' }
 );
 

@@ -1,5 +1,5 @@
 import { Controller } from 'react-hook-form'
-import { useLocationSearch } from '@/hooks/useLocarionSearch'
+import { useLocationSearch } from '@/hooks/useLocationSearch'
 import { useEffect, useRef } from 'react'
 
 interface Props {

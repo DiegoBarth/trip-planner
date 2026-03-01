@@ -21,14 +21,22 @@ function loadCache(client: QueryClient) {
       if (!storageKey.startsWith(CACHE_PREFIX)) continue
       const raw = localStorage.getItem(storageKey)
       if (!raw) continue
-      const { data, dataUpdatedAt, queryKey } = JSON.parse(raw)
-      if (Date.now() - dataUpdatedAt > CACHE_MAX_AGE_MS) {
+      try {
+        const { data, dataUpdatedAt, queryKey } = JSON.parse(raw)
+        if (Date.now() - dataUpdatedAt > CACHE_MAX_AGE_MS) {
+          localStorage.removeItem(storageKey)
+          continue
+        }
+        client.setQueryData(queryKey, data, { updatedAt: dataUpdatedAt })
+      } catch (parseErr) {
+        console.warn('[queryClient] Cache inválido, removendo:', storageKey, parseErr)
         localStorage.removeItem(storageKey)
-        continue
       }
-      client.setQueryData(queryKey, data, { updatedAt: dataUpdatedAt })
     }
-  } catch {
+  } catch (err) {
+    if (typeof localStorage !== 'undefined') {
+      console.warn('[queryClient] Erro ao carregar cache do localStorage:', err)
+    }
   }
 }
 
@@ -46,7 +54,14 @@ function persistCache(client: QueryClient) {
         data: query.state.data,
         dataUpdatedAt: query.state.dataUpdatedAt,
       }))
-    } catch {
+    } catch (err) {
+      const isQuota = err instanceof DOMException && (err.name === 'QuotaExceededError' || err.code === 22)
+      console.warn(
+        isQuota
+          ? '[queryClient] localStorage cheio; cache não foi salvo. Limpe dados do site se precisar de espaço.'
+          : '[queryClient] Erro ao persistir cache:',
+        err
+      )
     }
   })
 }
