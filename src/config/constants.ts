@@ -20,6 +20,8 @@ export const API_TIMEOUT_MS = 30 * MS_PER_SECOND;
 
 export const EDGE_ZONE = 80;
 
+export const TOP_PULL_ZONE_PX = 56;
+
 export const SWIPE_MIN_DISTANCE_PX = 50;
 
 export const SWIPE_DELTA_PX = 10;
