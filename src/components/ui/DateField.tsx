@@ -5,11 +5,22 @@ import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
 import "react-day-picker/dist/style.css"
 
+export function getFirstFocusableDay(calendar: HTMLDivElement | null): HTMLButtonElement | null {
+  if (!calendar) return null
 
-export function DateField({
-  value, onChange,
-  required
-}: { value: Date | undefined, onChange: (date: Date | undefined) => void, required?: boolean }) {
+  let dayButton = calendar.querySelector('[role="gridcell"][aria-selected="true"] button') as HTMLButtonElement | null
+
+  if (!dayButton) dayButton = calendar.querySelector('[data-today="true"] button') as HTMLButtonElement | null
+  if (!dayButton) dayButton = calendar.querySelector('[role="gridcell"] button') as HTMLButtonElement | null
+
+  return dayButton
+}
+
+export function DateField({ value, onChange, required }: {
+value: Date | undefined
+onChange: (date: Date | undefined) => void
+required?: boolean
+}) {
   const idRef = useRef(Math.random().toString(36).slice(2))
   const [open, setOpen] = useState(false)
   const buttonRef = useRef<HTMLButtonElement | null>(null)
@@ -18,39 +29,27 @@ export function DateField({
   const buttonRect = buttonRef.current?.getBoundingClientRect()
 
   useEffect(() => {
-    if (open) {
-      const onAnyOpen = (e: CustomEvent) => {
-        if (e.detail !== idRef.current) setOpen(false);
-      }
+    if (!open) return
 
-      window.addEventListener('datefield:open', onAnyOpen as EventListener);
-      window.dispatchEvent(new CustomEvent('datefield:open', { detail: idRef.current }));
-
-      if (calendarRef.current) {
-        let dayButton = calendarRef.current.querySelector('[role="gridcell"][aria-selected="true"] button');
-
-        if (!dayButton) {
-          dayButton = calendarRef.current.querySelector('[data-today="true"] button');
-        }
-
-        if (!dayButton) {
-          dayButton = calendarRef.current.querySelector('[role="gridcell"] button');
-        }
-
-        if (dayButton) (dayButton as HTMLButtonElement).focus();
-      }
-      return () => {
-        window.removeEventListener('datefield:open', onAnyOpen as EventListener);
-      }
+    const onAnyOpen = (e: CustomEvent) => {
+      if (e.detail !== idRef.current) setOpen(false)
     }
-  }, [open]);
+
+    window.addEventListener("datefield:open", onAnyOpen as EventListener)
+    window.dispatchEvent(new CustomEvent("datefield:open", { detail: idRef.current }))
+
+    const dayButton = getFirstFocusableDay(calendarRef.current)
+    dayButton?.focus()
+
+    return () => window.removeEventListener("datefield:open", onAnyOpen as EventListener)
+  }, [open])
 
   return (
     <div className="relative flex items-center gap-2">
       <button
         ref={buttonRef}
         type="button"
-        aria-label={value ? `Data selecionada: ${format(value, 'PPP', { locale: ptBR })}` : 'Selecione uma data'}
+        aria-label={value ? `Data selecionada: ${format(value, "PPP", { locale: ptBR })}` : "Selecione uma data"}
         onClick={() => setOpen(!open)}
         className="w-full border border-gray-300 dark:border-gray-600
                    bg-white dark:bg-gray-700
@@ -58,10 +57,15 @@ export function DateField({
                    rounded-md p-2 text-left focus:outline-none
                    focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500"
       >
-        {value
-          ? format(value, "PPP", { locale: ptBR })
-          : required ? <span className="text-muted-foreground">Selecione uma data *</span> : <span className="text-muted-foreground">Selecione uma data</span>}
+        {value ? (
+          format(value, "PPP", { locale: ptBR })
+        ) : required ? (
+          <span className="text-muted-foreground">Selecione uma data *</span>
+        ) : (
+          <span className="text-muted-foreground">Selecione uma data</span>
+        )}
       </button>
+
       {value && (
         <button
           type="button"
@@ -86,7 +90,7 @@ export function DateField({
                        rounded-lg shadow-lg p-3"
             style={{
               top: buttonRect.top - 320,
-              left: buttonRect.left,
+              left: buttonRect.left
             }}
           >
             <DayPicker
@@ -95,9 +99,7 @@ export function DateField({
               onSelect={(date) => {
                 onChange(date)
                 setOpen(false)
-                setTimeout(() => {
-                  buttonRef.current?.focus()
-                }, 0)
+                setTimeout(() => buttonRef.current?.focus(), 0)
               }}
               locale={ptBR}
               className="custom-calendar"
@@ -106,5 +108,5 @@ export function DateField({
           document.body
         )}
     </div>
-  );
+  )
 }

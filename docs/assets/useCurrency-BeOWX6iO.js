@@ -1,1 +1,0 @@
-import{i as e}from"./react-query-B2gPi3Dv.js";import{i as t}from"./index-ePc6HAeu.js";function n(){let{data:n,isLoading:r,error:i}=e(t());return{rates:n??null,isLoading:r,error:i}}export{n as t};
