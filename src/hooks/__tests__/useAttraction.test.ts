@@ -389,6 +389,7 @@ describe('useAttraction', () => {
   })
 
   it('updateAttraction continues when updateReservation throws in sync', async () => {
+    const err = vi.spyOn(console, 'error').mockImplementation(() => {})
     const linkedReservation = {
       id: 7,
       type: 'activity' as const,
@@ -416,6 +417,7 @@ describe('useAttraction', () => {
       reservationStatus: 'confirmed',
     })
     expect(out).toEqual(updated)
+    err.mockRestore()
   })
 
   it('updateAttraction onSuccess when previous not in cache still runs without throwing', async () => {
@@ -430,6 +432,7 @@ describe('useAttraction', () => {
   })
 
   it('deleteAttraction continues when deleteReservation throws', async () => {
+    const err = vi.spyOn(console, 'error').mockImplementation(() => {})
     const att = makeAttraction({ id: 1, reservationId: 20 })
     mockDeleteReservation.mockRejectedValue(new Error('API error'))
     mockDeleteAttraction.mockResolvedValue(undefined)
@@ -438,6 +441,7 @@ describe('useAttraction', () => {
     await waitFor(() => expect(result.current.attractions).toHaveLength(1))
     await result.current.deleteAttraction(1)
     expect(mockDeleteAttraction).toHaveBeenCalledWith(1)
+    err.mockRestore()
   })
 
   it('citiesToPrefetch adds todayOrNext city when withDate has future date', async () => {

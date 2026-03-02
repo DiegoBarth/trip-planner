@@ -150,6 +150,7 @@ describe('useReservation', () => {
   })
 
   it('updateReservation continues when deleteFile throws', async () => {
+    const err = vi.spyOn(console, 'error').mockImplementation(() => {})
     const res = makeReservation({ id: 1, documentFileId: 'old-id' })
     const updated = makeReservation({ id: 1 })
     mockDeleteFile.mockRejectedValue(new Error('Drive error'))
@@ -159,6 +160,7 @@ describe('useReservation', () => {
     await waitFor(() => expect(result.current.reservations).toHaveLength(1))
     await result.current.updateReservation({ ...res, id: 1, documentFileId: 'new-id' })
     expect(mockUpdateReservation).toHaveBeenCalledTimes(1)
+    err.mockRestore()
   })
 
   it('updateReservation syncs linked attraction when updated has attractionId and status', async () => {
@@ -260,6 +262,7 @@ describe('useReservation', () => {
   })
 
   it('updateReservation continues when updateAttraction throws during sync', async () => {
+    const err = vi.spyOn(console, 'error').mockImplementation(() => {})
     const att = {
       id: 40,
       name: 'D',
@@ -288,6 +291,7 @@ describe('useReservation', () => {
     await waitFor(() => expect(result.current.reservations).toHaveLength(1))
     const out = await result.current.updateReservation({ ...res, id: 4, status: 'confirmed' })
     expect(out).toEqual(updated)
+    err.mockRestore()
   })
 
   it('deleteReservation calls deleteFile when reservation has documentFileId', async () => {
@@ -303,6 +307,7 @@ describe('useReservation', () => {
   })
 
   it('deleteReservation continues when deleteFile throws', async () => {
+    const err = vi.spyOn(console, 'error').mockImplementation(() => {})
     const res = makeReservation({ id: 1, documentFileId: 'file-1' })
     mockDeleteFile.mockRejectedValue(new Error('Drive error'))
     mockDeleteReservation.mockResolvedValue(undefined)
@@ -311,6 +316,7 @@ describe('useReservation', () => {
     await waitFor(() => expect(result.current.reservations).toHaveLength(1))
     await result.current.deleteReservation(1)
     expect(mockDeleteReservation).toHaveBeenCalledWith(1)
+    err.mockRestore()
   })
 
   it('deleteReservation calls deleteAttraction and cache when reservation has attractionId', async () => {
@@ -330,6 +336,7 @@ describe('useReservation', () => {
   })
 
   it('deleteReservation continues when deleteAttraction throws', async () => {
+    const err = vi.spyOn(console, 'error').mockImplementation(() => {})
     const res = makeReservation({ id: 1, attractionId: 88 })
     mockDeleteAttraction.mockRejectedValue(new Error('API error'))
     mockDeleteReservation.mockResolvedValue(undefined)
@@ -341,6 +348,7 @@ describe('useReservation', () => {
     await waitFor(() => expect(result.current.reservations).toHaveLength(1))
     await result.current.deleteReservation(1)
     expect(mockDeleteReservation).toHaveBeenCalledWith(1)
+    err.mockRestore()
   })
 
   it('updateReservation does not call deleteFile when documentFileId unchanged', async () => {
