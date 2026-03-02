@@ -1,4 +1,4 @@
-/** Constantes só de autenticação – importadas pelo App no bundle inicial (mantém constants.ts fora do critical path). */
+/** Authentication-only constants, imported by App in the initial bundle to keep constants.ts out of the critical path. */
 const MS_PER_MINUTE = 60 * 1000;
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 
