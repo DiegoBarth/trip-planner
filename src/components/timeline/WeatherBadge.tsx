@@ -50,7 +50,9 @@ export function WeatherBadge({ weather }: WeatherBadgeProps) {
       <div>
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
-            <span className="text-3xl">{safeWeather.icon}</span>
+            <span className="text-3xl" role="img" aria-label="weather-icon-main">
+              {safeWeather.icon}
+            </span>
 
             <div>
               <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
@@ -75,11 +77,11 @@ export function WeatherBadge({ weather }: WeatherBadgeProps) {
           {hasPeriods && (
             <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-sm text-gray-700 dark:text-gray-300 mb-2 pb-2 border-b border-gray-200 dark:border-gray-600">
               {periods.morning && (
-                <span className="flex items-center gap-1.5">
+                <span className="flex items-center gap-1.5" data-testid="period-morning">
                   <span className="text-xs font-medium text-gray-500 dark:text-gray-400">
                     Manhã
                   </span>
-                  <span>{periods.morning.icon}</span>
+                  <span role="img" aria-label="icon-morning">{periods.morning.icon}</span>
                   <span className="font-semibold">
                     {periods.morning.temp}°
                   </span>
@@ -92,11 +94,11 @@ export function WeatherBadge({ weather }: WeatherBadgeProps) {
               )}
 
               {periods.afternoon && (
-                <span className="flex items-center gap-1.5">
+                <span className="flex items-center gap-1.5" data-testid="period-afternoon">
                   <span className="text-xs font-medium text-gray-500 dark:text-gray-400">
                     Tarde
                   </span>
-                  <span>{periods.afternoon.icon}</span>
+                  <span role="img" aria-label="icon-afternoon">{periods.afternoon.icon}</span>
                   <span className="font-semibold">
                     {periods.afternoon.temp}°
                   </span>
@@ -109,11 +111,11 @@ export function WeatherBadge({ weather }: WeatherBadgeProps) {
               )}
 
               {periods.evening && (
-                <span className="flex items-center gap-1.5">
+                <span className="flex items-center gap-1.5" data-testid="period-evening">
                   <span className="text-xs font-medium text-gray-500 dark:text-gray-400">
                     Noite
                   </span>
-                  <span>{periods.evening.icon}</span>
+                  <span role="img" aria-label="icon-evening">{periods.evening.icon}</span>
                   <span className="font-semibold">
                     {periods.evening.temp}°
                   </span>
@@ -149,7 +151,7 @@ export function WeatherBadge({ weather }: WeatherBadgeProps) {
           </div>
 
           <div className="flex items-center gap-1">
-            💧 {safeWeather.humidity}%
+            <span role="img" aria-label="humidity-icon">💧</span> {safeWeather.humidity}%
           </div>
         </div>
 

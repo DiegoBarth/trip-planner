@@ -1,5 +1,6 @@
 import { memo } from 'react';
-import ArrowDown from 'lucide-react/dist/esm/icons/arrow-down';
+import HelpCircle from 'lucide-react/dist/esm/icons/help-circle';
+import Bus from 'lucide-react/dist/esm/icons/bus';
 import Car from 'lucide-react/dist/esm/icons/car';
 import TrendingUp from 'lucide-react/dist/esm/icons/trending-up';
 import Clock from 'lucide-react/dist/esm/icons/clock';
@@ -11,15 +12,17 @@ interface TimelineSegmentProps {
 
 export const TimelineSegment = memo(function TimelineSegment({ segment }: TimelineSegmentProps) {
   const getTravelIcon = () => {
+    if (!segment) return <HelpCircle data-testid="icon-default" className="w-4 h-4" />;
+
     switch (segment.travelMode) {
       case 'walking':
-        return <TrendingUp className="w-4 h-4" />;
+        return <TrendingUp data-testid="icon-walking" className="w-4 h-4" />;
       case 'driving':
-        return <Car className="w-4 h-4" />;
+        return <Car data-testid="icon-driving" className="w-4 h-4" />;
       case 'transit':
-        return <Car className="w-4 h-4" />;
+        return <Bus data-testid="icon-transit" className="w-4 h-4" />;
       default:
-        return <ArrowDown className="w-4 h-4" />;
+        return <HelpCircle data-testid="icon-default" className="w-4 h-4" />;
     }
   };
 

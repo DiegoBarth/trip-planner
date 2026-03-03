@@ -50,6 +50,7 @@ export const TimelineCard = memo(function TimelineCard({
       />
 
       <div
+        data-testid="timeline-card"
         className={`
           relative ml-4 md:ml-6 rounded-2xl shadow-xl overflow-hidden border-l-4
           min-h-[180px] md:min-h-[200px]

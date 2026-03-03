@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react'
 import TimelinePage from '../TimelinePage'
 import { createPageWrapper } from './pageWrapper'
 import { useCountry } from '@/contexts/CountryContext'
@@ -295,7 +295,8 @@ describe('TimelinePage', () => {
 
   it('calls handleToggleVisited and shows success toast', async () => {
     const toggleVisited = vi.fn().mockResolvedValue(undefined)
-    const att = makeAttraction({ id: 1, day: 1, lat: 35.68, lng: 139.76 })
+    const att = makeAttraction({ id: 1, name: 'Templo', day: 1, lat: 35.68, lng: 139.76 })
+
     mockUseAttraction.mockReturnValue({
       attractions: [att],
       isLoading: false,
@@ -311,7 +312,9 @@ describe('TimelinePage', () => {
       isUpdating: false,
       isDeleting: false,
     })
+
     mockBuildDayTimeline.mockResolvedValue(makeTimelineDay(1, [att]))
+
     mockUseOSRMRoutesQuery.mockReturnValue({
       segmentsByDay: {},
       isRoutesLoading: false,
@@ -319,11 +322,15 @@ describe('TimelinePage', () => {
       distances: {},
       refetch: vi.fn(),
     })
+
     render(<TimelinePage />, { wrapper: Wrapper })
-    await waitFor(() => {
-      expect(screen.getByTestId('timeline-component')).toBeInTheDocument()
+
+    const toggleBtn = await screen.findByRole('button', {
+      name: /Toggle visitado Templo/i
     })
-    fireEvent.click(screen.getByRole('button', { name: /Toggle visitado Templo/i }))
+
+    fireEvent.click(toggleBtn)
+
     await waitFor(() => {
       expect(toggleVisited).toHaveBeenCalledWith(1)
       expect(mockSuccess).toHaveBeenCalledWith('Status da atração atualizado')
@@ -332,8 +339,8 @@ describe('TimelinePage', () => {
 
   it('handleToggleVisited error shows error toast', async () => {
     const toggleVisited = vi.fn().mockRejectedValue(new Error('API error'))
-    const att = makeAttraction({ id: 1, day: 1, lat: 35.68, lng: 139.76 })
-    const errSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const att = makeAttraction({ id: 1, name: 'Templo', day: 1 })
+
     mockUseAttraction.mockReturnValue({
       attractions: [att],
       isLoading: false,
@@ -342,13 +349,14 @@ describe('TimelinePage', () => {
       updateAttraction: vi.fn(),
       deleteAttraction: vi.fn(),
       toggleVisited,
+      availableDays: [1],
       bulkUpdate: vi.fn(),
       citiesToPrefetch: [],
-      availableDays: [1],
       isCreating: false,
       isUpdating: false,
       isDeleting: false,
     })
+
     mockBuildDayTimeline.mockResolvedValue(makeTimelineDay(1, [att]))
     mockUseOSRMRoutesQuery.mockReturnValue({
       segmentsByDay: {},
@@ -357,15 +365,21 @@ describe('TimelinePage', () => {
       distances: {},
       refetch: vi.fn(),
     })
+
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => { })
+
     render(<TimelinePage />, { wrapper: Wrapper })
-    await waitFor(() => {
-      expect(screen.getByTestId('timeline-component')).toBeInTheDocument()
+    const toggleBtn = await screen.findByRole('button', { name: /Toggle visitado Templo/i })
+
+    await act(async () => {
+      fireEvent.click(toggleBtn)
     })
-    fireEvent.click(screen.getByRole('button', { name: /Toggle visitado Templo/i }))
+
     await waitFor(() => {
       expect(mockError).toHaveBeenCalledWith('Erro ao atualizar atração')
     })
-    errSpy.mockRestore()
+
+    consoleSpy.mockRestore()
   })
 
   it('does not show export button when no timeline data', () => {
@@ -529,7 +543,7 @@ describe('TimelinePage', () => {
       distances: {},
       refetch: vi.fn(),
     })
-    const errSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const errSpy = vi.spyOn(console, 'error').mockImplementation(() => { })
     render(<TimelinePage />, { wrapper: Wrapper })
     await waitFor(() => {
       expect(screen.getByTestId('timeline-component')).toBeInTheDocument()

@@ -128,7 +128,6 @@ export async function fetchWeatherForecast(city: string): Promise<WeatherData[]>
       const periodFromSlot = (item: any): WeatherPeriodSummary | undefined => item ? {
         temp: Math.round(item.main.temp),
         icon: getWeatherEmoji(item.weather[0].icon),
-        description: item.weather[0].description,
         pop: item.pop || 0
       } : undefined;
 

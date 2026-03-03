@@ -5,7 +5,7 @@ export interface TimelineSegment {
   to: Attraction
   durationMinutes: number
   distanceKm: number
-  travelMode: 'walking' | 'driving' | 'transit'
+  travelMode: 'walking' | 'driving' | 'transit' | string
 }
 
 export interface TimelineConflict {

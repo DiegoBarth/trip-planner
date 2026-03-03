@@ -1,7 +1,6 @@
 export interface WeatherPeriodSummary {
   temp: number
   icon: string
-  description: string
   pop: number
 }
 
