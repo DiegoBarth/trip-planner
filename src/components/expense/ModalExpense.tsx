@@ -269,6 +269,7 @@ export function ModalExpense({ expense, isOpen, onClose, onSave }: ModalExpenseP
           <div>
             <label htmlFor="expense-country" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">País *</label>
             <CustomSelect
+              id="expense-country"
               value={formData.country ? `${COUNTRIES[formData.country].flag} ${COUNTRIES[formData.country].name}` : ''}
               onChange={(val) => {
                 if (!val) {
@@ -287,6 +288,7 @@ export function ModalExpense({ expense, isOpen, onClose, onSave }: ModalExpenseP
           <div>
             <label htmlFor="expense-currency" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Moeda *</label>
             <CustomSelect
+              id="expense-currency"
               value={formData.currency === 'BRL' ? 'R$ Real (BRL)' : formData.currency === 'JPY' ? '¥ Iene (JPY)' : '₩ Won (KRW)'}
               onChange={(val) => {
                 const currencyMap: Record<string, Currency> = {

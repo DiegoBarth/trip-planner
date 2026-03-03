@@ -411,6 +411,4 @@ describe('ModalReservation Component', () => {
       expect(mockOnSave).not.toHaveBeenCalled()
     })
   })
-
- 
 })
