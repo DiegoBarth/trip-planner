@@ -16,8 +16,9 @@ export function getFirstFocusableDay(calendar: HTMLDivElement | null): HTMLButto
   return dayButton
 }
 
-export function DateField({ value, onChange, required }: {
+export function DateField({ value, id, onChange, required }: {
 value: Date | undefined
+id?: string
 onChange: (date: Date | undefined) => void
 required?: boolean
 }) {
@@ -68,6 +69,7 @@ required?: boolean
 
       {value && (
         <button
+          id={id}
           type="button"
           aria-label="Limpar data"
           className="ml-1 px-2 py-1 rounded text-xs text-gray-900 dark:text-gray-100

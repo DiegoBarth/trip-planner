@@ -53,6 +53,7 @@ export function ReservationActionsModal({ reservation, isOpen, onClose, onEdit, 
       aria-labelledby="reservation-actions-title"
     >
       <div
+        data-testid="reservation-backdrop"
         className="absolute inset-0 bg-black/40 backdrop-blur-sm"
         onClick={onClose}
         aria-hidden="true"

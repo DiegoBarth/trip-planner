@@ -181,10 +181,11 @@ export function ModalReservation({ reservation, isOpen, onClose, onSave }: Modal
       <div className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div>
-            <label className="block text-sm font-bold text-gray-900 dark:text-gray-100 mb-1.5">
+            <label htmlFor="reservation_type" className="block text-sm font-bold text-gray-900 dark:text-gray-100 mb-1.5">
               Tipo *
             </label>
             <CustomSelect
+              id="reservation_type"
               value={RESERVATION_TYPES[formData.type].label}
               onChange={(val) => {
                 const typeKey = Object.entries(RESERVATION_TYPES).find(([_, c]) => c.label === val)?.[0] as ReservationType
@@ -195,10 +196,11 @@ export function ModalReservation({ reservation, isOpen, onClose, onSave }: Modal
           </div>
 
           <div>
-            <label className="block text-sm font-bold text-gray-900 dark:text-gray-100 mb-1.5">
+            <label htmlFor="status" className="block text-sm font-bold text-gray-900 dark:text-gray-100 mb-1.5">
               Status *
             </label>
             <CustomSelect
+              id="status"
               value={BOOKING_STATUS[formData.status].label}
               onChange={(val) => {
                 const statusKey = Object.entries(BOOKING_STATUS).find(([_, c]) => c.label === val)?.[0] as BookingStatus
@@ -210,10 +212,11 @@ export function ModalReservation({ reservation, isOpen, onClose, onSave }: Modal
         </div>
 
         <div>
-          <label className="block text-sm font-bold text-gray-900 dark:text-gray-100 mb-1.5">
+          <label htmlFor="title" className="block text-sm font-bold text-gray-900 dark:text-gray-100 mb-1.5">
             Título *
           </label>
           <input
+            id="title"
             type="text"
             required
             autoComplete="off"
@@ -224,10 +227,11 @@ export function ModalReservation({ reservation, isOpen, onClose, onSave }: Modal
         </div>
 
         <div>
-          <label className="block text-sm font-bold text-gray-900 dark:text-gray-100 mb-1.5">
+          <label htmlFor="description" className="block text-sm font-bold text-gray-900 dark:text-gray-100 mb-1.5">
             Descrição
           </label>
           <input
+            id="description"
             type="text"
             autoComplete="off"
             {...register('description')}
@@ -240,7 +244,7 @@ export function ModalReservation({ reservation, isOpen, onClose, onSave }: Modal
           <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100 mb-2.5">📅 Datas e Horário</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+              <label htmlFor="date" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
                 Data *
               </label>
               <Controller
@@ -248,6 +252,7 @@ export function ModalReservation({ reservation, isOpen, onClose, onSave }: Modal
                 control={control}
                 render={({ field }) => (
                   <DateField
+                    id="date"
                     value={field.value ? parseLocalDate(field.value) : undefined}
                     onChange={(date: Date | undefined) => field.onChange(date ? dateToYYYYMMDD(date) : '')}
                   />
@@ -256,7 +261,7 @@ export function ModalReservation({ reservation, isOpen, onClose, onSave }: Modal
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+              <label htmlFor="end_date" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
                 Data Fim *
               </label>
               <Controller
@@ -264,6 +269,7 @@ export function ModalReservation({ reservation, isOpen, onClose, onSave }: Modal
                 control={control}
                 render={({ field }) => (
                   <DateField
+                    id="end_date"
                     value={field.value ? parseLocalDate(field.value) : undefined}
                     onChange={(date: Date | undefined) => field.onChange(date ? dateToYYYYMMDD(date) : '')}
                   />
@@ -272,10 +278,11 @@ export function ModalReservation({ reservation, isOpen, onClose, onSave }: Modal
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+              <label htmlFor="hour" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
                 Horário
               </label>
               <input
+                id="hour"
                 type="time"
                 autoComplete="off"
                 {...register('time')}
@@ -289,10 +296,11 @@ export function ModalReservation({ reservation, isOpen, onClose, onSave }: Modal
           <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100 mb-2.5">🏢 Provedor e Confirmação</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+              <label htmlFor="provider" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
                 Provedor *
               </label>
               <input
+                id="provider"
                 type="text"
                 autoComplete="off"
                 {...register('provider')}
@@ -302,10 +310,11 @@ export function ModalReservation({ reservation, isOpen, onClose, onSave }: Modal
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+              <label htmlFor="confirmation_code" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
                 Código
               </label>
               <input
+                id="confirmation_code"
                 type="text"
                 autoComplete="off"
                 {...register('confirmationCode')}
@@ -320,10 +329,11 @@ export function ModalReservation({ reservation, isOpen, onClose, onSave }: Modal
           <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100 mb-2.5">📍 Localização</h3>
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+              <label htmlFor="location" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
                 Local *
               </label>
               <input
+                id="location"
                 type="text"
                 autoComplete="off"
                 {...register('location')}
@@ -334,10 +344,11 @@ export function ModalReservation({ reservation, isOpen, onClose, onSave }: Modal
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                <label htmlFor="country" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
                   País *
                 </label>
                 <CustomSelect
+                  id="country"
                   value={formData.country ? `${COUNTRIES[formData.country].flag} ${COUNTRIES[formData.country].name}` : ''}
                   onChange={(val) => {
                     if (!val) {
@@ -355,7 +366,7 @@ export function ModalReservation({ reservation, isOpen, onClose, onSave }: Modal
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                <label htmlFor="attraction_id" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
                   Vincular Atração <span className="text-xs text-gray-500">(opcional)</span>
                 </label>
                 <Controller
@@ -363,6 +374,7 @@ export function ModalReservation({ reservation, isOpen, onClose, onSave }: Modal
                   control={control}
                   render={({ field }) => (
                     <CustomSelect
+                      id="attraction_id"
                       value={formData.attractionId ? attractions.find(a => a.id === formData.attractionId)?.name || '' : ''}
                       onChange={(val) => {
                         if (!val) {

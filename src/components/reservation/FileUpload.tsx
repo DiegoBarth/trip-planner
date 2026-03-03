@@ -61,7 +61,7 @@ export function FileUpload({
     try {
       const base64 = await fileToBase64(file);
       const response = await uploadFile(file.name, base64, file.type);
-      
+
       if (response.success && response.fileUrl && response.fileId) {
         onFileUploaded(response.fileUrl, response.fileId!);
         setError(null);
@@ -167,6 +167,7 @@ export function FileUpload({
       ) : (
         <div className="relative">
           <input
+            data-testid="file-upload-input"
             type="file"
             autoComplete="off"
             onChange={handleFileSelect}

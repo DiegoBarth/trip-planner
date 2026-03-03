@@ -171,6 +171,7 @@ export function CustomSelect({
     <div className="relative w-full" ref={containerRef}>
       <button
         type="button"
+        data-testid={`custom-select-${id}`}
         id={id}
         disabled={disabled}
         onClick={() => !disabled && setIsOpen(!isOpen)}
