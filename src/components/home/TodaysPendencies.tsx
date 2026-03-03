@@ -30,7 +30,7 @@ export default function TodaysPendencies() {
         "
       >
         <div className="flex items-center gap-3">
-          <CheckSquare className="w-8 h-8" />
+          <CheckSquare data-testid="check-square-icon" className="w-8 h-8" />
           <div>
             <h3 className="text-lg font-bold">Tudo em dia!</h3>
             <p className="text-sm opacity-90">Nenhuma pendência no momento</p>
@@ -60,7 +60,7 @@ export default function TodaysPendencies() {
           >
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center group-hover:bg-blue-200 transition-colors">
-                <CheckSquare className="w-5 h-5 text-blue-600" />
+                <CheckSquare data-testid="check-square-icon" className="w-5 h-5 text-blue-600" />
               </div>
               <div>
                 <p className="font-semibold text-gray-900">Checklist</p>
@@ -69,7 +69,7 @@ export default function TodaysPendencies() {
                 </p>
               </div>
             </div>
-            <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-gray-600" />
+            <ChevronRight data-testid="chevron-right-icon" className="w-5 h-5 text-gray-400 group-hover:text-gray-600" />
           </Link>
         )}
 
@@ -89,7 +89,7 @@ export default function TodaysPendencies() {
                 </p>
               </div>
             </div>
-            <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-gray-600" />
+            <ChevronRight data-testid="chevron-right-icon" className="w-5 h-5 text-gray-400 group-hover:text-gray-600" />
           </Link>
         )}
       </div>

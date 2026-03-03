@@ -78,7 +78,7 @@ export default function NextDaySummary() {
   if (!nextDayData) {
     return (
       <div className="h-[309px] bg-white dark:bg-gray-800 rounded-2xl shadow-md p-6 flex flex-col items-center justify-center text-center">
-        <Calendar className="w-12 h-12 text-gray-400 mb-3" />
+        <Calendar data-testid="calendar-icon" className="w-12 h-12 text-gray-400 mb-3" />
         <p className="text-gray-600 dark:text-gray-400">
           Nenhum dia planejado
         </p>

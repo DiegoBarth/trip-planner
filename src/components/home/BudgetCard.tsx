@@ -46,6 +46,7 @@ export function BudgetCard({ origin, total, spent, remaining }: BudgetCardProps)
           </div>
           <div className="mt-1.5 h-1.5 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
             <div
+              role="progressbar"
               className="h-full rounded-full transition-all duration-300"
               style={{ width: `${Math.min(percentSpent, 100)}%`, backgroundColor: config.color }}
             />
