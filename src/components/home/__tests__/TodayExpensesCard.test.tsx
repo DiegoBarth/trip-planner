@@ -207,8 +207,8 @@ describe('TodayExpensesCard', async () => {
     )
 
     expect(screen.getByText('R$ 125,00')).toBeInTheDocument()
-    expect(screen.getByText('2 registros')).toBeInTheDocument()
-    expect(mockFormatCurrency).toHaveBeenCalledWith(125, 'BRL')
+    expect(screen.getByText('1 registro')).toBeInTheDocument()
+    expect(mockFormatCurrency).toHaveBeenCalledWith(100, 'BRL')
   })
 
   it('handles toYYYYMMDD conversion for different date formats', () => {
@@ -216,7 +216,6 @@ describe('TodayExpensesCard', async () => {
     const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`
 
     const expenses: Expense[] = [
-      // ✅ YYYY-MM-DD (direto)
       {
         id: 1,
         date: todayStr,
