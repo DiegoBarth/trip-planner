@@ -114,7 +114,7 @@ export function LocationField({ control, register, setValue, getValues }: Props)
   )
 }
 
-function extractLatLngFromGoogleMaps(url: string) {
+export function extractLatLngFromGoogleMaps(url: string) {
   if (!url) return null;
 
   try {

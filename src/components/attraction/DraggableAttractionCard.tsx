@@ -55,6 +55,7 @@ export function DraggableAttractionCard({ attraction, priority = false, onCheckV
 
   return (
     <div
+      data-testid="draggable-wrapper"
       ref={setNodeRef}
       style={style}
       className={`
