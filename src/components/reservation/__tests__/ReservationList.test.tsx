@@ -225,7 +225,7 @@ describe('ReservationList', () => {
     expect(screen.getByTestId('confirm-modal')).toBeInTheDocument()
   })
 
-  it('should call onDelete after confirming deletion', () => {
+  it('should call onDelete after confirming deletion', async () => {
     render(
       <ReservationList
         reservations={[baseReservation]}
@@ -239,7 +239,9 @@ describe('ReservationList', () => {
     fireEvent.click(screen.getByText('delete'))
     fireEvent.click(screen.getByText('confirm-delete'))
 
-    expect(onDelete).toHaveBeenCalledWith(1)
+    await waitFor(() => {
+      expect(onDelete).toHaveBeenCalledWith(1)
+    })
   })
 
   it('should correctly compute stats counts', () => {

@@ -36,6 +36,7 @@ function HeaderPortals({ onLogout }: { onLogout: () => void }) {
     <div className="flex items-center gap-2">
       <ThemeToggle />
       <button
+        data-testid="logout-btn"
         type="button"
         onClick={onLogout}
         className="p-2 rounded-lg hover:bg-white/20 transition-colors"
