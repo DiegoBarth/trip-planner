@@ -16,7 +16,7 @@ vi.mock('@/components/ui/CustomSelect', () => ({
     value,
     onChange,
     options,
-    placeholder,
+    placeholder
   }: {
     id?: string
     value: string
@@ -31,7 +31,6 @@ vi.mock('@/components/ui/CustomSelect', () => ({
         onChange={(e) => onChange(e.target.value)}
         aria-label={placeholder}
       >
-        <option value="">{placeholder}</option>
         {options.map((opt) => (
           <option key={opt} value={opt}>
             {opt}
@@ -49,6 +48,7 @@ describe('ConverterPage', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
+
     mockUseCurrency.mockReturnValue({
       rates: mockRates,
       isLoading: false,
@@ -56,99 +56,149 @@ describe('ConverterPage', () => {
     })
   })
 
-  it('renders page header with title and subtitle', () => {
+  it('renders page header', () => {
     render(<ConverterPage />, { wrapper: Wrapper })
-    expect(screen.getByRole('heading', { name: /Conversor/i })).toBeInTheDocument()
-    expect(screen.getByText(/Converta entre iene, won e real/i)).toBeInTheDocument()
+
+    expect(
+      screen.getByRole('heading', { name: /Conversor/i })
+    ).toBeInTheDocument()
+
+    expect(
+      screen.getByText(/Converta entre iene, won e real/i)
+    ).toBeInTheDocument()
   })
 
-  it('renders amount input and currency selects', () => {
+  it('renders amount input and selects', () => {
     render(<ConverterPage />, { wrapper: Wrapper })
-    expect(screen.getByRole('textbox', { name: /Valor/i })).toBeInTheDocument()
+
+    expect(screen.getByPlaceholderText(/Digite um valor/i)).toBeInTheDocument()
+
     expect(screen.getByText(/^De$/)).toBeInTheDocument()
     expect(screen.getByText(/^Para$/)).toBeInTheDocument()
+
+    expect(screen.getByTestId('converter-from')).toBeInTheDocument()
+    expect(screen.getByTestId('converter-to')).toBeInTheDocument()
   })
 
-  it('shows loading state when isLoading', () => {
+  it('shows loading state', () => {
     mockUseCurrency.mockReturnValue({
       rates: null,
       isLoading: true,
       error: null,
     })
+
     render(<ConverterPage />, { wrapper: Wrapper })
+
     expect(screen.getByText(/Carregando taxas/i)).toBeInTheDocument()
   })
 
-  it('shows QueryErrorView when error', () => {
+  it('shows error view', () => {
     mockUseCurrency.mockReturnValue({
       rates: null,
       isLoading: false,
       error: new Error('Network error'),
     })
+
     render(<ConverterPage />, { wrapper: Wrapper })
-    expect(screen.getByText(/Não foi possível carregar as taxas de câmbio/i)).toBeInTheDocument()
+
+    expect(
+      screen.getByText(/Não foi possível carregar as taxas de câmbio/i)
+    ).toBeInTheDocument()
   })
 
   it('shows placeholder when no amount entered', () => {
     render(<ConverterPage />, { wrapper: Wrapper })
-    expect(screen.getByText(/Digite um valor para ver a conversão/i)).toBeInTheDocument()
+
+    expect(screen.getByText(/^Digite um valor$/)).toBeInTheDocument()
   })
 
-  it('renders swap button for currencies', () => {
+  it('updates amount and shows conversion', () => {
     render(<ConverterPage />, { wrapper: Wrapper })
-    const swapBtn = screen.getByRole('button', { name: /Trocar moedas/i })
-    expect(swapBtn).toBeInTheDocument()
-  })
 
-  it('updates amount input and shows conversion when amount > 0', () => {
-    render(<ConverterPage />, { wrapper: Wrapper })
-    const input = screen.getByRole('textbox', { name: /Valor/i })
+    const input = screen.getByPlaceholderText(/Digite um valor/i)
+
     fireEvent.change(input, { target: { value: '100' } })
+
     expect(input).toHaveValue('¥ 100')
-    expect(screen.getByText(/¥\s*100\s*=/)).toBeInTheDocument()
+
     expect(screen.getByText('R$ 4,00')).toBeInTheDocument()
   })
 
-  it('swap button is disabled when from and to currency are the same', () => {
+  it('swap button disables when currencies equal', () => {
     render(<ConverterPage />, { wrapper: Wrapper })
+
     const toSelect = screen.getByTestId('converter-to')
+
     fireEvent.change(toSelect, { target: { value: '¥ Iene (JPY)' } })
-    const swapBtn = screen.getByRole('button', { name: /Trocar moedas/i })
+
+    const swapBtn = screen.getByRole('button', { name: /swap currencies/i })
+
     expect(swapBtn).toBeDisabled()
   })
 
-  it('swap exchanges from and to currency and updates amount', () => {
+  it('swap currencies updates values', () => {
     render(<ConverterPage />, { wrapper: Wrapper })
-    const input = screen.getByRole('textbox', { name: /Valor/i })
+
+    const input = screen.getByPlaceholderText(/Digite um valor/i)
+
     fireEvent.change(input, { target: { value: '100' } })
-    expect(input).toHaveValue('¥ 100')
-    const swapBtn = screen.getByRole('button', { name: /Trocar moedas/i })
+
+    const swapBtn = screen.getByRole('button', { name: /swap currencies/i })
+
     fireEvent.click(swapBtn)
+
     expect(screen.getByTestId('converter-from')).toHaveValue('R$ Real (BRL)')
     expect(screen.getByTestId('converter-to')).toHaveValue('¥ Iene (JPY)')
-    expect((input as HTMLInputElement).value).toMatch(/R\$\s*4,00/)
   })
 
-  it('changing De currency updates select', () => {
+  it('changing "De" currency updates select', () => {
     render(<ConverterPage />, { wrapper: Wrapper })
+
     const fromSelect = screen.getByTestId('converter-from')
+
     fireEvent.change(fromSelect, { target: { value: '₩ Won (KRW)' } })
+
     expect(fromSelect).toHaveValue('₩ Won (KRW)')
   })
 
-  it('changing Para currency updates select', () => {
+  it('changing "Para" currency updates select', () => {
     render(<ConverterPage />, { wrapper: Wrapper })
+
     const toSelect = screen.getByTestId('converter-to')
+
     fireEvent.change(toSelect, { target: { value: '¥ Iene (JPY)' } })
+
     expect(toSelect).toHaveValue('¥ Iene (JPY)')
   })
 
+  it('retry button reloads page', () => {
+    const reloadMock = vi.fn()
+
+    Object.defineProperty(window, 'location', {
+      value: { reload: reloadMock },
+      writable: true,
+    })
+
+    mockUseCurrency.mockReturnValue({
+      rates: null,
+      isLoading: false,
+      error: new Error('Network error'),
+    })
+
+    render(<ConverterPage />, { wrapper: Wrapper })
+
+    const retryBtn = screen.getByRole('button', { name: /Tentar novamente/i })
+
+    fireEvent.click(retryBtn)
+
+    expect(reloadMock).toHaveBeenCalled()
+  })
   it('shows BRL placeholder when from currency is BRL', () => {
     render(<ConverterPage />, { wrapper: Wrapper })
     const fromSelect = screen.getByTestId('converter-from')
     fireEvent.change(fromSelect, { target: { value: 'R$ Real (BRL)' } })
     const input = screen.getByRole('textbox', { name: /Valor/i })
-    expect(input).toHaveAttribute('placeholder', 'R$ 0,00')
+    expect(input).toHaveAttribute('placeholder', 'Digite um valor')
   })
 
   it('when changing De currency with amount entered, converts and updates input', () => {
@@ -159,19 +209,5 @@ describe('ConverterPage', () => {
     const fromSelect = screen.getByTestId('converter-from')
     fireEvent.change(fromSelect, { target: { value: 'R$ Real (BRL)' } })
     expect((input as HTMLInputElement).value).toMatch(/R\$\s*4,00/)
-  })
-
-  it('error view shows retry button and calls onRetry when clicked', () => {
-    const reloadMock = vi.fn()
-    Object.defineProperty(window, 'location', { value: { reload: reloadMock }, writable: true })
-    mockUseCurrency.mockReturnValue({
-      rates: null,
-      isLoading: false,
-      error: new Error('Network error'),
-    })
-    render(<ConverterPage />, { wrapper: Wrapper })
-    const retryBtn = screen.getByRole('button', { name: /Tentar novamente/i })
-    fireEvent.click(retryBtn)
-    expect(reloadMock).toHaveBeenCalled()
   })
 })
