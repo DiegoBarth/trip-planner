@@ -1,8 +1,8 @@
 import { API_URL, API_TIMEOUT_MS, POST_RATE_LIMIT_MS } from '@/config/constants';
 
-const lastPostByAction = new Map<string, number>();
+export const lastPostByAction = new Map<string, number>();
 
-function getCsrfToken(): string | null {
+export function getCsrfToken(): string | null {
   if (typeof document === 'undefined') return null;
 
   const meta =
@@ -24,7 +24,7 @@ function enforcePostRateLimit(action: string) {
   lastPostByAction.set(action, now);
 }
 
-async function fetchWithTimeout(url: string, options: RequestInit & { timeoutMs?: number } = {}): Promise<Response> {
+export async function fetchWithTimeout(url: string, options: RequestInit & { timeoutMs?: number } = {}): Promise<Response> {
   const { timeoutMs = API_TIMEOUT_MS, ...fetchOptions } = options;
   const controller = new AbortController();
   const id = setTimeout(() => controller.abort(), timeoutMs);
@@ -54,7 +54,7 @@ async function fetchWithTimeout(url: string, options: RequestInit & { timeoutMs?
         throw new Error('A requisição demorou demais. Tente novamente.');
       }
 
-      if (err.message.includes('Failed to fetch') || err.message.includes('NetworkError')) {
+      if (err.message.includes('Failed to fetch')) {
         throw new Error('Sem conexão. Verifique sua internet e tente novamente.');
       }
     }
