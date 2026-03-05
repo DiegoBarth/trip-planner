@@ -136,7 +136,7 @@ export default function ConverterPage() {
             placeholder="Digite um valor"
             inputMode="numeric"
             className="
-              h-24 w-full text-center text-lg font-bold rounded-2xl
+              h-24 w-full text-center text-2xl font-bold rounded-2xl
               bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700
               shadow-sm text-gray-900 dark:text-white placeholder:text-gray-500
               focus:outline-none
@@ -163,7 +163,7 @@ export default function ConverterPage() {
               aria-label="Swap currencies"
               onClick={handleSwap}
               disabled={fromCurrency === toCurrency}
-              className="p-2.5 rounded-xl border bg-white dark:bg-gray-700"
+              className="p-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700"
             >
               <ArrowLeftRight className="w-5 h-5" />
             </button>
@@ -189,7 +189,7 @@ export default function ConverterPage() {
           >
             {isLoading ? (
               <p className="text-gray-500">Carregando taxas...</p>
-            ) : converted !== null && amount > 0 ? (
+            ) : converted !== null && amount > 0 && (
               <>
                 <p className="text-sm text-gray-500">
                   {formatCurrency(amount, fromCurrency)}
@@ -198,8 +198,6 @@ export default function ConverterPage() {
                   {formatCurrency(converted, toCurrency)}
                 </p>
               </>
-            ) : (
-              <p className="text-gray-500 text-lg font-bold">Digite um valor</p>
             )}
           </div>
 
@@ -209,7 +207,7 @@ export default function ConverterPage() {
       <div className="fixed bottom-16 left-0 right-0 bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 p-3 md:hidden">
         <div className="max-w-md mx-auto grid grid-cols-4 gap-2">
 
-          {['7', '8', '9', '⌫', '4', '5', '6', 'C', '1', '2', '3', '', '0', '00'].map((key, i) => {
+          {['7', '8', '9', '⌫', '4', '5', '6', 'C', '1', '2', '3', '', '0', '00', '000'].map((key, i) => {
 
             if (key === '') return <div key={i} />
 

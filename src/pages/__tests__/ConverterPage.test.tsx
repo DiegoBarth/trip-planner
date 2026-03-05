@@ -109,7 +109,7 @@ describe('ConverterPage', () => {
   it('shows placeholder when no amount entered', () => {
     render(<ConverterPage />, { wrapper: Wrapper })
 
-    expect(screen.getByText(/^Digite um valor$/)).toBeInTheDocument()
+    expect(screen.getByPlaceholderText(/Digite um valor/i)).toBeInTheDocument()
   })
 
   it('updates amount and shows conversion', () => {
