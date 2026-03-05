@@ -63,7 +63,7 @@ export default function App() {
   }, [userEmail]);
 
   if (!userEmail) {
-    const LoginScreen = lazy(() => import('./LoginScreen'));
+    const LoginScreen = lazy(() => import('@/components/login/LoginScreen'));
     return (
       <Suspense fallback={<div className="h-screen bg-white" />}>
         <LoginScreen onSuccess={handleLoginSuccess} onError={() => { }} />
