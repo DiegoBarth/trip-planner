@@ -21,7 +21,7 @@ function getColorForDay(day: number) {
 
 export function MapView() {
   const { country, day } = useCountry();
-  const { accommodations } = useAccommodation();
+  const { accommodations } = useAccommodation(country);
   const { attractions } = useAttraction(country);
   const location = useLocation();
 

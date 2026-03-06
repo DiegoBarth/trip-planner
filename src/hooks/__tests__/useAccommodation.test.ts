@@ -13,7 +13,9 @@ vi.mock('@/services/accommodationQueryService', () => ({
   }),
 }))
 
-function makeAccommodation(overrides: Partial<{ id: number; city: string }> = {}) {
+function makeAccommodation(
+  overrides: Partial<{ id: number; city: string; country: 'japan' | 'south-korea' | 'general' }> = {}
+) {
   return {
     id: 1,
     description: 'Hotel',
@@ -34,18 +36,61 @@ describe('useAccommodation', () => {
   })
 
   it('returns accommodations, isLoading and error', async () => {
-    const accommodations = [makeAccommodation({ id: 1 }), makeAccommodation({ id: 2, city: 'Kyoto' })]
+    const accommodations = [
+      makeAccommodation({ id: 1 }),
+      makeAccommodation({ id: 2, city: 'Kyoto' }),
+    ]
+
     mockQueryFn.mockResolvedValue(accommodations)
 
     const Wrapper = createQueryClientWrapper()
 
-    const { result } = renderHook(() => useAccommodation(), {
+    const { result } = renderHook(() => useAccommodation('japan'), {
       wrapper: Wrapper,
     })
 
     await waitFor(() => {
       expect(result.current.accommodations).toHaveLength(2)
       expect(result.current.isLoading).toBe(false)
+    })
+  })
+
+  it('filters accommodations by country', async () => {
+    const accommodations = [
+      makeAccommodation({ id: 1, country: 'japan' }),
+      makeAccommodation({ id: 2, country: 'south-korea' }),
+    ]
+
+    mockQueryFn.mockResolvedValue(accommodations)
+
+    const Wrapper = createQueryClientWrapper()
+
+    const { result } = renderHook(() => useAccommodation('japan'), {
+      wrapper: Wrapper,
+    })
+
+    await waitFor(() => {
+      expect(result.current.accommodations).toHaveLength(1)
+      expect(result.current.accommodations[0].country).toBe('japan')
+    })
+  })
+
+  it('returns all accommodations when country is all', async () => {
+    const accommodations = [
+      makeAccommodation({ id: 1, country: 'japan' }),
+      makeAccommodation({ id: 2, country: 'south-korea' }),
+    ]
+
+    mockQueryFn.mockResolvedValue(accommodations)
+
+    const Wrapper = createQueryClientWrapper()
+
+    const { result } = renderHook(() => useAccommodation('all'), {
+      wrapper: Wrapper,
+    })
+
+    await waitFor(() => {
+      expect(result.current.accommodations).toHaveLength(2)
     })
   })
 })
