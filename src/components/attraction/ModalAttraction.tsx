@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
+import { useCountry } from '@/contexts/CountryContext'
 import { useReservation } from '@/hooks/useReservation'
 import { useCurrency } from '@/hooks/useCurrency'
 import { useToast } from '@/contexts/toast'
@@ -11,7 +12,31 @@ import { DateField } from '@/components/ui/DateField'
 import { LocationField } from '@/components/attraction/LocationField'
 import { convertToBRL, formatCurrencyInputByCurrency, currencyToNumber, convertCurrency, dateToInputFormat, parseLocalDate, dateToYYYYMMDD } from '@/utils/formatters'
 import { COUNTRIES, ATTRACTION_TYPES, PERIODS, RESERVATION_STATUS, WEEK_DAYS } from '@/config/constants'
-import type { Attraction, Country, AttractionType, Currency, Period, ReservationStatus } from '@/types/Attraction'
+import type { Attraction, Country, AttractionType, Currency, Period, ReservationStatus, CountryFilterValue } from '@/types/Attraction'
+
+const COUNTRY_CURRENCY: Record<Country, Currency> = {
+  japan: 'JPY',
+  'south-korea': 'KRW',
+  general: 'BRL'
+}
+
+const CURRENCY_COUNTRY: Record<Currency, Country> = {
+  JPY: 'japan',
+  KRW: 'south-korea',
+  BRL: 'general'
+}
+
+// All currencies are always available
+const availableCurrencies = [
+  { label: '¥ Iene (JPY)', value: 'JPY' as Currency },
+  { label: '₩ Won (KRW)', value: 'KRW' as Currency },
+  { label: 'R$ Real (BRL)', value: 'BRL' as Currency }
+];
+
+export function getCountryFromFilter(filter: CountryFilterValue): Country {
+  if (filter === 'all') return 'general'
+  return filter
+}
 
 interface ModalAttractionProps {
   attraction?: Attraction
@@ -32,7 +57,7 @@ interface AttractionFormData {
   needsReservation: boolean
   reservationStatus?: string
   reservationId?: number
-  couplePrice: string | number
+  couplePrice: string
   currency: Currency
   priceInBRL: number
   idealPeriod?: Period
@@ -50,13 +75,15 @@ interface AttractionFormData {
 }
 
 export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAttractionProps) {
+  const { country: countryFilter } = useCountry()
+  const defaultCountry = getCountryFromFilter(countryFilter)
   const toast = useToast()
   const [saving, setSaving] = useState(false);
   const { register, control, handleSubmit, watch, setValue, reset, getValues } =
     useForm<AttractionFormData>({
       defaultValues: {
         name: '',
-        country: 'japan',
+        country: defaultCountry,
         city: '',
         region: '',
         date: '',
@@ -66,8 +93,8 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
         needsReservation: false,
         reservationStatus: undefined,
         reservationId: undefined,
-        couplePrice: 0,
-        currency: 'JPY',
+        couplePrice: '',
+        currency: COUNTRY_CURRENCY[defaultCountry],
         priceInBRL: 0,
         idealPeriod: undefined,
         isOpen: undefined,
@@ -84,8 +111,17 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
       }
     });
 
-  const formData = watch();
-  const previousCurrency = useRef<Currency>(formData.currency);
+  const currency = watch('currency')
+  const couplePrice = watch('couplePrice', '')
+  const needsReservation = watch('needsReservation')
+  const reservationStatus = watch('reservationStatus')
+  const country = watch('country')
+  const idealPeriod = watch('idealPeriod')
+  const type = watch('type')
+  const priceInBRL = watch('priceInBRL')
+  const reservationId = watch('reservationId')
+
+  const previousCurrency = useRef<Currency>(currency);
   const { rates } = useCurrency();
   const { reservations } = useReservation();
 
@@ -96,7 +132,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
         let formattedPrice: string;
 
         if (attraction.currency === 'BRL') {
-          const cents = Math.round(attraction.couplePrice * 100).toString();
+          const cents = Math.round((attraction.couplePrice ?? 0) * 100).toString();
 
           formattedPrice = formatCurrencyInputByCurrency(cents, attraction.currency);
         }
@@ -106,7 +142,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
 
         reset({
           name: attraction.name ?? '',
-          country: attraction.country ?? 'japan',
+          country: attraction.country ?? defaultCountry,
           city: attraction.city ?? '',
           region: attraction.region ?? '',
           date: dateToInputFormat(attraction.date),
@@ -117,7 +153,13 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
           reservationStatus: attraction.reservationStatus,
           reservationId: attraction.reservationId,
           couplePrice: formattedPrice,
-          currency: attraction.currency ?? 'JPY',
+          currency:
+            attraction.currency ??
+            (attraction.country === 'japan'
+              ? 'JPY'
+              : attraction.country === 'south-korea'
+                ? 'KRW'
+                : 'BRL'),
           priceInBRL: attraction.priceInBRL ?? 0,
           idealPeriod: attraction.idealPeriod,
           isOpen: attraction.isOpen,
@@ -133,12 +175,16 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
           lng: attraction.lng ?? 0
         });
 
-        previousCurrency.current = attraction.currency;
+        previousCurrency.current = attraction.currency ?? (attraction.country === 'japan'
+          ? 'JPY'
+          : attraction.country === 'south-korea'
+            ? 'KRW'
+            : 'BRL');
       }
       else {
         reset({
           name: '',
-          country: 'japan',
+          country: defaultCountry,
           city: '',
           region: '',
           date: '',
@@ -148,8 +194,8 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
           needsReservation: false,
           reservationStatus: undefined,
           reservationId: undefined,
-          couplePrice: 0,
-          currency: 'JPY',
+          couplePrice: '',
+          currency: COUNTRY_CURRENCY[defaultCountry],
           priceInBRL: 0,
           idealPeriod: undefined,
           isOpen: undefined,
@@ -165,101 +211,79 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
           lng: 0
         });
 
-        previousCurrency.current = 'JPY';
+        previousCurrency.current = COUNTRY_CURRENCY[defaultCountry];
       }
     }
-  }, [isOpen, attraction, reset]);
+  }, [isOpen, attraction, reset, defaultCountry])
 
   // Convert and reformat couplePrice when currency changes
   useEffect(() => {
-    if (previousCurrency.current !== formData.currency && formData.couplePrice) {
-      const currentAmount = typeof formData.couplePrice === 'string'
-        ? currencyToNumber(formData.couplePrice, previousCurrency.current as Currency)
-        : (formData.couplePrice as number);
+    const price = currencyToNumber(couplePrice, previousCurrency.current)
+
+    if (previousCurrency.current !== currency && price > 0) {
+      const currentAmount = typeof couplePrice === 'string'
+        ? currencyToNumber(couplePrice, previousCurrency.current as Currency)
+        : (couplePrice as number);
 
       if (currentAmount > 0) {
-        const convertedAmount = convertCurrency(currentAmount, previousCurrency.current as Currency, formData.currency as Currency, rates);
+        const convertedAmount = convertCurrency(currentAmount, previousCurrency.current as Currency, currency as Currency, rates);
 
         // Format properly for each currency type
         let formattedAmount: string;
 
-        if (formData.currency === 'BRL') {
+        if (currency === 'BRL') {
           // For BRL, multiply by 100 to get cents, then format
           const cents = Math.round(convertedAmount * 100).toString();
 
-          formattedAmount = formatCurrencyInputByCurrency(cents, formData.currency as Currency);
+          formattedAmount = formatCurrencyInputByCurrency(cents, currency as Currency);
         }
         else {
           // For JPY and KRW, round to integer
           const rounded = Math.round(convertedAmount).toString();
 
-          formattedAmount = formatCurrencyInputByCurrency(rounded, formData.currency as Currency);
+          formattedAmount = formatCurrencyInputByCurrency(rounded, currency as Currency);
         }
 
         // Update both couplePrice and priceInBRL
         setValue('couplePrice', formattedAmount);
-        setValue('priceInBRL', convertToBRL(convertedAmount, formData.currency as Currency, rates));
+        setValue('priceInBRL', convertToBRL(convertedAmount, currency as Currency, rates));
       }
 
-      previousCurrency.current = formData.currency as Currency;
+      previousCurrency.current = currency as Currency;
     }
-  }, [formData.currency, formData.couplePrice, setValue]);
+  }, [currency, rates, couplePrice]);
 
   // Auto-select 'pending' when needsReservation is checked
   useEffect(() => {
-    if (formData.needsReservation && !formData.reservationStatus) {
-      setValue('reservationStatus', 'pending');
+    if (needsReservation && !reservationStatus) {
+      setValue('reservationStatus', 'pending')
     }
-  }, [formData.needsReservation, formData.reservationStatus, setValue]);
 
-  // All currencies are always available
-  const availableCurrencies = [
-    { label: '¥ Iene (JPY)', value: 'JPY' as Currency },
-    { label: '₩ Won (KRW)', value: 'KRW' as Currency },
-    { label: 'R$ Real (BRL)', value: 'BRL' as Currency }
-  ];
+    if (!needsReservation && reservationStatus) {
+      setValue('reservationStatus', undefined)
+    }
+  }, [needsReservation, reservationStatus, setValue])
 
   // Update currency when country changes
   const handleCountryChange = (country: Country) => {
-    setValue('country', country);
-
-    // Auto-select default currency based on country
-    if (country === 'japan') {
-      setValue('currency', 'JPY');
-    }
-    else if (country === 'south-korea') {
-      setValue('currency', 'KRW');
-    }
-    else if (country === 'general') {
-      setValue('currency', 'BRL');
-    }
-  };
+    setValue('currency', COUNTRY_CURRENCY[country])
+  }
 
   // Update country when currency changes
   const handleCurrencyChange = (currency: Currency) => {
-    setValue('currency', currency);
+    setValue('currency', currency)
+    setValue('country', CURRENCY_COUNTRY[currency])
+  }
 
-    // Auto-update country based on currency
-    if (currency === 'JPY') {
-      setValue('country', 'japan');
-    }
-    else if (currency === 'KRW') {
-      setValue('country', 'south-korea');
-    }
-    else if (currency === 'BRL') {
-      setValue('country', 'general');
-    }
-  };
-
-  const handleCouplerPriceChange = (value: string) => {
-    const formatted = formatCurrencyInputByCurrency(value, formData.currency as Currency);
+  const handleCouplePriceChange = (value: string) => {
+    const formatted = formatCurrencyInputByCurrency(value, currency as Currency);
 
     setValue('couplePrice', formatted);
 
     // Auto-calculate BRL price
-    const price = currencyToNumber(formatted, formData.currency as Currency);
+    const price = currencyToNumber(formatted, currency as Currency);
 
-    setValue('priceInBRL', convertToBRL(price, formData.currency as Currency, rates));
+    setValue('priceInBRL', convertToBRL(price, currency as Currency, rates));
   }
 
   const onSubmit = async (values: AttractionFormData) => {
@@ -273,8 +297,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
     setSaving(true);
 
     try {
-      await Promise.resolve(onSave(payload));
-
+      await onSave(payload);
       onClose();
     }
     finally {
@@ -323,7 +346,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
                 control={control}
                 render={({ field }) => (
                   <CustomSelect
-                    value={formData.country ? `${COUNTRIES[formData.country].flag} ${COUNTRIES[formData.country].name}` : ''}
+                    value={country ? `${COUNTRIES[country].flag} ${COUNTRIES[country].name}` : ''}
                     onChange={(val) => {
                       const countryKey = Object.entries(COUNTRIES).find(([_, c]) => `${c.flag} ${c.name}` === val)?.[0]
                       if (countryKey) {
@@ -360,7 +383,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
                 type="text"
                 autoComplete="off"
                 {...register('region')}
-                className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none focus:outline-none transition-colors placeholder-gray-500 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
+                className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none transition-colors placeholder-gray-500 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
                 placeholder="Ex: Asakusa"
               />
             </div>
@@ -374,7 +397,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
                 control={control}
                 render={({ field }) => (
                   <CustomSelect
-                    value={formData.type ? `${ATTRACTION_TYPES[formData.type].icon} ${ATTRACTION_TYPES[formData.type].label}` : ''}
+                    value={type ? `${ATTRACTION_TYPES[type].icon} ${ATTRACTION_TYPES[type].label}` : ''}
                     onChange={(val) => {
                       const typeKey = Object.entries(ATTRACTION_TYPES).find(([_, t]) => `${t.icon} ${t.label}` === val)?.[0]
                       if (typeKey) field.onChange(typeKey as AttractionType)
@@ -390,6 +413,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
               register={register}
               setValue={setValue}
               getValues={getValues}
+              watch={watch}
             />
           </div>
         </section>
@@ -432,7 +456,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
                 control={control}
                 render={({ field }) => (
                   <CustomSelect
-                    value={formData.idealPeriod ? `${PERIODS[formData.idealPeriod].icon} ${PERIODS[formData.idealPeriod].label} (${PERIODS[formData.idealPeriod].hours})` : ''}
+                    value={idealPeriod ? `${PERIODS[idealPeriod].icon} ${PERIODS[idealPeriod].label} (${PERIODS[idealPeriod].hours})` : ''}
                     onChange={(val) => {
                       if (!val) {
                         field.onChange(undefined)
@@ -456,7 +480,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
                 type="time"
                 autoComplete="off"
                 {...register('openingTime')}
-                className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none focus:outline-none transition-colors placeholder-gray-500 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
+                className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none transition-colors placeholder-gray-500 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
               />
             </div>
 
@@ -468,7 +492,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
                 type="time"
                 autoComplete="off"
                 {...register('closingTime')}
-                className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none focus:outline-none transition-colors placeholder-gray-500 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
+                className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none transition-colors placeholder-gray-500 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
               />
             </div>
 
@@ -481,7 +505,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
                 min="0"
                 autoComplete="off"
                 {...register('duration', { valueAsNumber: true })}
-                className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none focus:outline-none transition-colors placeholder-gray-500 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
+                className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none transition-colors placeholder-gray-500 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
               />
             </div>
 
@@ -533,7 +557,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             <div>
-              <label className="block text-sm font-bold text-gray-900 dark:text-gray-100 mb-1.5">
+              <label htmlFor="couplePrice" className="block text-sm font-bold text-gray-900 dark:text-gray-100 mb-1.5">
                 Valor Casal
               </label>
               <Controller
@@ -541,15 +565,16 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
                 control={control}
                 render={({ field }) => (
                   <input
+                    id="couplePrice"
                     type="text"
                     autoComplete="off"
                     value={typeof field.value === 'string' ? field.value : ''}
                     onChange={(e) => {
                       field.onChange(e.target.value)
-                      handleCouplerPriceChange(e.target.value)
+                      handleCouplePriceChange(e.target.value)
                     }}
-                    className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none focus:outline-none transition-colors placeholder-gray-500 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
-                    placeholder={formData.currency === 'BRL' ? 'R$ 0,00' : formData.currency === 'JPY' ? '¥ 0' : '₩ 0'}
+                    className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none transition-colors placeholder-gray-500 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
+                    placeholder={currency === 'BRL' ? 'R$ 0,00' : currency === 'JPY' ? '¥ 0' : '₩ 0'}
                   />
                 )}
               />
@@ -564,7 +589,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
                 control={control}
                 render={({ field }) => (
                   <CustomSelect
-                    value={availableCurrencies.find(c => c.value === formData.currency)?.label || ''}
+                    value={availableCurrencies.find(c => c.value === currency)?.label || ''}
                     onChange={(val) => {
                       const currency = availableCurrencies.find(c => c.label === val)?.value
                       if (currency) {
@@ -578,11 +603,11 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
               />
             </div>
 
-            {formData.currency !== 'BRL' && (
+            {currency !== 'BRL' && (
               <div className="md:col-span-3 bg-green-50 dark:bg-green-900/30 border-2 border-green-200 dark:border-green-700 p-4 rounded-lg">
                 <span className="text-sm font-bold text-gray-900 dark:text-gray-100">Valor em Reais: </span>
                 <span className="font-bold text-lg text-green-700 dark:text-green-200">
-                  {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(formData.priceInBRL || 0)}
+                  {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(priceInBRL || 0)}
                 </span>
               </div>
             )}
@@ -615,7 +640,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
               </label>
             </div>
 
-            {formData.needsReservation && (
+            {needsReservation && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-sm font-bold text-gray-900 dark:text-gray-100 mb-1.5">
@@ -626,7 +651,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
                     control={control}
                     render={({ field }) => (
                       <CustomSelect
-                        value={formData.reservationStatus ? `${RESERVATION_STATUS[formData.reservationStatus as ReservationStatus].icon} ${RESERVATION_STATUS[formData.reservationStatus as ReservationStatus].label}` : ''}
+                        value={reservationStatus ? `${RESERVATION_STATUS[reservationStatus as ReservationStatus].icon} ${RESERVATION_STATUS[reservationStatus as ReservationStatus].label}` : ''}
                         onChange={(val) => {
                           if (!val) {
                             field.onChange(undefined)
@@ -656,7 +681,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
                     control={control}
                     render={({ field }) => (
                       <CustomSelect
-                        value={formData.reservationId ? reservations.find(r => r.id === formData.reservationId)?.title || '' : ''}
+                        value={reservationId ? reservations.find(r => r.id === reservationId)?.title || '' : ''}
                         onChange={(val) => {
                           if (!val) {
                             field.onChange(undefined)
@@ -675,7 +700,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
             )}
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {!formData.reservationId && (
+              {!reservationId && (
                 <div>
                   <label className="block text-sm font-bold text-gray-900 dark:text-gray-100 mb-1.5">
                     Link Ingresso/Reserva
@@ -684,7 +709,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
                     type="url"
                     autoComplete="off"
                     {...register('ticketLink')}
-                    className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none focus:outline-none transition-colors placeholder-gray-500 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
+                    className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none transition-colors placeholder-gray-500 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
                     placeholder="https://..."
                   />
                 </div>
@@ -698,7 +723,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
                   type="url"
                   autoComplete="off"
                   {...register('imageUrl')}
-                  className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none focus:outline-none transition-colors placeholder-gray-500 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
+                  className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none transition-colors placeholder-gray-500 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
                   placeholder="https://..."
                 />
               </div>
@@ -711,7 +736,7 @@ export function ModalAttraction({ attraction, isOpen, onClose, onSave }: ModalAt
                   {...register('notes')}
                   rows={3}
                   autoComplete="off"
-                  className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none focus:outline-none transition-colors resize-none placeholder-gray-500 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
+                  className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none transition-colors resize-none placeholder-gray-500 dark:placeholder-gray-500 text-gray-900 dark:text-gray-100"
                   placeholder="Anotações adicionais..."
                 />
               </div>

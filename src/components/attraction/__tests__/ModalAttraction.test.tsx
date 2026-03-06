@@ -89,9 +89,21 @@ describe('ModalAttraction', () => {
 
   it('updates couple price and BRL calculation', async () => {
     renderComponent()
-    const couplePriceInput = screen.getByPlaceholderText(/¥ 0/i)
-    fireEvent.change(couplePriceInput, { target: { value: '1000' } })
+
+    const countrySelect = screen.getAllByTestId('custom-select')[0]
+
+    fireEvent.change(countrySelect, {
+      target: { value: '🇯🇵 Japão' }
+    })
+
+    const couplePriceInput = screen.getByLabelText(/valor casal/i)
+
+    fireEvent.change(couplePriceInput, {
+      target: { value: '1000' }
+    })
+
     expect((couplePriceInput as HTMLInputElement).value).toBe('¥ 1.000')
+
     expect(screen.getByText(/Valor em Reais/i)).toBeInTheDocument()
   })
 

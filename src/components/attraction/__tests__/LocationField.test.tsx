@@ -17,16 +17,51 @@ vi.mock('@/hooks/useLocationSearch', () => ({
 let mockResults: Array<{ displayName: string; lat: string; lon: string }> = []
 
 describe('LocationField', () => {
-  let getValues: any
   beforeEach(() => {
     vi.clearAllMocks()
     mockResults = []
-    getValues = vi.fn(() => ({ name: 'Tokyo', city: 'Tokyo', country: 'japan' }))
   })
 
   function Wrapper() {
-    const { control, register, setValue } = useForm()
-    return <LocationField control={control} register={register} setValue={setValue} getValues={getValues} />
+    const { control, register, setValue, getValues, watch } = useForm({
+      defaultValues: {
+        name: 'Tokyo',
+        city: 'Tokyo',
+        region: 'Tokyo',
+        country: 'japan',
+      },
+    })
+
+    return (
+      <LocationField
+        control={control}
+        register={register}
+        setValue={setValue}
+        getValues={getValues}
+        watch={watch}
+      />
+    )
+  }
+
+  function WrapperEmpty() {
+    const { control, register, setValue, getValues, watch } = useForm({
+      defaultValues: {
+        name: '',
+        city: '',
+        region: '',
+        country: 'japan',
+      },
+    })
+
+    return (
+      <LocationField
+        control={control}
+        register={register}
+        setValue={setValue}
+        getValues={getValues}
+        watch={watch}
+      />
+    )
   }
 
   it('renders input and button', () => {
@@ -42,8 +77,7 @@ describe('LocationField', () => {
   })
 
   it('does not call search if name or city missing', async () => {
-    getValues = vi.fn(() => ({ name: '', city: '' }))
-    render(<Wrapper />)
+    render(<WrapperEmpty />)
     fireEvent.click(screen.getByRole('button', { name: /buscar/i }))
     await waitFor(() => expect(mockSearch).not.toHaveBeenCalled())
   })

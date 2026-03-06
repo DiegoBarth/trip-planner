@@ -7,16 +7,17 @@ interface Props {
   register: any
   setValue: any
   getValues: any
+  watch: any
 }
 
-export function LocationField({ control, register, setValue, getValues }: Props) {
+export function LocationField({ control, register, setValue, getValues, watch }: Props) {
   const { results, loading, search, clear } = useLocationSearch();
   const containerRef = useRef<HTMLDivElement>(null);
 
   async function handleSearch() {
     const values = getValues();
 
-    if (!values.name || !values.city) return;
+    if (!values.name || !values.city || !values.country) return;
 
     await search(values.name, values.city, values.country);
   }
@@ -32,7 +33,9 @@ export function LocationField({ control, register, setValue, getValues }: Props)
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [clear]);
 
-  const values = getValues();
+  const name = watch('name');
+  const city = watch('city');
+  const country = watch('country');
 
   return (
     <div ref={containerRef}>
@@ -54,13 +57,11 @@ export function LocationField({ control, register, setValue, getValues }: Props)
                 field.onChange(value)
 
                 const coords = extractLatLngFromGoogleMaps(value)
-
                 if (coords) {
                   setValue('lat', coords.lat, { shouldDirty: true })
                   setValue('lng', coords.lng, { shouldDirty: true })
                 }
               }}
-
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
                   e.preventDefault()
@@ -76,7 +77,7 @@ export function LocationField({ control, register, setValue, getValues }: Props)
         <button
           type="button"
           onClick={handleSearch}
-          disabled={!values.name || !values.city || loading}
+          disabled={!name || !city || !country || loading}
           className="px-4 py-3 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 disabled:bg-gray-400 dark:disabled:bg-gray-600 transition-colors"
         >
           {loading ? 'Buscando...' : 'Buscar'}
@@ -94,7 +95,6 @@ export function LocationField({ control, register, setValue, getValues }: Props)
               onClick={() => {
                 const lat = parseFloat(place.lat)
                 const lon = parseFloat(place.lon)
-
                 const googleMapsUrl = `https://www.google.com/maps?q=${lat},${lon}`
 
                 setValue('location', googleMapsUrl, { shouldDirty: true })
