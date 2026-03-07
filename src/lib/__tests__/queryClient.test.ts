@@ -3,6 +3,36 @@ import { QueryClient } from '@tanstack/react-query'
 
 const CACHE_PREFIX = 'rq_v1_'
 
+function mockSessionStorage() {
+  const store: Record<string, string> = {}
+
+  const sessionStorageMock: any = {
+    getItem: vi.fn((key: string) => store[key] ?? null),
+    setItem: vi.fn((key: string, value: string) => {
+      store[key] = value
+      sessionStorageMock[key] = value
+    }),
+    removeItem: vi.fn((key: string) => {
+      delete store[key]
+      delete sessionStorageMock[key]
+    }),
+    clear: vi.fn(() => {
+      Object.keys(store).forEach((k) => {
+        delete store[k]
+        delete sessionStorageMock[k]
+      })
+    }),
+    key: vi.fn((index: number) => Object.keys(store)[index] ?? null),
+    get length() {
+      return Object.keys(store).length
+    },
+  }
+
+  vi.stubGlobal('sessionStorage', sessionStorageMock)
+
+  return store
+}
+
 function mockLocalStorage() {
   const store: Record<string, string> = {}
 
@@ -36,14 +66,15 @@ function mockLocalStorage() {
 describe('queryClient cache behavior', () => {
   beforeEach(() => {
     vi.resetModules()
+    mockSessionStorage()
     mockLocalStorage()
     vi.spyOn(console, 'warn').mockImplementation(() => { })
   })
 
-  it('loads valid cache from localStorage', async () => {
+  it('loads valid cache from sessionStorage', async () => {
     const now = Date.now()
 
-    localStorage.setItem(
+    sessionStorage.setItem(
       CACHE_PREFIX + '["test"]',
       JSON.stringify({
         queryKey: ['test'],
@@ -61,7 +92,7 @@ describe('queryClient cache behavior', () => {
   it('removes expired cache', async () => {
     const old = Date.now() - 2 * 60 * 60 * 1000 // 2h
 
-    localStorage.setItem(
+    sessionStorage.setItem(
       CACHE_PREFIX + '["expired"]',
       JSON.stringify({
         queryKey: ['expired'],
@@ -72,15 +103,15 @@ describe('queryClient cache behavior', () => {
 
     await import('../queryClient')
 
-    expect(localStorage.removeItem).toHaveBeenCalled()
+    expect(sessionStorage.removeItem).toHaveBeenCalled()
   })
 
   it('removes invalid JSON cache', async () => {
-    localStorage.setItem(CACHE_PREFIX + '["bad"]', 'invalid-json')
+    sessionStorage.setItem(CACHE_PREFIX + '["bad"]', 'invalid-json')
 
     await import('../queryClient')
 
-    expect(localStorage.removeItem).toHaveBeenCalled()
+    expect(sessionStorage.removeItem).toHaveBeenCalled()
   })
 
   it('persists cache on successful query update', async () => {
@@ -96,12 +127,12 @@ describe('queryClient cache behavior', () => {
       fetchStatus: 'idle',
     } as any)
 
-    expect(localStorage.setItem).toHaveBeenCalled()
+    expect(sessionStorage.setItem).toHaveBeenCalled()
   })
 
   it('handles quota exceeded error gracefully', async () => {
     vi.stubGlobal(
-      'localStorage',
+      'sessionStorage',
       {
         getItem: vi.fn(),
         removeItem: vi.fn(),
@@ -137,7 +168,7 @@ describe('queryClient cache behavior', () => {
   it('handles unexpected error while loading cache', async () => {
     const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => { })
 
-    mockLocalStorage()
+    mockSessionStorage()
 
     vi.spyOn(Object, 'keys').mockImplementationOnce(() => {
       throw new Error('boom')
@@ -146,9 +177,45 @@ describe('queryClient cache behavior', () => {
     await import('../queryClient')
 
     expect(warnSpy).toHaveBeenCalledWith(
-      '[queryClient] Erro ao carregar cache do localStorage:',
+      '[queryClient] Erro ao carregar cache:',
       expect.any(Error)
     )
+  })
+
+  it('loads OSRM cache from localStorage', async () => {
+    const now = Date.now()
+    const osrmKey = CACHE_PREFIX + '["osrm-routes","day-1"]'
+
+    localStorage.setItem(
+      osrmKey,
+      JSON.stringify({
+        queryKey: ['osrm-routes', 'day-1'],
+        data: { path: [], distanceKm: 5 },
+        dataUpdatedAt: now,
+      })
+    )
+
+    const mod = await import('../queryClient')
+    const client = mod.queryClient
+
+    expect(client.getQueryData(['osrm-routes', 'day-1'])).toEqual({ path: [], distanceKm: 5 })
+  })
+
+  it('persists OSRM cache to localStorage', async () => {
+    const mod = await import('../queryClient')
+    const client: QueryClient = mod.queryClient
+
+    client.setQueryData(['osrm-routes', 'day-1'], { path: [], distanceKm: 5 })
+
+    client.getQueryCache().find({ queryKey: ['osrm-routes', 'day-1'] })?.setState({
+      data: { path: [], distanceKm: 5 },
+      dataUpdatedAt: Date.now(),
+      status: 'success',
+      fetchStatus: 'idle',
+    } as any)
+
+    expect(localStorage.setItem).toHaveBeenCalled()
+    expect(sessionStorage.setItem).not.toHaveBeenCalled()
   })
 })
 

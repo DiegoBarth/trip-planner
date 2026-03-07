@@ -21,7 +21,6 @@ const BudgetSummary = lazy(() => import('@/components/home/BudgetSummary'))
 export default function HomePage(_props: { onLogout: () => void }) {
   const { country } = useCountry()
   const { citiesToPrefetch } = useAttraction(country)
-
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -31,7 +30,7 @@ export default function HomePage(_props: { onLogout: () => void }) {
     queryClient.prefetchQuery(getExchangeRatesQueryOptions());
 
     citiesToPrefetch.forEach(city => queryClient.prefetchQuery(getWeatherQueryOptions(city)));
-  }, [citiesToPrefetch]);
+  }, [citiesToPrefetch, queryClient]);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 pb-20">

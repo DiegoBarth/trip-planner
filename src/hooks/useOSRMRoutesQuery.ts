@@ -2,7 +2,6 @@ import { useQuery } from '@tanstack/react-query'
 import { fetchOSRMRoute } from '@/services/osrmService'
 import { legsToSegments } from '@/services/timelineService'
 import { isMappableAttraction } from '@/utils/typeGuards'
-import { QUERY_STALE_TIME_MS } from '@/config/constants'
 import type { TimelineSegment } from '@/types/Timeline'
 import type { Attraction } from '@/types/Attraction'
 import type { Accommodation } from '@/types/Accommodation'
@@ -115,15 +114,24 @@ function groupedByDayKey(groupedByDay: Record<number, Attraction[]>, accommodati
   return `${dayKeys};${accKey}`;
 }
 
-export function useOSRMRoutesQuery(groupedByDay: Record<number, Attraction[]>, accommodations: Accommodation[]) {
+export function getOSRMRoutesQueryOptions(groupedByDay: Record<number, Attraction[]>, accommodations: Accommodation[]) {
   const key = groupedByDayKey(groupedByDay, accommodations);
   const hasDays = Object.keys(groupedByDay).length > 0;
 
-  const query = useQuery({
-    queryKey: ['osrm-routes', key],
+  return {
+    queryKey: ['osrm-routes', key] as const,
     queryFn: () => fetchRoutesForDays(groupedByDay, accommodations),
-    staleTime: QUERY_STALE_TIME_MS,
-    enabled: hasDays
+    staleTime: Infinity,
+    enabled: hasDays,
+  };
+}
+
+export function useOSRMRoutesQuery(groupedByDay: Record<number, Attraction[]>, accommodations: Accommodation[]) {
+  const options = getOSRMRoutesQueryOptions(groupedByDay, accommodations);
+
+  const query = useQuery({
+    ...options,
+    enabled: options.enabled,
   });
 
   const data = query.data;

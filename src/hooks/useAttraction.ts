@@ -203,6 +203,8 @@ export function useAttraction(country: CountryFilterValue) {
       return old.map(a => updatedMap.get(a.id) ?? a);
     });
 
+    queryClient.invalidateQueries({ queryKey: ['osrm-routes'] });
+
     return updated;
   };
 

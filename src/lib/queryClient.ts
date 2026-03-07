@@ -2,6 +2,13 @@ import { QueryClient } from '@tanstack/react-query'
 
 const CACHE_PREFIX = 'rq_v1_'
 const CACHE_MAX_AGE_MS = 60 * 60 * 1000 // 1 hora
+const OSRM_QUERY_KEY = 'osrm-routes'
+
+function isOSRMQueryKey(queryKey: unknown): boolean {
+  if (!queryKey || !Array.isArray(queryKey)) return false
+  const first = queryKey[0]
+  return first === OSRM_QUERY_KEY || String(first) === OSRM_QUERY_KEY
+}
 
 /** Creates a new QueryClient instance (e.g. for tests or SSR). */
 export function createQueryClient(): QueryClient {
@@ -15,27 +22,35 @@ export function createQueryClient(): QueryClient {
   })
 }
 
+function loadFromStorage(client: QueryClient, storage: Storage, onlyOSRM: boolean) {
+  for (const storageKey of Object.keys(storage)) {
+    if (!storageKey.startsWith(CACHE_PREFIX)) continue
+    const raw = storage.getItem(storageKey)
+    if (!raw) continue
+    try {
+      const { data, dataUpdatedAt, queryKey } = JSON.parse(raw)
+      if (onlyOSRM !== isOSRMQueryKey(queryKey)) continue
+      if (Date.now() - dataUpdatedAt > CACHE_MAX_AGE_MS) {
+        storage.removeItem(storageKey)
+        continue
+      }
+      client.setQueryData(queryKey, data, { updatedAt: dataUpdatedAt })
+    } catch (parseErr) {
+      console.warn('[queryClient] Cache inválido, removendo:', storageKey, parseErr)
+      storage.removeItem(storageKey)
+    }
+  }
+}
+
 function loadCache(client: QueryClient) {
   try {
-    for (const storageKey of Object.keys(localStorage)) {
-      if (!storageKey.startsWith(CACHE_PREFIX)) continue
-      const raw = localStorage.getItem(storageKey)
-      if (!raw) continue
-      try {
-        const { data, dataUpdatedAt, queryKey } = JSON.parse(raw)
-        if (Date.now() - dataUpdatedAt > CACHE_MAX_AGE_MS) {
-          localStorage.removeItem(storageKey)
-          continue
-        }
-        client.setQueryData(queryKey, data, { updatedAt: dataUpdatedAt })
-      } catch (parseErr) {
-        console.warn('[queryClient] Cache inválido, removendo:', storageKey, parseErr)
-        localStorage.removeItem(storageKey)
-      }
+    loadFromStorage(client, sessionStorage, false)
+    if (typeof localStorage !== 'undefined') {
+      loadFromStorage(client, localStorage, true)
     }
   } catch (err) {
-    if (typeof localStorage !== 'undefined') {
-      console.warn('[queryClient] Erro ao carregar cache do localStorage:', err)
+    if (typeof sessionStorage !== 'undefined') {
+      console.warn('[queryClient] Erro ao carregar cache:', err)
     }
   }
 }
@@ -43,14 +58,17 @@ function loadCache(client: QueryClient) {
 function persistCache(client: QueryClient) {
   client.getQueryCache().subscribe((event) => {
     if (event.type !== 'updated') return
-    const action = event.action as { type: string }
-    if (action.type !== 'success') return
     const query = event.query
-    if (typeof query.queryKey[0] !== 'string') return
-    const storageKey = CACHE_PREFIX + JSON.stringify(query.queryKey)
+    const qk = query?.queryKey
+    if (!qk || !Array.isArray(qk) || typeof qk[0] !== 'string') return
+    // Persist only when query has data (prefetch and useQuery both set status to 'success')
+    if (query.state.status !== 'success' || query.state.data === undefined) return
+    const storageKey = CACHE_PREFIX + JSON.stringify(qk)
+    const useLocalForOSRM = isOSRMQueryKey(qk) && typeof localStorage !== 'undefined'
+    const storage = useLocalForOSRM ? localStorage : sessionStorage
     try {
-      localStorage.setItem(storageKey, JSON.stringify({
-        queryKey: query.queryKey,
+      storage.setItem(storageKey, JSON.stringify({
+        queryKey: qk,
         data: query.state.data,
         dataUpdatedAt: query.state.dataUpdatedAt,
       }))
@@ -58,7 +76,7 @@ function persistCache(client: QueryClient) {
       const isQuota = err instanceof DOMException && (err.name === 'QuotaExceededError' || err.code === 22)
       console.warn(
         isQuota
-          ? '[queryClient] localStorage cheio; cache não foi salvo. Limpe dados do site se precisar de espaço.'
+          ? `[queryClient] ${storage === localStorage ? 'local' : 'session'}Storage cheio; cache não foi salvo. Limpe dados do site se precisar de espaço.`
           : '[queryClient] Erro ao persistir cache:',
         err
       )
