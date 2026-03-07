@@ -99,6 +99,7 @@ describe('CountryFilter', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
+    sessionStorage.removeItem('trip_filter')
     mockUseCountry.mockReturnValue({
       country: 'all',
       setCountry: mockSetCountry,
@@ -322,5 +323,16 @@ describe('CountryFilter', () => {
 
     render(<CountryFilter />)
     expect(screen.getByTestId('day-filter-value')).toHaveTextContent('Dia 2')
+  })
+
+  it('calls setDay with saved day from sessionStorage on mount when day is numeric', () => {
+    sessionStorage.setItem(
+      'trip_filter',
+      JSON.stringify({ country: 'japan', day: 2 })
+    )
+
+    render(<CountryFilter />)
+
+    expect(mockSetDay).toHaveBeenCalledWith(2)
   })
 })

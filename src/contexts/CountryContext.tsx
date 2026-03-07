@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useRef, useState } from 'react'
 import type { CountryFilterValue } from '@/types/Attraction'
 
 type DayFilter = number | 'all'
@@ -42,8 +42,14 @@ export function CountryProvider({ children }: { children: ReactNode }) {
   const initialFilter = getInitialFilter();
   const [country, setCountry] = useState<CountryFilter>(initialFilter.country);
   const [day, setDay] = useState<DayFilter>(initialFilter.day);
+  const prevCountryRef = useRef<CountryFilter | null>(null);
 
-  useEffect(() => { setDay('all') }, [country]);
+  useEffect(() => {
+    if (prevCountryRef.current !== null && prevCountryRef.current !== country) {
+      setDay('all');
+    }
+    prevCountryRef.current = country;
+  }, [country]);
 
   useEffect(() => {
     sessionStorage.setItem('trip_filter', JSON.stringify({ country, day }));

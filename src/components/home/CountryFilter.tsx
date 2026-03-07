@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import MapPin from 'lucide-react/dist/esm/icons/map-pin';
 import Calendar from 'lucide-react/dist/esm/icons/calendar';
 import { useCountry } from '@/contexts/CountryContext'
@@ -6,6 +7,8 @@ import { useFilterSheet } from '@/contexts/FilterSheetContext'
 import { CustomSelect } from '@/components/ui/CustomSelect'
 import { COUNTRIES } from '@/config/constants'
 import type { Country, CountryFilterValue } from '@/types/Attraction'
+
+const TRIP_FILTER_KEY = 'trip_filter';
 
 const FILTER_OPTIONS: { key: CountryFilterValue; label: string }[] = [
   { key: 'all', label: 'Todos' },
@@ -27,6 +30,19 @@ export function CountryFilter({ showDayFilter = true, hideGeneralOption = false 
   const { availableDays } = useAttraction(country)
   const dropdownPosition = useFilterSheet()
   const inSheet = dropdownPosition === 'above'
+
+  useEffect(() => {
+    const saved = sessionStorage.getItem(TRIP_FILTER_KEY)
+    if (!saved) return
+    try {
+      const parsed = JSON.parse(saved)
+      if (parsed?.day !== undefined && parsed.day !== 'all' && typeof parsed.day === 'number') {
+        setDay(parsed.day)
+      }
+    } catch {
+      // ignore invalid stored value
+    }
+  }, [setDay])
 
   const visibleOptions = hideGeneralOption
     ? FILTER_OPTIONS.filter(o => o.key !== 'general')
