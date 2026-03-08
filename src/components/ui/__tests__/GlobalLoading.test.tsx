@@ -8,6 +8,10 @@ vi.mock('@tanstack/react-query', () => ({
   useIsMutating: vi.fn(),
 }))
 
+vi.mock('react-router-dom', () => ({
+  useLocation: vi.fn(() => ({ pathname: '/', search: '', hash: '', state: null, key: 'default' })),
+}))
+
 describe('GlobalLoading', () => {
   beforeEach(() => {
     vi.clearAllMocks()
