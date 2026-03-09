@@ -172,10 +172,10 @@ function getAttractionDuration(attraction: Attraction): number {
 /**
  * Detect scheduling conflicts for a timeline day
  */
-function detectConflicts(attractions: Attraction[], segments: (TimelineSegment | null)[]): TimelineConflict[] {
+function detectConflicts(attractions: Attraction[], segments: (TimelineSegment | null)[], startTime: string): TimelineConflict[] {
   const conflicts: TimelineConflict[] = [];
 
-  let currentTime = timeToMinutes('09:00'); // Default start time
+  let currentTime = timeToMinutes(startTime);
 
   for (let i = 0; i < attractions.length; i++) {
     const attraction = attractions[i];
@@ -261,11 +261,15 @@ export async function buildDayTimeline(attractions: Attraction[], precomputedSeg
   const totalDistance = segments.reduce((sum, s) => sum + (s?.distanceKm ?? 0), 0);
   const totalTravelTime = segments.reduce((sum, s) => sum + (s?.durationMinutes ?? 0), 0);
 
-  // Detect conflicts
-  const conflicts = detectConflicts(sortedAttractions, segments);
+  // Calculate start time based on first attraction opening
+  const firstAttraction = sortedAttractions[1];
 
-  // Calculate start and end times
-  const startTime = '09:00';
+  const startTime = firstAttraction?.openingTime && firstAttraction.openingTime !== ''
+    ? firstAttraction.openingTime
+    : '09:00';
+
+  // Detect conflicts
+  const conflicts = detectConflicts(sortedAttractions, segments, startTime);
 
   let currentMinutes = timeToMinutes(startTime);
 

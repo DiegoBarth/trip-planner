@@ -11,7 +11,7 @@ import type { OSRMLeg } from '@/services/osrmService'
 type AttractionWithTimes = Attraction & { arrivalTime: string; departureTime: string }
 
 function mockOSRMWithLegs(legs: { distance: number; duration: number }[]) {
-  ;(globalThis.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+  ; (globalThis.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
     ok: true,
     json: () =>
       Promise.resolve({
@@ -129,7 +129,7 @@ describe('timelineService', () => {
     })
 
     it('returns segment when OSRM returns route', async () => {
-      ;(fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+      ; (fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
         ok: true,
         json: () =>
           Promise.resolve({
@@ -151,7 +151,7 @@ describe('timelineService', () => {
     })
 
     it('returns transit and uses legs[0] duration when distanceKm > 5', async () => {
-      ;(fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+      ; (fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
         ok: true,
         json: () =>
           Promise.resolve({
@@ -166,7 +166,7 @@ describe('timelineService', () => {
     })
 
     it('uses fallback duration when result has no legs', async () => {
-      ;(fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+      ; (fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
         ok: true,
         json: () =>
           Promise.resolve({
@@ -231,7 +231,7 @@ describe('timelineService', () => {
     })
 
     it('builds day with null segments when OSRM returns no routes', async () => {
-      ;(globalThis.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+      ; (globalThis.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
         ok: true,
         json: () => Promise.resolve({ routes: [] }),
       })
@@ -250,19 +250,29 @@ describe('timelineService', () => {
       expect(att0?.departureTime).toBe('09:00')
     })
 
-    it('detects late-arrival conflict when arriving before opening', async () => {
+    it('does not detect late-arrival when startTime equals openingTime', async () => {
       const a1 = makeAttraction({
         id: 1,
         order: 0,
         date: '2025-03-01',
         day: 1,
+      })
+
+      const a2 = makeAttraction({
+        id: 2,
+        order: 1,
+        date: '2025-03-01',
+        day: 1,
         openingTime: '10:00',
         closingTime: '18:00',
       })
-      const result = await buildDayTimeline([a1], [])
+
+      const result = await buildDayTimeline([a1, a2], [])
+
       const lateArrival = result?.conflicts.find(c => c.type === 'late-arrival')
-      expect(lateArrival).toBeDefined()
-      expect(lateArrival?.message).toContain('abre às 10:00')
+
+      expect(lateArrival).toBeUndefined()
+      expect(result?.startTime).toBe('10:00')
     })
 
     it('detects closed conflict when arriving after closing', async () => {
@@ -323,5 +333,26 @@ describe('timelineService', () => {
       const arrival = calculateArrivalTime(atts, segments, 2, '09:00')
       expect(arrival).toBe('11:30')
     })
+  })
+
+  it('uses openingTime as startTime when first attraction has openingTime', async () => {
+    const a1 = makeAttraction({
+      id: 1,
+      order: 0,
+      date: '2025-03-01',
+      day: 1,
+    })
+
+    const a2 = makeAttraction({
+      id: 2,
+      order: 1,
+      date: '2025-03-01',
+      day: 1,
+      openingTime: '10:00',
+    })
+
+    const result = await buildDayTimeline([a1, a2], [])
+
+    expect(result?.startTime).toBe('10:00')
   })
 })
