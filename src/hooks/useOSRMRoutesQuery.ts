@@ -39,6 +39,35 @@ export type RoutesByDay = {
   segments: (TimelineSegment | null)[]
 }
 
+function normalizeCityKey(city: string): string {
+  return city.trim().toLowerCase();
+}
+
+function accommodationForCity(accommodations: Accommodation[], city: string): Accommodation | undefined {
+  const key = normalizeCityKey(city);
+  return accommodations.find((a) => normalizeCityKey(a.city) === key);
+}
+
+/** Pick the city that appears most often in the day's attractions (avoids wrong accommodation when first attraction is in another city). */
+function mainCityForDay(sortedAttractions: Attraction[]): string {
+  const countByKey = new Map<string, number>();
+  const cityByKey = new Map<string, string>();
+  for (const a of sortedAttractions) {
+    const key = normalizeCityKey(a.city);
+    countByKey.set(key, (countByKey.get(key) ?? 0) + 1);
+    if (!cityByKey.has(key)) cityByKey.set(key, a.city);
+  }
+  let maxCount = 0;
+  let mainKey = normalizeCityKey(sortedAttractions[0].city);
+  for (const [key, count] of countByKey) {
+    if (count > maxCount) {
+      maxCount = count;
+      mainKey = key;
+    }
+  }
+  return cityByKey.get(mainKey) ?? sortedAttractions[0].city;
+}
+
 async function fetchRoutesForDays(
   groupedByDay: Record<number, Attraction[]>,
   accommodations: Accommodation[]
@@ -52,16 +81,17 @@ async function fetchRoutesForDays(
       const validPoints = points.filter(isMappableAttraction);
       if (validPoints.length < 2) return null;
       const sortedAttractions = [...validPoints].sort((a, b) => a.order - b.order);
+      const city = mainCityForDay(sortedAttractions);
+      const stay = accommodationForCity(accommodations, city);
       let routePoints = sortedAttractions.map((p) => ({ lat: p.lat!, lng: p.lng! }));
-      if (accommodations.length > 0) {
-        const stay = accommodations[0];
+      if (stay?.lat != null && stay?.lng != null) {
         routePoints = [
           { lat: stay.lat, lng: stay.lng },
           ...routePoints,
           { lat: stay.lat, lng: stay.lng },
         ];
       }
-      return { dayNum: Number(dayNum), routePoints, sortedAttractions };
+      return { dayNum: Number(dayNum), routePoints, sortedAttractions, stay };
     })
     .filter((x): x is NonNullable<typeof x> => x != null);
 
@@ -77,7 +107,7 @@ async function fetchRoutesForDays(
 
   for (let i = 0; i < results.length; i++) {
     const { dayNum, result } = results[i];
-    const { sortedAttractions } = entries[i];
+    const { sortedAttractions, stay } = entries[i];
     if (!result) continue;
 
     routes[dayNum] = result.path;
@@ -85,12 +115,12 @@ async function fetchRoutesForDays(
 
     if (result.legs && result.legs.length >= sortedAttractions.length) {
       const legsIncludingAcc = result.legs.slice(0, sortedAttractions.length);
-      const sortedWithAcc = accommodations.length > 0 && sortedAttractions[0]
-        ? [accommodationToAttraction(accommodations[0], sortedAttractions[0]), ...sortedAttractions]
+      const sortedWithAcc = stay != null && sortedAttractions[0]
+        ? [accommodationToAttraction(stay, sortedAttractions[0]), ...sortedAttractions]
         : sortedAttractions;
       segmentsByDay[dayNum] = legsToSegments(sortedWithAcc, legsIncludingAcc);
     } else {
-      const segmentCount = accommodations.length > 0 && sortedAttractions.length > 0
+      const segmentCount = stay != null && sortedAttractions.length > 0
         ? sortedAttractions.length
         : Math.max(0, sortedAttractions.length - 1);
       segmentsByDay[dayNum] = new Array(segmentCount).fill(null);

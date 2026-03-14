@@ -1,6 +1,7 @@
 import { fetchOSRMRoute, type OSRMLeg } from '@/services/osrmService'
+import { PERIOD_START } from '@/config/constants'
 import type { Attraction } from '@/types/Attraction'
-import type { TimelineSegment, TimelineConflict, TimelineDay } from '@/types/Timeline'
+import type { TimelineSegment, TimelineConflict, TimelineDay, FreeTimeBlock } from '@/types/Timeline'
 
 /**
  * Convert OSRM legs + sorted attractions to timeline segments (for use with cached route data).
@@ -170,34 +171,27 @@ function getAttractionDuration(attraction: Attraction): number {
 }
 
 /**
- * Detect scheduling conflicts for a timeline day
+ * Detect scheduling conflicts using final arrival/departure times (e.g. after ideal period / free time).
+ * Use this so conflicts reflect the actual schedule shown to the user (and in the PDF).
  */
-function detectConflicts(attractions: Attraction[], segments: (TimelineSegment | null)[], startTime: string): TimelineConflict[] {
+function detectConflictsFromTimes(
+  attractions: Attraction[],
+  arrivalTimes: string[],
+  departureTimes: string[]
+): TimelineConflict[] {
   const conflicts: TimelineConflict[] = [];
-
-  let currentTime = timeToMinutes(startTime);
 
   for (let i = 0; i < attractions.length; i++) {
     const attraction = attractions[i];
-    const segment = i > 0 ? segments[i - 1] : null; // Travel TO this attraction (from i-1 to i)
+    const arrivalTime = timeToMinutes(arrivalTimes[i] ?? '00:00');
+    const departureTime = timeToMinutes(departureTimes[i] ?? '00:00');
+    const arrivalTimeStr = arrivalTimes[i] ?? '00:00';
+    const departureTimeStr = departureTimes[i] ?? '00:00';
 
-    // Add travel time from previous attraction
-    if (segment) {
-      currentTime += segment.durationMinutes;
-    }
-
-    const arrivalTime = currentTime;
-    const arrivalTimeStr = minutesToTime(arrivalTime);
-    const duration = getAttractionDuration(attraction);
-    const departureTime = currentTime + duration;
-    const departureTimeStr = minutesToTime(departureTime);
-
-    // Check if attraction has opening hours
     if (attraction.openingTime && attraction.closingTime) {
       const openingMinutes = timeToMinutes(attraction.openingTime);
       const closingMinutes = timeToMinutes(attraction.closingTime);
 
-      // Arriving before opening
       if (arrivalTime < openingMinutes) {
         conflicts.push({
           attractionId: attraction.id,
@@ -205,11 +199,8 @@ function detectConflicts(attractions: Attraction[], segments: (TimelineSegment |
           message: `Chegada às ${arrivalTimeStr}, mas abre às ${attraction.openingTime}`,
           severity: 'warning'
         });
-
-        currentTime = openingMinutes; // Wait until opening
       }
 
-      // Arriving after closing or staying past closing
       if (arrivalTime >= closingMinutes) {
         conflicts.push({
           attractionId: attraction.id,
@@ -217,8 +208,7 @@ function detectConflicts(attractions: Attraction[], segments: (TimelineSegment |
           message: `Chegada às ${arrivalTimeStr}, mas fecha às ${attraction.closingTime}`,
           severity: 'error'
         });
-      }
-      else if (departureTime > closingMinutes) {
+      } else if (departureTime > closingMinutes) {
         conflicts.push({
           attractionId: attraction.id,
           type: 'overlap',
@@ -228,8 +218,7 @@ function detectConflicts(attractions: Attraction[], segments: (TimelineSegment |
       }
     }
 
-    // Check if too many hours in one day (more than 12 hours)
-    if (currentTime > timeToMinutes('21:00')) {
+    if (arrivalTime > timeToMinutes('21:00')) {
       conflicts.push({
         attractionId: attraction.id,
         type: 'rush',
@@ -237,11 +226,194 @@ function detectConflicts(attractions: Attraction[], segments: (TimelineSegment |
         severity: 'warning'
       });
     }
-
-    currentTime = departureTime;
   }
 
   return conflicts;
+}
+
+/**
+ * Compute arrival/departure times from a given start time (sync, no OSRM).
+ */
+function computeTimesFromStartTime(
+  sortedAttractions: Attraction[],
+  segments: (TimelineSegment | null)[],
+  startTime: string
+): { arrivalTimes: string[]; departureTimes: string[]; endTime: string } {
+  let currentMinutes = timeToMinutes(startTime);
+  const arrivalTimes: string[] = [];
+  const departureTimes: string[] = [];
+
+  for (let i = 0; i < sortedAttractions.length; i++) {
+    if (i === 0) {
+      arrivalTimes.push(minutesToTime(currentMinutes));
+    } else {
+      const prevDeparture = departureTimes[i - 1] ? timeToMinutes(departureTimes[i - 1]) : currentMinutes;
+      const travel = segments[i - 1]?.durationMinutes || 0;
+      arrivalTimes.push(minutesToTime(prevDeparture + travel));
+      currentMinutes = prevDeparture + travel;
+    }
+    const duration = getAttractionDuration(sortedAttractions[i]);
+    departureTimes.push(minutesToTime(currentMinutes + duration));
+    currentMinutes = currentMinutes + duration;
+  }
+  const endTime = departureTimes[departureTimes.length - 1] || startTime;
+  return { arrivalTimes, departureTimes, endTime };
+}
+
+/**
+ * Apply ideal period: if an attraction has idealPeriod and we'd arrive before that period starts,
+ * insert a free time block and set arrival to the period start; then recompute subsequent times.
+ * Returns the list of free time blocks to show in the timeline.
+ */
+function applyIdealPeriods(
+  sortedAttractions: Attraction[],
+  segments: (TimelineSegment | null)[],
+  arrivalTimes: string[],
+  departureTimes: string[]
+): FreeTimeBlock[] {
+  const freeTimeBlocks: FreeTimeBlock[] = [];
+  const n = sortedAttractions.length;
+
+  for (let i = 0; i < n; i++) {
+    const a = sortedAttractions[i];
+    const idealPeriod = a.idealPeriod as keyof typeof PERIOD_START | undefined;
+    if (!idealPeriod || idealPeriod === 'full-day') continue;
+    const periodStart = PERIOD_START[idealPeriod];
+    if (!periodStart) continue;
+
+    const arrivalM = timeToMinutes(arrivalTimes[i]);
+    const periodStartM = timeToMinutes(periodStart);
+    if (arrivalM >= periodStartM) continue;
+
+    freeTimeBlocks.push({
+      beforeAttractionIndex: i,
+      startTime: arrivalTimes[i],
+      endTime: periodStart,
+    });
+    arrivalTimes[i] = periodStart;
+    const duration = getAttractionDuration(a);
+    departureTimes[i] = minutesToTime(periodStartM + duration);
+
+    for (let j = i + 1; j < n; j++) {
+      const prevDep = timeToMinutes(departureTimes[j - 1]);
+      const travel = segments[j - 1]?.durationMinutes || 0;
+      arrivalTimes[j] = minutesToTime(prevDep + travel);
+      const dur = getAttractionDuration(sortedAttractions[j]);
+      departureTimes[j] = minutesToTime(prevDep + travel + dur);
+    }
+  }
+  return freeTimeBlocks;
+}
+
+/**
+ * Total wait time (minutes) when arriving before opening at attractions that have openingTime.
+ */
+function totalWaitMinutes(
+  sortedAttractions: Attraction[],
+  segments: (TimelineSegment | null)[],
+  startTime: string
+): number {
+  const { arrivalTimes } = computeTimesFromStartTime(sortedAttractions, segments, startTime);
+  let total = 0;
+  for (let i = 0; i < sortedAttractions.length; i++) {
+    const a = sortedAttractions[i];
+    if (a.openingTime) {
+      const arrivalM = timeToMinutes(arrivalTimes[i]);
+      const openingM = timeToMinutes(a.openingTime);
+      if (arrivalM < openingM) total += openingM - arrivalM;
+    }
+  }
+  return total;
+}
+
+/**
+ * True if with this start time we never arrive after closing at any attraction.
+ */
+function isStartTimeFeasible(
+  sortedAttractions: Attraction[],
+  segments: (TimelineSegment | null)[],
+  startTime: string
+): boolean {
+  const { arrivalTimes, departureTimes } = computeTimesFromStartTime(sortedAttractions, segments, startTime);
+  for (let i = 0; i < sortedAttractions.length; i++) {
+    const a = sortedAttractions[i];
+    if (a.closingTime) {
+      const arrivalM = timeToMinutes(arrivalTimes[i]);
+      const closingM = timeToMinutes(a.closingTime);
+      if (arrivalM >= closingM) return false;
+      const depM = timeToMinutes(departureTimes[i]);
+      if (depM > closingM) return false;
+    }
+  }
+  return true;
+}
+
+/**
+ * Suggests a start time that minimizes total wait at openings, without arriving after closing anywhere.
+ * Only considers feasible start times (no arrival after closing); among those, picks the one with
+ * minimum wait, and in tie the earliest (so we don't suggest 12:45 when 08:00 already gives 0 wait).
+ */
+export function suggestStartTime(
+  attractions: Attraction[],
+  segments: (TimelineSegment | null)[]
+): string {
+  if (attractions.length === 0 || segments.length !== attractions.length - 1) return '09:00';
+  const sorted = [...attractions].sort((a, b) => a.order - b.order);
+
+  const isAccommodationAtStart = sorted[0]?.id === -999;
+  const firstArrivalIndex = isAccommodationAtStart ? 1 : 0;
+  const firstAttraction = sorted[firstArrivalIndex];
+  const travelToFirstMinutes = firstArrivalIndex === 0 ? 0 : (segments[0]?.durationMinutes ?? 0);
+  const defaultStart = '09:00';
+  const computedStart =
+    firstAttraction?.openingTime && firstAttraction.openingTime !== ''
+      ? minutesToTime(Math.max(0, timeToMinutes(firstAttraction.openingTime) - travelToFirstMinutes))
+      : defaultStart;
+
+  let bestStart = computedStart;
+  if (!isStartTimeFeasible(sorted, segments, bestStart)) {
+    bestStart = defaultStart;
+    if (!isStartTimeFeasible(sorted, segments, bestStart)) return computedStart;
+  }
+  let bestWait = totalWaitMinutes(sorted, segments, bestStart);
+
+  for (let h = 4; h <= 12; h++) {
+    for (let m = 0; m < 60; m += 15) {
+      const start = minutesToTime(h * 60 + m);
+      if (!isStartTimeFeasible(sorted, segments, start)) continue;
+      const wait = totalWaitMinutes(sorted, segments, start);
+      const earlierAndSameWait = wait === bestWait && timeToMinutes(start) < timeToMinutes(bestStart);
+      if (wait < bestWait || earlierAndSameWait) {
+        bestWait = wait;
+        bestStart = start;
+      }
+    }
+  }
+  return bestStart;
+}
+
+/**
+ * Recompute a timeline with a new start time (same segments; updates times, conflicts, freeTimeBlocks).
+ */
+export function recomputeTimelineWithStartTime(timeline: TimelineDay, newStartTime: string): TimelineDay {
+  const sorted = [...timeline.attractions].sort((a, b) => a.order - b.order);
+  const { arrivalTimes, departureTimes } = computeTimesFromStartTime(sorted, timeline.segments, newStartTime);
+  const freeTimeBlocks = applyIdealPeriods(sorted, timeline.segments, arrivalTimes, departureTimes);
+  const endTime = departureTimes[departureTimes.length - 1] || newStartTime;
+  const conflicts = detectConflictsFromTimes(sorted, arrivalTimes, departureTimes);
+  const attractionsWithTimes = sorted.map((a, idx) => ({
+    ...a,
+    arrivalTime: arrivalTimes[idx],
+    departureTime: departureTimes[idx],
+  }));
+  return {
+    ...timeline,
+    attractions: attractionsWithTimes,
+    conflicts,
+    startTime: newStartTime,
+    endTime,
+    freeTimeBlocks: freeTimeBlocks.length > 0 ? freeTimeBlocks : undefined,
+  };
 }
 
 /**
@@ -251,7 +423,6 @@ function detectConflicts(attractions: Attraction[], segments: (TimelineSegment |
 export async function buildDayTimeline(attractions: Attraction[], precomputedSegments?: (TimelineSegment | null)[]): Promise<TimelineDay | null> {
   if (attractions.length === 0) return null;
 
-  // Sort attractions by order
   const sortedAttractions = [...attractions].sort((a, b) => a.order - b.order);
 
   const segments = precomputedSegments != null && precomputedSegments.length === sortedAttractions.length - 1
@@ -261,53 +432,25 @@ export async function buildDayTimeline(attractions: Attraction[], precomputedSeg
   const totalDistance = segments.reduce((sum, s) => sum + (s?.distanceKm ?? 0), 0);
   const totalTravelTime = segments.reduce((sum, s) => sum + (s?.durationMinutes ?? 0), 0);
 
-  // First stop we need to arrive at: index 0 when no accommodation, index 1 when accommodation at 0.
   const isAccommodationAtStart = sortedAttractions[0]?.id === -999;
   const firstArrivalIndex = isAccommodationAtStart ? 1 : 0;
   const firstAttraction = sortedAttractions[firstArrivalIndex];
   const travelToFirstMinutes = firstArrivalIndex === 0 ? 0 : (segments[0]?.durationMinutes ?? 0);
-
   const defaultStart = '09:00';
 
   let startTime: string;
   if (firstAttraction?.openingTime && firstAttraction.openingTime !== '') {
     const arrivalAtFirstMinutes = timeToMinutes(firstAttraction.openingTime);
     const leaveMinutes = arrivalAtFirstMinutes - travelToFirstMinutes;
-    // Allow early start so we arrive exactly at opening (e.g. leave 04:44 to arrive 05:00 with 16 min travel)
     startTime = minutesToTime(Math.max(0, leaveMinutes));
   } else {
     startTime = defaultStart;
   }
 
-  // Detect conflicts
-  const conflicts = detectConflicts(sortedAttractions, segments, startTime);
-
-  let currentMinutes = timeToMinutes(startTime);
-
-  const arrivalTimes: string[] = [];;
-  const departureTimes: string[] = [];;
-
-  for (let i = 0; i < sortedAttractions.length; i++) {
-    if (i === 0) {
-      arrivalTimes.push(minutesToTime(currentMinutes));
-    }
-    else {
-      const prevDeparture = departureTimes[i - 1] ? timeToMinutes(departureTimes[i - 1]) : currentMinutes;
-      const travel = segments[i - 1]?.durationMinutes || 0;
-
-      arrivalTimes.push(minutesToTime(prevDeparture + travel));
-
-      currentMinutes = prevDeparture + travel;
-    }
-
-    const duration = getAttractionDuration(sortedAttractions[i]);
-
-    departureTimes.push(minutesToTime(currentMinutes + duration));
-
-    currentMinutes = currentMinutes + duration;
-  }
-
+  const { arrivalTimes, departureTimes } = computeTimesFromStartTime(sortedAttractions, segments, startTime);
+  const freeTimeBlocks = applyIdealPeriods(sortedAttractions, segments, arrivalTimes, departureTimes);
   const endTime = departureTimes[departureTimes.length - 1] || startTime;
+  const conflicts = detectConflictsFromTimes(sortedAttractions, arrivalTimes, departureTimes);
 
   const attractionsWithTimes = sortedAttractions.map((a, idx) => ({
     ...a,
@@ -325,6 +468,7 @@ export async function buildDayTimeline(attractions: Attraction[], precomputedSeg
     totalTravelTime,
     startTime,
     endTime,
+    freeTimeBlocks: freeTimeBlocks.length > 0 ? freeTimeBlocks : undefined,
   };
 }
 

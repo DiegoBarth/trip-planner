@@ -15,6 +15,12 @@ export interface TimelineConflict {
   severity: 'warning' | 'error'
 }
 
+export interface FreeTimeBlock {
+  beforeAttractionIndex: number
+  startTime: string
+  endTime: string
+}
+
 export interface TimelineDay {
   date: string
   dayNumber: number
@@ -25,4 +31,5 @@ export interface TimelineDay {
   totalTravelTime: number
   startTime: string
   endTime: string
+  freeTimeBlocks?: FreeTimeBlock[]
 }

@@ -130,6 +130,16 @@ export function exportTimelineToPDF(days: TimelineDay[]) {
         y += LINE_HEIGHT + 1;
       }
 
+      const freeTime = day.freeTimeBlocks?.find((b) => b.beforeAttractionIndex === i);
+      if (freeTime) {
+        y = checkPageBreak(doc, y, LINE_HEIGHT * 2);
+        doc.setFontSize(7);
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(100, 116, 139);
+        doc.text(`Tempo livre: ${freeTime.startTime} - ${freeTime.endTime}`, MARGIN + 8, y);
+        y += LINE_HEIGHT + 1;
+      }
+
       const a = day.attractions[i];
       const arrival = (a as { arrivalTime?: string }).arrivalTime ?? day.startTime;
       const departure = (a as { departureTime?: string }).departureTime ?? day.startTime;

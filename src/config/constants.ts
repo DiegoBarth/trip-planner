@@ -112,6 +112,14 @@ export const PERIODS = {
   'full-day': { label: 'Dia todo', icon: '🌍', hours: '00:00-23:59' }
 };
 
+export const PERIOD_START: Record<keyof typeof PERIODS, string | null> = {
+  morning: '06:00',
+  afternoon: '12:00',
+  evening: '18:00',
+  night: '22:00',
+  'full-day': null
+};
+
 export const RESERVATION_STATUS = {
   'not-needed': { label: 'Não precisa', icon: '✓' },
   pending: { label: 'Pendente', icon: '⏳' },

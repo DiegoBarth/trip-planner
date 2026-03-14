@@ -25,6 +25,8 @@ vi.mock('@/contexts/toast', async (importOriginal) => {
 })
 vi.mock('@/services/timelineService', () => ({
   buildDayTimeline: vi.fn(),
+  suggestStartTime: vi.fn((_attractions: unknown, _segments: unknown) => '09:00'),
+  recomputeTimelineWithStartTime: vi.fn((timeline: TimelineDay, startTime: string) => ({ ...timeline, startTime })),
 }))
 vi.mock('@/utils/exportTimelineToPDF', () => ({
   exportTimelineToPDF: vi.fn(),

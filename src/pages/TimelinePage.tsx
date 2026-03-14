@@ -9,20 +9,51 @@ import { useOSRMRoutesQuery } from '@/hooks/useOSRMRoutesQuery'
 import { useCountry } from '@/contexts/CountryContext'
 import { useAccommodation } from '@/hooks/useAccommodation';
 import { useToast } from '@/contexts/toast'
-import { buildDayTimeline } from '@/services/timelineService'
+import { buildDayTimeline, suggestStartTime, recomputeTimelineWithStartTime } from '@/services/timelineService'
 import type { Attraction, Country } from '@/types/Attraction'
 import type { Accommodation } from '@/types/Accommodation'
 import type { TimelineDay } from '@/types/Timeline'
 
 const Timeline = lazy(() => import('@/components/timeline/Timeline'))
 
+/** First segment above this (km) is considered wrong accommodation – recalc from timeline list. */
+const MAX_REASONABLE_FIRST_LEG_KM = 100
+
+function normalizeCityKey(city: string): string {
+  return city.trim().toLowerCase();
+}
+
+/** City that appears most often in the day (avoids wrong accommodation when first attraction is in another city). */
+function mainCityForDay(attractions: Attraction[]): string {
+  const countByCity = new Map<string, string>();
+  for (const a of attractions) {
+    const key = normalizeCityKey(a.city);
+    if (!countByCity.has(key)) countByCity.set(key, a.city);
+  }
+  const count: Record<string, number> = {};
+  for (const a of attractions) {
+    const key = normalizeCityKey(a.city);
+    count[key] = (count[key] ?? 0) + 1;
+  }
+  let maxCount = 0;
+  let mainKey = '';
+  for (const [key, n] of Object.entries(count)) {
+    if (n > maxCount) {
+      maxCount = n;
+      mainKey = key;
+    }
+  }
+  return mainKey ? (countByCity.get(mainKey) ?? attractions[0].city) : attractions[0].city;
+}
+
 function addAccommodationToDay(dayAttractions: Attraction[], accommodationByCity: Map<string, Accommodation>): Attraction[] {
   if (dayAttractions.length === 0) return dayAttractions;
 
-  const city = dayAttractions[0].city;
-  const acc = accommodationByCity.get(city);
+  const sorted = [...dayAttractions].sort((a, b) => a.order - b.order);
+  const city = mainCityForDay(sorted);
+  const acc = accommodationByCity.get(normalizeCityKey(city));
 
-  if (!acc?.lat || !acc?.lng) return dayAttractions;
+  if (!acc?.lat || !acc?.lng) return sorted;
 
   const accAttraction: Attraction = {
     id: -999,
@@ -30,17 +61,17 @@ function addAccommodationToDay(dayAttractions: Attraction[], accommodationByCity
     lat: acc.lat,
     lng: acc.lng,
     city: acc.city,
-    region: dayAttractions[0].region,
+    region: sorted[0].region,
     country: acc.country as Country,
     order: 0,
-    date: dayAttractions[0].date,
-    day: dayAttractions[0].day,
-    dayOfWeek: dayAttractions[0].dayOfWeek,
+    date: sorted[0].date,
+    day: sorted[0].day,
+    dayOfWeek: sorted[0].dayOfWeek,
     type: 'other',
     duration: 0,
     couplePrice: 0,
     priceInBRL: 0,
-    currency: dayAttractions[0].currency,
+    currency: sorted[0].currency,
     visited: false,
     needsReservation: false,
     openingTime: undefined,
@@ -48,7 +79,7 @@ function addAccommodationToDay(dayAttractions: Attraction[], accommodationByCity
     imageUrl: undefined,
   };
 
-  return [accAttraction, ...dayAttractions];
+  return [accAttraction, ...sorted];
 }
 
 export default function TimelinePage() {
@@ -69,7 +100,7 @@ export default function TimelinePage() {
 
   const accommodationByCity = useMemo(() => {
     const map = new Map<string, Accommodation>();
-    accommodations.forEach(a => map.set(a.city, a));
+    accommodations.forEach(a => map.set(normalizeCityKey(a.city), a));
     return map;
   }, [accommodations]);
 
@@ -168,6 +199,21 @@ export default function TimelinePage() {
 
   const [singleTimeline, setSingleTimeline] = useState<TimelineDay | null>(null);
   const [dayTimelines, setDayTimelines] = useState<(TimelineDay | null)[]>([]);
+  const [overrideStartTime, setOverrideStartTime] = useState<string | null>(null);
+
+  const displayedTimeline = useMemo(() => {
+    if (!singleTimeline) return null;
+    if (overrideStartTime) return recomputeTimelineWithStartTime(singleTimeline, overrideStartTime);
+    return singleTimeline;
+  }, [singleTimeline, overrideStartTime]);
+
+  const suggestedStartTime = useMemo(() => {
+    return singleTimeline ? suggestStartTime(singleTimeline.attractions, singleTimeline.segments) : null;
+  }, [singleTimeline]);
+
+  const handleStartTimeChange = useCallback((newStartTime: string) => {
+    setOverrideStartTime(newStartTime);
+  }, []);
 
   useEffect(() => {
 
@@ -186,8 +232,12 @@ export default function TimelinePage() {
       });
 
       const cached = segmentsByDay[Number(day)];
+      const firstLegAbnormal =
+        cached?.[0]?.distanceKm != null && cached[0].distanceKm > MAX_REASONABLE_FIRST_LEG_KM;
       const precomputed =
-        cached && cached.length === timelineAttractions.length - 1
+        cached &&
+        cached.length === timelineAttractions.length - 1 &&
+        !firstLegAbnormal
           ? cached
           : undefined;
 
@@ -196,6 +246,7 @@ export default function TimelinePage() {
           if (!cancelled) {
             startTransition(() => {
               setSingleTimeline(t);
+              setOverrideStartTime(null);
             });
           }
         });
@@ -221,8 +272,12 @@ export default function TimelinePage() {
         await new Promise(r => setTimeout(r, 0));
 
         const cached = segmentsByDay[g.day];
+        const firstLegAbnormal =
+          cached?.[0]?.distanceKm != null && cached[0].distanceKm > MAX_REASONABLE_FIRST_LEG_KM;
         const precomputed =
-          cached && cached.length === g.attractions.length - 1
+          cached &&
+          cached.length === g.attractions.length - 1 &&
+          !firstLegAbnormal
             ? cached
             : undefined;
 
@@ -257,18 +312,19 @@ export default function TimelinePage() {
         const timelineDays =
           dayTimelines.length === dayGroups.length
             ? dayTimelines
-            : await Promise.all(
+            :             await Promise.all(
               dayGroups.map((g) => {
-
                 const cached = segmentsByDay[g.day];
-
+                const firstLegAbnormal =
+                  cached?.[0]?.distanceKm != null && cached[0].distanceKm > MAX_REASONABLE_FIRST_LEG_KM;
                 const precomputed =
-                  cached && cached.length === g.attractions.length - 1
+                  cached &&
+                  cached.length === g.attractions.length - 1 &&
+                  !firstLegAbnormal
                     ? cached
                     : undefined;
 
                 return buildDayTimeline(g.attractions, precomputed);
-
               })
             );
 
@@ -287,9 +343,12 @@ export default function TimelinePage() {
       }
       else {
         const cached = segmentsByDay[Number(day)];
-
+        const firstLegAbnormal =
+          cached?.[0]?.distanceKm != null && cached[0].distanceKm > MAX_REASONABLE_FIRST_LEG_KM;
         const precomputed =
-          cached && cached.length === timelineAttractions.length - 1
+          cached &&
+          cached.length === timelineAttractions.length - 1 &&
+          !firstLegAbnormal
             ? cached
             : undefined;
 
@@ -401,10 +460,12 @@ export default function TimelinePage() {
               }
             >
               <Timeline
-                timeline={singleTimeline}
+                timeline={displayedTimeline}
                 city={timelineAttractions[0]?.city}
                 date={timelineAttractions[0]?.date}
                 onToggleVisited={handleToggleVisited}
+                suggestedStartTime={suggestedStartTime}
+                onStartTimeChange={handleStartTimeChange}
               />
             </Suspense>
           </div>

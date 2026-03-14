@@ -5,6 +5,7 @@ import Clock from 'lucide-react/dist/esm/icons/clock';
 import AlertCircle from 'lucide-react/dist/esm/icons/alert-circle';
 import TrendingUp from 'lucide-react/dist/esm/icons/trending-up';
 import { TimelineCard } from '@/components/timeline/TimelineCard'
+import { TimelineFreeTimeCard } from '@/components/timeline/TimelineFreeTimeCard'
 import { TimelineSegment } from '@/components/timeline/TimelineSegment'
 import { WeatherBadge } from '@/components/timeline/WeatherBadge'
 import { getWeatherForDate } from '@/services/weatherService'
@@ -17,9 +18,11 @@ interface TimelineProps {
   city?: string
   date?: string
   onToggleVisited?: (id: number) => void
+  suggestedStartTime?: string | null
+  onStartTimeChange?: (startTime: string) => void
 }
 
-export default function Timeline({ timeline, city: cityProp, date: dateProp, onToggleVisited }: TimelineProps) {
+export default function Timeline({ timeline, city: cityProp, date: dateProp, onToggleVisited, suggestedStartTime, onStartTimeChange }: TimelineProps) {
   const city = cityProp ?? timeline?.attractions[0]?.city ?? '';
   const dateForWeather = dateProp ?? timeline?.date ?? '';
   const { forecast } = useWeather(city);
@@ -71,12 +74,35 @@ export default function Timeline({ timeline, city: cityProp, date: dateProp, onT
             <div className="text-sm font-medium opacity-90 mb-1">Dia {timeline.dayNumber}</div>
             <h2 className="text-lg md:text-3xl font-bold mb-2 capitalize">{formatDate(timeline.date)}</h2>
           </div>
-          <div className="flex items-center gap-2 text-base md:text-lg opacity-90">
+          <div className="flex flex-wrap items-center gap-2 text-base md:text-lg opacity-90">
             <Clock className="w-5 h-5" />
             <span className="font-semibold">{timeline.startTime}</span>
             <span>→</span>
             <span className="font-semibold">{timeline.endTime}</span>
           </div>
+
+          {onStartTimeChange && (
+            <div className="flex flex-wrap items-center gap-3 pt-3 border-t border-white/20">
+              <label className="flex items-center gap-2 text-sm font-medium opacity-90">
+                <span>Sair às</span>
+                <input
+                  type="time"
+                  value={timeline.startTime}
+                  onChange={(e) => onStartTimeChange(e.target.value)}
+                  className="rounded-lg bg-white/15 px-3 py-2 text-white font-semibold border border-white/30 focus:ring-2 focus:ring-white/50 focus:border-white/50 focus:outline-none"
+                />
+              </label>
+              {suggestedStartTime != null && suggestedStartTime !== timeline.startTime && (
+                <button
+                  type="button"
+                  onClick={() => onStartTimeChange(suggestedStartTime)}
+                  className="text-sm px-3 py-2 rounded-lg bg-amber-500/30 hover:bg-amber-500/50 text-amber-100 font-medium border border-amber-400/40 transition-colors"
+                >
+                  Sugestão: sair às {suggestedStartTime}
+                </button>
+              )}
+            </div>
+          )}
 
           <div className="flex items-center gap-6 pt-4 border-t border-white/20 text-sm md:text-base">
             <div className="flex items-center gap-2">
@@ -124,6 +150,9 @@ export default function Timeline({ timeline, city: cityProp, date: dateProp, onT
         <div className="space-y-6">
           {timeline.attractions.map((attraction, index) => {
             const segment = index > 0 ? timeline.segments[index - 1] : null
+            const freeTimeBlock = timeline.freeTimeBlocks?.find(
+              (b) => b.beforeAttractionIndex === index
+            )
             const attractionConflicts = timeline.conflicts.filter(
               c => c.attractionId === attraction.id
             )
@@ -136,9 +165,16 @@ export default function Timeline({ timeline, city: cityProp, date: dateProp, onT
               <div
                 key={attraction.id}
                 ref={isLastVisited ? lastVisitedRef : undefined}
-                className="relative"
+                className="relative space-y-6"
               >
                 {segment && <TimelineSegment segment={segment} />}
+                {freeTimeBlock && (
+                  <TimelineFreeTimeCard
+                    key={`free-time-${index}`}
+                    startTime={freeTimeBlock.startTime}
+                    endTime={freeTimeBlock.endTime}
+                  />
+                )}
                 <TimelineCard
                   attraction={attraction}
                   arrivalTime={arrivalTime}

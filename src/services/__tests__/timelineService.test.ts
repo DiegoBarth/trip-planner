@@ -4,8 +4,11 @@ import {
   calculateTravelSegment,
   buildDayTimeline,
   calculateArrivalTime,
+  suggestStartTime,
+  recomputeTimelineWithStartTime,
 } from '../timelineService'
 import type { Attraction } from '@/types/Attraction'
+import type { TimelineDay } from '@/types/Timeline'
 import type { OSRMLeg } from '@/services/osrmService'
 
 type AttractionWithTimes = Attraction & { arrivalTime: string; departureTime: string }
@@ -391,5 +394,71 @@ describe('timelineService', () => {
     expect(result?.startTime).toBe('09:45')
     const firstArrival = (result?.attractions[1] as AttractionWithTimes)?.arrivalTime
     expect(firstArrival).toBe('10:00')
+  })
+
+  it('suggestStartTime returns a start time in HH:MM that minimizes wait', () => {
+    const acc = makeAttraction({ id: -999, order: 0, date: '2025-03-01', day: 1, duration: 0 })
+    const a1 = makeAttraction({ id: 1, order: 1, date: '2025-03-01', day: 1, openingTime: '05:00' })
+    const a2 = makeAttraction({ id: 2, order: 2, date: '2025-03-01', day: 1, openingTime: '09:00' })
+    const seg1 = { from: acc, to: a1, durationMinutes: 16, distanceKm: 10, travelMode: 'transit' as const }
+    const seg2 = { from: a1, to: a2, durationMinutes: 7, distanceKm: 1, travelMode: 'walking' as const }
+    const suggested = suggestStartTime([acc, a1, a2], [seg1, seg2])
+    expect(/^\d{2}:\d{2}$/.test(suggested)).toBe(true)
+    expect(suggested >= '04:00' && suggested <= '12:45').toBe(true)
+  })
+
+  it('buildDayTimeline adds freeTimeBlock and shifts arrival when attraction has idealPeriod and would arrive earlier', async () => {
+    const a1 = makeAttraction({ id: 1, order: 0, date: '2025-03-01', day: 1, duration: 60 })
+    const a2 = makeAttraction({
+      id: 2,
+      order: 1,
+      date: '2025-03-01',
+      day: 1,
+      duration: 90,
+      idealPeriod: 'evening',
+    })
+    const segment = {
+      from: a1,
+      to: a2,
+      durationMinutes: 10,
+      distanceKm: 2,
+      travelMode: 'walking' as const,
+    }
+    const result = await buildDayTimeline([a1, a2], [segment])
+    expect(result).not.toBeNull()
+    expect(result?.freeTimeBlocks).toHaveLength(1)
+    expect(result?.freeTimeBlocks?.[0]).toMatchObject({
+      beforeAttractionIndex: 1,
+      startTime: '10:10',
+      endTime: '18:00',
+    })
+    const secondArrival = (result?.attractions[1] as AttractionWithTimes)?.arrivalTime
+    const secondDeparture = (result?.attractions[1] as AttractionWithTimes)?.departureTime
+    expect(secondArrival).toBe('18:00')
+    expect(secondDeparture).toBe('19:30')
+  })
+
+  it('recomputeTimelineWithStartTime updates times and conflicts', () => {
+    const a1 = makeAttraction({ id: 1, order: 0, date: '2025-03-01', day: 1 })
+    const a2 = makeAttraction({ id: 2, order: 1, date: '2025-03-01', day: 1 })
+    const seg = { from: a1, to: a2, durationMinutes: 15, distanceKm: 1, travelMode: 'walking' as const }
+    const timeline: TimelineDay = {
+      date: '2025-03-01',
+      dayNumber: 1,
+      attractions: [
+        { ...a1, arrivalTime: '09:00', departureTime: '10:00' } as AttractionWithTimes,
+        { ...a2, arrivalTime: '10:15', departureTime: '11:15' } as AttractionWithTimes,
+      ],
+      segments: [seg],
+      conflicts: [],
+      totalDistance: 1,
+      totalTravelTime: 15,
+      startTime: '09:00',
+      endTime: '11:15',
+    }
+    const updated = recomputeTimelineWithStartTime(timeline, '10:00')
+    expect(updated.startTime).toBe('10:00')
+    expect((updated.attractions[0] as AttractionWithTimes).arrivalTime).toBe('10:00')
+    expect((updated.attractions[1] as AttractionWithTimes).arrivalTime).toBe('11:15')
   })
 })
