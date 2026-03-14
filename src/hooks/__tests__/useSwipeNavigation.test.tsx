@@ -70,7 +70,7 @@ describe('useSwipeNavigation', () => {
     expect(result.current.arrow).toBe('right')
   })
 
-  it('should navigate to next route on swiped left from right edge', () => {
+  it('should navigate to previous route on swiped left from right edge (arrow right)', () => {
     const { result } = renderHook(() => useSwipeNavigation())
 
     act(() => {
@@ -82,10 +82,10 @@ describe('useSwipeNavigation', () => {
       })
     })
 
-    expect(mockNavigate).toHaveBeenCalledWith(SWIPE_ROUTES[2])
+    expect(mockNavigate).toHaveBeenCalledWith(SWIPE_ROUTES[0])
   })
 
-  it('should navigate to previous route on swiped right from left edge', () => {
+  it('should navigate to next route on swiped right from left edge (arrow left)', () => {
     const { result } = renderHook(() => useSwipeNavigation())
 
     act(() => {
@@ -97,7 +97,7 @@ describe('useSwipeNavigation', () => {
       })
     })
 
-    expect(mockNavigate).toHaveBeenCalledWith(SWIPE_ROUTES[0])
+    expect(mockNavigate).toHaveBeenCalledWith(SWIPE_ROUTES[2])
   })
 
   it('should reset arrow on onTouchEndOrOnMouseUp', () => {
@@ -206,8 +206,8 @@ describe('useSwipeNavigation', () => {
     expect(result.current.arrow).toBeNull()
   })
 
-  it('should not navigate on onSwipedLeft when no next index', () => {
-    ; (useLocation as Mock).mockReturnValue({ pathname: SWIPE_ROUTES[SWIPE_ROUTES.length - 1] })
+  it('should not navigate on onSwipedLeft when no previous index (first route)', () => {
+    ; (useLocation as Mock).mockReturnValue({ pathname: SWIPE_ROUTES[0] })
     const { result } = renderHook(() => useSwipeNavigation())
 
     act(() => {
@@ -239,8 +239,8 @@ describe('useSwipeNavigation', () => {
     expect(result.current.arrow).toBeNull()
   })
 
-  it('should not navigate on onSwipedRight when no previous index', () => {
-    ; (useLocation as Mock).mockReturnValue({ pathname: SWIPE_ROUTES[0] })
+  it('should not navigate on onSwipedRight when no next index (last route)', () => {
+    ; (useLocation as Mock).mockReturnValue({ pathname: SWIPE_ROUTES[SWIPE_ROUTES.length - 1] })
     const { result } = renderHook(() => useSwipeNavigation())
 
     act(() => {

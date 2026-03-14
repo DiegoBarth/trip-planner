@@ -18,12 +18,12 @@ export function useSwipeNavigation() {
       const startedOnRight = e.initial[0] > screenWidth - EDGE_ZONE
 
       if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
-        if (e.deltaX > SWIPE_MIN_DISTANCE_PX && startedOnLeft && currentIndex > 0) {
+        if (e.deltaX > SWIPE_MIN_DISTANCE_PX && startedOnLeft && currentIndex < SWIPE_ROUTES.length - 1) {
           setArrow('left')
           return
         }
 
-        if (e.deltaX < -SWIPE_MIN_DISTANCE_PX && startedOnRight && currentIndex < SWIPE_ROUTES.length - 1) {
+        if (e.deltaX < -SWIPE_MIN_DISTANCE_PX && startedOnRight && currentIndex > 0) {
           setArrow('right')
           return
         }
@@ -40,16 +40,16 @@ export function useSwipeNavigation() {
     onSwipedLeft: (e) => {
       setArrow(null)
       const startedOnRight = e.initial[0] > window.innerWidth - EDGE_ZONE
-      if (startedOnRight && currentIndex < SWIPE_ROUTES.length - 1) {
-        navigate(SWIPE_ROUTES[currentIndex + 1])
+      if (startedOnRight && currentIndex > 0) {
+        navigate(SWIPE_ROUTES[currentIndex - 1])
       }
     },
 
     onSwipedRight: (e) => {
       setArrow(null)
       const startedOnLeft = e.initial[0] < EDGE_ZONE
-      if (startedOnLeft && currentIndex > 0) {
-        navigate(SWIPE_ROUTES[currentIndex - 1])
+      if (startedOnLeft && currentIndex < SWIPE_ROUTES.length - 1) {
+        navigate(SWIPE_ROUTES[currentIndex + 1])
       }
     },
 

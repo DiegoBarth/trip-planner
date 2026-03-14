@@ -192,10 +192,14 @@ export const LABELS = {
   }
 };
 
+/** Ordem do swipe: da direita pra esquerda no array. Da home, swipe esquerda → gastos, reservas, atrações, orçamento; swipe direita → timeline, checklist, dashboard. */
 export const SWIPE_ROUTES = [
+  '/dashboard',
+  '/checklist',
+  '/timeline',
   '/',
-  '/budgets',
   '/expenses',
-  '/appointments',
-  '/dashboard'
+  '/reservations',
+  '/attractions',
+  '/budgets'
 ];
