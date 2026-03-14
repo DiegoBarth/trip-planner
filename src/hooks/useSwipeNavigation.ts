@@ -62,7 +62,7 @@ export function useSwipeNavigation() {
     },
 
     onTouchEndOrOnMouseUp: () => setArrow(null),
-    preventScrollOnSwipe: true,
+    preventScrollOnSwipe: false,
     trackMouse: true,
     delta: SWIPE_DELTA_PX,
   })
