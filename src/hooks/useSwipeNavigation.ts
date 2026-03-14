@@ -9,9 +9,12 @@ export function useSwipeNavigation() {
   const [arrow, setArrow] = useState<'left' | 'right' | 'up' | null>(null)
 
   const currentIndex = SWIPE_ROUTES.indexOf(location.pathname)
+  const isMapPage = location.pathname === '/map'
 
   const handlers = useSwipeable({
     onSwiping: (e) => {
+      if (isMapPage) return
+
       const screenWidth = window.innerWidth
 
       const startedOnLeft = e.initial[0] < EDGE_ZONE
@@ -39,6 +42,7 @@ export function useSwipeNavigation() {
 
     onSwipedLeft: (e) => {
       setArrow(null)
+      if (isMapPage) return
       const startedOnRight = e.initial[0] > window.innerWidth - EDGE_ZONE
       if (startedOnRight && currentIndex > 0) {
         navigate(SWIPE_ROUTES[currentIndex - 1])
@@ -47,6 +51,7 @@ export function useSwipeNavigation() {
 
     onSwipedRight: (e) => {
       setArrow(null)
+      if (isMapPage) return
       const startedOnLeft = e.initial[0] < EDGE_ZONE
       if (startedOnLeft && currentIndex < SWIPE_ROUTES.length - 1) {
         navigate(SWIPE_ROUTES[currentIndex + 1])
@@ -54,6 +59,7 @@ export function useSwipeNavigation() {
     },
 
     onSwipedDown: (e) => {
+      if (isMapPage) return
       const startedAtTop = e.initial[1] < TOP_PULL_ZONE_PX
       if (window.scrollY === 0 && startedAtTop && e.deltaY > SWIPE_MIN_DISTANCE_PX * 2) {
         setArrow(null)
