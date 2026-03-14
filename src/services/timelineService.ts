@@ -261,12 +261,23 @@ export async function buildDayTimeline(attractions: Attraction[], precomputedSeg
   const totalDistance = segments.reduce((sum, s) => sum + (s?.distanceKm ?? 0), 0);
   const totalTravelTime = segments.reduce((sum, s) => sum + (s?.durationMinutes ?? 0), 0);
 
-  // Calculate start time based on first attraction opening
-  const firstAttraction = sortedAttractions[1];
+  // First stop we need to arrive at: index 0 when no accommodation, index 1 when accommodation at 0.
+  const isAccommodationAtStart = sortedAttractions[0]?.id === -999;
+  const firstArrivalIndex = isAccommodationAtStart ? 1 : 0;
+  const firstAttraction = sortedAttractions[firstArrivalIndex];
+  const travelToFirstMinutes = firstArrivalIndex === 0 ? 0 : (segments[0]?.durationMinutes ?? 0);
 
-  const startTime = firstAttraction?.openingTime && firstAttraction.openingTime !== ''
-    ? firstAttraction.openingTime
-    : '09:00';
+  const defaultStart = '09:00';
+
+  let startTime: string;
+  if (firstAttraction?.openingTime && firstAttraction.openingTime !== '') {
+    const arrivalAtFirstMinutes = timeToMinutes(firstAttraction.openingTime);
+    const leaveMinutes = arrivalAtFirstMinutes - travelToFirstMinutes;
+    // Allow early start so we arrive exactly at opening (e.g. leave 04:44 to arrive 05:00 with 16 min travel)
+    startTime = minutesToTime(Math.max(0, leaveMinutes));
+  } else {
+    startTime = defaultStart;
+  }
 
   // Detect conflicts
   const conflicts = detectConflicts(sortedAttractions, segments, startTime);

@@ -256,21 +256,17 @@ describe('timelineService', () => {
         order: 0,
         date: '2025-03-01',
         day: 1,
+        openingTime: '10:00',
+        closingTime: '18:00',
       })
-
       const a2 = makeAttraction({
         id: 2,
         order: 1,
         date: '2025-03-01',
         day: 1,
-        openingTime: '10:00',
-        closingTime: '18:00',
       })
-
       const result = await buildDayTimeline([a1, a2], [])
-
       const lateArrival = result?.conflicts.find(c => c.type === 'late-arrival')
-
       expect(lateArrival).toBeUndefined()
       expect(result?.startTime).toBe('10:00')
     })
@@ -281,10 +277,24 @@ describe('timelineService', () => {
         order: 0,
         date: '2025-03-01',
         day: 1,
-        openingTime: '08:00',
-        closingTime: '09:00',
+        duration: 0,
       })
-      const result = await buildDayTimeline([a1], [])
+      const a2 = makeAttraction({
+        id: 2,
+        order: 1,
+        date: '2025-03-01',
+        day: 1,
+        openingTime: '07:00',
+        closingTime: '08:00',
+      })
+      const segment = {
+        from: a1,
+        to: a2,
+        durationMinutes: 0,
+        distanceKm: 0,
+        travelMode: 'walking' as const,
+      }
+      const result = await buildDayTimeline([a1, a2], [segment])
       const closed = result?.conflicts.find(c => c.type === 'closed')
       expect(closed).toBeDefined()
     })
@@ -341,18 +351,45 @@ describe('timelineService', () => {
       order: 0,
       date: '2025-03-01',
       day: 1,
+      openingTime: '10:00',
     })
-
     const a2 = makeAttraction({
+      id: 2,
+      order: 1,
+      date: '2025-03-01',
+      day: 1,
+    })
+    const result = await buildDayTimeline([a1, a2], [])
+    expect(result?.startTime).toBe('10:00')
+    const firstArrival = (result?.attractions[0] as AttractionWithTimes)?.arrivalTime
+    expect(firstArrival).toBe('10:00')
+  })
+
+  it('sets startTime so arrival at first attraction equals openingTime when segment has travel', async () => {
+    const accommodation = makeAttraction({
+      id: -999,
+      order: 0,
+      date: '2025-03-01',
+      day: 1,
+      duration: 0,
+    })
+    const firstAttraction = makeAttraction({
       id: 2,
       order: 1,
       date: '2025-03-01',
       day: 1,
       openingTime: '10:00',
     })
-
-    const result = await buildDayTimeline([a1, a2], [])
-
-    expect(result?.startTime).toBe('10:00')
+    const segmentAccToFirst = {
+      from: accommodation,
+      to: firstAttraction,
+      durationMinutes: 15,
+      distanceKm: 1,
+      travelMode: 'walking' as const,
+    }
+    const result = await buildDayTimeline([accommodation, firstAttraction], [segmentAccToFirst])
+    expect(result?.startTime).toBe('09:45')
+    const firstArrival = (result?.attractions[1] as AttractionWithTimes)?.arrivalTime
+    expect(firstArrival).toBe('10:00')
   })
 })

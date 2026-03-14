@@ -5,8 +5,8 @@ import Banknote from 'lucide-react/dist/esm/icons/banknote';
 import AlertTriangle from 'lucide-react/dist/esm/icons/alert-triangle';
 import CheckCircle2 from 'lucide-react/dist/esm/icons/check-circle-2';
 import Navigation from 'lucide-react/dist/esm/icons/navigation';
-import { formatCurrency } from '@/utils/formatters'
-import { ATTRACTION_TYPES, RESERVATION_STATUS } from '@/config/constants'
+import { formatCurrency, formatTime } from '@/utils/formatters'
+import { RESERVATION_STATUS } from '@/config/constants'
 import type { Attraction } from '@/types/Attraction'
 import type { TimelineConflict } from '@/types/Timeline'
 
@@ -33,7 +33,6 @@ export const TimelineCard = memo(function TimelineCard({
   conflicts,
   onToggleVisited
 }: TimelineCardProps) {
-  const typeConfig = ATTRACTION_TYPES[attraction.type];
   const hasError = conflicts.some(c => c.severity === 'error');
   const hasWarning = conflicts.some(c => c.severity === 'warning');
   const isVisited = attraction.visited;
@@ -133,6 +132,17 @@ export const TimelineCard = memo(function TimelineCard({
           </div>
 
           {!isAccommodation && (
+            <div className="flex items-center gap-2 text-sm text-white/85 mb-2 text-shadow">
+              <Clock className="w-3.5 h-3.5 text-white/70 flex-shrink-0" />
+              <span>
+                {attraction.openingTime
+                  ? `${formatTime(attraction.openingTime)}${attraction.closingTime ? ` – ${formatTime(attraction.closingTime)}` : ''}`
+                  : '24h'}
+              </span>
+            </div>
+          )}
+
+          {!isAccommodation && (
             <div className="flex items-center gap-2 text-sm mb-3">
               <Banknote className="w-3.5 h-3.5 text-emerald-300 flex-shrink-0" />
               {attraction.couplePrice ? (
@@ -152,20 +162,12 @@ export const TimelineCard = memo(function TimelineCard({
             </div>
           )}
 
-          {!isAccommodation && (
+          {!isAccommodation && attraction.needsReservation && attraction.reservationStatus && (
             <div className="flex flex-wrap gap-2 mb-3">
-              {typeConfig && (
-                <span className="px-2 py-1 bg-white/20 text-white text-xs rounded-md backdrop-blur-sm">
-                  {typeConfig.label}
-                </span>
-              )}
-
-              {attraction.needsReservation && attraction.reservationStatus && (
-                <span className="px-2 py-1 bg-white/20 text-white text-xs rounded-md backdrop-blur-sm flex items-center gap-1">
-                  <span>{RESERVATION_STATUS[attraction.reservationStatus].icon}</span>
-                  <span>{RESERVATION_STATUS[attraction.reservationStatus].label}</span>
-                </span>
-              )}
+              <span className="px-2 py-1 bg-white/20 text-white text-xs rounded-md backdrop-blur-sm flex items-center gap-1">
+                <span>{RESERVATION_STATUS[attraction.reservationStatus].icon}</span>
+                <span>{RESERVATION_STATUS[attraction.reservationStatus].label}</span>
+              </span>
             </div>
           )}
 
