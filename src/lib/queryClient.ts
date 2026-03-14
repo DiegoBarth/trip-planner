@@ -1,7 +1,8 @@
 import { QueryClient } from '@tanstack/react-query'
 
 const CACHE_PREFIX = 'rq_v1_'
-const CACHE_MAX_AGE_MS = 60 * 60 * 1000 // 1 hora
+const CACHE_MAX_AGE_MS = 60 * 60 * 1000 // 1 hour (sessionStorage / refresh)
+const OSRM_CACHE_MAX_AGE_MS = 24 * 60 * 60 * 1000 // 24 hours (localStorage, OSRM routes)
 const OSRM_QUERY_KEY = 'osrm-routes'
 
 function isOSRMQueryKey(queryKey: unknown): boolean {
@@ -17,6 +18,8 @@ export function createQueryClient(): QueryClient {
       queries: {
         retry: 1,
         refetchOnWindowFocus: false,
+        refetchOnMount: false,
+        refetchOnReconnect: false,
       }
     }
   })
@@ -30,7 +33,8 @@ function loadFromStorage(client: QueryClient, storage: Storage, onlyOSRM: boolea
     try {
       const { data, dataUpdatedAt, queryKey } = JSON.parse(raw)
       if (onlyOSRM !== isOSRMQueryKey(queryKey)) continue
-      if (Date.now() - dataUpdatedAt > CACHE_MAX_AGE_MS) {
+      const maxAge = onlyOSRM ? OSRM_CACHE_MAX_AGE_MS : CACHE_MAX_AGE_MS
+      if (Date.now() - dataUpdatedAt > maxAge) {
         storage.removeItem(storageKey)
         continue
       }

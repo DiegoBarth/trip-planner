@@ -21,9 +21,10 @@ function getColorForDay(day: number) {
 
 export function MapView() {
   const { country, day } = useCountry();
-  const { accommodations } = useAccommodation(country);
-  const { attractions } = useAttraction(country);
+  const { accommodations, isLoading: isAccommodationsLoading } = useAccommodation(country);
+  const { attractions, isLoading: isAttractionsLoading } = useAttraction(country);
   const location = useLocation();
+  const dataReady = !isAttractionsLoading && !isAccommodationsLoading;
 
   const mappable = useMemo(() => attractions.filter(isMappableAttraction), [attractions]);
 
@@ -64,7 +65,8 @@ export function MapView() {
 
   const { routes } = useOSRMRoutesQuery(
     groupedByDay as Record<number, Attraction[]>,
-    accommodationsForMap
+    accommodationsForMap,
+    { enabled: dataReady }
   );
 
   const highlightAttractionId = useMemo(() => {

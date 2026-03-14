@@ -14,6 +14,12 @@ export const AUTH_REFRESH_INTERVAL_MS = 5 * MS_PER_MINUTE;
 
 export const QUERY_STALE_TIME_MS = 5 * MS_PER_MINUTE;
 
+/** Offline-first: data considered fresh for 24 hours; only refetch when invalidated (e.g. after mutation). */
+export const OFFLINE_STALE_TIME_MS = 24 * MS_PER_HOUR;
+
+/** Weather forecast: cache for 6 hours for use on the trip day without constant refetch. */
+export const WEATHER_STALE_TIME_MS = 6 * MS_PER_HOUR;
+
 export const BASE_PATH = import.meta.env.BASE_URL;
 
 export const API_TIMEOUT_MS = 30 * MS_PER_SECOND;

@@ -4,7 +4,7 @@ import { deleteAttraction, updateAttraction } from '@/api/attraction'
 import { updateReservationCacheOnCreate, updateReservationCacheOnUpdate, updateReservationCacheOnDelete } from '@/services/reservationCacheService'
 import { updateAttractionCacheOnDelete } from '@/services/attractionCacheService'
 import { dateToInputFormat } from '@/utils/formatters'
-import { QUERY_STALE_TIME_MS } from '@/config/constants'
+import { OFFLINE_STALE_TIME_MS } from '@/config/constants'
 import type { Attraction } from '@/types/Attraction'
 import type { Reservation } from '@/types/Reservation'
 import type { CreateReservationPayload, UpdateReservationPayload } from '@/api/reservation'
@@ -17,7 +17,7 @@ export function useReservation() {
   const { data: reservations = [], isLoading, error } = useQuery({
     queryKey: RESERVATION_QUERY_KEY,
     queryFn: getReservations,
-    staleTime: QUERY_STALE_TIME_MS
+    staleTime: OFFLINE_STALE_TIME_MS
   });
 
   const createMutation = useMutation({

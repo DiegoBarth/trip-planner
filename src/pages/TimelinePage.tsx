@@ -54,9 +54,10 @@ function addAccommodationToDay(dayAttractions: Attraction[], accommodationByCity
 export default function TimelinePage() {
   const [searchParams] = useSearchParams();
   const { country, day, setDay } = useCountry();
-  const { attractions, isLoading, toggleVisited } = useAttraction(country);
-  const { accommodations } = useAccommodation(country);
+  const { attractions, isLoading: isAttractionsLoading, toggleVisited } = useAttraction(country);
+  const { accommodations, isLoading: isAccommodationsLoading } = useAccommodation(country);
   const { success, error } = useToast();
+  const dataReady = !isAttractionsLoading && !isAccommodationsLoading;
 
   useEffect(() => {
     const dayParam = searchParams.get('day');
@@ -88,7 +89,7 @@ export default function TimelinePage() {
   }, [mappableAttractions]);
 
   const { segmentsByDay, isRoutesLoading } =
-    useOSRMRoutesQuery(groupedByDayForRoutes, accommodations);
+    useOSRMRoutesQuery(groupedByDayForRoutes, accommodations, { enabled: dataReady });
 
   const [isExporting, setIsExporting] = useState(false);
 
@@ -314,7 +315,7 @@ export default function TimelinePage() {
     }
   };
 
-  if (isLoading) {
+  if (isAttractionsLoading) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>

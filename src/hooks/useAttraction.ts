@@ -6,7 +6,7 @@ import { updateAttractionCacheOnCreate, updateAttractionCacheOnUpdate, updateAtt
 import { updateReservationCacheOnDelete } from '@/services/reservationCacheService'
 import { applyAutoDays, normalizeOrderByDate } from '@/utils/attractionDayUtils'
 import { dateToInputFormat } from '@/utils/formatters'
-import { QUERY_STALE_TIME_MS } from '@/config/constants'
+import { OFFLINE_STALE_TIME_MS } from '@/config/constants'
 import type { CreateAttractionPayload, UpdateAttractionPayload } from '@/api/attraction'
 import type { Attraction } from '@/types/Attraction'
 import type { CountryFilterValue } from '@/types/Attraction'
@@ -20,7 +20,7 @@ export function useAttraction(country: CountryFilterValue) {
   const { data: allAttractions = [], isLoading, error } = useQuery<Attraction[]>({
     queryKey: ATTRACTION_QUERY_KEY,
     queryFn: getAttractions,
-    staleTime: QUERY_STALE_TIME_MS,
+    staleTime: OFFLINE_STALE_TIME_MS,
   });
 
   const rawFiltered =

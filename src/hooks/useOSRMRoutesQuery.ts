@@ -47,53 +47,53 @@ async function fetchRoutesForDays(
   distances: Record<number, number>
   segmentsByDay: Record<number, (TimelineSegment | null)[]>
 }> {
+  const entries = Object.entries(groupedByDay)
+    .map(([dayNum, points]) => {
+      const validPoints = points.filter(isMappableAttraction);
+      if (validPoints.length < 2) return null;
+      const sortedAttractions = [...validPoints].sort((a, b) => a.order - b.order);
+      let routePoints = sortedAttractions.map((p) => ({ lat: p.lat!, lng: p.lng! }));
+      if (accommodations.length > 0) {
+        const stay = accommodations[0];
+        routePoints = [
+          { lat: stay.lat, lng: stay.lng },
+          ...routePoints,
+          { lat: stay.lat, lng: stay.lng },
+        ];
+      }
+      return { dayNum: Number(dayNum), routePoints, sortedAttractions };
+    })
+    .filter((x): x is NonNullable<typeof x> => x != null);
+
+  const results = await Promise.all(
+    entries.map(({ dayNum, routePoints }) =>
+      fetchOSRMRoute(routePoints).then((result) => ({ dayNum, result }))
+    )
+  );
+
   const routes: Record<number, [number, number][]> = {};
   const distances: Record<number, number> = {};
   const segmentsByDay: Record<number, (TimelineSegment | null)[]> = {};
 
-  for (const [dayNum, points] of Object.entries(groupedByDay)) {
-    const validPoints = points.filter(isMappableAttraction);
-
-    if (validPoints.length < 2) continue;
-
-    const sortedAttractions = [...validPoints].sort((a, b) => a.order - b.order);
-
-    let routePoints = sortedAttractions.map((p) => ({ lat: p.lat!, lng: p.lng! }));
-
-    if (accommodations.length > 0) {
-      const stay = accommodations[0];
-
-      routePoints = [
-        { lat: stay.lat, lng: stay.lng },
-        ...routePoints,
-        { lat: stay.lat, lng: stay.lng },
-      ];
-    }
-
-    const result = await fetchOSRMRoute(routePoints);
-
+  for (let i = 0; i < results.length; i++) {
+    const { dayNum, result } = results[i];
+    const { sortedAttractions } = entries[i];
     if (!result) continue;
 
-    const dNum = Number(dayNum);
+    routes[dayNum] = result.path;
+    distances[dayNum] = result.distanceKm;
 
-    routes[dNum] = result.path;
-    distances[dNum] = result.distanceKm;
-
-    // Legs: 0=acc->att1, 1=att1->att2, ..., n=att(n)->acc. Build segments including acc->att1 so Timeline (with addAccommodationToDay) can use cache.
     if (result.legs && result.legs.length >= sortedAttractions.length) {
       const legsIncludingAcc = result.legs.slice(0, sortedAttractions.length);
       const sortedWithAcc = accommodations.length > 0 && sortedAttractions[0]
         ? [accommodationToAttraction(accommodations[0], sortedAttractions[0]), ...sortedAttractions]
         : sortedAttractions;
-
-      segmentsByDay[dNum] = legsToSegments(sortedWithAcc, legsIncludingAcc);
-    }
-    else {
+      segmentsByDay[dayNum] = legsToSegments(sortedWithAcc, legsIncludingAcc);
+    } else {
       const segmentCount = accommodations.length > 0 && sortedAttractions.length > 0
         ? sortedAttractions.length
         : Math.max(0, sortedAttractions.length - 1);
-
-      segmentsByDay[dNum] = new Array(segmentCount).fill(null);
+      segmentsByDay[dayNum] = new Array(segmentCount).fill(null);
     }
   }
 
@@ -114,6 +114,11 @@ function groupedByDayKey(groupedByDay: Record<number, Attraction[]>, accommodati
   return `${dayKeys};${accKey}`;
 }
 
+export type UseOSRMRoutesQueryOptions = {
+  /** Quando false, a query não roda. Use para evitar duas requisições: espere atrações e acomodações prontas antes de habilitar. */
+  enabled?: boolean;
+};
+
 export function getOSRMRoutesQueryOptions(groupedByDay: Record<number, Attraction[]>, accommodations: Accommodation[]) {
   const key = groupedByDayKey(groupedByDay, accommodations);
   const hasDays = Object.keys(groupedByDay).length > 0;
@@ -126,12 +131,17 @@ export function getOSRMRoutesQueryOptions(groupedByDay: Record<number, Attractio
   };
 }
 
-export function useOSRMRoutesQuery(groupedByDay: Record<number, Attraction[]>, accommodations: Accommodation[]) {
+export function useOSRMRoutesQuery(
+  groupedByDay: Record<number, Attraction[]>,
+  accommodations: Accommodation[],
+  opts?: UseOSRMRoutesQueryOptions
+) {
   const options = getOSRMRoutesQueryOptions(groupedByDay, accommodations);
+  const enabled = (opts?.enabled !== false) && options.enabled;
 
   const query = useQuery({
     ...options,
-    enabled: options.enabled,
+    enabled,
   });
 
   const data = query.data;
