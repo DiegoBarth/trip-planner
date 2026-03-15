@@ -233,3 +233,35 @@ html[data-theme="dark"] body {
 .text-shadow {
   text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
 }
+
+/* Map: attraction popup without white wrapper/border */
+.leaflet-popup-content-wrapper.custom-attraction-popup,
+.leaflet-popup.custom-attraction-popup .leaflet-popup-content-wrapper {
+  background: transparent;
+  box-shadow: none;
+  border: none;
+  padding: 0;
+  overflow: visible;
+  max-height: none;
+}
+
+.leaflet-popup-content-wrapper.custom-attraction-popup .leaflet-popup-content,
+.leaflet-popup.custom-attraction-popup .leaflet-popup-content {
+  margin: 0;
+  overflow: visible;
+  min-width: 0;
+  max-height: none;
+}
+
+.leaflet-popup:has(.custom-attraction-popup) .leaflet-popup-tip-container {
+  display: none;
+}
+
+.leaflet-popup:has(.custom-attraction-popup) .leaflet-popup-close-button {
+  color: rgba(255, 255, 255, 0.9);
+  z-index: 30;
+}
+
+.leaflet-popup:has(.custom-attraction-popup) .leaflet-popup-close-button:hover {
+  color: white;
+}

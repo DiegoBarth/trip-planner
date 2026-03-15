@@ -194,7 +194,7 @@ export const AttractionCard = memo(function AttractionCard({
             title={country === 'south-korea' ? 'Abrir no Naver Map' : 'Abrir no mapa'}
             aria-label="Abrir no mapa"
           >
-            <Map className="w-4 h-4 drop-shadow pointer-events-none" />
+            <Map className="w-4 h-4 text-white drop-shadow pointer-events-none" />
           </a>
         )}
       </div>

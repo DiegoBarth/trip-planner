@@ -22,7 +22,7 @@ function getColorForDay(day: number) {
 export function MapView() {
   const { country, day } = useCountry();
   const { accommodations, isLoading: isAccommodationsLoading } = useAccommodation(country);
-  const { attractions, isLoading: isAttractionsLoading } = useAttraction(country);
+  const { attractions, isLoading: isAttractionsLoading, toggleVisited } = useAttraction(country);
   const location = useLocation();
   const dataReady = !isAttractionsLoading && !isAccommodationsLoading;
 
@@ -110,6 +110,7 @@ export function MapView() {
           getColor={getColorForDay}
           highlightAttractionId={highlightAttractionId}
           country={country}
+          onToggleVisited={toggleVisited}
         />
       </MapContainer>
     </div>

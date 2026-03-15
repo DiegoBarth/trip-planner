@@ -15,11 +15,12 @@ type Props = {
   getColor: (day: number) => string
   highlightAttractionId?: number | null
   country?: CountryFilterValue
+  onToggleVisited?: (id: number) => void
 }
 
 const HIGHLIGHT_COLOR = '#16a34a';
 
-export function MapRoutes({ groupedByDay, routes, accommodations, getColor, highlightAttractionId, country = 'all' }: Props) {
+export function MapRoutes({ groupedByDay, routes, accommodations, getColor, highlightAttractionId, country = 'all', onToggleVisited }: Props) {
   return (
     <>
       {Object.entries(groupedByDay).map(([dayNum]) => {
@@ -90,10 +91,10 @@ export function MapRoutes({ groupedByDay, routes, accommodations, getColor, high
                   },
                 }}
               >
-                <Popup maxWidth={300} minWidth={280} className="custom-attraction-popup">
+                <Popup maxWidth={400} minWidth={320} className="custom-attraction-popup">
                   <AttractionCard
                     attraction={point}
-                    onCheckVisited={() => { }}
+                    onCheckVisited={onToggleVisited ? () => onToggleVisited(point.id) : undefined}
                   />
                 </Popup>
               </Marker>
