@@ -94,17 +94,30 @@ export async function deleteReservation(id: number): Promise<void> {
 /**
  * Get all reservations.
  * Normalizes time field: Sheets stores "10:00" but API may return ISO datetime (e.g. 1899-12-30T13:06:28.000Z).
+ * Accepts response.data or response.reservations so backend can use either key.
  */
 export async function getReservations(): Promise<Reservation[]> {
-  const response = await apiGet<ApiResponse<Reservation[]>>({
+  const response = await apiGet<ApiResponse<Reservation[]> & { reservations?: Reservation[] }>({
     action: 'getReservations'
   });
 
-  if (!response.success || !response.data) {
+  if (!response.success) {
     return [];
   }
 
-  const list = parseReservations(response.data) as Reservation[];
+  const rawList = response.data ?? response.reservations;
+  if (!rawList || !Array.isArray(rawList)) {
+    return [];
+  }
+
+  let list: Reservation[];
+  try {
+    list = parseReservations(rawList) as Reservation[];
+  } catch (err) {
+    console.warn('[getReservations] Resposta com formato inesperado, retornando lista vazia.', err);
+    return [];
+  }
+
   return list.map((r) => ({
     ...r,
     time: normalizeTimeFromSheets(r.time) ?? r.time

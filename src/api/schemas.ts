@@ -105,7 +105,7 @@ export const reservationApiSchema = z.object({
   type: reservationTypeSchema,
   title: z.string(),
   description: z.string().optional(),
-  confirmationCode: z.string().optional(),
+  confirmationCode: z.union([z.string(), z.number()]).optional().transform(v => (v === undefined ? undefined : String(v))),
   date: z.string().optional(),
   endDate: z.string().optional(),
   time: z.string().optional(),
