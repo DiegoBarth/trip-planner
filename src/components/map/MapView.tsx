@@ -109,6 +109,7 @@ export function MapView() {
           accommodations={accommodationsForMap}
           getColor={getColorForDay}
           highlightAttractionId={highlightAttractionId}
+          country={country}
         />
       </MapContainer>
     </div>

@@ -7,7 +7,9 @@ import Trash2 from 'lucide-react/dist/esm/icons/trash-2';
 import Map from 'lucide-react/dist/esm/icons/map';
 import AlertTriangle from 'lucide-react/dist/esm/icons/alert-triangle';
 
+import { useCountry } from '@/contexts/CountryContext'
 import { formatCurrency, formatTime, formatDuration } from '@/utils/formatters'
+import { getMapsUrl } from '@/utils/mapsUrl'
 import { ATTRACTION_TYPES, PERIODS, RESERVATION_STATUS } from '@/config/constants'
 import type { Attraction } from '@/types/Attraction'
 
@@ -27,6 +29,7 @@ export const AttractionCard = memo(function AttractionCard({
   onClick,
   priority = false
 }: AttractionCardProps) {
+  const { country } = useCountry();
   const attractionType = ATTRACTION_TYPES[attraction.type]
 
   if (!attractionType) {
@@ -180,13 +183,15 @@ export const AttractionCard = memo(function AttractionCard({
           <a
             href={
               attraction.location ||
-              `https://www.google.com/maps/search/?api=1&query=${attraction.lat},${attraction.lng}`
+              (attraction.lat != null && attraction.lng != null
+                ? getMapsUrl(attraction.lat, attraction.lng, country)
+                : '#')
             }
             target="_blank"
             rel="noopener noreferrer"
             onClick={(e) => e.stopPropagation()}
             className="absolute bottom-3 right-4 z-20 p-2 rounded-xl bg-blue-500 hover:bg-blue-600 text-white shadow-lg transition-all touch-manipulation"
-            title="Abrir no mapa"
+            title={country === 'south-korea' ? 'Abrir no Naver Map' : 'Abrir no mapa'}
             aria-label="Abrir no mapa"
           >
             <Map className="w-4 h-4 drop-shadow pointer-events-none" />

@@ -5,7 +5,9 @@ import Banknote from 'lucide-react/dist/esm/icons/banknote';
 import AlertTriangle from 'lucide-react/dist/esm/icons/alert-triangle';
 import CheckCircle2 from 'lucide-react/dist/esm/icons/check-circle-2';
 import Navigation from 'lucide-react/dist/esm/icons/navigation';
+import { useCountry } from '@/contexts/CountryContext'
 import { formatCurrency, formatTime } from '@/utils/formatters'
+import { openInMaps } from '@/utils/mapsUrl'
 import { RESERVATION_STATUS } from '@/config/constants'
 import type { Attraction } from '@/types/Attraction'
 import type { TimelineConflict } from '@/types/Timeline'
@@ -19,12 +21,6 @@ interface TimelineCardProps {
   onToggleVisited?: (id: number) => void
 }
 
-function openInMaps(lat: number, lng: number) {
-  const url = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
-
-  window.open(url, '_blank');
-}
-
 export const TimelineCard = memo(function TimelineCard({
   attraction,
   arrivalTime,
@@ -33,6 +29,7 @@ export const TimelineCard = memo(function TimelineCard({
   conflicts,
   onToggleVisited
 }: TimelineCardProps) {
+  const { country } = useCountry();
   const hasError = conflicts.some(c => c.severity === 'error');
   const hasWarning = conflicts.some(c => c.severity === 'warning');
   const isVisited = attraction.visited;
@@ -91,10 +88,10 @@ export const TimelineCard = memo(function TimelineCard({
                 <button
                   onClick={(e) => {
                     e.stopPropagation()
-                    openInMaps(attraction.lat!, attraction.lng!)
+                    openInMaps(attraction.lat!, attraction.lng!, country)
                   }}
                   className="p-1.5 rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-sm transition-all"
-                  title="Abrir no Google Maps"
+                  title={country === 'south-korea' ? 'Abrir no Naver Map' : 'Abrir no Google Maps'}
                 >
                   <Navigation className="w-5 h-5 text-white" />
                 </button>

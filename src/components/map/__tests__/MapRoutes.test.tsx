@@ -107,18 +107,34 @@ describe('MapRoutes', () => {
     expect(markers.length).toBe(2)
   })
 
-  it('creates correct Google Maps link for accommodation', () => {
+  it('creates correct Google Maps link for accommodation when country is not South Korea', () => {
     render(
       <MapRoutes
         groupedByDay={{}}
         routes={{}}
         accommodations={[createAccommodation({ lat: 1, lng: 2 })]}
         getColor={getColorMock}
+        country="japan"
       />
     )
 
     const link = screen.getByRole('link', { name: /abrir no google maps/i })
-    expect(link).toHaveAttribute('href', 'https://www.google.com/maps?q=1,2')
+    expect(link).toHaveAttribute('href', 'https://www.google.com/maps/search/?api=1&query=1,2')
+  })
+
+  it('creates Naver Map link for accommodation when country is South Korea', () => {
+    render(
+      <MapRoutes
+        groupedByDay={{}}
+        routes={{}}
+        accommodations={[createAccommodation({ lat: 37.5, lng: 127 })]}
+        getColor={getColorMock}
+        country="south-korea"
+      />
+    )
+
+    const link = screen.getByRole('link', { name: /abrir no naver map/i })
+    expect(link).toHaveAttribute('href', 'https://map.naver.com/v5/?c=127,37.5,15,0,0,0,dh')
   })
 
   it('renders attraction markers from groupedByDay', () => {

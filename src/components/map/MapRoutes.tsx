@@ -3,6 +3,8 @@ import MarkerClusterGroup from 'react-leaflet-markercluster'
 import { AttractionCard } from '../attraction/AttractionCard'
 import { createCustomIcon } from './markers'
 import { PolylineWithArrows } from './PolylineWithArrows'
+import { getMapsUrl } from '@/utils/mapsUrl'
+import type { CountryFilterValue } from '@/types/Attraction'
 import type { MappableAttraction } from '@/types/MappableAttraction'
 import type { Accommodation } from '@/types/Accommodation'
 
@@ -12,11 +14,12 @@ type Props = {
   accommodations: Accommodation[]
   getColor: (day: number) => string
   highlightAttractionId?: number | null
+  country?: CountryFilterValue
 }
 
 const HIGHLIGHT_COLOR = '#16a34a';
 
-export function MapRoutes({ groupedByDay, routes, accommodations, getColor, highlightAttractionId }: Props) {
+export function MapRoutes({ groupedByDay, routes, accommodations, getColor, highlightAttractionId, country = 'all' }: Props) {
   return (
     <>
       {Object.entries(groupedByDay).map(([dayNum]) => {
@@ -41,7 +44,7 @@ export function MapRoutes({ groupedByDay, routes, accommodations, getColor, high
         maxClusterRadius={60}
       >
         {accommodations.map(acc => {
-          const mapsUrl = `https://www.google.com/maps?q=${acc.lat},${acc.lng}`;
+          const mapsUrl = getMapsUrl(acc.lat, acc.lng, country);
 
           return (
             <Marker
@@ -65,7 +68,7 @@ export function MapRoutes({ groupedByDay, routes, accommodations, getColor, high
                     rel="noopener noreferrer"
                     className="text-blue-600 text-sm underline"
                   >
-                    Abrir no Google Maps
+                    {country === 'south-korea' ? 'Abrir no Naver Map' : 'Abrir no Google Maps'}
                   </a>
                 </div>
               </Popup>

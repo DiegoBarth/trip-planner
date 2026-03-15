@@ -10,12 +10,7 @@ import Circle from 'lucide-react/dist/esm/icons/circle';
 import { useCountry } from '@/contexts/CountryContext'
 import { useAttraction } from '@/hooks/useAttraction'
 import { dateToInputFormat } from '@/utils/formatters'
-
-function openInMaps(lat: number, lng: number, name: string) {
-  const url = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}&query_place_id=${encodeURIComponent(name)}`;
-
-  window.open(url, '_blank');
-}
+import { openInMaps } from '@/utils/mapsUrl'
 
 export default function NextDaySummary() {
   const { country } = useCountry();
@@ -144,7 +139,7 @@ export default function NextDaySummary() {
                   openInMaps(
                     nextDayData.nextAttraction!.lat!,
                     nextDayData.nextAttraction!.lng!,
-                    nextDayData.nextAttraction!.name
+                    country
                   )
                 }}
                 className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-white/20 hover:bg-white/30 text-sm font-medium transition-colors"
