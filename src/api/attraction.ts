@@ -117,3 +117,48 @@ export async function bulkUpdateAttractions(payload: UpdateAttractionPayload[]):
 
   return response.data;
 }
+
+export interface ReorderDayPayload {
+  country: Attraction['country'];
+  fromDay: number;
+  toDay: number;
+}
+
+/**
+ * Move all attractions of a given day to another day number (same country).
+ * Backend updates dates and reorders; requires Apps Script endpoint reorderDay.
+ */
+export async function reorderDay(payload: ReorderDayPayload): Promise<Attraction[]> {
+  const response = await apiPost<ApiResponse<Attraction[]>>({
+    action: 'reorderDay',
+    data: payload
+  });
+
+  if (!response.success || !response.data) {
+    throw new Error(response.message || 'Failed to reorder day');
+  }
+
+  return parseAttractions(response.data) as Attraction[];
+}
+
+export interface MoveAttractionToDayPayload {
+  id: number;
+  targetDay: number;
+}
+
+/**
+ * Move a single attraction to another day (same country).
+ * Backend updates date and reorders; requires Apps Script endpoint moveAttractionToDay.
+ */
+export async function moveAttractionToDay(payload: MoveAttractionToDayPayload): Promise<Attraction> {
+  const response = await apiPost<ApiResponse<Attraction>>({
+    action: 'moveAttractionToDay',
+    data: payload
+  });
+
+  if (!response.success || !response.data) {
+    throw new Error(response.message || 'Failed to move attraction to day');
+  }
+
+  return response.data as Attraction;
+}

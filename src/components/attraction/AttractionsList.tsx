@@ -16,6 +16,8 @@ import type { Attraction } from '@/types/Attraction'
 
 interface AttractionsListProps {
   attractions: Attraction[]
+  /** Use this for getAutoDayForDate/getNextOrderForDate when list is filtered by day (e.g. day 12 only). Ensures day ordinal is correct. */
+  attractionsForDayOrder?: Attraction[]
   isLoading?: boolean
   onUpdate: (attraction: Attraction) => Promise<void>
   onCreate: (attraction: Omit<Attraction, 'id'>) => Promise<void>
@@ -29,6 +31,7 @@ interface AttractionsListProps {
 
 export default function AttractionsList({
   attractions,
+  attractionsForDayOrder,
   isLoading,
   onUpdate,
   onCreate,
@@ -45,22 +48,35 @@ export default function AttractionsList({
   const isDragEnabled = isDragEnabledProp ?? isDragEnabledLocal
   const setDragEnabled = onToggleDragEnabled ?? setIsDragEnabledLocal
 
+  const listForDayOrder = attractionsForDayOrder ?? attractions
+
   const handleSave = async (data: Omit<Attraction, 'id' | 'day' | 'order'>) => {
-    const autoDay = getAutoDayForDate(
-      attractions,
-      data.country,
-      data.date,
-      editingAttraction?.id
+    const normalizedNewDate = dateToInputFormat(data.date);
+    const normalizedCurrentDate = editingAttraction ? dateToInputFormat(editingAttraction.date) : '';
+
+    const dateUnchanged = Boolean(
+      editingAttraction && normalizedNewDate && normalizedNewDate === normalizedCurrentDate
     );
+
+    const autoDay =
+      dateUnchanged && editingAttraction
+        ? editingAttraction.day
+        : getAutoDayForDate(
+            listForDayOrder,
+            data.country,
+            data.date,
+            editingAttraction?.id
+          );
 
     const isSameGroup = editingAttraction
       ? editingAttraction.country === data.country
-      && dateToInputFormat(editingAttraction.date) === dateToInputFormat(data.date)
+      && normalizedNewDate === normalizedCurrentDate
       : false;
 
-    const order = isSameGroup
-      ? editingAttraction?.order ?? 1
-      : getNextOrderForDate(attractions, data.country, data.date, editingAttraction?.id);
+    const order =
+      isSameGroup || dateUnchanged
+        ? editingAttraction?.order ?? 1
+        : getNextOrderForDate(listForDayOrder, data.country, data.date, editingAttraction?.id);
 
     const payload = { ...data, day: autoDay, order };
 

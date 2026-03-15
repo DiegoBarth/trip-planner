@@ -143,7 +143,14 @@ export function dateToInputFormat(date: string): string {
     return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
   }
 
-  return date.split('T')[0];
+  const dateOnly = date.split('T')[0];
+  const parts = dateOnly.split('-').map(Number);
+
+  if (parts.length !== 3 || parts.some(Number.isNaN)) return dateOnly;
+
+  const [year, month, day] = parts;
+
+  return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
 }
 
 export function formatTime(time: string): string {

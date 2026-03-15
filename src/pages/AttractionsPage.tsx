@@ -1,13 +1,15 @@
 import { useState, useMemo, lazy, Suspense } from 'react'
 import Plus from 'lucide-react/dist/esm/icons/plus';
 import GripVertical from 'lucide-react/dist/esm/icons/grip-vertical';
+import ArrowLeftRight from 'lucide-react/dist/esm/icons/arrow-left-right';
 import { PageHeader } from '@/components/ui/PageHeader'
 import { CountryFilter } from '@/components/home/CountryFilter'
 import { Fab } from '@/components/ui/Fab'
 import { useAttraction } from '@/hooks/useAttraction'
 import { useToast } from '@/contexts/toast'
 import { useCountry } from '@/contexts/CountryContext'
-import type { Attraction } from '@/types/Attraction'
+import { ReorderDaysModal } from '@/components/attraction/ReorderDaysModal'
+import type { Attraction, Country } from '@/types/Attraction'
 
 const ModalAttraction = lazy(() =>
   import('@/components/attraction/ModalAttraction').then((m) => ({ default: m.ModalAttraction }))
@@ -21,6 +23,7 @@ export default function AttractionsPage() {
   const { success, error } = useToast();
 
   const [showModal, setShowModal] = useState(false)
+  const [showReorderModal, setShowReorderModal] = useState(false)
   const [isDragEnabled, setIsDragEnabled] = useState(false)
 
   const filteredAttractions = useMemo(() => {
@@ -101,19 +104,32 @@ export default function AttractionsPage() {
         subtitle="Planeje seus pontos turísticos"
         filter={<CountryFilter hideGeneralOption />}
         action={
-          <button
-            type="button"
-            onClick={() => setIsDragEnabled((v) => !v)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-sm font-medium transition-colors ${isDragEnabled
-              ? 'bg-white/25 text-white hover:bg-white/30'
-              : 'bg-white/15 text-white/95 hover:bg-white/20'
-              }`}
-            title={isDragEnabled ? 'Desabilitar reordenação' : 'Habilitar reordenação'}
-            aria-pressed={isDragEnabled}
-          >
-            <GripVertical className="w-4 h-4" />
-            {isDragEnabled ? 'Reordenação ativa' : 'Reordenar'}
-          </button>
+          <div className="flex items-center gap-2">
+            {country !== 'all' && (
+              <button
+                type="button"
+                onClick={() => setShowReorderModal(true)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/15 text-white/95 hover:bg-white/20 text-sm font-medium transition-colors"
+                title="Reordenar dias"
+              >
+                <ArrowLeftRight className="w-4 h-4" />
+                Reordenar dias
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={() => setIsDragEnabled((v) => !v)}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-sm font-medium transition-colors ${isDragEnabled
+                ? 'bg-white/25 text-white hover:bg-white/30'
+                : 'bg-white/15 text-white/95 hover:bg-white/20'
+                }`}
+              title={isDragEnabled ? 'Desabilitar reordenação' : 'Habilitar reordenação'}
+              aria-pressed={isDragEnabled}
+            >
+              <GripVertical className="w-4 h-4" />
+              {isDragEnabled ? 'Reordenação ativa' : 'Reordenar'}
+            </button>
+          </div>
         }
       />
 
@@ -121,6 +137,7 @@ export default function AttractionsPage() {
         <Suspense fallback={null}>
           <AttractionsList
             attractions={filteredAttractions}
+            attractionsForDayOrder={day !== 'all' ? attractions : undefined}
             isLoading={isLoading}
             onCreate={handleCreate}
             onUpdate={handleUpdate}
@@ -150,6 +167,14 @@ export default function AttractionsPage() {
             }}
           />
         </Suspense>
+      )}
+
+      {country !== 'all' && (
+        <ReorderDaysModal
+          isOpen={showReorderModal}
+          onClose={() => setShowReorderModal(false)}
+          country={country as Country}
+        />
       )}
     </div>
   );
