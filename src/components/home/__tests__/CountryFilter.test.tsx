@@ -4,6 +4,7 @@ import { CountryFilter } from '@/components/home/CountryFilter'
 import { useCountry } from '@/contexts/CountryContext'
 import { useAttraction } from '@/hooks/useAttraction'
 import { useFilterSheet } from '@/contexts/FilterSheetContext'
+import { TRIP_FILTER_KEY } from '@/config/constants'
 
 vi.mock('@/contexts/CountryContext', () => ({
   useCountry: vi.fn(() => ({
@@ -74,20 +75,11 @@ vi.mock('@/components/ui/CustomSelect', () => ({
   },
 }))
 
-
 vi.mock('lucide-react/dist/esm/icons/map-pin', () => ({
   default: () => <div data-testid="map-pin" />,
 }))
 vi.mock('lucide-react/dist/esm/icons/calendar', () => ({
   default: () => <div data-testid="calendar" />,
-}))
-
-vi.mock('@/config/constants', () => ({
-  COUNTRIES: {
-    general: { flag: '🌍', name: 'Geral' },
-    japan: { flag: '🇯🇵', name: 'Japão' },
-    'south-korea': { flag: '🇰🇷', name: 'Coreia do Sul' },
-  },
 }))
 
 describe('CountryFilter', () => {
@@ -99,7 +91,7 @@ describe('CountryFilter', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
-    sessionStorage.removeItem('trip_filter')
+    localStorage.removeItem(TRIP_FILTER_KEY)
     mockUseCountry.mockReturnValue({
       country: 'all',
       setCountry: mockSetCountry,
@@ -325,14 +317,10 @@ describe('CountryFilter', () => {
     expect(screen.getByTestId('day-filter-value')).toHaveTextContent('Dia 2')
   })
 
-  it('calls setDay with saved day from sessionStorage on mount when day is numeric', () => {
-    sessionStorage.setItem(
-      'trip_filter',
-      JSON.stringify({ country: 'japan', day: 2 })
-    )
+  it('calls setDay with saved day from localStorage on mount when day is numeric', () => {
+    localStorage.setItem(TRIP_FILTER_KEY, JSON.stringify({ country: 'japan', day: 2 }))
 
     render(<CountryFilter />)
-
     expect(mockSetDay).toHaveBeenCalledWith(2)
   })
 })

@@ -166,11 +166,12 @@ describe('NextDaySummary', () => {
   })
 
   it('renders attractions list quando !showTravelMode (executa <li>)', () => {
-    const dateStr = '2026-03-10'
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2026-04-01'))
 
     const attractions = [
-      { id: 1, name: 'Attraction 1', date: dateStr, lat: 1, lng: 2, order: 1, day: 2, visited: false },
-      { id: 2, name: 'Attraction 2', date: dateStr, lat: 1, lng: 2, order: 2, day: 2, visited: false },
+      { id: 1, name: 'Attraction 1', date: '2026-04-02', lat: 1, lng: 2, order: 1, day: 2, visited: false },
+      { id: 2, name: 'Attraction 2', date: '2026-04-02', lat: 1, lng: 2, order: 2, day: 2, visited: false },
     ]
 
     mockUseAttraction.mockReturnValue({
@@ -196,5 +197,7 @@ describe('NextDaySummary', () => {
     expect(screen.getByText(/Attraction 2/i)).toBeInTheDocument()
 
     expect(screen.queryByText(/Toque para marcar visitado/i)).not.toBeInTheDocument()
+
+    vi.useRealTimers()
   })
 })

@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { CountryProvider, useCountry } from '../CountryContext'
+import { TRIP_FILTER_KEY } from '@/config/constants'
 
 function Consumer() {
   const { country, day, setCountry } = useCountry()
@@ -15,14 +16,12 @@ function Consumer() {
   )
 }
 
-const TRIP_FILTER_KEY = 'trip_filter'
-
 describe('CountryContext', () => {
   beforeEach(() => {
-    sessionStorage.removeItem(TRIP_FILTER_KEY)
+    localStorage.removeItem(TRIP_FILTER_KEY)
   })
 
-  it('initial state is all/all when sessionStorage is empty', () => {
+  it('initial state is all/all when localStorage is empty', () => {
     render(
       <CountryProvider>
         <Consumer />
@@ -33,8 +32,8 @@ describe('CountryContext', () => {
     expect(screen.getByTestId('day')).toHaveTextContent('all')
   })
 
-  it('initial state comes from sessionStorage and day is preserved on mount', () => {
-    sessionStorage.setItem(
+  it('initial state comes from localStorage and day is preserved on mount', () => {
+    localStorage.setItem(
       TRIP_FILTER_KEY,
       JSON.stringify({ country: 'japan', day: 2 })
     )
@@ -50,7 +49,7 @@ describe('CountryContext', () => {
   })
 
   it('resets day to all when country changes', () => {
-    sessionStorage.setItem(
+    localStorage.setItem(
       TRIP_FILTER_KEY,
       JSON.stringify({ country: 'japan', day: 2 })
     )
@@ -69,20 +68,20 @@ describe('CountryContext', () => {
     expect(screen.getByTestId('day')).toHaveTextContent('all')
   })
 
-  it('persists country and day to sessionStorage when state changes', () => {
+  it('persists country and day to localStorage when state changes', () => {
     render(
       <CountryProvider>
         <Consumer />
       </CountryProvider>
     )
 
-    expect(sessionStorage.getItem(TRIP_FILTER_KEY)).toBe(
+    expect(localStorage.getItem(TRIP_FILTER_KEY)).toBe(
       JSON.stringify({ country: 'all', day: 'all' })
     )
 
     fireEvent.click(screen.getByRole('button', { name: /trocar país/i }))
 
-    expect(sessionStorage.getItem(TRIP_FILTER_KEY)).toBe(
+    expect(localStorage.getItem(TRIP_FILTER_KEY)).toBe(
       JSON.stringify({ country: 'south-korea', day: 'all' })
     )
   })

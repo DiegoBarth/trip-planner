@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import { createContext, useContext, useEffect, useRef, useState } from 'react'
+import { TRIP_FILTER_KEY } from '@/config/constants'
 import type { CountryFilterValue } from '@/types/Attraction'
 
 type DayFilter = number | 'all'
@@ -13,7 +14,7 @@ interface CountryContextType {
 }
 
 function getInitialFilter(): { country: CountryFilter; day: DayFilter } {
-  const saved = sessionStorage.getItem('trip_filter');
+  const saved = localStorage.getItem(TRIP_FILTER_KEY);
 
   if (!saved) return { country: 'all', day: 'all' };
 
@@ -25,7 +26,7 @@ function getInitialFilter(): { country: CountryFilter; day: DayFilter } {
     }
   }
   catch {
-    sessionStorage.removeItem('trip_filter');
+    localStorage.removeItem(TRIP_FILTER_KEY);
   }
 
   return { country: 'all', day: 'all' };
@@ -52,7 +53,7 @@ export function CountryProvider({ children }: { children: ReactNode }) {
   }, [country]);
 
   useEffect(() => {
-    sessionStorage.setItem('trip_filter', JSON.stringify({ country, day }));
+    localStorage.setItem(TRIP_FILTER_KEY, JSON.stringify({ country, day }));
   }, [country, day]);
 
   return (

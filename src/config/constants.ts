@@ -217,3 +217,5 @@ export const SWIPE_ROUTES = [
   '/attractions',
   '/budgets'
 ];
+
+export const TRIP_FILTER_KEY = 'trip_filter';

@@ -5,10 +5,8 @@ import { useCountry } from '@/contexts/CountryContext'
 import { useAttraction } from '@/hooks/useAttraction';
 import { useFilterSheet } from '@/contexts/FilterSheetContext'
 import { CustomSelect } from '@/components/ui/CustomSelect'
-import { COUNTRIES } from '@/config/constants'
+import { COUNTRIES, TRIP_FILTER_KEY } from '@/config/constants'
 import type { Country, CountryFilterValue } from '@/types/Attraction'
-
-const TRIP_FILTER_KEY = 'trip_filter';
 
 const FILTER_OPTIONS: { key: CountryFilterValue; label: string }[] = [
   { key: 'all', label: 'Todos' },
@@ -32,7 +30,7 @@ export function CountryFilter({ showDayFilter = true, hideGeneralOption = false 
   const inSheet = dropdownPosition === 'above'
 
   useEffect(() => {
-    const saved = sessionStorage.getItem(TRIP_FILTER_KEY)
+    const saved = localStorage.getItem(TRIP_FILTER_KEY)
     if (!saved) return
     try {
       const parsed = JSON.parse(saved)
