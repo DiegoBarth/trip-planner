@@ -1,17 +1,14 @@
 import { useState, useMemo, useRef, useEffect } from 'react'
 import { PageHeader } from '@/components/ui/PageHeader'
 import { useCurrency } from '@/hooks/useCurrency'
-import {
-  convertCurrency,
-  formatCurrencyInputByCurrency,
-  currencyToNumber,
-  formatCurrency,
-} from '@/utils/formatters'
-import type { Currency } from '@/types/Attraction'
+import { convertCurrency, formatCurrencyInputByCurrency, currencyToNumber, formatCurrency } from '@/utils/formatters'
 import ArrowLeftRight from 'lucide-react/dist/esm/icons/arrow-left-right'
 import { CustomSelect } from '@/components/ui/CustomSelect'
 import { QueryErrorView } from '@/components/ui/QueryErrorView'
+import { useCountry } from '@/contexts/CountryContext'
+import { COUNTRIES } from '@/config/constants'
 import { cn } from '@/lib/utils'
+import type { Currency } from '@/types/Attraction'
 
 const CURRENCY_OPTIONS: { label: string; value: Currency }[] = [
   { label: '¥ Iene (JPY)', value: 'JPY' },
@@ -20,10 +17,15 @@ const CURRENCY_OPTIONS: { label: string; value: Currency }[] = [
 ]
 
 export default function ConverterPage() {
+  const { country } = useCountry()
   const { rates, isLoading, error } = useCurrency()
 
+  const defaultFromCurrency: Currency = country === 'all'
+    ? 'KRW'
+    : COUNTRIES[country]?.currency ?? 'KRW'
+
   const [amountInput, setAmountInput] = useState('')
-  const [fromCurrency, setFromCurrency] = useState<Currency>('JPY')
+  const [fromCurrency, setFromCurrency] = useState<Currency>(defaultFromCurrency)
   const [toCurrency, setToCurrency] = useState<Currency>('BRL')
 
   const prevFromCurrencyRef = useRef<Currency>(fromCurrency)
@@ -83,6 +85,14 @@ export default function ConverterPage() {
 
     setAmountInput(formatCurrencyInputByCurrency(valueToShow, fromCurrency))
   }, [fromCurrency, rates])
+
+  useEffect(() => {
+    const newCurrency = country === 'all'
+      ? 'KRW'
+      : COUNTRIES[country]?.currency ?? 'KRW'
+
+    setFromCurrency(newCurrency)
+  }, [country])
 
   const handleSwap = () => {
     if (fromCurrency === toCurrency) return
@@ -163,7 +173,12 @@ export default function ConverterPage() {
               aria-label="Swap currencies"
               onClick={handleSwap}
               disabled={fromCurrency === toCurrency}
-              className="p-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700"
+              className="
+                p-2.5 rounded-xl border border-gray-300 dark:border-gray-600
+                bg-white dark:bg-gray-700
+                disabled:opacity-40
+                disabled:cursor-not-allowed
+              "
             >
               <ArrowLeftRight className="w-5 h-5" />
             </button>

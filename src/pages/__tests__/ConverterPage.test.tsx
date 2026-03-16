@@ -119,9 +119,9 @@ describe('ConverterPage', () => {
 
     fireEvent.change(input, { target: { value: '100' } })
 
-    expect(input).toHaveValue('¥ 100')
+    expect(input).toHaveValue('₩ 100')
 
-    expect(screen.getByText('R$ 4,00')).toBeInTheDocument()
+    expect(screen.getByText('R$ 0,07')).toBeInTheDocument()
   })
 
   it('swap button disables when currencies equal', () => {
@@ -129,7 +129,7 @@ describe('ConverterPage', () => {
 
     const toSelect = screen.getByTestId('converter-to')
 
-    fireEvent.change(toSelect, { target: { value: '¥ Iene (JPY)' } })
+    fireEvent.change(toSelect, { target: { value: '₩ Won (KRW)' } })
 
     const swapBtn = screen.getByRole('button', { name: /swap currencies/i })
 
@@ -148,7 +148,7 @@ describe('ConverterPage', () => {
     fireEvent.click(swapBtn)
 
     expect(screen.getByTestId('converter-from')).toHaveValue('R$ Real (BRL)')
-    expect(screen.getByTestId('converter-to')).toHaveValue('¥ Iene (JPY)')
+    expect(screen.getByTestId('converter-to')).toHaveValue('₩ Won (KRW)')
   })
 
   it('changing "De" currency updates select', () => {
@@ -205,9 +205,9 @@ describe('ConverterPage', () => {
     render(<ConverterPage />, { wrapper: Wrapper })
     const input = screen.getByRole('textbox', { name: /Valor/i })
     fireEvent.change(input, { target: { value: '100' } })
-    expect(input).toHaveValue('¥ 100')
+    expect(input).toHaveValue('₩ 100')
     const fromSelect = screen.getByTestId('converter-from')
     fireEvent.change(fromSelect, { target: { value: 'R$ Real (BRL)' } })
-    expect((input as HTMLInputElement).value).toMatch(/R\$\s*4,00/)
+    expect((input as HTMLInputElement).value).toMatch(/R\$\s*0,07/)
   })
 })
