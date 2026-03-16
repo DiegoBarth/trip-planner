@@ -179,10 +179,9 @@ export const AttractionCard = memo(function AttractionCard({
             )}
           </div>
         </div>
-        {(attraction.location || (attraction.lat && attraction.lng)) && (
+        {(attraction.lat && attraction.lng) && (
           <a
             href={
-              attraction.location ||
               (attraction.lat != null && attraction.lng != null
                 ? getMapsUrl(attraction.lat, attraction.lng, country)
                 : '#')
