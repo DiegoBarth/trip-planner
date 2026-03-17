@@ -97,8 +97,7 @@ describe('DraggableAttractionCard', () => {
     const attraction = createAttraction()
     render(<DraggableAttractionCard attraction={attraction} />)
 
-    expect(screen.getByTitle(/clique e arraste/i)).toBeInTheDocument()
-    expect(screen.getByText(/reordenar/i)).toBeInTheDocument()
+    expect(screen.getByTitle(/arrastar para reordenar/i)).toBeInTheDocument()
   })
 
   it('does not render drag handle on mobile', () => {

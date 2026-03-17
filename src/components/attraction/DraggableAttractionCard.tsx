@@ -70,24 +70,21 @@ export function DraggableAttractionCard({ attraction, priority = false, onCheckV
         <div
           {...handleListeners}
           className={`
-            absolute top-0 left-0 right-0 h-14 z-20 flex items-center gap-2 px-3
-            bg-gradient-to-b from-gray-900 to-gray-800 bg-opacity-60
-            hover:bg-opacity-90 group-hover:bg-opacity-80
-            rounded-t-lg transition-all
-            cursor-grab active:cursor-grabbing
-            focus:outline-none [-webkit-tap-highlight-color:transparent]
-            ${isDragging ? 'bg-opacity-90 ring-2 ring-blue-500' : ''}
-          `}
-          title="Clique e arraste para reordenar esta atração"
+      absolute top-2 left-2 z-30
+      p-2 rounded-lg
+      bg-black/40 backdrop-blur-sm
+      opacity-0 group-hover:opacity-100
+      transition-all duration-200
+      cursor-grab active:cursor-grabbing
+      ${isDragging ? 'opacity-100 ring-2 ring-blue-500' : ''}
+    `}
+          title="Arrastar para reordenar"
         >
-          <div className="flex flex-col gap-0.5">
-            <GripVertical className="w-5 h-5 text-white" />
-          </div>
-          <span className="text-white text-sm font-medium">Reordenar</span>
+          <GripVertical className="w-4 h-4 text-white" />
         </div>
       )}
 
-      <div className={isMobile ? '' : 'pt-12'}>
+      <div>
         <AttractionCard
           attraction={attraction}
           priority={priority}
