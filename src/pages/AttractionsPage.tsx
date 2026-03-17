@@ -113,21 +113,26 @@ export default function AttractionsPage() {
                 title="Reordenar dias"
               >
                 <ArrowLeftRight className="w-4 h-4" />
-                Reordenar dias
+                <span className="hidden sm:inline">Reordenar dias</span>
               </button>
             )}
             <button
               type="button"
               onClick={() => setIsDragEnabled((v) => !v)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-sm font-medium transition-colors ${isDragEnabled
-                ? 'bg-white/25 text-white hover:bg-white/30'
-                : 'bg-white/15 text-white/95 hover:bg-white/20'
-                }`}
+              className={`
+                flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-sm font-medium transition-all
+                ${isDragEnabled
+                  ? `bg-white text-blue-600 shadow-md dark:bg-gray-700 dark:text-white dark:shadow-lg sm:bg-white/25 sm:text-white sm:hover:bg-white/30`
+                  : `bg-white/15 text-white/95 hover:bg-white/20`}
+              `}
               title={isDragEnabled ? 'Desabilitar reordenação' : 'Habilitar reordenação'}
               aria-pressed={isDragEnabled}
             >
               <GripVertical className="w-4 h-4" />
-              {isDragEnabled ? 'Reordenação ativa' : 'Reordenar'}
+
+              <span className="hidden sm:inline">
+                {isDragEnabled ? 'Reordenação ativa' : 'Reordenar'}
+              </span>
             </button>
           </div>
         }
