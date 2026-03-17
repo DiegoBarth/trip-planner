@@ -50,7 +50,7 @@ function HeaderPortals({ onLogout }: { onLogout: () => void }) {
   return (
     <>
       {createPortal(actions, headerEls.actionsEl)}
-      {isHome && headerEls.filterEl && createPortal(<CountryFilter hideGeneralOption />, headerEls.filterEl)}
+      {isHome && headerEls.filterEl && createPortal(<CountryFilter hideGeneralOption variant='glass' />, headerEls.filterEl)}
     </>
   )
 }

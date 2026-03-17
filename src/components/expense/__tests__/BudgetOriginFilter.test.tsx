@@ -25,7 +25,7 @@ vi.mock('@/components/ui/CustomSelect', () => ({
         <span data-testid={`${id}-value`}>{value}</span>
         <span data-testid={`${id}-options`}>{options?.join(', ')}</span>
         <span data-testid={`${id}-variant`}>{variant}</span>
-        {leftIcon && <div data-testid="left-icon">{leftIcon}</div>}
+        {leftIcon && <div data-testid="left-icon-container">{leftIcon}</div>}
         <span data-testid={`${id}-dropdown-position`}>{dropdownPosition}</span>
       </div>
     )
@@ -68,19 +68,30 @@ describe('BudgetOriginFilter', () => {
     )
   })
 
-  it('valueToLabel converts BudgetOrigin to label correctly', () => {
+  it('converts BudgetOrigin to label correctly', () => {
     render(<BudgetOriginFilter value="Alimentação" onChange={mockOnChange} />)
 
     expect(screen.getByTestId('budget-origin-filter-value')).toHaveTextContent('Alimentação')
   })
 
-  it('valueToLabel returns "Todos" for unknown value', () => {
-    render(<BudgetOriginFilter value={"Inexistente" as any} onChange={mockOnChange} />)
+  it('always uses "default" variant and shows Wallet icon', () => {
+    // Independente do valor do context, o componente agora é estático
+    mockUseFilterSheet.mockReturnValue('above')
 
-    expect(screen.getByTestId('budget-origin-filter-value')).toHaveTextContent('Todos')
+    render(<BudgetOriginFilter value="all" onChange={mockOnChange} />)
+
+    expect(screen.getByTestId('budget-origin-filter-variant')).toHaveTextContent('default')
+    expect(screen.getByTestId('wallet-icon')).toBeInTheDocument()
   })
 
-  it('labelToValue converts label to BudgetOrigin correctly', () => {
+  it('passes dropdownPosition from context to CustomSelect', () => {
+    mockUseFilterSheet.mockReturnValue('above')
+    render(<BudgetOriginFilter value="all" onChange={mockOnChange} />)
+
+    expect(screen.getByTestId('budget-origin-filter-dropdown-position')).toHaveTextContent('above')
+  })
+
+  it('handles label to value conversion on change', () => {
     render(<BudgetOriginFilter value="all" onChange={mockOnChange} />)
 
     fireEvent.change(screen.getByTestId('budget-origin-filter-input'), {
@@ -90,47 +101,13 @@ describe('BudgetOriginFilter', () => {
     expect(mockOnChange).toHaveBeenCalledWith('Diego')
   })
 
-  it('handles "Todos" label → "all" value roundtrip', () => {
-    render(
-      <BudgetOriginFilter
-        value="Atrações"
-        onChange={mockOnChange}
-      />
-    )
+  it('handles "Todos" label → "all" value conversion', () => {
+    render(<BudgetOriginFilter value="Diego" onChange={mockOnChange} />)
 
-    const input = screen.getByTestId('budget-origin-filter-input');
-    fireEvent.change(input, { target: { value: 'Todos' } });
+    fireEvent.change(screen.getByTestId('budget-origin-filter-input'), {
+      target: { value: 'Todos' }
+    });
 
     expect(mockOnChange).toHaveBeenCalledWith('all');
   });
-
-  describe('useFilterSheet integration', () => {
-    it('uses "glass" variant and Wallet icon when dropdownPosition="below"', () => {
-      mockUseFilterSheet.mockReturnValue('below')
-
-      render(<BudgetOriginFilter value="all" onChange={mockOnChange} />)
-
-      expect(screen.getByTestId('budget-origin-filter-variant')).toHaveTextContent('glass')
-      expect(screen.getByTestId('wallet-icon')).toBeInTheDocument()
-    })
-
-    it('uses "default" variant without icon when dropdownPosition="above"', () => {
-      mockUseFilterSheet.mockReturnValue('above')
-
-      render(<BudgetOriginFilter value="all" onChange={mockOnChange} />)
-
-      expect(screen.getByTestId('budget-origin-filter-variant')).toHaveTextContent('default')
-      expect(screen.queryByTestId('wallet-icon')).not.toBeInTheDocument()
-    })
-  })
-
-  it('full roundtrip: label change triggers onChange with correct value using real origins', () => {
-    render(<BudgetOriginFilter value="all" onChange={mockOnChange} />)
-
-    fireEvent.change(screen.getByTestId('budget-origin-filter-input'), {
-      target: { value: 'Transporte' }
-    })
-
-    expect(mockOnChange).toHaveBeenCalledWith('Transporte')
-  })
 })

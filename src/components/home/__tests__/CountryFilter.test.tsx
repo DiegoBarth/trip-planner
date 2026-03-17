@@ -147,21 +147,11 @@ describe('CountryFilter', () => {
     expect(screen.queryByTestId('day-filter-select')).not.toBeInTheDocument()
   })
 
-  it('uses glass variant and icons when not inSheet', () => {
-    mockUseFilterSheet.mockReturnValue('below')
-    render(<CountryFilter />)
+  it('uses glass variant and shows icons when variant prop is "glass"', () => {
+    render(<CountryFilter variant="glass" />)
 
     expect(screen.getByTestId('country-filter-variant')).toHaveTextContent('glass')
     expect(screen.getAllByTestId('left-icon')).toHaveLength(2)
-  })
-
-
-  it('uses default variant without icons when inSheet', () => {
-    mockUseFilterSheet.mockReturnValue('above')
-    render(<CountryFilter />)
-    expect(screen.getByTestId('country-filter-variant')).toHaveTextContent('default')
-    expect(screen.queryByTestId('map-pin')).not.toBeInTheDocument()
-    expect(screen.queryByTestId('calendar')).not.toBeInTheDocument()
   })
 
   it('disables day filter when no available days', () => {

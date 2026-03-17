@@ -20,14 +20,14 @@ const FILTER_OPTIONS: { key: CountryFilterValue; label: string }[] = [
 
 interface CountryFilterProps {
   showDayFilter?: boolean
-  hideGeneralOption?: boolean
+  hideGeneralOption?: boolean,
+  variant?: 'default' | 'glass' | undefined
 };
 
-export function CountryFilter({ showDayFilter = true, hideGeneralOption = false }: CountryFilterProps) {
+export function CountryFilter({ showDayFilter = true, hideGeneralOption = false, variant = 'default' }: CountryFilterProps) {
   const { country, setCountry, day, setDay } = useCountry()
   const { availableDays } = useAttraction(country)
   const dropdownPosition = useFilterSheet()
-  const inSheet = dropdownPosition === 'above'
 
   useEffect(() => {
     const saved = localStorage.getItem(TRIP_FILTER_KEY)
@@ -78,8 +78,8 @@ export function CountryFilter({ showDayFilter = true, hideGeneralOption = false 
           value={countryToLabel(country)}
           onChange={(val) => setCountry(labelToCountry(val))}
           options={countryOptions}
-          variant={inSheet ? 'default' : 'glass'}
-          leftIcon={inSheet ? undefined : <MapPin />}
+          variant={variant}
+          leftIcon={variant == 'default' ? undefined : <MapPin />}
           placeholder="País"
           dropdownPosition={dropdownPosition}
         />
@@ -91,8 +91,8 @@ export function CountryFilter({ showDayFilter = true, hideGeneralOption = false 
             value={dayValue}
             onChange={handleDayChange}
             options={dayOptions}
-            variant={inSheet ? 'default' : 'glass'}
-            leftIcon={inSheet ? undefined : <Calendar />}
+            variant={variant}
+            leftIcon={variant == 'default' ? undefined : <Calendar />}
             placeholder="Dia"
             disabled={availableDays.length === 0}
             dropdownPosition={dropdownPosition}

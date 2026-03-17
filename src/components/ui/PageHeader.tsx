@@ -1,7 +1,6 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import ArrowLeft from 'lucide-react/dist/esm/icons/arrow-left';
 import SlidersHorizontal from 'lucide-react/dist/esm/icons/sliders-horizontal';
-import X from 'lucide-react/dist/esm/icons/x';
 import { useNavigate } from 'react-router-dom'
 import { ThemeToggle } from '@/components/ui/ThemeToggle'
 import { FilterSheetProvider } from '@/contexts/FilterSheetContext'
@@ -22,34 +21,36 @@ export function PageHeader({ title, subtitle, showBack = true, action, filter, c
   const navigate = useNavigate()
   const isMobile = useMediaQuery('(max-width: 768px)')
   const [filterOpen, setFilterOpen] = useState(false)
-  const filterSheetRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (!filterOpen) return
+
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape') setFilterOpen(false)
     }
+
     document.addEventListener('keydown', handleEscape)
-    document.body.style.overflow = 'hidden'
+
     return () => {
       document.removeEventListener('keydown', handleEscape)
-      document.body.style.overflow = ''
     }
   }, [filterOpen])
 
   const showFilterAsIcon = isMobile && !!filter
 
   return (
-    <>
+    <div className="sticky top-0 z-30 flex flex-col">
+
       <header
         className={cn(
-          'sticky top-0 z-30 bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg',
+          'bg-gradient-to-r from-blue-600 to-purple-600 shadow-md',
+          'z-30',
           isMobile ? 'px-3 pt-2 pb-2' : 'px-4 md:px-6 pt-3 pb-4',
           className
         )}
       >
         <div className="max-w-6xl mx-auto">
-          <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center justify-between gap-2 text-white">
             <div className="flex flex-1 items-center gap-2 min-w-0">
               {showBack && (
                 <button
@@ -64,7 +65,7 @@ export function PageHeader({ title, subtitle, showBack = true, action, filter, c
               <h1
                 className={cn(
                   'font-bold font-display truncate',
-                  isMobile ? 'text-base text-xl' : 'text-xl sm:text-2xl md:text-3xl'
+                  isMobile ? 'text-base sm:text-xl' : 'text-xl sm:text-2xl md:text-3xl'
                 )}
               >
                 {title}
@@ -74,9 +75,15 @@ export function PageHeader({ title, subtitle, showBack = true, action, filter, c
               {showFilterAsIcon && (
                 <button
                   type="button"
-                  onClick={() => setFilterOpen(true)}
-                  className="p-2 rounded-xl text-white/90 hover:text-white hover:bg-white/15 transition-colors focus:ring-2 focus:ring-white/30 focus:outline-none"
-                  aria-label="Filtros"
+                  onClick={() => setFilterOpen((prev) => !prev)}
+                  className={cn(
+                    "p-2 rounded-xl transition-colors focus:ring-2 focus:ring-white/30 focus:outline-none",
+                    filterOpen
+                      ? "bg-white/20 text-white"
+                      : "text-white/90 hover:text-white hover:bg-white/15"
+                  )}
+                  aria-label={filterOpen ? "Fechar Filtros" : "Filtros"}
+                  aria-expanded={filterOpen}
                 >
                   <SlidersHorizontal className="w-5 h-5" />
                 </button>
@@ -85,47 +92,41 @@ export function PageHeader({ title, subtitle, showBack = true, action, filter, c
               <ThemeToggle />
             </div>
           </div>
+
           {!isMobile && subtitle && (
             <p className="text-white/90 mt-0.5 line-clamp-2 text-xs sm:text-sm md:text-base">
               {subtitle}
             </p>
           )}
+
           {filter && !isMobile && <div className="mt-3">{filter}</div>}
         </div>
       </header>
 
       {showFilterAsIcon && filterOpen && (
-        <>
+        <div
+          className="fixed inset-0 z-2 bg-black/40 dark:bg-black/60"
+          onClick={() => setFilterOpen(false)}
+        />
+      )}
+
+      {showFilterAsIcon && filterOpen && (
+        <div className="w-full px-3 py-2 absolute top-full left-0 right-0">
           <div
-            className="fixed inset-0 z-[65] bg-black/50 md:hidden"
-            aria-hidden
-            onClick={() => setFilterOpen(false)}
-          />
-          <div
-            ref={filterSheetRef}
-            className="fixed inset-x-0 bottom-0 z-[70] max-h-[85vh] flex flex-col rounded-t-2xl bg-gray-50 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 shadow-2xl md:hidden"
             role="dialog"
             aria-label="Filtros"
+            className="
+              max-w-6xl mx-auto bg-white dark:bg-[#1e293b] rounded-[1.5rem]
+              shadow-xl border border-gray-100 dark:border-slate-700 p-2 animate-in slide-in-from-top-2 fade-in-20 duration-200
+            "
           >
-            <div className="flex items-center justify-between flex-shrink-0 p-4 pb-2 border-b border-gray-200 dark:border-gray-700">
-              <span className="text-sm font-semibold text-gray-900 dark:text-gray-200">Filtros</span>
-              <button
-                type="button"
-                onClick={() => setFilterOpen(false)}
-                className="p-2 rounded-xl text-gray-500 hover:text-gray-900 dark:hover:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-500 focus:outline-none"
-                aria-label="Fechar"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            <div className="overflow-y-auto overscroll-contain px-4 pb-6 pt-1 min-h-0">
-              <FilterSheetProvider dropdownPosition="above">
-                {filter}
-              </FilterSheetProvider>
-            </div>
+            <FilterSheetProvider dropdownPosition="below">
+              {filter}
+            </FilterSheetProvider>
           </div>
-        </>
+        </div>
       )}
-    </>
+
+    </div>
   )
 }
