@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import ArrowLeft from 'lucide-react/dist/esm/icons/arrow-left';
 import SlidersHorizontal from 'lucide-react/dist/esm/icons/sliders-horizontal';
 import { useNavigate } from 'react-router-dom'
@@ -39,12 +40,12 @@ export function PageHeader({ title, subtitle, showBack = true, action, filter, c
   const showFilterAsIcon = isMobile && !!filter
 
   return (
-    <div className="sticky top-0 z-30 flex flex-col">
+    <div className="sticky top-0 z-[1000] flex flex-col">
 
       <header
         className={cn(
           'bg-gradient-to-r from-blue-600 to-purple-600 shadow-md',
-          'z-30',
+          'z-[1000]',
           isMobile ? 'px-3 pt-2 pb-2' : 'px-4 md:px-6 pt-3 pb-4',
           className
         )}
@@ -77,12 +78,12 @@ export function PageHeader({ title, subtitle, showBack = true, action, filter, c
                   type="button"
                   onClick={() => setFilterOpen((prev) => !prev)}
                   className={cn(
-                    "p-2 rounded-xl transition-colors focus:ring-2 focus:ring-white/30 focus:outline-none",
+                    "p-2 rounded-xl transition-all focus:ring-2 focus:ring-white/30 focus:outline-none",
                     filterOpen
-                      ? "bg-white/20 text-white"
+                      ? "bg-white text-blue-600 shadow-md scale-105"
                       : "text-white/90 hover:text-white hover:bg-white/15"
                   )}
-                  aria-label={filterOpen ? "Fechar Filtros" : "Filtros"}
+                  aria-label={filterOpen ? "Fechar filtros" : "Abrir filtros"}
                   aria-expanded={filterOpen}
                 >
                   <SlidersHorizontal className="w-5 h-5" />
@@ -103,28 +104,36 @@ export function PageHeader({ title, subtitle, showBack = true, action, filter, c
         </div>
       </header>
 
-      {showFilterAsIcon && filterOpen && (
+      {showFilterAsIcon && filterOpen && createPortal(
         <div
-          className="fixed inset-0 z-2 bg-black/40 dark:bg-black/60"
+          className="fixed inset-0 z-[998] bg-black/40 dark:bg-black/60 backdrop-blur-[2px]"
           onClick={() => setFilterOpen(false)}
-        />
+        />,
+        document.body
       )}
 
-      {showFilterAsIcon && filterOpen && (
-        <div className="w-full px-3 py-2 absolute top-full left-0 right-0">
+      {showFilterAsIcon && filterOpen && createPortal(
+        <div className="fixed top-[64px] left-0 right-0 z-[9999] px-3 py-2">
           <div
             role="dialog"
             aria-label="Filtros"
             className="
-              max-w-6xl mx-auto bg-white dark:bg-[#1e293b] rounded-[1.5rem]
-              shadow-xl border border-gray-100 dark:border-slate-700 p-2 animate-in slide-in-from-top-2 fade-in-20 duration-200
+              max-w-6xl mx-auto
+              bg-white dark:bg-slate-800
+              text-gray-900 dark:text-gray-100
+              rounded-[1.5rem]
+              shadow-2xl
+              border border-gray-200 dark:border-slate-700
+              p-3
+              animate-in slide-in-from-top-2 fade-in-20 duration-200
             "
           >
             <FilterSheetProvider dropdownPosition="below">
               {filter}
             </FilterSheetProvider>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
     </div>
