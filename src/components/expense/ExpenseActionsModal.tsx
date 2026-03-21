@@ -52,7 +52,7 @@ export function ExpenseActionsModal({ expense, isOpen, onClose, onEdit, onDelete
 
   return (
     <div
-      className="fixed inset-0 z-[600] flex justify-center items-end md:items-center"
+      className="fixed inset-0 z-[1100] flex justify-center items-end md:items-center md:py-6"
       role="dialog"
       aria-modal="true"
       aria-labelledby="expense-actions-title"

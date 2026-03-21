@@ -148,3 +148,12 @@ export function parseChecklistItems(data: unknown): z.infer<typeof checklistResp
   }
   return result.data
 }
+
+/** Single-item response (create/update/toggle); validates shape after merge with payload if needed */
+export function parseChecklistItem(data: unknown): z.infer<typeof checklistItemApiSchema> {
+  const result = checklistItemApiSchema.safeParse(data)
+  if (!result.success) {
+    throw new Error('Resposta da API com formato inválido (checklist item).')
+  }
+  return result.data
+}

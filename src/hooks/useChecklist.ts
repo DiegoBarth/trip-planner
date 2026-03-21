@@ -3,6 +3,7 @@ import { createChecklistItem, updateChecklistItem, deleteChecklistItem, getCheck
 import { updateChecklistCacheOnCreate, updateChecklistCacheOnUpdate, updateChecklistCacheOnDelete, updateChecklistCacheOnToggle } from '@/services/checklistCacheService'
 import { OFFLINE_STALE_TIME_MS } from '@/config/constants'
 import type { CreateChecklistItemPayload, UpdateChecklistItemPayload } from '@/api/checklist'
+import type { ChecklistItem } from '@/types/ChecklistItem'
 
 const CHECKLIST_QUERY_KEY = ['checklist'];
 
@@ -39,8 +40,12 @@ export function useChecklist() {
   });
 
   const toggleMutation = useMutation({
-    mutationFn: ({ id, isPacked }: { id: number; isPacked: boolean }) =>
-      toggleChecklistItemPacked(id, isPacked),
+    mutationFn: ({ id, isPacked }: { id: number; isPacked: boolean }) => {
+      const fallback = queryClient.getQueryData<ChecklistItem[]>(CHECKLIST_QUERY_KEY)?.find(
+        item => item.id === id
+      )
+      return toggleChecklistItemPacked(id, isPacked, fallback)
+    },
     onSuccess: toggledItem => {
       updateChecklistCacheOnToggle(queryClient, toggledItem);
     }

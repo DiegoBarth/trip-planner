@@ -68,7 +68,7 @@ export function ModalBase({
 
   return (
     <div
-      className="fixed inset-0 z-[600] flex justify-center items-end md:items-center"
+      className="fixed inset-0 z-[1100] flex justify-center items-end md:items-center md:py-6"
       role="dialog"
       aria-modal="true"
       aria-labelledby={title ? 'modal-title' : undefined}
@@ -84,7 +84,7 @@ export function ModalBase({
       <div
         ref={trapRef}
         className={cn(
-          'relative w-full max-h-[80vh] md:max-h-[90vh] bg-white dark:bg-gray-800 rounded-t-2xl md:rounded-2xl flex flex-col shadow-2xl',
+          'relative w-full max-h-[min(85vh,calc(100dvh-1rem))] md:max-h-[min(92vh,calc(100dvh-3rem))] bg-white dark:bg-gray-800 rounded-t-2xl md:rounded-2xl flex flex-col shadow-2xl',
           sizeClasses[size]
         )}
       >

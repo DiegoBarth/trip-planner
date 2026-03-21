@@ -91,7 +91,11 @@ describe('useChecklist', () => {
 
     await waitFor(() => expect(result.current.items).toHaveLength(1))
     await result.current.togglePacked({ id: 1, isPacked: true })
-    expect(mockToggleChecklistItemPacked).toHaveBeenCalledWith(1, true)
+    expect(mockToggleChecklistItemPacked).toHaveBeenCalledWith(
+      1,
+      true,
+      expect.objectContaining({ id: 1, description: 'Passport' })
+    )
   })
 
   it('updateItem calls API with payload', async () => {

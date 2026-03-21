@@ -1,0 +1,1 @@
+import{i as e}from"./react-query-DW_P6Gp6.js";import{i as t}from"./index-D884dv48.js";function n(){let{data:n,isLoading:r,error:i}=e(t());return{rates:n??null,isLoading:r,error:i}}export{n as t};

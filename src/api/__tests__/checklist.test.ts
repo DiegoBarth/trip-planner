@@ -17,9 +17,13 @@ vi.mock('@/api/client', () => ({
   apiPost: vi.fn()
 }))
 
-vi.mock('@/api/schemas', () => ({
-  parseChecklistItems: vi.fn((data) => data)
-}))
+vi.mock('@/api/schemas', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/api/schemas')>()
+  return {
+    ...actual,
+    parseChecklistItems: vi.fn((data: unknown) => data),
+  }
+})
 
 const mockItem: ChecklistItem = {
   id: 1,
@@ -47,6 +51,26 @@ describe('Checklist API - Success Scenarios', () => {
     const result = await createChecklistItem(payload)
     expect(result).toEqual(mockItem)
     expect(apiPost).toHaveBeenCalledWith({ action: 'createChecklistItem', data: payload })
+  })
+
+  it('createChecklistItem merges payload when API returns only id', async () => {
+    ; (apiPost as Mock).mockResolvedValue({ success: true, data: { id: 7 } })
+    const payload: CreateChecklistItemPayload = {
+      category: 'electronics',
+      description: 'Carregador',
+      isPacked: false,
+      quantity: 2,
+      notes: 'USB-C',
+    }
+    const result = await createChecklistItem(payload)
+    expect(result).toEqual({
+      id: 7,
+      category: 'electronics',
+      description: 'Carregador',
+      isPacked: false,
+      quantity: 2,
+      notes: 'USB-C',
+    })
   })
 
   it('updateChecklistItem should return updated item', async () => {

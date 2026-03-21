@@ -77,7 +77,7 @@ export function ReorderDaysModal({ isOpen, onClose, country }: ReorderDaysModalP
   const dayOptions = availableDays.length > 0 ? availableDays : [1, 2, 3]
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50" role="dialog" aria-modal="true" aria-labelledby="reorder-days-title">
+    <div className="fixed inset-0 z-[1100] flex items-center justify-center p-4 bg-black/50" role="dialog" aria-modal="true" aria-labelledby="reorder-days-title">
       <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
         <div className="sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 py-3 flex items-center justify-between">
           <h2 id="reorder-days-title" className="text-lg font-bold text-gray-900 dark:text-white">

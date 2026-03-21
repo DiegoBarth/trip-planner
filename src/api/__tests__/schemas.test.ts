@@ -5,6 +5,7 @@ import {
   parseExpenses,
   parseReservations,
   parseChecklistItems,
+  parseChecklistItem,
 } from '../schemas'
 
 describe('parseAttractions', () => {
@@ -104,5 +105,21 @@ describe('parseChecklistItems', () => {
   it('throws on invalid data', () => {
     expect(() => parseChecklistItems(null)).toThrow('formato inválido (checklist)')
     expect(() => parseChecklistItems([{ id: 1 }])).toThrow('formato inválido (checklist)')
+  })
+})
+
+describe('parseChecklistItem', () => {
+  it('parses valid single item', () => {
+    const data = {
+      id: 1,
+      description: 'Passaporte',
+      category: 'documents',
+      isPacked: false,
+    }
+    expect(parseChecklistItem(data)).toEqual(data)
+  })
+
+  it('throws on invalid single item', () => {
+    expect(() => parseChecklistItem({ id: 1 })).toThrow('formato inválido (checklist item)')
   })
 })
