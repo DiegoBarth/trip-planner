@@ -24,6 +24,7 @@ required?: boolean
 }) {
   const idRef = useRef(Math.random().toString(36).slice(2))
   const [open, setOpen] = useState(false)
+  const pickerRef = useRef<HTMLDivElement | null>(null)
   const buttonRef = useRef<HTMLButtonElement | null>(null)
   const calendarRef = useRef<HTMLDivElement | null>(null)
 
@@ -45,8 +46,26 @@ required?: boolean
     return () => window.removeEventListener("datefield:open", onAnyOpen as EventListener)
   }, [open])
 
+  useEffect(() => {
+    if (!open) return
+
+    const handlePointerDown = (e: Event) => {
+      const target = e.target as Node
+      if (pickerRef.current?.contains(target)) return
+      if (calendarRef.current?.contains(target)) return
+      setOpen(false)
+    }
+
+    document.addEventListener("pointerdown", handlePointerDown, true)
+    document.addEventListener("mousedown", handlePointerDown, true)
+    return () => {
+      document.removeEventListener("pointerdown", handlePointerDown, true)
+      document.removeEventListener("mousedown", handlePointerDown, true)
+    }
+  }, [open])
+
   return (
-    <div className="relative flex items-center gap-2">
+    <div ref={pickerRef} className="relative flex items-center gap-2">
       <button
         ref={buttonRef}
         type="button"

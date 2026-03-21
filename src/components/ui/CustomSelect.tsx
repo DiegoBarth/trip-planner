@@ -94,18 +94,22 @@ export function CustomSelect({
     return () => window.removeEventListener('scroll', handleScroll, true);
   }, [isOpen]);
 
-  // Close on click outside
+  // Close on click outside (dropdown is portaled to body — must include dropdownRef)
   useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    }
-    if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
+    if (!isOpen) return
+
+    const handlePointerDown = (event: Event) => {
+      const target = event.target as Node
+      if (containerRef.current?.contains(target) || dropdownRef.current?.contains(target)) return
+      setIsOpen(false)
     }
 
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener('pointerdown', handlePointerDown, true)
+    document.addEventListener('mousedown', handlePointerDown, true)
+    return () => {
+      document.removeEventListener('pointerdown', handlePointerDown, true)
+      document.removeEventListener('mousedown', handlePointerDown, true)
+    }
   }, [isOpen]);
 
   const handleSelect = (option: string) => {

@@ -87,6 +87,18 @@ describe('DateField', () => {
     expect(document.querySelector('.custom-calendar')).not.toBeInTheDocument()
   })
 
+  it('closes calendar when clicking outside', () => {
+    const onChange = vi.fn()
+    render(<DateField value={undefined} onChange={onChange} />)
+    const button = screen.getByRole('button', { name: /Selecione uma data/i })
+    fireEvent.click(button)
+    expect(document.querySelector('.custom-calendar')).toBeInTheDocument()
+
+    fireEvent.mouseDown(document.body)
+
+    expect(document.querySelector('.custom-calendar')).not.toBeInTheDocument()
+  })
+
   it('clears date when clear button is clicked', () => {
     const onChange = vi.fn()
     const date = new Date(2023, 0, 15)
