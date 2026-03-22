@@ -1,5 +1,5 @@
 import { apiGet, apiPost } from '@/api/client'
-import { parseExpenses } from '@/api/schemas'
+import { parseExpense, parseExpenses } from '@/api/schemas'
 import type { Expense } from '@/types/Expense'
 import type { Country } from '@/types/Attraction'
 
@@ -39,7 +39,7 @@ export async function createExpense(payload: CreateExpensePayload): Promise<Expe
     throw new Error(response.message || 'Failed to create expense');
   }
 
-  return response.data;
+  return parseExpense(response.data);
 }
 
 /**
@@ -55,7 +55,7 @@ export async function updateExpense(payload: UpdateExpensePayload): Promise<Expe
     throw new Error(response.message || 'Failed to update expense');
   }
 
-  return response.data;
+  return parseExpense(response.data);
 }
 
 /**

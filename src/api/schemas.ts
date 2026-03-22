@@ -97,6 +97,15 @@ export function parseExpenses(data: unknown): z.infer<typeof expensesResponseSch
   return result.data
 }
 
+/** Single expense (create/update response); same shape as items from parseExpenses */
+export function parseExpense(data: unknown): z.infer<typeof expenseApiSchema> {
+  const result = expenseApiSchema.safeParse(data)
+  if (!result.success) {
+    throw new Error('Resposta da API com formato inválido (gasto).')
+  }
+  return result.data
+}
+
 // Reservation API response
 const reservationTypeSchema = z.enum(['document', 'insurance', 'flight', 'train', 'bus', 'accommodation', 'transport-pass', 'activity', 'other'])
 const bookingStatusSchema = z.enum(['pending', 'confirmed', 'cancelled', 'completed'])

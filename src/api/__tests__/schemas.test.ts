@@ -3,6 +3,7 @@ import {
   parseAttractions,
   parseBudgets,
   parseExpenses,
+  parseExpense,
   parseReservations,
   parseChecklistItems,
   parseChecklistItem,
@@ -71,6 +72,27 @@ describe('parseExpenses', () => {
   it('throws on invalid data', () => {
     expect(() => parseExpenses(null)).toThrow('formato inválido (gastos)')
     expect(() => parseExpenses([{ id: 1 }])).toThrow('formato inválido (gastos)')
+  })
+})
+
+describe('parseExpense', () => {
+  it('parses valid single expense', () => {
+    const data = {
+      id: 20,
+      description: 'Test',
+      amount: 211.23,
+      currency: 'BRL',
+      amountInBRL: 211.23,
+      category: 'food',
+      budgetOrigin: 'Casal',
+      date: '22/03/2026',
+      country: 'general',
+    }
+    expect(parseExpense(data)).toEqual(data)
+  })
+
+  it('throws on invalid single expense', () => {
+    expect(() => parseExpense({ id: 1 })).toThrow('formato inválido (gasto)')
   })
 })
 

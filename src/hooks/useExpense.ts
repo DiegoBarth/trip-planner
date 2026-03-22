@@ -25,7 +25,6 @@ export function useExpense(country: CountryFilterValue) {
       createExpense(payload),
     onSuccess: newExpense => {
       updateExpenseCacheOnCreate(queryClient, newExpense);
-
       queryClient.invalidateQueries({ queryKey: BUDGET_SUMMARY_QUERY_KEY });
     }
   });
@@ -37,11 +36,10 @@ export function useExpense(country: CountryFilterValue) {
       const previousExpenses = queryClient.getQueryData<Expense[]>(EXPENSE_QUERY_KEY);
       const previousExpense = previousExpenses?.find(e => e.id === updatedExpense.id);
 
-      if (!previousExpense) return
+      if (!previousExpense) return;
 
-      updateExpenseCacheOnUpdate(queryClient, previousExpense, updatedExpense)
-
-      queryClient.invalidateQueries({ queryKey: BUDGET_SUMMARY_QUERY_KEY })
+      updateExpenseCacheOnUpdate(queryClient, previousExpense, updatedExpense);
+      queryClient.invalidateQueries({ queryKey: BUDGET_SUMMARY_QUERY_KEY });
     }
   });
 
@@ -54,7 +52,6 @@ export function useExpense(country: CountryFilterValue) {
       if (!deletedExpense) return;
 
       updateExpenseCacheOnDelete(queryClient, deletedId);
-
       queryClient.invalidateQueries({ queryKey: BUDGET_SUMMARY_QUERY_KEY });
     }
   });

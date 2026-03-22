@@ -4,10 +4,11 @@ import type { Expense } from '@/types/Expense'
 const EXPENSE_QUERY_KEY = ['expenses'];
 
 export function updateExpenseCacheOnCreate(queryClient: QueryClient, newExpense: Expense) {
-  queryClient.setQueryData<Expense[]>(
-    EXPENSE_QUERY_KEY,
-    old => (old ? [...old, newExpense] : [newExpense])
-  );
+  queryClient.setQueryData<Expense[]>(EXPENSE_QUERY_KEY, old => {
+    const list = old ?? [];
+    const withoutSameId = list.filter(e => e.id !== newExpense.id);
+    return [...withoutSameId, newExpense];
+  });
 }
 
 export function updateExpenseCacheOnUpdate(queryClient: QueryClient, previousExpense: Expense, updatedExpense: Expense) {
