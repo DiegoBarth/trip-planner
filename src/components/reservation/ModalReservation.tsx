@@ -192,6 +192,7 @@ export function ModalReservation({ reservation, isOpen, onClose, onSave }: Modal
                 if (typeKey) setValue('type', typeKey)
               }}
               options={Object.values(RESERVATION_TYPES).map(t => t.label)}
+              dropdownPosition="below"
             />
           </div>
 
@@ -207,6 +208,7 @@ export function ModalReservation({ reservation, isOpen, onClose, onSave }: Modal
                 if (statusKey) setValue('status', statusKey)
               }}
               options={Object.values(BOOKING_STATUS).map(s => s.label)}
+              dropdownPosition="below"
             />
           </div>
         </div>
