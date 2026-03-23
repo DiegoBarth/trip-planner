@@ -6,7 +6,7 @@ import { ReservationActionsModal } from '@/components/reservation/ReservationAct
 import { ConfirmModal } from '@/components/ui/ConfirmModal'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { formatDate, dateToInputFormat, parseLocalDate } from '@/utils/formatters'
-import type { Reservation } from '@/types/Reservation'
+import type { BookingStatus, Reservation } from '@/types/Reservation'
 
 interface ReservationListProps {
   reservations: Reservation[]
@@ -21,6 +21,24 @@ export default function ReservationList({ reservations, onUpdate, onCreate, onDe
   const [editingReservation, setEditingReservation] = useState<Reservation | undefined>();
   const [reservationToDelete, setReservationToDelete] = useState<Reservation | null>(null);
   const [reservationForActions, setReservationForActions] = useState<Reservation | null>(null);
+  /** `null` = show all statuses */
+  const [statusFilter, setStatusFilter] = useState<BookingStatus | null>(null);
+
+  const filteredReservations = useMemo(() => {
+    if (!statusFilter) return reservations;
+
+    return reservations.filter(r => r.status === statusFilter);
+  }, [reservations, statusFilter]);
+
+  function toggleStatusFilter(status: BookingStatus | 'all') {
+    if (status === 'all') {
+      setStatusFilter(null);
+
+      return;
+    }
+
+    setStatusFilter(prev => (prev === status ? null : status));
+  }
 
   function timeToMinutes(t: string | undefined): number {
     if (!t || !t.trim()) return 24 * 60;
@@ -37,7 +55,7 @@ export default function ReservationList({ reservations, onUpdate, onCreate, onDe
     const preTripItems: Reservation[] = [];
     const dateGrouped: Record<string, Reservation[]> = {};
 
-    reservations.forEach(reservation => {
+    filteredReservations.forEach(reservation => {
       if (!reservation.date) {
         preTripItems.push(reservation);
       }
@@ -59,14 +77,15 @@ export default function ReservationList({ reservations, onUpdate, onCreate, onDe
     });
 
     return { preTripItems, dateGrouped, orderedDateKeys };
-  }, [reservations]);
+  }, [filteredReservations]);
 
   const stats = useMemo(() => {
     return {
       total: reservations.length,
       confirmed: reservations.filter(r => r.status === 'confirmed').length,
       pending: reservations.filter(r => r.status === 'pending').length,
-      completed: reservations.filter(r => r.status === 'completed').length
+      completed: reservations.filter(r => r.status === 'completed').length,
+      cancelled: reservations.filter(r => r.status === 'cancelled').length
     }
   }, [reservations]);
 
@@ -123,18 +142,66 @@ export default function ReservationList({ reservations, onUpdate, onCreate, onDe
             </div>
           </div>
           <div className="flex flex-wrap gap-2">
-            <span className="px-3 py-1.5 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300 shadow-sm">
+            <button
+              type="button"
+              onClick={() => toggleStatusFilter('all')}
+              aria-pressed={statusFilter === null}
+              className={`px-3 py-1.5 rounded-lg bg-white dark:bg-gray-800 border text-sm font-medium text-gray-700 dark:text-gray-300 shadow-sm transition ring-offset-2 dark:ring-offset-gray-900 ${
+                statusFilter === null
+                  ? 'ring-2 ring-indigo-500 border-indigo-300 dark:border-indigo-600'
+                  : 'border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50'
+              }`}
+            >
               Total <span className="font-bold text-gray-900 dark:text-gray-100">{stats.total}</span>
-            </span>
-            <span className="px-3 py-1.5 rounded-lg bg-green-100 text-green-800 text-sm font-medium">
+            </button>
+            <button
+              type="button"
+              onClick={() => toggleStatusFilter('confirmed')}
+              aria-pressed={statusFilter === 'confirmed'}
+              className={`px-3 py-1.5 rounded-lg bg-green-100 dark:bg-green-950/40 text-green-800 dark:text-green-200 text-sm font-medium transition ring-offset-2 dark:ring-offset-gray-900 ${
+                statusFilter === 'confirmed'
+                  ? 'ring-2 ring-green-600'
+                  : 'hover:brightness-95 dark:hover:brightness-110'
+              }`}
+            >
               Confirmado <span className="font-bold">{stats.confirmed}</span>
-            </span>
-            <span className="px-3 py-1.5 rounded-lg bg-amber-100 text-amber-800 text-sm font-medium">
+            </button>
+            <button
+              type="button"
+              onClick={() => toggleStatusFilter('pending')}
+              aria-pressed={statusFilter === 'pending'}
+              className={`px-3 py-1.5 rounded-lg bg-amber-100 dark:bg-amber-950/40 text-amber-800 dark:text-amber-200 text-sm font-medium transition ring-offset-2 dark:ring-offset-gray-900 ${
+                statusFilter === 'pending'
+                  ? 'ring-2 ring-amber-600'
+                  : 'hover:brightness-95 dark:hover:brightness-110'
+              }`}
+            >
               Pendente <span className="font-bold">{stats.pending}</span>
-            </span>
-            <span className="px-3 py-1.5 rounded-lg bg-gray-100 text-gray-700 text-sm font-medium">
+            </button>
+            <button
+              type="button"
+              onClick={() => toggleStatusFilter('completed')}
+              aria-pressed={statusFilter === 'completed'}
+              className={`px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 text-sm font-medium transition ring-offset-2 dark:ring-offset-gray-900 ${
+                statusFilter === 'completed'
+                  ? 'ring-2 ring-gray-500'
+                  : 'hover:brightness-95 dark:hover:brightness-110'
+              }`}
+            >
               Concluído <span className="font-bold">{stats.completed}</span>
-            </span>
+            </button>
+            <button
+              type="button"
+              onClick={() => toggleStatusFilter('cancelled')}
+              aria-pressed={statusFilter === 'cancelled'}
+              className={`px-3 py-1.5 rounded-lg bg-red-100 dark:bg-red-950/40 text-red-800 dark:text-red-200 text-sm font-medium transition ring-offset-2 dark:ring-offset-gray-900 ${
+                statusFilter === 'cancelled'
+                  ? 'ring-2 ring-red-600'
+                  : 'hover:brightness-95 dark:hover:brightness-110'
+              }`}
+            >
+              Cancelado <span className="font-bold">{stats.cancelled}</span>
+            </button>
           </div>
         </div>
       )}
@@ -146,6 +213,22 @@ export default function ReservationList({ reservations, onUpdate, onCreate, onDe
             title="Nenhuma reserva encontrada"
             description="Comece adicionando suas reservas, documentos e ingressos!"
           />
+        ) : filteredReservations.length === 0 ? (
+          <div className="text-center py-12 px-4 rounded-xl border-2 border-dashed border-indigo-200 dark:border-indigo-800 bg-white dark:bg-gray-800">
+            <p className="text-lg font-medium text-gray-800 dark:text-gray-100">
+              Nenhuma reserva nesta situação
+            </p>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-2 mb-4">
+              Tente outro filtro ou mostre todas as reservas.
+            </p>
+            <button
+              type="button"
+              onClick={() => setStatusFilter(null)}
+              className="inline-flex items-center justify-center px-4 py-2 rounded-lg bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900"
+            >
+              Mostrar todas
+            </button>
+          </div>
         ) : (
           <>
             {groupedReservations.preTripItems.length > 0 && (

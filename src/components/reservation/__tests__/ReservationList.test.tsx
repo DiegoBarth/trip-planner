@@ -141,8 +141,8 @@ describe('ReservationList', () => {
       />
     )
 
-    const totalBadge = screen.getByText(/Total/i).closest('span')!
-    expect(within(totalBadge).getByText('1')).toBeInTheDocument()
+    const totalBtn = screen.getByRole('button', { name: /Total/i })
+    expect(within(totalBtn).getByText('1')).toBeInTheDocument()
   })
 
   it('should group pre-trip reservations (without date)', () => {
@@ -260,17 +260,49 @@ describe('ReservationList', () => {
       />
     )
 
-    const totalBadge = screen.getByText(/Total/i).closest('span')!
-    expect(within(totalBadge).getByText('3')).toBeInTheDocument()
+    const totalBtn = screen.getByRole('button', { name: /Total/i })
+    expect(within(totalBtn).getByText('3')).toBeInTheDocument()
 
-    const confirmadoBadge = screen.getByText(/Confirmado/i).closest('span')!
-    expect(within(confirmadoBadge).getByText('1')).toBeInTheDocument()
+    const confirmadoBtn = screen.getByRole('button', { name: /Confirmado/i })
+    expect(within(confirmadoBtn).getByText('1')).toBeInTheDocument()
 
-    const pendenteBadge = screen.getByText(/Pendente/i).closest('span')!
-    expect(within(pendenteBadge).getByText('1')).toBeInTheDocument()
+    const pendenteBtn = screen.getByRole('button', { name: /Pendente/i })
+    expect(within(pendenteBtn).getByText('1')).toBeInTheDocument()
 
-    const concluidoBadge = screen.getByText(/Concluído/i).closest('span')!
-    expect(within(concluidoBadge).getByText('1')).toBeInTheDocument()
+    const concluidoBtn = screen.getByRole('button', { name: /Concluído/i })
+    expect(within(concluidoBtn).getByText('1')).toBeInTheDocument()
+
+    const canceladoBtn = screen.getByRole('button', { name: /Cancelado/i })
+    expect(within(canceladoBtn).getByText('0')).toBeInTheDocument()
+  })
+
+  it('should filter list when clicking a situation badge', () => {
+    const data: Reservation[] = [
+      { ...baseReservation, id: 1, status: 'confirmed' as any },
+      { ...baseReservation, id: 2, status: 'pending' as any, title: 'Pending only' },
+    ]
+
+    render(
+      <ReservationList
+        reservations={data}
+        onUpdate={onUpdate}
+        onCreate={onCreate}
+        onDelete={onDelete}
+      />
+    )
+
+    expect(screen.getByTestId('card-1')).toBeInTheDocument()
+    expect(screen.getByTestId('card-2')).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: /Confirmado/i }))
+
+    expect(screen.getByTestId('card-1')).toBeInTheDocument()
+    expect(screen.queryByTestId('card-2')).not.toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: /Confirmado/i }))
+
+    expect(screen.getByTestId('card-1')).toBeInTheDocument()
+    expect(screen.getByTestId('card-2')).toBeInTheDocument()
   })
 
   it('should order date groups chronologically', () => {
