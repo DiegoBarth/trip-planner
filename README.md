@@ -1,151 +1,141 @@
-# 🗾 Trip Planner - Japan & South Korea
+# Trip Planner — Japan & South Korea
 
-Web application for planning trips to Japan and South Korea, with budget control, attractions, and expenses management.
+Web app to plan trips to **Japan** and **South Korea**: itinerary, budget, expenses, attractions, reservations, checklist, and a **day-by-day timeline** with routes and weather. Built to be used on the road, with **PWA** support and **offline-friendly** caching.
 
-## ✨ Features
+## Features
 
-### 💰 Budget Control
-- **3 Separate Budgets**: Diego, Pamela, and Couple
-- Total and per-person balance visualization
-- Expense graphs and usage percentage
+### Home & navigation
+- **Swipe** between main sections (mobile-friendly flow).
+- **Country filter** (Japan / South Korea / all) on the home header.
+- **Today’s summary**: next-day attractions, checklist and reservation reminders, budget snapshot.
+- **Bottom navigation** + **dark / light** theme.
 
-### 🎯 Attractions Management
-- Complete tourist attraction registration
-- Organization by Country → City → Day → Order
-- Detailed information:
-  - Name, type, location
-  - Opening hours
-  - Prices (with automatic JPY/KRW → BRL conversion)
-  - Reservation status
-  - Links to tickets and location
-  - Images
-- Advanced filters (country, city, day, type, visited)
-- Mark attractions as visited
-- Drag-and-drop sorting
+### Timeline (itinerary)
+- **Per-day view** of attractions in order, with accommodation context when relevant.
+- **Leg distances and travel times** between stops via **OSRM** (fetched online, then **cached** in storage for reuse without hitting the API every time).
+- **Weather** for trip days when `VITE_OPENWEATHER_API_KEY` is set.
+- **Export timeline to PDF** (single day or full trip).
 
-### 💸 Expenses Control
-- Expense registration by category
-- Optional linking with attractions
-- Automatic currency conversion
-- Filters by category, origin, and date
+### Map
+- **Leaflet** map with attraction markers and **clustering** for dense areas.
+- Filtered by the same country scope as the rest of the app.
 
-### 📊 Dashboard
-- Complete financial summary
-- Upcoming attractions of the day
-- Expense statistics
-- Quick actions
+### Attractions
+- Register attractions with type, location, day, period, prices, **JPY / KRW / BRL**, reservation status, links, and optional image.
+- **Filters**: country, city, day, type, visited.
+- **Drag-and-drop** order; **mark as visited**; **reorder whole days** (move day content).
+- Optional link to a **reservation** record.
 
-## 🛠️ Technologies
+### Reservations
+- Types: flights, hotels, documents, passes, activities, etc.
+- **Booking status** (pending, confirmed, cancelled, completed) with **filter chips** on the list.
+- Notes, dates, provider, confirmation code, **booking / document links** (with file upload flow where supported).
+- **Notes icon** on cards to expand observations without opening the action sheet.
+
+### Budget
+- Multiple **budget origins** (e.g. personal, shared, food, attractions, transport).
+- Create / edit / delete budget lines; summary views and charts.
+
+### Expenses
+- Log spending by category and origin; optional link to an **attraction**.
+- **Currency conversion** using rates from the backend; filters by category, origin, and date.
+
+### Checklist
+- Items by **category** with icons; **packed** toggle.
+- **Export checklist to PDF**.
+
+### Dashboard
+- Financial overview (spent vs budget, remaining balance).
+- **Trip progress** (attractions visited vs total).
+
+### Currency converter
+- Quick **JPY / KRW / BRL** conversion page.
+
+### Authentication & data
+- **Google Sign-In** (OAuth); API calls use your backend after login.
+- **React Query** with **persisted cache** (session storage for general queries, longer retention for **OSRM route** data) for a smoother experience when offline or on flaky networks.
+
+### PWA
+- **Installable** progressive web app (`vite-plugin-pwa`, Workbox).
+- Static assets cached; app shell works **offline** after first load. Fresh data still requires network when cache is stale or missing.
+
+## Tech stack
 
 - **React 19** + **TypeScript**
-- **Vite** (Rolldown) - Build tool
-- **TailwindCSS** - Styling
-- **@tanstack/react-query** - State management
-- **@dnd-kit** - Drag and drop
-- **date-fns** - Date manipulation
-- **lucide-react** - Icons
+- **Vite** (Rolldown build)
+- **Tailwind CSS**
+- **React Router** 7
+- **TanStack Query** (persisted cache)
+- **React Hook Form** + **Zod** (forms / validation)
+- **@dnd-kit** (drag and drop)
+- **Leaflet** + **React Leaflet** (map)
+- **date-fns**
+- **lucide-react**
+- **jsPDF** (PDF exports)
+- **vite-plugin-pwa**
 
-## 📁 Project Structure
+## Project structure (overview)
 
 ```
 src/
-├── types/               # TypeScript types
-│   ├── Attraction.ts    # Attraction types
-│   ├── Expense.ts       # Expense types
-│   └── Budget.ts        # Budget types
-│
-├── config/
-│   └── constants.ts     # Constants (currencies, countries, categories)
-│
-├── utils/
-│   └── formatters.ts    # Formatting and conversion functions
-│
-├── components/
-│   ├── attractions/     # Attraction components
-│   │   ├── AttractionCard.tsx
-│   │   ├── AttractionsList.tsx
-│   │   └── ModalAttraction.tsx
-│   │
-│   ├── home/           # Home components
-│   │   └── BudgetCard.tsx
-│   │
-│   ├── budget/         # Budget components
-│   ├── expenses/       # Expense components
-│   └── ui/            # Reusable components
-│
-└── pages/
-    └── HomePage.tsx    # Home page
+├── api/              # Backend clients (attractions, expenses, budget, …)
+├── components/       # Feature UI (attractions, budget, checklist, timeline, …)
+├── config/           # constants.ts (countries, categories, stale times, …)
+├── contexts/         # Theme, toast, country filter, …
+├── hooks/            # Data hooks, OSRM routes, scroll lock, …
+├── pages/            # Route-level screens
+├── schemas/          # Zod schemas
+├── services/         # Timeline / weather / cache helpers
+├── types/            # TypeScript models
+└── utils/            # Formatters, PDF export, maps URLs, …
 ```
 
-## 💱 Currency Conversion
+## Currency & rates
 
-Exchange rates (JPY/KRW → BRL) are fetched from the backend API and cached by the app. Configuration for countries and categories lives in `src/config/constants.ts`.
+Exchange rates (**JPY** / **KRW** → **BRL**) are provided by your backend and cached in the app. Labels and categories are configured in `src/config/constants.ts`.
 
-## 🚀 Getting Started
-
-### Installation
+## Getting started
 
 ```bash
-# Install dependencies
 npm install
-
-# Development mode
-npm run dev
-
-# Production build (GitHub Pages)
-npm run build
-
-# Preview build
-npm run preview
-
-# Run tests
-npm run test
-
-# Run tests with coverage
+npm run dev          # dev server
+npm run build        # production build → docs/ (GitHub Pages)
+npm run preview      # preview production build
+npm run test         # Vitest
 npm run test:coverage
 ```
 
-### Configuration
+### Environment
 
-1. Copy `.env.example` to `.env` and set:
-   - `VITE_API_URL` – backend API URL (e.g. Google Apps Script deploy URL)
-   - `VITE_GOOGLE_CLIENT_ID` – Google OAuth client ID for login
-2. Adjust countries and categories in `src/config/constants.ts` if needed.
+Copy `.env.example` to `.env`:
 
-## 🌐 Deploy (GitHub Pages)
+| Variable | Description |
+|----------|-------------|
+| `VITE_API_URL` | Backend base URL (e.g. Google Apps Script web app) |
+| `VITE_GOOGLE_CLIENT_ID` | Google OAuth Web client ID |
+| `VITE_OPENWEATHER_API_KEY` | Optional — enables forecast badges on the timeline |
 
-The project is configured for GitHub Pages deployment:
+## Deploy (GitHub Pages)
 
-```json
-{
-  "base": "/trip-planner/",
-  "build": {
-    "outDir": "docs"
-  }
-}
-```
-
-To deploy:
+`vite.config.ts` uses `base: '/trip-planner/'` and `outDir: 'docs'`.
 
 ```bash
 npm run build
 git add docs
-git commit -m "Deploy"
+git commit -m "chore: deploy"
 git push
 ```
 
-In the repository settings, enable GitHub Pages pointing to the `/docs` folder.
+Enable GitHub Pages from the **`/docs`** folder on the default branch.
 
-## 📱 Upcoming Features
+> **Note:** On Windows, if `cp docs/index.html docs/404.html` fails in `npm run build`, copy the file manually or use a cross-platform script so SPA routes work on refresh.
 
-- [ ] Offline mode
-- [ ] Pending reservation notifications
-- [ ] Multi-language (PT/EN/JP/KR)
+## Possible next steps
 
-## 📝 License
+- Broader **offline writes** (queue mutations when offline).
+- **Push / local reminders** for pending reservations.
+- **i18n** (PT / EN / …).
+
+## License
 
 MIT
-
----
-
-**Have a great trip! 🇯🇵🇰🇷✈️**
