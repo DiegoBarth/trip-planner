@@ -15,7 +15,7 @@ export function validateWithToast<T>(
   const messages = result.error.issues.map(
     issue => issue.message ?? 'Preencha os campos obrigatórios.'
   )
-  // Exibe os toasts após o handler do modal para garantir que apareçam (z-index e ciclo do React)
+  // Show toasts after the modal handler so they appear above the modal (z-index and React cycle)
   setTimeout(() => {
     for (const message of messages) {
       toast.error(message)

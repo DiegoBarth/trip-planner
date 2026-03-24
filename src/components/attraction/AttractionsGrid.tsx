@@ -44,7 +44,7 @@ export function AttractionsGrid({
     )
   }
 
-  // Os primeiros ABOVE_FOLD_LIMIT cards na ordem de renderização recebem eager + fetchpriority=high
+  // First ABOVE_FOLD_LIMIT cards in render order get eager loading + fetchpriority=high
   const ABOVE_FOLD_LIMIT = 6
   let globalCardIndex = 0
 

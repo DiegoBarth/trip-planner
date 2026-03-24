@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import X from 'lucide-react/dist/esm/icons/x';
 import Pencil from 'lucide-react/dist/esm/icons/pencil';
 import Trash2 from 'lucide-react/dist/esm/icons/trash-2';
+import { useBodyScrollLock } from '@/hooks/useBodyScrollLock'
 import { useFocusTrap } from '@/hooks/useFocusTrap'
 import { RESERVATION_TYPES, BOOKING_STATUS } from '@/config/constants'
 import type { Reservation } from '@/types/Reservation'
@@ -16,6 +17,7 @@ interface ReservationActionsModalProps {
 
 export function ReservationActionsModal({ reservation, isOpen, onClose, onEdit, onDelete }: ReservationActionsModalProps) {
   const trapRef = useFocusTrap(isOpen);
+  useBodyScrollLock(isOpen && !!reservation);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -47,7 +49,7 @@ export function ReservationActionsModal({ reservation, isOpen, onClose, onEdit, 
 
   return (
     <div
-      className="fixed inset-0 z-[1100] flex justify-center items-end md:items-center md:py-6"
+      className="fixed inset-0 z-[1100] flex justify-center items-end md:items-center md:py-6 overflow-hidden overscroll-none"
       role="dialog"
       aria-modal="true"
       aria-labelledby="reservation-actions-title"

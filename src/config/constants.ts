@@ -88,7 +88,7 @@ export function getCategoryFromLabel(label: string): keyof typeof EXPENSE_CATEGO
   return (entry?.[0] as keyof typeof EXPENSE_CATEGORIES) || 'other';
 };
 
-/* Cores com contraste WCAG AA (texto legível em fundo claro e escuro) */
+/* WCAG AA contrast colors (readable text on light and dark backgrounds) */
 export const BUDGET_ORIGINS = {
   Diego: { label: 'Diego', icon: '👨', color: '#1d4ed8' },
   Pamela: { label: 'Pamela', icon: '👩', color: '#be185d' },
@@ -146,7 +146,7 @@ export const BUDGET_CATEGORIES = [
   'Outros'
 ];
 
-/* Cores com contraste WCAG AA para badges em fundo claro */
+/* WCAG AA contrast colors for badges on light backgrounds */
 export const CHECKLIST_CATEGORIES = {
   documents: { label: 'Documentos', icon: '📄', color: '#1d4ed8' },
   clothes: { label: 'Roupas', icon: '👕', color: '#be185d' },
@@ -170,7 +170,7 @@ export const RESERVATION_TYPES = {
   other: { label: 'Outro', icon: '📋', color: '#6b7280' }
 };
 
-/* Cores com contraste WCAG AA para texto branco no badge */
+/* WCAG AA contrast colors for white text on badges */
 export const BOOKING_STATUS = {
   pending: { label: 'Pendente', icon: '⏳', color: '#b45309' },
   confirmed: { label: 'Confirmado', icon: '✅', color: '#047857' },
@@ -206,7 +206,7 @@ export const LABELS = {
   }
 };
 
-/** Ordem do swipe: da direita pra esquerda no array. Da home, swipe esquerda → gastos, reservas, atrações, orçamento; swipe direita → timeline, checklist, dashboard. */
+/** Swipe order: right-to-left in the array. From home: swipe left → expenses, reservations, attractions, budget; swipe right → timeline, checklist, dashboard. */
 export const SWIPE_ROUTES = [
   '/dashboard',
   '/checklist',

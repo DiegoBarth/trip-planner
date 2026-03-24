@@ -104,7 +104,7 @@ vi.mock('@/components/ui/ModalBase', () => ({
     <div data-testid="modal-base">
       <h2 data-testid="modal-title">{title}</h2>
 
-      {/* 🔥 FORM CORRETO */}
+      {/* Correct form mock for submit */}
       <form
         data-testid="modal-form"
         onSubmit={(e) => {
@@ -133,7 +133,7 @@ vi.mock('@/components/ui/ModalBase', () => ({
   )
 }))
 
-// 🔴 IMPORTANTE: mock sem variáveis externas
+// IMPORTANT: mock must not use external variables (hoisting)
 vi.mock('@/api/reservation', () => ({
   deleteFile: vi.fn(),
   uploadFile: vi.fn()

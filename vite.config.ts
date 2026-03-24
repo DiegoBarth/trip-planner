@@ -18,7 +18,7 @@ function deferCssPlugin() {
   }
 }
 
-// Remove modulepreload de chunks que só são usados em rotas específicas (lazy)
+// Remove modulepreload for chunks only used on specific lazy-loaded routes
 function removeLazyModulePreload() {
   const LAZY_CHUNKS = ['dnd-kit', 'google-oauth', 'leaflet']
   return {

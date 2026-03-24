@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import X from 'lucide-react/dist/esm/icons/x';
 import { cn } from '@/lib/utils'
+import { useBodyScrollLock } from '@/hooks/useBodyScrollLock'
 import { useFocusTrap } from '@/hooks/useFocusTrap'
 
 interface ConfirmModalProps {
@@ -16,6 +17,7 @@ interface ConfirmModalProps {
 export function ConfirmModal({ isOpen, onClose, title, message, confirmLabel = 'Excluir', onConfirm, loading = false }: ConfirmModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const trapRef = useFocusTrap(isOpen);
+  useBodyScrollLock(isOpen);
   const busy = loading || isSubmitting;
 
   const handleConfirm = async () => {
@@ -47,7 +49,7 @@ export function ConfirmModal({ isOpen, onClose, title, message, confirmLabel = '
 
   return (
     <div
-      className="fixed inset-0 z-[1100] flex justify-center items-end md:items-center md:py-6"
+      className="fixed inset-0 z-[1100] flex justify-center items-end md:items-center md:py-6 overflow-hidden overscroll-none"
       role="dialog"
       aria-modal="true"
       aria-labelledby="confirm-modal-title"

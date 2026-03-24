@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import X from 'lucide-react/dist/esm/icons/x';
 import Pencil from 'lucide-react/dist/esm/icons/pencil';
 import Trash2 from 'lucide-react/dist/esm/icons/trash-2';
+import { useBodyScrollLock } from '@/hooks/useBodyScrollLock'
 import { useFocusTrap } from '@/hooks/useFocusTrap'
 import { formatCurrency } from '@/utils/formatters'
 import { BUDGET_ORIGINS, COUNTRIES, getBudgetOriginFromLabel } from '@/config/constants'
@@ -17,6 +18,7 @@ interface ExpenseActionsModalProps {
 
 export function ExpenseActionsModal({ expense, isOpen, onClose, onEdit, onDelete }: ExpenseActionsModalProps) {
   const trapRef = useFocusTrap(isOpen);
+  useBodyScrollLock(isOpen && !!expense);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -52,7 +54,7 @@ export function ExpenseActionsModal({ expense, isOpen, onClose, onEdit, onDelete
 
   return (
     <div
-      className="fixed inset-0 z-[1100] flex justify-center items-end md:items-center md:py-6"
+      className="fixed inset-0 z-[1100] flex justify-center items-end md:items-center md:py-6 overflow-hidden overscroll-none"
       role="dialog"
       aria-modal="true"
       aria-labelledby="expense-actions-title"

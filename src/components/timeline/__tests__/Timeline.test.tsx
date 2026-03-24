@@ -11,7 +11,7 @@ import type { WeatherData, WeatherPeriodSummary } from '@/types/Weather';
 // Mock child components to simplify tests
 vi.mock('@/components/timeline/TimelineCard', () => ({
   TimelineCard: vi.fn((props) => {
-    // chama onToggleVisited automaticamente para testes
+    // calls onToggleVisited automatically for tests
     props.onToggleVisited?.(props.attraction.id);
     return <div data-testid="timeline-card" />;
   })

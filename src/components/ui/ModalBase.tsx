@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import X from 'lucide-react/dist/esm/icons/x';
+import { useBodyScrollLock } from '@/hooks/useBodyScrollLock'
 import { useFocusTrap } from '@/hooks/useFocusTrap'
 import { cn } from '@/lib/utils'
 
@@ -41,6 +42,7 @@ export function ModalBase({
   size = 'md'
 }: ModalBaseProps) {
   const trapRef = useFocusTrap(isOpen);
+  useBodyScrollLock(isOpen);
 
   const sizeClasses = {
     sm: 'md:w-[400px]',
@@ -68,7 +70,7 @@ export function ModalBase({
 
   return (
     <div
-      className="fixed inset-0 z-[1100] flex justify-center items-end md:items-center md:py-6"
+      className="fixed inset-0 z-[1100] flex justify-center items-end md:items-center md:py-6 overflow-hidden overscroll-none"
       role="dialog"
       aria-modal="true"
       aria-labelledby={title ? 'modal-title' : undefined}
@@ -109,7 +111,7 @@ export function ModalBase({
         )}
 
         {/* Content */}
-        <div className="px-4 py-3 md:px-6 md:py-4 overflow-y-auto flex-1 min-h-0">
+        <div className="px-4 py-3 md:px-6 md:py-4 overflow-y-auto overscroll-contain flex-1 min-h-0 touch-pan-y">
           {children}
         </div>
 

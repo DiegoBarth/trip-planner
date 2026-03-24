@@ -3,6 +3,7 @@ import X from 'lucide-react/dist/esm/icons/x'
 import { useQueryClient } from '@tanstack/react-query'
 import { reorderDay, moveAttractionToDay } from '@/api/attraction'
 import { useAttraction } from '@/hooks/useAttraction'
+import { useBodyScrollLock } from '@/hooks/useBodyScrollLock'
 import { useToast } from '@/contexts/toast'
 import type { Attraction, Country } from '@/types/Attraction'
 
@@ -32,6 +33,7 @@ export function ReorderDaysModal({ isOpen, onClose, country }: ReorderDaysModalP
   }, [isOpen, availableDays])
   const [movingAttractionId, setMovingAttractionId] = useState<number | null>(null)
   const [targetDayByAttraction, setTargetDayByAttraction] = useState<Record<number, number>>({})
+  useBodyScrollLock(isOpen)
 
   const handleReorderDay = async () => {
     if (fromDay === toDay) return
@@ -77,8 +79,8 @@ export function ReorderDaysModal({ isOpen, onClose, country }: ReorderDaysModalP
   const dayOptions = availableDays.length > 0 ? availableDays : [1, 2, 3]
 
   return (
-    <div className="fixed inset-0 z-[1100] flex items-center justify-center p-4 bg-black/50" role="dialog" aria-modal="true" aria-labelledby="reorder-days-title">
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 z-[1100] flex items-center justify-center p-4 bg-black/50 overflow-hidden overscroll-none" role="dialog" aria-modal="true" aria-labelledby="reorder-days-title">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto overscroll-contain touch-pan-y">
         <div className="sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 py-3 flex items-center justify-between">
           <h2 id="reorder-days-title" className="text-lg font-bold text-gray-900 dark:text-white">
             Reordenar dias
@@ -139,7 +141,7 @@ export function ReorderDaysModal({ isOpen, onClose, country }: ReorderDaysModalP
             <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">
               Escolha o dia de destino e clique em mover.
             </p>
-            <ul className="space-y-2 max-h-60 overflow-y-auto">
+            <ul className="space-y-2 max-h-60 overflow-y-auto overscroll-contain touch-pan-y">
               {attractions
                 .filter((a) => a.id !== -999)
                 .map((attraction) => (

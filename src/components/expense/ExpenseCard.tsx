@@ -25,7 +25,7 @@ const CATEGORY_ICON_BG: Record<string, string> = {
   other: 'bg-slate-100',
 }
 
-/* Badge de origem com contraste WCAG em tema claro e escuro */
+/* Origin badge with WCAG contrast in light and dark themes */
 const ORIGIN_BADGE_CLASS: Record<string, string> = {
   Diego: 'bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-300',
   Pamela: 'bg-pink-100 dark:bg-pink-900/50 text-pink-800 dark:text-pink-300',

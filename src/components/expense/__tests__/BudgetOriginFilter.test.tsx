@@ -75,7 +75,7 @@ describe('BudgetOriginFilter', () => {
   })
 
   it('always uses "default" variant and shows Wallet icon', () => {
-    // Independente do valor do context, o componente agora é estático
+    // Regardless of context value, the component is now static
     mockUseFilterSheet.mockReturnValue('above')
 
     render(<BudgetOriginFilter value="all" onChange={mockOnChange} />)

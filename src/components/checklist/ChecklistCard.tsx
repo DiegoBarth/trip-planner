@@ -3,7 +3,7 @@ import type { ChecklistItem } from '@/types/ChecklistItem'
 import { CHECKLIST_CATEGORIES } from '@/config/constants'
 import { cn } from '@/lib/utils'
 
-/* Badge e ícone por categoria com contraste WCAG em tema claro e escuro */
+/* Category badge and icon with WCAG contrast in light and dark themes */
 const CATEGORY_BADGE_CLASS: Record<string, string> = {
   documents: 'bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-300',
   clothes: 'bg-pink-100 dark:bg-pink-900/50 text-pink-800 dark:text-pink-300',

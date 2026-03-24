@@ -145,7 +145,7 @@ function groupedByDayKey(groupedByDay: Record<number, Attraction[]>, accommodati
 }
 
 export type UseOSRMRoutesQueryOptions = {
-  /** Quando false, a query não roda. Use para evitar duas requisições: espere atrações e acomodações prontas antes de habilitar. */
+  /** When false, the query does not run. Use to avoid duplicate requests: wait until attractions and accommodations are ready before enabling. */
   enabled?: boolean;
 };
 

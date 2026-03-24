@@ -119,7 +119,7 @@ describe('NextDaySummary', () => {
       </MemoryRouter>
     )
 
-    // Filtra pelo botão do Attraction 1
+    // Find the button for Attraction 1
     const visitButton = screen.getAllByRole('button').find(button =>
       button.textContent?.includes('Attraction 1')
     )
