@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { createChecklistItem, updateChecklistItem, deleteChecklistItem, getChecklistItems, toggleChecklistItemPacked } from '@/api/checklist'
 import { updateChecklistCacheOnCreate, updateChecklistCacheOnUpdate, updateChecklistCacheOnDelete, updateChecklistCacheOnToggle } from '@/services/checklistCacheService'
+import { shouldRefetchOnFocus } from '@/services/refetchPolicy'
 import { OFFLINE_STALE_TIME_MS } from '@/config/constants'
 import type { CreateChecklistItemPayload, UpdateChecklistItemPayload } from '@/api/checklist'
 import type { ChecklistItem } from '@/types/ChecklistItem'
@@ -14,6 +15,7 @@ export function useChecklist() {
     queryKey: CHECKLIST_QUERY_KEY,
     queryFn: getChecklistItems,
     staleTime: OFFLINE_STALE_TIME_MS,
+    refetchOnWindowFocus: shouldRefetchOnFocus
   });
 
   const createMutation = useMutation({

@@ -5,6 +5,7 @@ import { deleteReservation, updateReservation } from '@/api/reservation'
 import { updateAttractionCacheOnCreate, updateAttractionCacheOnUpdate, updateAttractionCacheOnDelete } from '@/services/attractionCacheService'
 import { updateReservationCacheOnDelete } from '@/services/reservationCacheService'
 import { applyAutoDays, normalizeOrderByDate } from '@/utils/attractionDayUtils'
+import { shouldRefetchOnFocus } from '@/services/refetchPolicy'
 import { dateToInputFormat } from '@/utils/formatters'
 import { OFFLINE_STALE_TIME_MS } from '@/config/constants'
 import type { CreateAttractionPayload, UpdateAttractionPayload } from '@/api/attraction'
@@ -21,6 +22,7 @@ export function useAttraction(country: CountryFilterValue) {
     queryKey: ATTRACTION_QUERY_KEY,
     queryFn: getAttractions,
     staleTime: OFFLINE_STALE_TIME_MS,
+    refetchOnWindowFocus: shouldRefetchOnFocus
   });
 
   const rawFiltered =
@@ -137,7 +139,7 @@ export function useAttraction(country: CountryFilterValue) {
         previous.date === updatedAttraction.date &&
         previous.order === updatedAttraction.order &&
         previous.day === updatedAttraction.day;
-        
+
       if (!onlyVisitedChanged) {
         queryClient.invalidateQueries({ queryKey: ['osrm-routes'] });
       }

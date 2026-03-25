@@ -1,7 +1,8 @@
 import { QueryClient } from '@tanstack/react-query'
+import { shouldRefetchOnFocus } from '@/services/refetchPolicy'
 
 const CACHE_PREFIX = 'rq_v1_'
-const CACHE_MAX_AGE_MS = 60 * 60 * 1000 // 1 hour (sessionStorage / refresh)
+const CACHE_MAX_AGE_MS = 120 * 60 * 1000 // 2 hours (sessionStorage / refresh)
 const OSRM_CACHE_MAX_AGE_MS = 24 * 60 * 60 * 1000 // 24 hours (localStorage, OSRM routes)
 const OSRM_QUERY_KEY = 'osrm-routes'
 
@@ -17,9 +18,9 @@ export function createQueryClient(): QueryClient {
     defaultOptions: {
       queries: {
         retry: 1,
-        refetchOnWindowFocus: false,
-        refetchOnMount: false,
-        refetchOnReconnect: false,
+        refetchOnWindowFocus: shouldRefetchOnFocus,
+        refetchOnReconnect: true,
+        refetchOnMount: false
       }
     }
   })

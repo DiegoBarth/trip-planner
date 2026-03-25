@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { createExpense, updateExpense, deleteExpense, getExpenses } from '@/api/expense'
 import { updateExpenseCacheOnCreate, updateExpenseCacheOnUpdate, updateExpenseCacheOnDelete } from '@/services/expenseCacheService'
+import { shouldRefetchOnFocus } from '@/services/refetchPolicy'
 import { OFFLINE_STALE_TIME_MS } from '@/config/constants'
 import type { CreateExpensePayload, UpdateExpensePayload } from '@/api/expense'
 import type { CountryFilterValue } from '@/types/Attraction'
@@ -16,6 +17,7 @@ export function useExpense(country: CountryFilterValue) {
     queryKey: EXPENSE_QUERY_KEY,
     queryFn: getExpenses,
     staleTime: OFFLINE_STALE_TIME_MS,
+    refetchOnWindowFocus: shouldRefetchOnFocus
   });
 
   const expenses = country === 'all' ? allExpenses : allExpenses.filter(e => (e.country ?? 'general') === country);

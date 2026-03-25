@@ -8,10 +8,15 @@ export function GlobalLoading() {
   const isFetching = useIsFetching({
     predicate: (query) => {
       const key = query.queryKey[0];
+
       if (key === 'weather' || key === 'budget_summary') return false;
-      if (key === 'osrm-routes') return pathname === '/timeline' || pathname === '/map';
-      return true;
-    },
+      if (key === 'osrm-routes') {
+        return (pathname === '/timeline' || pathname === '/map')
+          && query.state.data === undefined;
+      }
+
+      return query.state.data === undefined;
+    }
   });
 
   const isMutating = useIsMutating();

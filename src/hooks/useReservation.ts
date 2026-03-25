@@ -3,6 +3,7 @@ import { createReservation, updateReservation, deleteReservation, getReservation
 import { deleteAttraction, updateAttraction } from '@/api/attraction'
 import { updateReservationCacheOnCreate, updateReservationCacheOnUpdate, updateReservationCacheOnDelete } from '@/services/reservationCacheService'
 import { updateAttractionCacheOnDelete } from '@/services/attractionCacheService'
+import { shouldRefetchOnFocus } from '@/services/refetchPolicy'
 import { dateToInputFormat } from '@/utils/formatters'
 import { OFFLINE_STALE_TIME_MS } from '@/config/constants'
 import type { Attraction } from '@/types/Attraction'
@@ -17,7 +18,8 @@ export function useReservation() {
   const { data: reservations = [], isLoading, error } = useQuery({
     queryKey: RESERVATION_QUERY_KEY,
     queryFn: getReservations,
-    staleTime: OFFLINE_STALE_TIME_MS
+    staleTime: OFFLINE_STALE_TIME_MS,
+    refetchOnWindowFocus: shouldRefetchOnFocus
   });
 
   const createMutation = useMutation({
