@@ -135,7 +135,7 @@ describe('ReservationCard', () => {
       />
     )
 
-    const card = screen.getByRole('button')
+    const card = screen.getByRole('button', { name: /Abrir detalhes da reserva/i })
     fireEvent.click(card)
 
     expect(onClick).toHaveBeenCalledWith(baseReservation)
@@ -151,7 +151,7 @@ describe('ReservationCard', () => {
       />
     )
 
-    const card = screen.getByRole('button')
+    const card = screen.getByRole('button', { name: /Abrir detalhes da reserva/i })
     fireEvent.keyDown(card, { key: 'Enter' })
 
     expect(onClick).toHaveBeenCalledWith(baseReservation)
@@ -167,7 +167,7 @@ describe('ReservationCard', () => {
       />
     )
 
-    const card = screen.getByRole('button')
+    const card = screen.getByRole('button', { name: /Abrir detalhes da reserva/i })
     fireEvent.keyDown(card, { key: ' ' })
 
     expect(onClick).toHaveBeenCalledWith(baseReservation)
@@ -211,7 +211,7 @@ describe('ReservationCard', () => {
       />
     )
 
-    const card = screen.getByRole('button')
+    const card = screen.getByRole('button', { name: /Abrir detalhes da reserva/i })
     const documentLink = screen.getByRole('link', { name: /documento/i })
 
     fireEvent.click(card)
@@ -250,6 +250,40 @@ describe('ReservationCard', () => {
     )
 
     expect(screen.getByText('formatted-2025-01-01')).toBeInTheDocument()
+  })
+
+  it('should show notes toggle and expand notes on click without opening card actions', () => {
+    const onClick = vi.fn()
+
+    render(
+      <ReservationCard
+        reservation={{ ...baseReservation, notes: '  Minha observação\nlinha 2  ' }}
+        onClick={onClick}
+      />
+    )
+
+    const notesBtn = screen.getByRole('button', { name: /Ver observações/i })
+    expect(screen.queryByText('Minha observação')).not.toBeInTheDocument()
+
+    fireEvent.click(notesBtn)
+
+    expect(screen.getByText(/Minha observação/)).toBeInTheDocument()
+    expect(screen.getByText(/linha 2/)).toBeInTheDocument()
+    expect(onClick).not.toHaveBeenCalled()
+
+    fireEvent.click(notesBtn)
+    expect(screen.queryByText(/Minha observação/)).not.toBeInTheDocument()
+  })
+
+  it('should not render notes button when notes are empty', () => {
+    render(
+      <ReservationCard
+        reservation={{ ...baseReservation, notes: '   ' }}
+        onClick={vi.fn()}
+      />
+    )
+
+    expect(screen.queryByRole('button', { name: /observações/i })).not.toBeInTheDocument()
   })
 
 })

@@ -1,9 +1,11 @@
+import { useState } from 'react'
 import ExternalLink from 'lucide-react/dist/esm/icons/external-link';
 import FileText from 'lucide-react/dist/esm/icons/file-text';
 import MapPin from 'lucide-react/dist/esm/icons/map-pin';
 import Calendar from 'lucide-react/dist/esm/icons/calendar';
 import Clock from 'lucide-react/dist/esm/icons/clock';
 import Hash from 'lucide-react/dist/esm/icons/hash';
+import StickyNote from 'lucide-react/dist/esm/icons/sticky-note';
 import { formatDate } from '@/utils/formatters'
 import { RESERVATION_TYPES, BOOKING_STATUS, COUNTRIES } from '@/config/constants'
 import type { Reservation } from '@/types/Reservation'
@@ -14,8 +16,10 @@ interface ReservationCardProps {
 }
 
 export function ReservationCard({ reservation, onClick }: ReservationCardProps) {
+  const [notesOpen, setNotesOpen] = useState(false);
   const typeConfig = RESERVATION_TYPES[reservation.type];
   const statusConfig = BOOKING_STATUS[reservation.status];
+  const hasNotes = Boolean(reservation.notes?.trim());
 
   const formatDateRange = () => {
     if (!reservation.date) return null;
@@ -31,6 +35,7 @@ export function ReservationCard({ reservation, onClick }: ReservationCardProps) 
     <div
       role={onClick ? 'button' : undefined}
       tabIndex={onClick ? 0 : undefined}
+      aria-label={onClick ? 'Abrir detalhes da reserva' : undefined}
       onClick={() => onClick?.(reservation)}
       onKeyDown={e => {
         if (onClick && (e.key === 'Enter' || e.key === ' ')) {
@@ -65,9 +70,35 @@ export function ReservationCard({ reservation, onClick }: ReservationCardProps) 
             {statusConfig.label}
           </span>
         </div>
-        <h3 className="font-bold text-gray-900 dark:text-gray-100 text-lg overflow-x-auto whitespace-nowrap mb-3 pr-1" title={reservation.title}>
-          {reservation.title}
-        </h3>
+        <div className="flex items-start gap-2 mb-3 min-w-0">
+          <h3 className="font-bold text-gray-900 dark:text-gray-100 text-lg overflow-x-auto whitespace-nowrap flex-1 min-w-0 pr-1" title={reservation.title}>
+            {reservation.title}
+          </h3>
+          {hasNotes && (
+            <button
+              type="button"
+              aria-expanded={notesOpen}
+              aria-label={notesOpen ? 'Ocultar observações' : 'Ver observações'}
+              onClick={e => {
+                e.stopPropagation()
+                setNotesOpen(open => !open)
+              }}
+              className="flex-shrink-0 p-1.5 rounded-lg text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 hover:bg-amber-100 dark:hover:bg-amber-900/50 focus:outline-none focus:ring-2 focus:ring-amber-500/60 transition-colors"
+            >
+              <StickyNote className="w-5 h-5" aria-hidden />
+            </button>
+          )}
+        </div>
+
+        {notesOpen && hasNotes && (
+          <div
+            className="mb-3 p-3 rounded-xl bg-amber-50/90 dark:bg-amber-950/30 border border-amber-200/80 dark:border-amber-800/60 text-sm text-gray-800 dark:text-gray-100 whitespace-pre-wrap break-words"
+            role="region"
+            aria-label="Observações"
+          >
+            {reservation.notes!.trim()}
+          </div>
+        )}
 
         {reservation.description && (
           <p className="text-sm text-gray-600 mb-3 line-clamp-2">
