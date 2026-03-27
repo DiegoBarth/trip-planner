@@ -1,1 +1,0 @@
-import{r as e}from"./react-query-CdR__AEM.js";import{i as t}from"./index-Dq9afv0Q.js";function n(){let{data:n,isLoading:r,error:i}=e(t());return{rates:n??null,isLoading:r,error:i}}export{n as t};

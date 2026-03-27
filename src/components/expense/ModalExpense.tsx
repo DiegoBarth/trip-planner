@@ -54,7 +54,7 @@ export function ModalExpense({ expense, isOpen, onClose, onSave }: ModalExpenseP
       currency: 'BRL',
       amountInBRL: 0,
       budgetOrigin: 'Casal',
-      date: new Date().toISOString().split('T')[0],
+      date: dateToYYYYMMDD(new Date()),
       country: 'general',
       notes: '',
       receiptUrl: ''
@@ -115,7 +115,7 @@ export function ModalExpense({ expense, isOpen, onClose, onSave }: ModalExpenseP
           currency: 'BRL',
           amountInBRL: 0,
           budgetOrigin: 'Casal',
-          date: new Date().toISOString().split('T')[0],
+          date: dateToYYYYMMDD(new Date()),
           country: 'general',
           notes: '',
           receiptUrl: ''

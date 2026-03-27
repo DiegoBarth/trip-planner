@@ -22,18 +22,20 @@ type BudgetFormData = Omit<Budget, 'amount' | 'id'> & {
   id?: number
 }
 
-const defaultValues: BudgetFormData = {
-  origin: 'Diego' as BudgetOrigin,
-  description: '',
-  amount: '' as string | number,
-  date: new Date().toISOString().split('T')[0]
+function getDefaultBudgetFormValues(): BudgetFormData {
+  return {
+    origin: 'Diego' as BudgetOrigin,
+    description: '',
+    amount: '' as string | number,
+    date: dateToYYYYMMDD(new Date())
+  };
 }
 
 export function ModalBudget({ budget, isOpen, onClose, onSave }: ModalBudgetProps) {
   const toast = useToast()
   const [saving, setSaving] = useState(false);
   const { control, register, handleSubmit, reset, setValue, watch } = useForm<BudgetFormData>({
-    defaultValues
+    defaultValues: getDefaultBudgetFormValues()
   });
 
   const selectedOrigin = watch('origin');
@@ -53,7 +55,7 @@ export function ModalBudget({ budget, isOpen, onClose, onSave }: ModalBudgetProp
         reset(formValues);
       }
       else {
-        reset(defaultValues);
+        reset(getDefaultBudgetFormValues());
       }
     }
   }, [isOpen, budget, reset]);
@@ -75,7 +77,7 @@ export function ModalBudget({ budget, isOpen, onClose, onSave }: ModalBudgetProp
     try {
       await Promise.resolve(onSave(budgetData));
 
-      reset(defaultValues);
+      reset(getDefaultBudgetFormValues());
       onClose();
     }
     finally {
