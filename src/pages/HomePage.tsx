@@ -1,4 +1,4 @@
-import { useEffect, useMemo, lazy, Suspense } from 'react'
+import { useEffect, lazy, Suspense } from 'react'
 import { Link } from 'react-router-dom'
 import { useQueryClient } from '@tanstack/react-query';
 import Banknote from 'lucide-react/dist/esm/icons/banknote';
@@ -9,14 +9,10 @@ import { LazySection } from '@/components/LazySection'
 import NextDaySummary from '@/components/home/NextDaySummary'
 import { useCountry } from '@/contexts/CountryContext'
 import { useAttraction } from '@/hooks/useAttraction'
-import { useAccommodation } from '@/hooks/useAccommodation'
-import { getOSRMRoutesQueryOptions } from '@/hooks/useOSRMRoutesQuery'
 import { getBudgetsQueryOptions, getBudgetSummaryQueryOptions } from '@/services/budgetQueryService';
 import { getAccommodationsQueryOptions } from '@/services/accommodationQueryService';
 import { getExchangeRatesQueryOptions } from '@/services/currencyQueryService';
 import { getWeatherQueryOptions } from '@/services/weatherQueryService';
-import type { Attraction } from '@/types/Attraction';
-import type { Accommodation } from '@/types/Accommodation';
 import { TodaysPendenciesSkeleton, TodayExpensesCardSkeleton } from '@/components/skeletons/HomeSkeletons'
 
 const TodaysPendencies = lazy(() => import('@/components/home/TodaysPendencies'))
@@ -26,32 +22,7 @@ const BudgetSummary = lazy(() => import('@/components/home/BudgetSummary'))
 export default function HomePage(_props: { onLogout: () => void }) {
   const { country } = useCountry()
   const { citiesToPrefetch } = useAttraction(country)
-  const { attractions: allAttractions } = useAttraction('all')
-  const { accommodations: allAccommodations } = useAccommodation('all')
   const queryClient = useQueryClient();
-
-  const osrmPrefetchPayloads = useMemo(() => {
-    const mappable = allAttractions.filter(a => a.lat != null && a.lng != null);
-    const byCountry = new Map<string, Attraction[]>();
-    mappable.forEach(a => {
-      const c = a.country ?? 'general';
-      if (!byCountry.has(c)) byCountry.set(c, []);
-      byCountry.get(c)!.push(a);
-    });
-    const result: { groupedByDay: Record<number, Attraction[]>; accommodations: Accommodation[] }[] = [];
-    byCountry.forEach((atts, c) => {
-      const grouped: Record<number, Attraction[]> = {};
-      atts.forEach(a => {
-        if (!grouped[a.day]) grouped[a.day] = [];
-        grouped[a.day].push(a);
-      });
-      const accs = allAccommodations.filter(acc => (acc.country ?? 'general') === c);
-      if (Object.keys(grouped).length > 0) {
-        result.push({ groupedByDay: grouped, accommodations: accs });
-      }
-    });
-    return result;
-  }, [allAttractions, allAccommodations]);
 
   useEffect(() => {
     queryClient.prefetchQuery(getBudgetsQueryOptions());
@@ -61,15 +32,6 @@ export default function HomePage(_props: { onLogout: () => void }) {
 
     citiesToPrefetch.forEach(city => queryClient.prefetchQuery(getWeatherQueryOptions(city)));
   }, [citiesToPrefetch, queryClient]);
-
-  useEffect(() => {
-    osrmPrefetchPayloads.forEach(({ groupedByDay, accommodations: accs }) => {
-      const options = getOSRMRoutesQueryOptions(groupedByDay, accs);
-      if (!options.enabled) return;
-      if (queryClient.getQueryData(options.queryKey) != null) return;
-      queryClient.prefetchQuery({ queryKey: options.queryKey, queryFn: options.queryFn, staleTime: options.staleTime });
-    });
-  }, [osrmPrefetchPayloads, queryClient]);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 pb-20">

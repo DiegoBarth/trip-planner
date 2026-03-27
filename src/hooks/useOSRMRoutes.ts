@@ -1,9 +1,12 @@
 import { useEffect, useState } from 'react'
-import { fetchOSRMRoute } from '@/services/osrmService'
+import { straightLineRouteFromCoordinates } from '@/services/osrmService'
 import { isMappableAttraction } from '@/utils/typeGuards'
 import type { Attraction } from '@/types/Attraction'
 import type { Accommodation } from '@/types/Accommodation'
 
+/**
+ * Legacy hook: local polylines (Haversine) only. Prefer `useOSRMRoutesQuery` for per-day OSRM routes.
+ */
 export function useOSRMRoutes(groupedByDay: Record<number, Attraction[]>, accommodations: Accommodation[]) {
   const [routes, setRoutes] = useState<Record<number, [number, number][]>>({});
   const [distances, setDistances] = useState<Record<number, number>>({});
@@ -11,7 +14,7 @@ export function useOSRMRoutes(groupedByDay: Record<number, Attraction[]>, accomm
   useEffect(() => {
     let isMounted = true;
 
-    async function loadRoutes() {
+    function loadRoutes() {
       const newRoutes: Record<number, [number, number][]> = {};
       const newDistances: Record<number, number> = {};
 
@@ -21,8 +24,8 @@ export function useOSRMRoutes(groupedByDay: Record<number, Attraction[]>, accomm
         if (validPoints.length < 2) continue;
 
         let routePoints = validPoints.map(p => ({
-          lat: p.lat,
-          lng: p.lng
+          lat: p.lat!,
+          lng: p.lng!,
         }));
 
         if (accommodations.length > 0) {
@@ -31,16 +34,14 @@ export function useOSRMRoutes(groupedByDay: Record<number, Attraction[]>, accomm
           routePoints = [
             { lat: stay.lat, lng: stay.lng },
             ...routePoints,
-            { lat: stay.lat, lng: stay.lng }
+            { lat: stay.lat, lng: stay.lng },
           ];
         }
 
-        const result = await fetchOSRMRoute(routePoints);
+        const { path, distanceKm } = straightLineRouteFromCoordinates(routePoints);
 
-        if (result) {
-          newRoutes[Number(dayNum)] = result.path;
-          newDistances[Number(dayNum)] = result.distanceKm;
-        }
+        newRoutes[Number(dayNum)] = path;
+        newDistances[Number(dayNum)] = distanceKm;
       }
 
       if (isMounted) {

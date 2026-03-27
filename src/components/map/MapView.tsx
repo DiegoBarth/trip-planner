@@ -64,9 +64,10 @@ export function MapView() {
     );
   }, [accommodations, day, filtered]);
 
+  /** Full country accommodation list (same as timeline) so React Query cache keys match and routes/segments reuse. */
   const { routes } = useOSRMRoutesQuery(
     groupedByDay as Record<number, Attraction[]>,
-    accommodationsForMap,
+    accommodations ?? [],
     { enabled: dataReady }
   );
 

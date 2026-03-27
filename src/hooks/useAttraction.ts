@@ -77,7 +77,6 @@ export function useAttraction(country: CountryFilterValue) {
     mutationFn: (payload: CreateAttractionPayload) => createAttraction(payload),
     onSuccess: newAttraction => {
       updateAttractionCacheOnCreate(queryClient, newAttraction)
-      queryClient.invalidateQueries({ queryKey: ['osrm-routes'] })
     }
   });
 
@@ -131,18 +130,6 @@ export function useAttraction(country: CountryFilterValue) {
       if (!previous) return;
 
       updateAttractionCacheOnUpdate(queryClient, previous, updatedAttraction);
-
-      const onlyVisitedChanged =
-        previous.visited !== updatedAttraction.visited &&
-        previous.lat === updatedAttraction.lat &&
-        previous.lng === updatedAttraction.lng &&
-        previous.date === updatedAttraction.date &&
-        previous.order === updatedAttraction.order &&
-        previous.day === updatedAttraction.day;
-
-      if (!onlyVisitedChanged) {
-        queryClient.invalidateQueries({ queryKey: ['osrm-routes'] });
-      }
     }
   });
 
@@ -165,7 +152,6 @@ export function useAttraction(country: CountryFilterValue) {
     },
     onSuccess: (_, deletedId) => {
       updateAttractionCacheOnDelete(queryClient, deletedId);
-      queryClient.invalidateQueries({ queryKey: ['osrm-routes'] });
     }
   });
 
@@ -204,8 +190,6 @@ export function useAttraction(country: CountryFilterValue) {
 
       return old.map(a => updatedMap.get(a.id) ?? a);
     });
-
-    queryClient.invalidateQueries({ queryKey: ['osrm-routes'] });
 
     return updated;
   };

@@ -13,22 +13,6 @@ import type { OSRMLeg } from '@/services/osrmService'
 
 type AttractionWithTimes = Attraction & { arrivalTime: string; departureTime: string }
 
-function mockOSRMWithLegs(legs: { distance: number; duration: number }[]) {
-  ; (globalThis.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
-    ok: true,
-    json: () =>
-      Promise.resolve({
-        routes: [
-          {
-            distance: legs.reduce((s, l) => s + l.distance, 0),
-            geometry: { coordinates: [] },
-            legs: legs.map(l => ({ distance: l.distance, duration: l.duration })),
-          },
-        ],
-      }),
-  })
-}
-
 function makeAttraction(overrides: Partial<Attraction> = {}): Attraction {
   return {
     id: 1,
@@ -120,67 +104,29 @@ describe('timelineService', () => {
   })
 
   describe('calculateTravelSegment', () => {
-    beforeEach(() => {
-      vi.stubGlobal('fetch', vi.fn())
-    })
-
     it('returns null when from has no lat/lng', async () => {
       const from = makeAttraction({ lat: undefined, lng: undefined })
       const to = makeAttraction({ lat: 35.69, lng: 139.70 })
       expect(await calculateTravelSegment(from, to)).toBeNull()
-      expect(fetch).not.toHaveBeenCalled()
     })
 
-    it('returns segment when OSRM returns route', async () => {
-      ; (fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
-        ok: true,
-        json: () =>
-          Promise.resolve({
-            routes: [
-              {
-                distance: 3000,
-                legs: [{ distance: 3000, duration: 360 }],
-              },
-            ],
-          }),
-      })
+    it('estimates segment via Haversine (no fetch)', async () => {
       const from = makeAttraction({ id: 1, lat: 35.68, lng: 139.69 })
       const to = makeAttraction({ id: 2, lat: 35.69, lng: 139.70 })
       const result = await calculateTravelSegment(from, to)
       expect(result).not.toBeNull()
       expect(result?.from).toEqual(from)
       expect(result?.to).toEqual(to)
-      expect(result?.distanceKm).toBe(3)
+      expect(result?.distanceKm).toBeGreaterThan(0)
+      expect(result?.travelMode).toBe('walking')
     })
 
-    it('returns transit and uses legs[0] duration when distanceKm > 5', async () => {
-      ; (fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
-        ok: true,
-        json: () =>
-          Promise.resolve({
-            routes: [{ distance: 6000, legs: [{ distance: 6000, duration: 600 }] }],
-          }),
-      })
+    it('uses transit when straight-line distance > 5 km', async () => {
       const from = makeAttraction({ id: 1, lat: 35.68, lng: 139.69 })
-      const to = makeAttraction({ id: 2, lat: 35.69, lng: 139.70 })
+      const to = makeAttraction({ id: 2, lat: 36.2, lng: 139.69 })
       const result = await calculateTravelSegment(from, to)
       expect(result?.travelMode).toBe('transit')
-      expect(result?.durationMinutes).toBe(10)
-    })
-
-    it('uses fallback duration when result has no legs', async () => {
-      ; (fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
-        ok: true,
-        json: () =>
-          Promise.resolve({
-            routes: [{ distance: 6000 }],
-          }),
-      })
-      const from = makeAttraction({ id: 1, lat: 35.68, lng: 139.69 })
-      const to = makeAttraction({ id: 2, lat: 35.69, lng: 139.70 })
-      const result = await calculateTravelSegment(from, to)
-      expect(result?.travelMode).toBe('transit')
-      expect(result?.durationMinutes).toBeGreaterThanOrEqual(0)
+      expect(result?.durationMinutes).toBeGreaterThan(0)
     })
 
     it('returns null when to has no lat/lng', async () => {
@@ -214,35 +160,24 @@ describe('timelineService', () => {
       expect(result?.conflicts).toEqual([])
     })
 
-    it('calls fetchOSRMRoute and builds segments when no precomputedSegments and 2+ attractions', async () => {
-      mockOSRMWithLegs([{ distance: 2000, duration: 240 }])
+    it('without precomputed: builds segments with Haversine only (no fetch)', async () => {
+      const fetchSpy = vi.fn()
+      vi.stubGlobal('fetch', fetchSpy)
       const a1 = makeAttraction({ id: 1, order: 0, lat: 35.68, lng: 139.69, date: '2025-03-01', day: 1 })
       const a2 = makeAttraction({ id: 2, order: 1, lat: 35.69, lng: 139.70, date: '2025-03-01', day: 1 })
       const result = await buildDayTimeline([a2, a1])
+      expect(fetchSpy).not.toHaveBeenCalled()
       expect(result).not.toBeNull()
       expect(result?.attractions).toHaveLength(2)
       expect(result?.segments).toHaveLength(1)
-      expect(result?.segments[0]?.distanceKm).toBe(2)
+      expect(result?.segments[0]?.distanceKm).toBeGreaterThan(0)
     })
 
-    it('builds segment with transit when OSRM leg distance > 3km', async () => {
-      mockOSRMWithLegs([{ distance: 5000, duration: 600 }])
+    it('without precomputed: long leg becomes transit (> 3 km straight-line)', async () => {
       const a1 = makeAttraction({ id: 1, order: 0, lat: 35.68, lng: 139.69, date: '2025-03-01', day: 1 })
-      const a2 = makeAttraction({ id: 2, order: 1, lat: 35.69, lng: 139.70, date: '2025-03-01', day: 1 })
+      const a2 = makeAttraction({ id: 2, order: 1, lat: 36.2, lng: 139.69, date: '2025-03-01', day: 1 })
       const result = await buildDayTimeline([a1, a2])
       expect(result?.segments[0]?.travelMode).toBe('transit')
-    })
-
-    it('builds day with null segments when OSRM returns no routes', async () => {
-      ; (globalThis.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
-        ok: true,
-        json: () => Promise.resolve({ routes: [] }),
-      })
-      const a1 = makeAttraction({ id: 1, order: 0, lat: 35.68, lng: 139.69, date: '2025-03-01', day: 1 })
-      const a2 = makeAttraction({ id: 2, order: 1, lat: 35.69, lng: 139.70, date: '2025-03-01', day: 1 })
-      const result = await buildDayTimeline([a1, a2])
-      expect(result?.segments).toHaveLength(1)
-      expect(result?.segments[0]).toBeNull()
     })
 
     it('uses attraction duration 0 for first attraction', async () => {

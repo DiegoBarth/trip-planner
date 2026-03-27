@@ -47,7 +47,7 @@ export default function Timeline({ timeline, city: cityProp, date: dateProp, onT
       ? getWeatherForDate(forecast, dateToInputFormat(dateForWeather))
       : null;
 
-  /** Página passa city+date quando o dia existe; timeline ainda null = buildDayTimeline em andamento. */
+  /** Parent passes city+date when the day exists; timeline still null while buildDayTimeline is in progress. */
   const isTimelinePending =
     !timeline &&
     Boolean(cityProp?.trim()) &&

@@ -1,10 +1,9 @@
 import { QueryClient } from '@tanstack/react-query'
-import { OFFLINE_STALE_TIME_MS } from '@/config/constants'
+import { OFFLINE_STALE_TIME_MS, OSRM_LOCAL_STORAGE_MAX_AGE_MS } from '@/config/constants'
 import { shouldRefetchOnFocus } from '@/services/refetchPolicy'
 
 const CACHE_PREFIX = 'rq_v1_'
 const CACHE_MAX_AGE_MS = 120 * 60 * 1000 // 2 hours (sessionStorage / refresh)
-const OSRM_CACHE_MAX_AGE_MS = 24 * 60 * 60 * 1000 // 24 hours (localStorage, OSRM routes)
 const OSRM_QUERY_KEY = 'osrm-routes'
 
 function isOSRMQueryKey(queryKey: unknown): boolean {
@@ -41,7 +40,7 @@ function loadFromStorage(client: QueryClient, storage: Storage, onlyOSRM: boolea
     try {
       const { data, dataUpdatedAt, queryKey } = JSON.parse(raw)
       if (onlyOSRM !== isOSRMQueryKey(queryKey)) continue
-      const maxAge = onlyOSRM ? OSRM_CACHE_MAX_AGE_MS : CACHE_MAX_AGE_MS
+      const maxAge = onlyOSRM ? OSRM_LOCAL_STORAGE_MAX_AGE_MS : CACHE_MAX_AGE_MS
       if (Date.now() - dataUpdatedAt > maxAge) {
         storage.removeItem(storageKey)
         continue

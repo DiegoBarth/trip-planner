@@ -1,13 +1,7 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, beforeEach } from 'vitest'
 import { renderHook, waitFor } from '@testing-library/react'
 import { useOSRMRoutes } from '../useOSRMRoutes'
 import type { Attraction } from '@/types/Attraction'
-
-const mockFetchOSRMRoute = vi.fn()
-
-vi.mock('@/services/osrmService', () => ({
-  fetchOSRMRoute: (...args: unknown[]) => mockFetchOSRMRoute(...args),
-}))
 
 function makeAttraction(overrides: Partial<Attraction> = {}): Attraction {
   return {
@@ -33,8 +27,7 @@ function makeAttraction(overrides: Partial<Attraction> = {}): Attraction {
 
 describe('useOSRMRoutes', () => {
   beforeEach(() => {
-    vi.clearAllMocks()
-    mockFetchOSRMRoute.mockResolvedValue({ path: [[35.68, 139.69], [35.69, 139.7]], distanceKm: 5 })
+    /* noop */
   })
 
   it('returns empty routes and distances when groupedByDay is empty', () => {
@@ -45,7 +38,7 @@ describe('useOSRMRoutes', () => {
     expect(result.current.distances).toEqual({})
   })
 
-  it('fetches routes when groupedByDay has days with 2+ mappable points', async () => {
+  it('fills routes locally (Haversine) when there are 2+ mappable points', async () => {
     const groupedByDay: Record<number, Attraction[]> = {
       1: [
         makeAttraction({ id: 1, lat: 35.68, lng: 139.69, order: 0 }),
@@ -57,8 +50,8 @@ describe('useOSRMRoutes', () => {
     )
 
     await waitFor(() => {
-      expect(mockFetchOSRMRoute).toHaveBeenCalled()
-      expect(Object.keys(result.current.routes).length).toBeGreaterThanOrEqual(0)
+      expect(result.current.routes[1]?.length).toBeGreaterThanOrEqual(2)
+      expect(result.current.distances[1]).toBeGreaterThan(0)
     })
   })
 })

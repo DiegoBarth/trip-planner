@@ -17,6 +17,21 @@ export const QUERY_STALE_TIME_MS = 5 * MS_PER_MINUTE;
 /** Offline-first: data considered fresh for 24 hours; only refetch when invalidated (e.g. after mutation). */
 export const OFFLINE_STALE_TIME_MS = 24 * MS_PER_HOUR;
 
+/**
+ * OSRM routes (timeline/map): persist for the whole trip; queryKey already includes ids/lat/lng/order
+ * and accommodations — when that set changes, a new key is generated and data is refetched.
+ */
+export const OSRM_LOCAL_STORAGE_MAX_AGE_MS = 180 * MS_PER_DAY;
+
+/**
+ * Global cap on concurrent OSRM HTTP requests. ~6 is often the practical per-host limit in browsers;
+ * higher values tend to saturate the public demo router and trigger cancellations.
+ */
+export const OSRM_ROUTE_FETCH_CONCURRENCY = 5;
+
+/** Per-route timeout (public OSRM demo often exceeds ~15s with many waypoints). */
+export const OSRM_FETCH_TIMEOUT_MS = 45 * MS_PER_SECOND;
+
 /** Weather forecast: cache for 6 hours for use on the trip day without constant refetch. */
 export const WEATHER_STALE_TIME_MS = 6 * MS_PER_HOUR;
 

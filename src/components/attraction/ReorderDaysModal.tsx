@@ -42,7 +42,6 @@ export function ReorderDaysModal({ isOpen, onClose, country }: ReorderDaysModalP
     try {
       const updated = await reorderDay({ country, fromDay, toDay })
       replaceAttractionsInCache(queryClient, updated)
-      await queryClient.invalidateQueries({ queryKey: ['osrm-routes'] })
       success(`Dia ${fromDay} movido para o dia ${toDay}`)
       onClose()
     } catch (err) {
@@ -60,7 +59,6 @@ export function ReorderDaysModal({ isOpen, onClose, country }: ReorderDaysModalP
     try {
       await moveAttractionToDay({ id: attraction.id, targetDay })
       await queryClient.refetchQueries({ queryKey: ['attractions'] })
-      await queryClient.invalidateQueries({ queryKey: ['osrm-routes'] })
       success(`"${attraction.name}" movido para o dia ${targetDay}`)
       setTargetDayByAttraction(prev => {
         const next = { ...prev }

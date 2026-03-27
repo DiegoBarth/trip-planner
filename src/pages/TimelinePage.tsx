@@ -120,8 +120,18 @@ export default function TimelinePage() {
     return grouped;
   }, [mappableAttractions]);
 
+  /** Scope OSRM to the selected day: e.g. day 1 only queries that day (same grouping as the map). */
+  const groupedByDayForOsrm = useMemo(() => {
+    if (day === 'all') return groupedByDayForRoutes;
+    const d = Number(day);
+    if (!Number.isInteger(d) || d < 1) return {};
+    const points = groupedByDayForRoutes[d];
+    if (!points?.length) return {};
+    return { [d]: points };
+  }, [day, groupedByDayForRoutes]);
+
   const { segmentsByDay, isRoutesLoading } =
-    useOSRMRoutesQuery(groupedByDayForRoutes, accommodations, { enabled: dataReady });
+    useOSRMRoutesQuery(groupedByDayForOsrm, accommodations, { enabled: dataReady });
 
   const [isExporting, setIsExporting] = useState(false);
 

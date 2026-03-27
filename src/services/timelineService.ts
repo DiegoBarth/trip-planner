@@ -1,4 +1,4 @@
-import { fetchOSRMRoute, type OSRMLeg } from '@/services/osrmService'
+import { straightLineRouteFromCoordinates, type OSRMLeg } from '@/services/osrmService'
 import { PERIOD_START } from '@/config/constants'
 import type { Attraction } from '@/types/Attraction'
 import type { TimelineSegment, TimelineConflict, TimelineDay, FreeTimeBlock } from '@/types/Timeline'
@@ -52,10 +52,10 @@ export function legsToSegments(sortedAttractions: Attraction[], legs: OSRMLeg[])
 }
 
 /**
- * One OSRM request for the whole day: all coordinates in order.
- * Returns segments between consecutive attractions (null when no coords or no route).
+ * Local Haversine approximation (no network). Per-day OSRM (one URL, all points in order) runs only in
+ * `useOSRMRoutesQuery`; this path does not trigger HTTP.
  */
-async function fetchSegmentsForDay(sortedAttractions: Attraction[]): Promise<(TimelineSegment | null)[]> {
+function segmentsFromStraightLineForDay(sortedAttractions: Attraction[]): (TimelineSegment | null)[] {
   const n = sortedAttractions.length;
   const segments: (TimelineSegment | null)[] = new Array(n - 1);
 
@@ -68,13 +68,10 @@ async function fetchSegmentsForDay(sortedAttractions: Attraction[]): Promise<(Ti
     return segments.fill(null);
   }
 
-  const result = await fetchOSRMRoute(coords);
-
-  if (!result?.legs || result.legs.length === 0) {
+  const legs = straightLineRouteFromCoordinates(coords).legs;
+  if (!legs?.length) {
     return segments.fill(null);
   }
-
-  const legs = result.legs;
 
   for (let i = 0; i < n - 1; i++) {
     const from = sortedAttractions[i];
@@ -109,26 +106,21 @@ async function fetchSegmentsForDay(sortedAttractions: Attraction[]): Promise<(Ti
   return segments;
 }
 
-/**
- * Calculate travel time between two attractions using OSRM (single leg).
- * Used when only two points or as fallback.
- */
+/** Estimativa local entre dois pontos (sem OSRM; evita requisições extras). */
 export async function calculateTravelSegment(from: Attraction, to: Attraction): Promise<TimelineSegment | null> {
   if (!from.lat || !from.lng || !to.lat || !to.lng) {
     return null;
   }
 
-  const result = await fetchOSRMRoute([
+  const result = straightLineRouteFromCoordinates([
     { lat: from.lat, lng: from.lng },
-    { lat: to.lat, lng: to.lng }
+    { lat: to.lat, lng: to.lng },
   ]);
 
-  if (!result) return null;
-
-  const travelMode = result.distanceKm > 5 ? 'transit' : 'walking';
+  const travelMode: 'walking' | 'transit' = result.distanceKm > 5 ? 'transit' : 'walking';
   const durationMinutes = travelMode === 'walking'
     ? Math.ceil((result.distanceKm / 5) * 60)
-    : (result.legs?.[0]?.durationMinutes ?? Math.ceil((result.distanceKm / 5) * 60));
+    : Math.ceil((result.distanceKm / 30) * 60);
 
   return {
     from,
@@ -418,7 +410,7 @@ export function recomputeTimelineWithStartTime(timeline: TimelineDay, newStartTi
 
 /**
  * Build timeline for a specific day.
- * If precomputedSegments is provided, skips OSRM fetch and uses them (e.g. from cache).
+ * If precomputedSegments is provided, uses them (e.g. from useOSRMRoutesQuery cache); otherwise Haversine only.
  */
 export async function buildDayTimeline(attractions: Attraction[], precomputedSegments?: (TimelineSegment | null)[]): Promise<TimelineDay | null> {
   if (attractions.length === 0) return null;
@@ -427,7 +419,7 @@ export async function buildDayTimeline(attractions: Attraction[], precomputedSeg
 
   const segments = precomputedSegments != null && precomputedSegments.length === sortedAttractions.length - 1
     ? precomputedSegments
-    : await fetchSegmentsForDay(sortedAttractions);
+    : segmentsFromStraightLineForDay(sortedAttractions);
 
   const totalDistance = segments.reduce((sum, s) => sum + (s?.distanceKm ?? 0), 0);
   const totalTravelTime = segments.reduce((sum, s) => sum + (s?.durationMinutes ?? 0), 0);

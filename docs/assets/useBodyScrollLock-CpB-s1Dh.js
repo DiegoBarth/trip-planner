@@ -1,1 +1,0 @@
-import{O as e}from"./google-login-button-w_hzbxpn.js";var t=e(),n=0,r=``;function i(){n+=1,n===1&&(r=document.body.style.overflow,document.body.style.overflow=`hidden`)}function a(){n=Math.max(0,n-1),n===0&&(document.body.style.overflow=r)}function o(e){(0,t.useEffect)(()=>{if(e)return i(),()=>{a()}},[e])}export{o as t};

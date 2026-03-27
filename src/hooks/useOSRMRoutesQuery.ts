@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
-import { fetchOSRMRoute } from '@/services/osrmService'
+import type { QueryFunctionContext } from '@tanstack/react-query'
+import { fetchOSRMRouteWithFallback } from '@/services/osrmService'
 import { legsToSegments } from '@/services/timelineService'
 import { isMappableAttraction } from '@/utils/typeGuards'
 import type { TimelineSegment } from '@/types/Timeline'
@@ -68,9 +69,11 @@ function mainCityForDay(sortedAttractions: Attraction[]): string {
   return cityByKey.get(mainKey) ?? sortedAttractions[0].city;
 }
 
+/** One OSRM request per day: same order as attraction `order`; with a stay, [hotel, …attractions, hotel]. */
 async function fetchRoutesForDays(
   groupedByDay: Record<number, Attraction[]>,
-  accommodations: Accommodation[]
+  accommodations: Accommodation[],
+  signal?: AbortSignal
 ): Promise<{
   routes: Record<number, [number, number][]>
   distances: Record<number, number>
@@ -97,7 +100,7 @@ async function fetchRoutesForDays(
 
   const results = await Promise.all(
     entries.map(({ dayNum, routePoints }) =>
-      fetchOSRMRoute(routePoints).then((result) => ({ dayNum, result }))
+      fetchOSRMRouteWithFallback(routePoints, signal).then((result) => ({ dayNum, result }))
     )
   );
 
@@ -113,17 +116,25 @@ async function fetchRoutesForDays(
     routes[dayNum] = result.path;
     distances[dayNum] = result.distanceKm;
 
-    if (result.legs && result.legs.length >= sortedAttractions.length) {
-      const legsIncludingAcc = result.legs.slice(0, sortedAttractions.length);
-      const sortedWithAcc = stay != null && sortedAttractions[0]
+    /**
+     * With stay in the route: OSRM returns (n+1) legs for [h, a1, …, an, h] —
+     * the timeline uses the first n legs (h→a1, a1→a2, …).
+     * Without stay: (n−1) legs between n attractions — previously required `>= n` and always hit the null branch.
+     */
+    const hasStayLoop =
+      stay?.lat != null && stay?.lng != null && sortedAttractions.length > 0;
+    const legsNeeded = hasStayLoop
+      ? sortedAttractions.length
+      : Math.max(0, sortedAttractions.length - 1);
+
+    if (result.legs && result.legs.length >= legsNeeded && legsNeeded > 0) {
+      const legsIncludingAcc = result.legs.slice(0, legsNeeded);
+      const sortedWithAcc = hasStayLoop
         ? [accommodationToAttraction(stay, sortedAttractions[0]), ...sortedAttractions]
         : sortedAttractions;
       segmentsByDay[dayNum] = legsToSegments(sortedWithAcc, legsIncludingAcc);
-    } else {
-      const segmentCount = stay != null && sortedAttractions.length > 0
-        ? sortedAttractions.length
-        : Math.max(0, sortedAttractions.length - 1);
-      segmentsByDay[dayNum] = new Array(segmentCount).fill(null);
+    } else if (legsNeeded > 0) {
+      segmentsByDay[dayNum] = new Array(legsNeeded).fill(null);
     }
   }
 
@@ -155,8 +166,17 @@ export function getOSRMRoutesQueryOptions(groupedByDay: Record<number, Attractio
 
   return {
     queryKey: ['osrm-routes', key] as const,
-    queryFn: () => fetchRoutesForDays(groupedByDay, accommodations),
+    queryFn: ({ signal }: QueryFunctionContext<readonly ['osrm-routes', string]>) =>
+      fetchRoutesForDays(groupedByDay, accommodations, signal),
     staleTime: Infinity,
+    /**
+     * No time-based GC in-session (React Query's internal timer caps ~24 days; Infinity disables in-memory GC).
+     * Stale entries disappear when queryKey changes; disk TTL: OSRM_LOCAL_STORAGE_MAX_AGE_MS in queryClient.
+     */
+    gcTime: Infinity,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    refetchOnMount: false,
     enabled: hasDays,
   };
 }
