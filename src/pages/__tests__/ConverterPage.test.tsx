@@ -89,7 +89,7 @@ describe('ConverterPage', () => {
 
     render(<ConverterPage />, { wrapper: Wrapper })
 
-    expect(screen.getByText(/Carregando taxas/i)).toBeInTheDocument()
+    expect(screen.getByRole('status', { name: /carregando taxas de câmbio/i })).toBeInTheDocument()
   })
 
   it('shows error view', () => {

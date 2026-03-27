@@ -130,7 +130,7 @@ describe('ChecklistList', () => {
     ).toBeInTheDocument()
   })
 
-  it('does not render when loading', () => {
+  it('renders skeleton when loading', () => {
     const { container } = render(
       <ChecklistList
         items={baseItems}
@@ -142,7 +142,8 @@ describe('ChecklistList', () => {
       />
     )
 
-    expect(container.firstChild).toBeNull()
+    expect(container.firstChild).toHaveAttribute('aria-hidden', 'true')
+    expect(container.querySelector('.animate-pulse')).toBeInTheDocument()
   })
 
   it('opens actions modal when card is clicked', () => {

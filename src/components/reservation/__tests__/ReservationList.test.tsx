@@ -102,7 +102,7 @@ describe('ReservationList', () => {
     vi.clearAllMocks()
   })
 
-  it('should return null when loading', () => {
+  it('should render skeleton when loading', () => {
     const { container } = render(
       <ReservationList
         reservations={[]}
@@ -113,7 +113,8 @@ describe('ReservationList', () => {
       />
     )
 
-    expect(container.firstChild).toBeNull()
+    expect(container.firstChild).toHaveAttribute('aria-hidden', 'true')
+    expect(container.querySelector('.animate-pulse')).toBeInTheDocument()
   })
 
   it('should render empty state when no reservations', () => {

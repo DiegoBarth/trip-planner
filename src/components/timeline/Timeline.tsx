@@ -11,6 +11,7 @@ import { WeatherBadge } from '@/components/timeline/WeatherBadge'
 import { getWeatherForDate } from '@/services/weatherService'
 import { useWeather } from '@/hooks/useWeather'
 import { formatDate, dateToInputFormat } from '@/utils/formatters'
+import { TimelinePanelSkeleton } from '@/components/skeletons/TimelineSkeletons'
 import type { TimelineDay } from '@/types/Timeline'
 
 interface TimelineProps {
@@ -45,6 +46,16 @@ export default function Timeline({ timeline, city: cityProp, date: dateProp, onT
     dateForWeather && forecast.length > 0
       ? getWeatherForDate(forecast, dateToInputFormat(dateForWeather))
       : null;
+
+  /** Página passa city+date quando o dia existe; timeline ainda null = buildDayTimeline em andamento. */
+  const isTimelinePending =
+    !timeline &&
+    Boolean(cityProp?.trim()) &&
+    Boolean(dateProp?.trim());
+
+  if (isTimelinePending) {
+    return <TimelinePanelSkeleton />;
+  }
 
   if (!timeline) {
     return (

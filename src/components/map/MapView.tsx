@@ -10,6 +10,7 @@ import { FitBounds } from '@/components/map/FitBounds'
 import { MapRoutes } from '@/components/map/MapRoutes'
 import { useOSRMRoutesQuery } from '@/hooks/useOSRMRoutesQuery'
 import { isMappableAttraction } from '@/utils/typeGuards'
+import { MapViewSkeleton } from '@/components/skeletons/MapViewSkeleton'
 import type { Attraction } from '@/types/Attraction'
 import type { MappableAttraction } from '@/types/MappableAttraction'
 
@@ -87,6 +88,10 @@ export function MapView() {
   useEffect(() => {
     import('leaflet/dist/leaflet.css')
   }, [])
+
+  if (!dataReady) {
+    return <MapViewSkeleton />
+  }
 
   return (
     <div className="h-[calc(100vh-122px)] md:h-[calc(100vh-147px-4rem)]">

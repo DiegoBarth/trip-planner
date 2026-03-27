@@ -1,6 +1,11 @@
 import { DashboardCard } from '@/components/dashboard/DashboardCard'
 import { AttractionStatusCards } from '@/components/dashboard/AttractionStatusCards'
 import { PageHeader } from '@/components/ui/PageHeader'
+import {
+  BudgetOriginChartSkeleton,
+  DashboardPageSkeleton,
+  ExpensesChartSkeleton,
+} from '@/components/skeletons/DashboardSkeletons'
 import { useCountry } from '@/contexts/CountryContext'
 import { formatCurrency } from '@/utils/formatters'
 import { useAttraction } from '@/hooks/useAttraction'
@@ -36,12 +41,7 @@ export default function DashboardPage() {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-20 md:pb-6">
         <PageHeader title="Dashboard" subtitle="Resumo da sua viagem" />
-        <div className="flex flex-col items-center justify-center h-[60vh] space-y-4">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-          <p className="text-gray-500 font-medium animate-pulse">
-            Carregando dados da viagem...
-          </p>
-        </div>
+        <DashboardPageSkeleton />
       </div>
     )
   }
@@ -85,11 +85,11 @@ export default function DashboardPage() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <LazySection height={320}>
+          <LazySection height={320} fallback={<ExpensesChartSkeleton />}>
             <ExpensesByCategoryChart data={stats.expensesByCategory} />
           </LazySection>
 
-          <LazySection height={320}>
+          <LazySection height={320} fallback={<BudgetOriginChartSkeleton />}>
             <BudgetByOriginChart data={stats.budgetByOrigin} />
           </LazySection>
         </div>

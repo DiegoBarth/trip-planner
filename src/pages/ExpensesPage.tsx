@@ -13,6 +13,7 @@ import { formatDate } from '@/utils/formatters'
 import { useToast } from '@/contexts/toast'
 import type { Expense } from '@/types/Expense'
 import type { BudgetOrigin } from '@/types/Attraction'
+import { ExpenseListSkeleton } from '@/components/skeletons/ListSkeletons'
 
 const ExpenseList = lazy(() => import('@/components/expense/ExpenseList'))
 
@@ -107,7 +108,7 @@ export default function ExpensesPage() {
       />
 
       <main className="max-w-6xl mx-auto px-4 md:px-6 py-6 mb-12">
-        <Suspense fallback={null}>
+        <Suspense fallback={<ExpenseListSkeleton />}>
           <ExpenseList
             expenses={filteredExpenses}
             onCreate={handleCreate}

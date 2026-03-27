@@ -162,7 +162,7 @@ describe('TimelinePage', () => {
     vi.restoreAllMocks()
   })
 
-  it('renders loading spinner when isLoading', () => {
+  it('renders timeline skeleton when attractions are loading', () => {
     mockUseAttraction.mockReturnValue({
       attractions: [],
       isLoading: true,
@@ -179,7 +179,7 @@ describe('TimelinePage', () => {
       isDeleting: false,
     })
     render(<TimelinePage />, { wrapper: Wrapper })
-    expect(document.querySelector('.animate-spin')).toBeInTheDocument()
+    expect(screen.getByRole('status', { name: /carregando timeline/i })).toBeInTheDocument()
   })
 
   it('renders page header with title and subtitle', () => {
@@ -257,7 +257,7 @@ describe('TimelinePage', () => {
       refetch: vi.fn(),
     })
     render(<TimelinePage />, { wrapper: Wrapper })
-    expect(screen.getByText(/Carregando rotas em segundo plano/i)).toBeInTheDocument()
+    expect(screen.getByRole('status', { name: /carregando timeline/i })).toBeInTheDocument()
   })
 
   it('renders single Timeline when day is set and has mappable attractions', async () => {

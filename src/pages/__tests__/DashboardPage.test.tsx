@@ -68,6 +68,7 @@ describe('DashboardPage', () => {
       budgets: [{ id: 1, origin: 'Atrações', description: '', amount: 5000, date: '2025-03-01' }],
       budgetSummary: undefined,
       isLoading: false,
+      isSummaryPending: false,
       error: null,
       refetch: vi.fn().mockResolvedValue(undefined),
       createBudget: vi.fn(),
@@ -107,7 +108,7 @@ describe('DashboardPage', () => {
       isDeleting: false,
     })
     render(<DashboardPage />, { wrapper: Wrapper })
-    expect(screen.getByText(/Carregando dados da viagem/i)).toBeInTheDocument()
+    expect(screen.getByRole('status', { name: /carregando dashboard/i })).toBeInTheDocument()
   })
 
   it('renders dashboard stats when loaded', async () => {

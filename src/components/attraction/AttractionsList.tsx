@@ -10,6 +10,7 @@ const ModalAttraction = lazy(() =>
 const AttractionsGridWithDnD = lazy(() =>
   import('@/components/attraction/AttractionsGridWithDnD').then((m) => ({ default: m.AttractionsGridWithDnD }))
 )
+import { AttractionCardSkeleton } from '@/components/skeletons/ListSkeletons'
 import { getAutoDayForDate, getNextOrderForDate } from '@/utils/attractionDayUtils'
 import { dateToInputFormat, formatCurrency } from '@/utils/formatters'
 import type { Attraction } from '@/types/Attraction'
@@ -180,11 +181,17 @@ export default function AttractionsList({
       </div>
 
       {isLoading && (
-        <div className="space-y-6 animate-pulse" aria-hidden>
-          <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded-lg w-64" />
+        <div className="space-y-6" aria-hidden="true">
+          <div className="flex items-center justify-between gap-4 flex-wrap animate-pulse">
+            <div className="flex items-center gap-2 flex-wrap">
+              <div className="h-7 w-40 rounded-lg bg-gray-200 dark:bg-gray-600" />
+              <div className="h-4 w-16 rounded bg-gray-100 dark:bg-gray-700" />
+            </div>
+            <div className="h-10 w-32 rounded-xl bg-gray-200 dark:bg-gray-600" />
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
             {[1, 2, 3, 4, 5, 6].map((i) => (
-              <div key={i} className="aspect-[3/2] rounded-2xl bg-gray-200 dark:bg-gray-700 min-h-[120px]" />
+              <AttractionCardSkeleton key={i} />
             ))}
           </div>
         </div>
@@ -193,11 +200,11 @@ export default function AttractionsList({
         (isDragEnabled && onBulkUpdate ? (
           <Suspense
             fallback={
-              <div className="space-y-6 animate-pulse">
-                <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded-xl w-48" />
+              <div className="space-y-6" aria-hidden>
+                <div className="h-10 w-48 rounded-xl bg-gray-200 dark:bg-gray-600 animate-pulse" />
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                   {[1, 2, 3].map((i) => (
-                    <div key={i} className="aspect-[3/2] rounded-2xl bg-gray-200 dark:bg-gray-700" />
+                    <AttractionCardSkeleton key={i} />
                   ))}
                 </div>
               </div>

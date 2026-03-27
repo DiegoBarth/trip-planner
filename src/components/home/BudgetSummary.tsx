@@ -1,9 +1,14 @@
 import { BudgetCard } from '@/components/home/BudgetCard'
+import { BudgetSummarySkeleton } from '@/components/skeletons/HomeSkeletons'
 import { useBudget } from '@/hooks/useBudget'
 import type { BudgetOrigin } from '@/types/Attraction'
 
 export default function BudgetSummary() {
-  const { budgetSummary } = useBudget();
+  const { budgetSummary, isLoading, isSummaryPending } = useBudget();
+
+  if (isLoading || isSummaryPending) {
+    return <BudgetSummarySkeleton />;
+  }
 
   if (!budgetSummary) return null;
 

@@ -8,6 +8,7 @@ import { useBudget } from '@/hooks/useBudget';
 import { useToast } from '@/contexts/toast'
 import type { BudgetOrigin } from '@/types/Attraction'
 import type { CreateBudgetPayload, UpdateBudgetPayload } from '@/api/budget'
+import { BudgetListSkeleton } from '@/components/skeletons/ListSkeletons'
 
 const BudgetList = lazy(() => import('@/components/budget/BudgetList'))
 
@@ -78,7 +79,7 @@ export default function BudgetPage() {
       />
 
       <main className="max-w-6xl mx-auto px-4 md:px-6 py-6 mb-12">
-        <Suspense fallback={null}>
+        <Suspense fallback={<BudgetListSkeleton />}>
           <BudgetList
             budgets={filteredBudgets}
             isLoading={isLoading}

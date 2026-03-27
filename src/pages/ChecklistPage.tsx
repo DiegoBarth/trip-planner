@@ -6,6 +6,7 @@ import { useChecklist } from '@/hooks/useChecklist'
 import { useToast } from '@/contexts/toast'
 import { ModalChecklistItem } from '@/components/checklist/ModalChecklistItem'
 import type { ChecklistItem } from '@/types/ChecklistItem'
+import { ChecklistListSkeleton } from '@/components/skeletons/ListSkeletons'
 
 const ChecklistList = lazy(() => import('@/components/checklist/ChecklistList'))
 
@@ -72,7 +73,7 @@ export default function ChecklistPage() {
       />
 
       <main className="max-w-6xl mx-auto px-4 md:px-6 py-6 mb-12">
-        <Suspense fallback={null}>
+        <Suspense fallback={<ChecklistListSkeleton />}>
           <ChecklistList
             items={items}
             onCreate={handleCreate}

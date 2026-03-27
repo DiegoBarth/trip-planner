@@ -10,12 +10,23 @@ function getCategoryLabel(category: ExpenseCategory): string {
   return EXPENSE_CATEGORIES[category]?.label ?? category;
 }
 
-function pieSegmentPath(cx: number, cy: number, r: number, startAngle: number, endAngle: number) {
+/**
+ * Um único comando SVG A não desenha 360° (ponto inicial = final).
+ * Para fatia cheia usamos dois semicírculos, padrão comum em gráficos pizza SVG.
+ */
+function pieSegmentPath(cx: number, cy: number, r: number, startAngle: number, endAngle: number): string {
+  const sweep = endAngle - startAngle;
+  if (sweep <= 1e-6) {
+    return '';
+  }
+  if (sweep >= 2 * Math.PI - 1e-6) {
+    return `M ${cx} ${cy - r} A ${r} ${r} 0 1 1 ${cx} ${cy + r} A ${r} ${r} 0 1 1 ${cx} ${cy - r} Z`;
+  }
   const x1 = cx + r * Math.cos(startAngle);
   const y1 = cy + r * Math.sin(startAngle);
   const x2 = cx + r * Math.cos(endAngle);
   const y2 = cy + r * Math.sin(endAngle);
-  const large = endAngle - startAngle > Math.PI ? 1 : 0;
+  const large = sweep > Math.PI ? 1 : 0;
   return `M ${cx} ${cy} L ${x1} ${y1} A ${r} ${r} 0 ${large} 1 ${x2} ${y2} Z`;
 }
 
@@ -23,9 +34,10 @@ export default function ExpensesByCategoryChart({ data }: { data: ExpenseByCateg
   const [hoverIndex, setHoverIndex] = useState<number | null>(null);
 
   const { segments } = useMemo(() => {
-    const sum = data.reduce((acc, d) => acc + d.total, 0);
-    let angle = -Math.PI / 2; // start from top
-    const segs = data.map((d, i) => {
+    const positive = data.filter((d) => d.total > 0);
+    const sum = positive.reduce((acc, d) => acc + d.total, 0);
+    let angle = -Math.PI / 2; // topo do círculo
+    const segs = positive.map((d, i) => {
       const sliceAngle = sum > 0 ? (d.total / sum) * 2 * Math.PI : 0;
       const start = angle;
       angle += sliceAngle;
@@ -62,17 +74,21 @@ export default function ExpensesByCategoryChart({ data }: { data: ExpenseByCateg
       <div className="chart-container w-full relative flex flex-col min-h-0">
         <div className="flex-1 min-h-[200px] max-h-[240px] flex items-center justify-center">
           <svg viewBox="0 0 200 180" className="w-full h-full max-h-[220px]" preserveAspectRatio="xMidYMid meet" aria-label="Gráfico de gastos por categoria">
-          {segments.map((seg, i) => (
-            <path
-              key={`segment-${i}`}
-              d={pieSegmentPath(cx, cy, r, seg.startAngle, seg.endAngle)}
-              fill={seg.color}
-              className="hover:opacity-80 transition-opacity outline-none cursor-pointer"
-              onMouseEnter={(e) => handleMouseEnter(e, i)}
-              onMouseLeave={handleMouseLeave}
-              aria-hidden
-            />
-          ))}
+          {segments.map((seg, i) => {
+            const d = pieSegmentPath(cx, cy, r, seg.startAngle, seg.endAngle);
+            if (!d) return null;
+            return (
+              <path
+                key={`segment-${seg.category}-${i}`}
+                d={d}
+                fill={seg.color}
+                className="hover:opacity-80 transition-opacity outline-none cursor-pointer"
+                onMouseEnter={(e) => handleMouseEnter(e, i)}
+                onMouseLeave={handleMouseLeave}
+                aria-hidden
+              />
+            );
+          })}
           {hoverIndex !== null && segments[hoverIndex] && (
             <g>
               <title>

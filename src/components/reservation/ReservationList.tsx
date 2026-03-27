@@ -7,6 +7,7 @@ import { ConfirmModal } from '@/components/ui/ConfirmModal'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { formatDate, dateToInputFormat, parseLocalDate } from '@/utils/formatters'
 import type { BookingStatus, Reservation } from '@/types/Reservation'
+import { ReservationListSkeleton } from '@/components/skeletons/ListSkeletons'
 
 interface ReservationListProps {
   reservations: Reservation[]
@@ -126,7 +127,7 @@ export default function ReservationList({ reservations, onUpdate, onCreate, onDe
     setReservationToDelete(reservation);
   };
 
-  if (isLoading) return null;
+  if (isLoading) return <ReservationListSkeleton />;
 
   return (
     <div>

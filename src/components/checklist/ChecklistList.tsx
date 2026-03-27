@@ -12,6 +12,7 @@ import { ModalChecklistItem } from '@/components/checklist/ModalChecklistItem'
 import { ChecklistActionsModal } from '@/components/checklist/ChecklistActionsModal'
 import { CHECKLIST_CATEGORIES } from '@/config/constants'
 import type { ChecklistItem } from '@/types/ChecklistItem'
+import { ChecklistListSkeleton } from '@/components/skeletons/ListSkeletons'
 
 interface ChecklistListProps {
   items: ChecklistItem[]
@@ -107,7 +108,7 @@ export default function ChecklistList({ items, onUpdate, onCreate, onDelete, onT
     setItemToDelete(item);
   };
 
-  if (isLoading) return null;
+  if (isLoading) return <ChecklistListSkeleton />;
 
   return (
     <div>

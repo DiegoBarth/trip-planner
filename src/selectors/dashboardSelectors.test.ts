@@ -37,6 +37,17 @@ describe('selectExpensesByCategory', () => {
     expect(food?.total).toBe(150)
     expect(transport?.total).toBe(80)
   })
+
+  it('normalizes category label to key (e.g. API em português)', () => {
+    const expenses = [
+      { category: 'Alimentação' as unknown as import('@/types/Expense').ExpenseCategory, amountInBRL: 100 } as import('@/types/Expense').Expense,
+      { category: 'food' as const, amountInBRL: 50 } as import('@/types/Expense').Expense,
+    ]
+    const result = selectExpensesByCategory(expenses)
+    expect(result).toHaveLength(1)
+    expect(result[0].category).toBe('food')
+    expect(result[0].total).toBe(150)
+  })
 })
 
 describe('selectBudgetByOrigin', () => {

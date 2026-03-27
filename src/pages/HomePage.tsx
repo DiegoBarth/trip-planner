@@ -17,6 +17,7 @@ import { getExchangeRatesQueryOptions } from '@/services/currencyQueryService';
 import { getWeatherQueryOptions } from '@/services/weatherQueryService';
 import type { Attraction } from '@/types/Attraction';
 import type { Accommodation } from '@/types/Accommodation';
+import { TodaysPendenciesSkeleton, TodayExpensesCardSkeleton } from '@/components/skeletons/HomeSkeletons'
 
 const TodaysPendencies = lazy(() => import('@/components/home/TodaysPendencies'))
 const TodayExpensesCard = lazy(() => import('@/components/home/TodayExpensesCard'))
@@ -95,10 +96,10 @@ export default function HomePage(_props: { onLogout: () => void }) {
           {/* Sidebar-like Content */}
           <div className="flex flex-col gap-6">
             <h2 className="sr-only">Pendências e Gastos de Hoje</h2>
-            <Suspense fallback={<div className="h-56 rounded-xl bg-gray-100 dark:bg-gray-700 animate-pulse" />}>
+            <Suspense fallback={<TodaysPendenciesSkeleton />}>
               <TodaysPendencies />
             </Suspense>
-            <Suspense fallback={<div className="h-20 rounded-xl bg-gray-100 dark:bg-gray-700 animate-pulse" />}>
+            <Suspense fallback={<TodayExpensesCardSkeleton />}>
               <TodayExpensesCard />
             </Suspense>
           </div>

@@ -1,0 +1,65 @@
+/** Matches Timeline.tsx: weather strip + gradient day header + list area */
+
+export function TimelineWeatherStripSkeleton() {
+  return (
+    <div className="h-[207px] w-full rounded-2xl bg-gray-100 dark:bg-gray-800 animate-pulse border border-gray-200 dark:border-gray-700" aria-hidden />
+  )
+}
+
+export function TimelineDayHeaderSkeleton() {
+  return (
+    <div
+      className="bg-gradient-to-br from-slate-600 to-slate-700 dark:from-slate-700 dark:to-slate-800 text-white rounded-2xl p-5 md:p-6 shadow-lg animate-pulse space-y-4"
+      aria-hidden
+    >
+      <div className="flex items-center justify-between gap-4 flex-wrap">
+        <div className="h-4 w-16 rounded bg-white/20" />
+        <div className="h-7 md:h-8 w-48 max-w-[70%] rounded-lg bg-white/25" />
+      </div>
+      <div className="flex flex-wrap items-center gap-2">
+        <div className="w-5 h-5 rounded bg-white/20" />
+        <div className="h-5 w-24 rounded bg-white/25" />
+        <div className="h-5 w-6 rounded bg-white/15" />
+        <div className="h-5 w-28 rounded bg-white/25" />
+      </div>
+      <div className="h-px bg-white/20" />
+      <div className="space-y-2">
+        <div className="h-4 w-full max-w-md rounded bg-white/15" />
+        <div className="h-4 w-4/5 max-w-sm rounded bg-white/15" />
+      </div>
+    </div>
+  )
+}
+
+export function TimelineListSkeleton() {
+  return (
+    <div className="space-y-4 pt-4" aria-hidden>
+      {[1, 2, 3].map((i) => (
+        <div
+          key={i}
+          className="flex gap-3 p-4 rounded-xl bg-gray-50 dark:bg-gray-800/80 border border-gray-100 dark:border-gray-700 animate-pulse"
+        >
+          <div className="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-600 flex-shrink-0" />
+          <div className="flex-1 space-y-2 min-w-0">
+            <div className="h-4 w-3/4 max-w-[280px] rounded bg-gray-200 dark:bg-gray-600" />
+            <div className="h-3 w-1/2 max-w-[180px] rounded bg-gray-100 dark:bg-gray-700" />
+            <div className="flex gap-2 pt-1">
+              <div className="h-6 w-20 rounded-md bg-gray-200 dark:bg-gray-600" />
+              <div className="h-6 w-24 rounded-md bg-gray-100 dark:bg-gray-700" />
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+export function TimelinePanelSkeleton() {
+  return (
+    <div className="space-y-6" role="status" aria-label="Carregando timeline">
+      <TimelineWeatherStripSkeleton />
+      <TimelineDayHeaderSkeleton />
+      <TimelineListSkeleton />
+    </div>
+  )
+}

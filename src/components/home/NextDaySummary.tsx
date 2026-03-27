@@ -9,12 +9,13 @@ import CheckCircle2 from 'lucide-react/dist/esm/icons/check-circle-2';
 import Circle from 'lucide-react/dist/esm/icons/circle';
 import { useCountry } from '@/contexts/CountryContext'
 import { useAttraction } from '@/hooks/useAttraction'
+import { NextDaySummarySkeleton } from '@/components/skeletons/HomeSkeletons'
 import { dateToInputFormat } from '@/utils/formatters'
 import { openInMaps } from '@/utils/mapsUrl'
 
 export default function NextDaySummary() {
   const { country } = useCountry();
-  const { attractions, toggleVisited } = useAttraction(country);
+  const { attractions, toggleVisited, isLoading } = useAttraction(country);
 
   const nextDayData = useMemo(() => {
     const today = new Date();
@@ -69,6 +70,10 @@ export default function NextDaySummary() {
       nextAttraction: nextAttraction ?? null
     }
   }, [attractions]);
+
+  if (isLoading) {
+    return <NextDaySummarySkeleton />;
+  }
 
   if (!nextDayData) {
     return (

@@ -8,6 +8,7 @@ import { QueryErrorView } from '@/components/ui/QueryErrorView'
 import { useCountry } from '@/contexts/CountryContext'
 import { COUNTRIES } from '@/config/constants'
 import { cn } from '@/lib/utils'
+import { ConverterRatesSkeleton } from '@/components/skeletons/ConverterSkeletons'
 import type { Currency } from '@/types/Attraction'
 
 const CURRENCY_OPTIONS: { label: string; value: Currency }[] = [
@@ -203,7 +204,7 @@ export default function ConverterPage() {
             aria-live="polite"
           >
             {isLoading ? (
-              <p className="text-gray-500">Carregando taxas...</p>
+              <ConverterRatesSkeleton />
             ) : converted !== null && amount > 0 && (
               <>
                 <p className="text-sm text-gray-500">

@@ -12,7 +12,7 @@ export function useBudget() {
   const queryClient = useQueryClient();
 
   const { data: budgets = [], isLoading, error, refetch } = useQuery(getBudgetsQueryOptions());
-  const { data: budgetSummary } = useQuery<BudgetSummary>(getBudgetSummaryQueryOptions());
+  const { data: budgetSummary, isPending: isSummaryPending } = useQuery<BudgetSummary>(getBudgetSummaryQueryOptions());
 
   const createMutation = useMutation({
     mutationFn: (payload: CreateBudgetPayload) => createBudget(payload),
@@ -57,6 +57,7 @@ export function useBudget() {
     budgets,
     budgetSummary,
     isLoading,
+    isSummaryPending,
     error,
     refetch,
     createBudget: createMutation.mutateAsync,

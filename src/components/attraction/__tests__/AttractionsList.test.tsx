@@ -126,10 +126,8 @@ describe('AttractionsList', () => {
 
     expect(container).toBeTruthy()
 
-    const skeleton = container.querySelector('.animate-pulse')
-    expect(skeleton).toBeInTheDocument()
-
-    expect(skeleton).toHaveAttribute('aria-hidden', 'true')
+    expect(container.querySelectorAll('.animate-pulse').length).toBeGreaterThan(0)
+    expect(container.querySelector('[aria-hidden="true"]')).toBeInTheDocument()
   })
 
   it('renders grid plain when not drag enabled', async () => {

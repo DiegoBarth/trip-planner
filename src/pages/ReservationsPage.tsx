@@ -8,6 +8,7 @@ import { useCountry } from '@/contexts/CountryContext'
 import { useToast } from '@/contexts/toast'
 import { ModalReservation } from '@/components/reservation/ModalReservation'
 import type { Reservation } from '@/types/Reservation'
+import { ReservationListSkeleton } from '@/components/skeletons/ListSkeletons'
 
 const ReservationList = lazy(() => import('@/components/reservation/ReservationList'))
 
@@ -70,7 +71,7 @@ export default function ReservationsPage() {
       />
 
       <main className="max-w-6xl mx-auto px-4 md:px-6 py-6 mb-12">
-        <Suspense fallback={null}>
+        <Suspense fallback={<ReservationListSkeleton />}>
           <ReservationList
             reservations={filteredReservations}
             onCreate={handleCreate}

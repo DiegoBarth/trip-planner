@@ -64,4 +64,15 @@ describe('ExpensesByCategoryChart', () => {
 
     expect(screen.getByLabelText('Gráfico de gastos por categoria')).toBeInTheDocument()
   })
+
+  it('renders full disc for a single category (SVG full circle uses two arcs)', () => {
+    const { container } = render(
+      <ExpensesByCategoryChart data={[{ category: 'food' as any, total: 200 }]} />
+    )
+
+    const path = container.querySelector('path');
+    expect(path).toBeTruthy();
+    const d = path?.getAttribute('d') ?? '';
+    expect(d.split(' A ').length - 1).toBe(2);
+  })
 })

@@ -2,7 +2,15 @@ import type { Budget } from '@/types/Budget'
 import type { Expense, ExpenseCategory } from '@/types/Expense'
 import type { Attraction } from '@/types/Attraction'
 import type { BudgetOrigin } from '@/types/Attraction'
+import { EXPENSE_CATEGORIES, getCategoryFromLabel } from '@/config/constants'
 import { dateToInputFormat } from '@/utils/formatters'
+
+function normalizeExpenseCategory(raw: string): ExpenseCategory {
+  if (Object.prototype.hasOwnProperty.call(EXPENSE_CATEGORIES, raw)) {
+    return raw as ExpenseCategory;
+  }
+  return getCategoryFromLabel(raw);
+}
 
 export function selectTotalSpent(expenses: Expense[]) {
   return expenses.reduce((acc, e) => acc + e.amountInBRL, 0);
@@ -12,13 +20,16 @@ export function selectExpensesByCategory(expenses: Expense[]) {
   const map = new Map<ExpenseCategory, number>();
 
   expenses.forEach(e => {
-    map.set(e.category, (map.get(e.category) || 0) + e.amountInBRL)
+    const category = normalizeExpenseCategory(String(e.category));
+    map.set(category, (map.get(category) || 0) + e.amountInBRL)
   });
 
-  return Array.from(map).map(([category, total]) => ({
-    category,
-    total
-  }));
+  return Array.from(map)
+    .filter(([, total]) => total > 0)
+    .map(([category, total]) => ({
+      category,
+      total
+    }));
 }
 
 export function selectBudgetByOrigin(budgets: Budget[], expenses: Expense[]) {

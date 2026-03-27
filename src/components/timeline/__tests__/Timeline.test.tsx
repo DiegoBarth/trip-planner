@@ -130,9 +130,14 @@ describe('Timeline Component', () => {
     Element.prototype.scrollIntoView = vi.fn();
   });
 
-  it('renders placeholder when no timeline is provided', () => {
+  it('renders placeholder when no timeline and no day context', () => {
     render(<Timeline timeline={null} />);
     expect(screen.getByText(/Nenhuma atração para mostrar/)).toBeInTheDocument();
+  });
+
+  it('renders skeleton when timeline is pending (city and date from page)', () => {
+    render(<Timeline timeline={null} city="Tokyo" date="2026-03-03" />);
+    expect(screen.getByRole('status', { name: /carregando timeline/i })).toBeInTheDocument();
   });
 
   it('renders timeline correctly with attractions', () => {

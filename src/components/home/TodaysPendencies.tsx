@@ -6,10 +6,11 @@ import FileText from 'lucide-react/dist/esm/icons/file-text';
 import ChevronRight from 'lucide-react/dist/esm/icons/chevron-right';
 import { useReservation } from '@/hooks/useReservation'
 import { useChecklist } from '@/hooks/useChecklist';
+import { TodaysPendenciesSkeleton } from '@/components/skeletons/HomeSkeletons'
 
 export default function TodaysPendencies() {
-  const { reservations } = useReservation();
-  const { items } = useChecklist();
+  const { reservations, isLoading: reservationsLoading } = useReservation();
+  const { items, isLoading: checklistLoading } = useChecklist();
 
   const pendencies = useMemo(() => {
     const unpackedItems = items.filter(item => !item.isPacked);
@@ -21,6 +22,10 @@ export default function TodaysPendencies() {
       total: unpackedItems.length + pendingReservations.length
     };
   }, [items, reservations]);
+
+  if (reservationsLoading || checklistLoading) {
+    return <TodaysPendenciesSkeleton />;
+  }
 
   if (pendencies.total === 0) {
     return (

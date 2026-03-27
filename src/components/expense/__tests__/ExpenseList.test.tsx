@@ -113,9 +113,10 @@ describe('ExpenseList', () => {
     vi.clearAllMocks()
   })
 
-  it('should render nothing when isLoading is true', () => {
+  it('should render skeleton when isLoading is true', () => {
     const { container } = render(<ExpenseList {...defaultProps} isLoading={true} />)
-    expect(container.firstChild).toBeNull()
+    expect(container.firstChild).toHaveAttribute('aria-hidden', 'true')
+    expect(container.querySelector('.animate-pulse')).toBeInTheDocument()
   })
 
   it('should render EmptyState when there are no expenses', () => {

@@ -8,6 +8,7 @@ import { EmptyState } from '@/components/ui/EmptyState'
 import { formatCurrency, dateToInputFormat } from '@/utils/formatters'
 import { COUNTRIES } from '@/config/constants'
 import type { Expense } from '@/types/Expense'
+import { ExpenseListSkeleton } from '@/components/skeletons/ListSkeletons'
 
 const COUNTRY_DISPLAY_ORDER = ['japan', 'south-korea', 'general', 'outros'];
 
@@ -91,7 +92,7 @@ export default function ExpenseList({ expenses, onUpdate, onCreate, onDelete, is
     }
   };
 
-  if (isLoading) return null;
+  if (isLoading) return <ExpenseListSkeleton />;
 
   const totalBRL = expenses.reduce((sum, e) => sum + (e.amountInBRL ?? 0), 0);
   const hasExpenses = expenses.length > 0;

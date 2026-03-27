@@ -10,6 +10,7 @@ import { useToast } from '@/contexts/toast'
 import { useCountry } from '@/contexts/CountryContext'
 import { ReorderDaysModal } from '@/components/attraction/ReorderDaysModal'
 import type { Attraction, Country } from '@/types/Attraction'
+import { AttractionsListSkeleton } from '@/components/skeletons/ListSkeletons'
 
 const ModalAttraction = lazy(() =>
   import('@/components/attraction/ModalAttraction').then((m) => ({ default: m.ModalAttraction }))
@@ -139,7 +140,7 @@ export default function AttractionsPage() {
       />
 
       <main className="max-w-6xl mx-auto px-4 md:px-6 py-6 mb-12">
-        <Suspense fallback={null}>
+        <Suspense fallback={<AttractionsListSkeleton />}>
           <AttractionsList
             attractions={filteredAttractions}
             attractionsForDayOrder={day !== 'all' ? attractions : undefined}

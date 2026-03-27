@@ -103,9 +103,10 @@ afterEach(() => {
 })
 
 describe('BudgetList', () => {
-  it('returns null when loading', () => {
+  it('shows skeleton when loading', () => {
     const { container } = renderComponent({ isLoading: true })
-    expect(container.firstChild).toBeNull()
+    expect(container.firstChild).not.toBeNull()
+    expect(container.querySelector('.animate-pulse')).toBeInTheDocument()
   })
 
   it('shows empty state when no budgets', () => {

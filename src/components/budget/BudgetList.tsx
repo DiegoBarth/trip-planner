@@ -9,6 +9,7 @@ import { BUDGET_ORIGINS } from '@/config/constants'
 import type { Budget } from '@/types/Budget'
 import type { BudgetOrigin } from '@/types/Attraction'
 import type { CreateBudgetPayload, UpdateBudgetPayload } from '@/api/budget'
+import { BudgetListSkeleton } from '@/components/skeletons/ListSkeletons'
 
 interface BudgetListProps {
   budgets: Budget[]
@@ -93,7 +94,7 @@ export default function BudgetList({ budgets, isLoading, onUpdate, onCreate, onD
     setBudgetToDelete(budget);
   };
 
-  if (isLoading) return null;
+  if (isLoading) return <BudgetListSkeleton />;
 
   return (
     <div>

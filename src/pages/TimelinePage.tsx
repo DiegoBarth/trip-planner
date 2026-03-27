@@ -13,6 +13,7 @@ import { buildDayTimeline, suggestStartTime, recomputeTimelineWithStartTime } fr
 import type { Attraction, Country } from '@/types/Attraction'
 import type { Accommodation } from '@/types/Accommodation'
 import type { TimelineDay } from '@/types/Timeline'
+import { TimelinePanelSkeleton } from '@/components/skeletons/TimelineSkeletons'
 
 const Timeline = lazy(() => import('@/components/timeline/Timeline'))
 
@@ -374,14 +375,6 @@ export default function TimelinePage() {
     }
   };
 
-  if (isAttractionsLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-20 md:pb-6">
       <PageHeader
@@ -404,8 +397,11 @@ export default function TimelinePage() {
       />
 
       <main className="max-w-6xl mx-auto px-4 md:px-6 py-6 min-h-screen">
-
-        {(day === 'all'
+        {isAttractionsLoading ? (
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 min-h-[420px]">
+            <TimelinePanelSkeleton />
+          </div>
+        ) : (day === 'all'
           ? dayGroups.length === 0
           : timelineAttractions.length === 0) ? (
 
@@ -425,16 +421,14 @@ export default function TimelinePage() {
             </Link>
           </div>
         ) : isRoutesLoading ? (
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-8 text-center">
-            <p className="text-gray-500 dark:text-gray-400 text-sm">
-              Carregando rotas em segundo plano...
-            </p>
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 min-h-[420px]">
+            <TimelinePanelSkeleton />
           </div>
         ) : day === 'all' ? (
           <div className="space-y-10">
             <Suspense
               fallback={
-                <div className="h-650 bg-gray-200 dark:bg-gray-700 animate-pulse rounded-2xl" />
+                <TimelinePanelSkeleton />
               }
             >
               {dayGroups.map((group, idx) => (
@@ -456,7 +450,7 @@ export default function TimelinePage() {
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 min-h-[420px]">
             <Suspense
               fallback={
-                <div className="h-40 bg-gray-200 dark:bg-gray-700 animate-pulse rounded-2xl" />
+                <TimelinePanelSkeleton />
               }
             >
               <Timeline
