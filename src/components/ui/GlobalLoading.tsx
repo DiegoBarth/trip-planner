@@ -1,26 +1,14 @@
 import Loader2 from 'lucide-react/dist/esm/icons/loader-2';
-import { useLocation } from 'react-router-dom'
-import { useIsFetching, useIsMutating } from '@tanstack/react-query'
+import { useIsMutating } from '@tanstack/react-query'
 
+/**
+ * Full-screen loading only for mutations (save/delete/etc.).
+ * Read queries refetch in the background (focus/reconnect) so navigating Home does not
+ * block the UI; use local skeletons/spinners where a specific first load is critical.
+ */
 export function GlobalLoading() {
-  const { pathname } = useLocation();
-
-  const isFetching = useIsFetching({
-    predicate: (query) => {
-      const key = query.queryKey[0];
-
-      if (key === 'weather' || key === 'budget_summary') return false;
-      if (key === 'osrm-routes') {
-        return (pathname === '/timeline' || pathname === '/map')
-          && query.state.data === undefined;
-      }
-
-      return query.state.data === undefined;
-    }
-  });
-
   const isMutating = useIsMutating();
-  const isLoading = isFetching > 0 || isMutating > 0;
+  const isLoading = isMutating > 0;
 
   if (!isLoading) return null;
 

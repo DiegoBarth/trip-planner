@@ -1,4 +1,5 @@
 import { QueryClient } from '@tanstack/react-query'
+import { OFFLINE_STALE_TIME_MS } from '@/config/constants'
 import { shouldRefetchOnFocus } from '@/services/refetchPolicy'
 
 const CACHE_PREFIX = 'rq_v1_'
@@ -20,7 +21,13 @@ export function createQueryClient(): QueryClient {
         retry: 1,
         refetchOnWindowFocus: shouldRefetchOnFocus,
         refetchOnReconnect: true,
-        refetchOnMount: false
+        refetchOnMount: false,
+        /**
+         * Default React Query gcTime is 5 minutes; inactive queries were dropped while
+         * navigating (e.g. Home → Timeline → Home), forcing cold fetches and a global
+         * loading overlay. Keep cached queries in memory for the session length.
+         */
+        gcTime: OFFLINE_STALE_TIME_MS
       }
     }
   })
