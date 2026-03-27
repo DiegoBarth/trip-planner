@@ -3,6 +3,7 @@ import X from 'lucide-react/dist/esm/icons/x'
 import { useQueryClient } from '@tanstack/react-query'
 import { reorderDay, moveAttractionToDay } from '@/api/attraction'
 import { useAttraction } from '@/hooks/useAttraction'
+import { replaceAttractionsInCache } from '@/services/attractionCacheService'
 import { useBodyScrollLock } from '@/hooks/useBodyScrollLock'
 import { useToast } from '@/contexts/toast'
 import type { Attraction, Country } from '@/types/Attraction'
@@ -39,9 +40,9 @@ export function ReorderDaysModal({ isOpen, onClose, country }: ReorderDaysModalP
     if (fromDay === toDay) return
     setMovingDay(true)
     try {
-      await reorderDay({ country, fromDay, toDay })
-      queryClient.invalidateQueries({ queryKey: ['attractions'] })
-      queryClient.invalidateQueries({ queryKey: ['osrm-routes'] })
+      const updated = await reorderDay({ country, fromDay, toDay })
+      replaceAttractionsInCache(queryClient, updated)
+      await queryClient.invalidateQueries({ queryKey: ['osrm-routes'] })
       success(`Dia ${fromDay} movido para o dia ${toDay}`)
       onClose()
     } catch (err) {
@@ -58,8 +59,8 @@ export function ReorderDaysModal({ isOpen, onClose, country }: ReorderDaysModalP
     setMovingAttractionId(attraction.id)
     try {
       await moveAttractionToDay({ id: attraction.id, targetDay })
-      queryClient.invalidateQueries({ queryKey: ['attractions'] })
-      queryClient.invalidateQueries({ queryKey: ['osrm-routes'] })
+      await queryClient.refetchQueries({ queryKey: ['attractions'] })
+      await queryClient.invalidateQueries({ queryKey: ['osrm-routes'] })
       success(`"${attraction.name}" movido para o dia ${targetDay}`)
       setTargetDayByAttraction(prev => {
         const next = { ...prev }

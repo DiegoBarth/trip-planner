@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { QueryClient } from '@tanstack/react-query'
 import {
+  replaceAttractionsInCache,
   updateAttractionCacheOnCreate,
   updateAttractionCacheOnUpdate,
   updateAttractionCacheOnDelete,
@@ -28,6 +29,15 @@ function makeAttraction(overrides: Partial<Attraction> = {}): Attraction {
 }
 
 describe('attractionCacheService', () => {
+  it('replaceAttractionsInCache replaces full list', () => {
+    const client = new QueryClient()
+    client.setQueryData(['attractions'], [makeAttraction({ id: 1, day: 1 })])
+    replaceAttractionsInCache(client, [makeAttraction({ id: 1, day: 2 }), makeAttraction({ id: 2, day: 2 })])
+    const data = client.getQueryData<Attraction[]>(['attractions'])
+    expect(data).toHaveLength(2)
+    expect(data?.every(a => a.day === 2)).toBe(true)
+  })
+
   it('updateAttractionCacheOnCreate appends new attraction', () => {
     const client = new QueryClient()
     client.setQueryData(['attractions'], [makeAttraction({ id: 1 })])

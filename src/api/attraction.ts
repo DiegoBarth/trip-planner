@@ -160,5 +160,5 @@ export async function moveAttractionToDay(payload: MoveAttractionToDayPayload): 
     throw new Error(response.message || 'Failed to move attraction to day');
   }
 
-  return response.data as Attraction;
+  return parseAttractions([response.data])[0] as Attraction;
 }

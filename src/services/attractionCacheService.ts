@@ -3,6 +3,11 @@ import type { Attraction } from '@/types/Attraction'
 
 const ATTRACTION_QUERY_KEY = ['attractions'];
 
+/** Replace full list (e.g. after reorderDay bulk update from API). */
+export function replaceAttractionsInCache(queryClient: QueryClient, attractions: Attraction[]) {
+  queryClient.setQueryData<Attraction[]>(ATTRACTION_QUERY_KEY, attractions);
+}
+
 export function updateAttractionCacheOnCreate(queryClient: QueryClient, newAttraction: Attraction) {
   queryClient.setQueryData<Attraction[]>(
     ATTRACTION_QUERY_KEY,
