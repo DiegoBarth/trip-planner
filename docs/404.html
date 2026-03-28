@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="anonymous">
+  <link rel="preload" as="style" onload="this.rel=&#39;stylesheet&#39;" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Poppins:wght@600;700&amp;display=swap">
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#6366f1" />
+  <meta name="description" content="Plan your dream trip to Japan and South Korea" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- Preload fontes críticas (latin) para reduzir CLS no título e no corpo -->
+  <link rel="preload" href="https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="https://fonts.gstatic.com/s/poppins/v24/pxiByp8kv8JHgFVrLEj6Z1xlFd2JQEk.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="https://fonts.gstatic.com/s/poppins/v24/pxiByp8kv8JHgFVrLCz7Z1xlFd2JQEk.woff2" as="font" type="font/woff2" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=optional"
+    rel="stylesheet"
+    media="print"
+    onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=optional"></noscript>
+
+  <title>Trip Planner</title>
+
+  <style>
+    /* Fallback com métricas da Inter: evita CLS em spans quando a fonte da Web carrega */
+    @font-face {
+      font-family: 'Inter Fallback';
+      ascent-override: 90%;
+      descent-override: 22%;
+      size-adjust: 107%;
+      src: local('Arial');
+    }
+
+    /* Esqueleto Crítico para evitar CLS e melhorar FCP */
+    :root {
+      --bg: #f8fafc;
+      --header: #4f46e5;
+    }
+
+    .dark {
+      --bg: #0f172a;
+      --header: #312e81;
+    }
+
+    body {
+      margin: 0;
+      background-color: var(--bg);
+      font-family: sans-serif;
+    }
+
+    /* Header fixo: LCP (h1) no primeiro paint; React monta em #app-root e injeta só os controles */
+    .app-header {
+      background: linear-gradient(135deg, #2563eb, #9333ea, #ec4899);
+      color: #fff;
+    }
+    .app-header__inner {
+      max-width: 72rem;
+      margin: 0 auto;
+      padding: 1.5rem 1rem 2rem;
+    }
+    .app-header__row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .app-header h1 {
+      margin: 0;
+      font-family: 'Poppins', 'Inter', sans-serif;
+      font-size: 1.875rem;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      line-height: 1.2;
+    }
+    .app-header__subtitle {
+      margin: 0.5rem 0 0;
+      font-size: 0.875rem;
+      opacity: 0.9;
+    }
+    @media (min-width: 768px) {
+      .app-header h1 { font-size: 2.25rem; }
+      .app-header__subtitle { font-size: 1rem; }
+    }
+    .app-header.hidden { display: none !important; }
+  </style>
+  <script type="module" crossorigin src="/trip-planner/assets/index-BPyHmS68.js"></script>
+  <link rel="modulepreload" crossorigin href="/trip-planner/assets/rolldown-runtime-CWU8vmCm.js">
+  <link rel="modulepreload" crossorigin href="/trip-planner/assets/google-login-button-lkaudT6W.js">
+  <link rel="modulepreload" crossorigin href="/trip-planner/assets/router-rvax8L1A.js">
+  <link rel="modulepreload" crossorigin href="/trip-planner/assets/react-query-DE2rgPia.js">
+  <link rel="modulepreload" crossorigin href="/trip-planner/assets/ui-icons-CNy-R80H.js">
+  <link rel="modulepreload" crossorigin href="/trip-planner/assets/react-vendor-CNJILNc-.js">
+  <link rel="modulepreload" crossorigin href="/trip-planner/assets/zod-D5IKcgru.js">
+  <link rel="stylesheet" crossorigin href="/trip-planner/assets/index-rmz2aFj6.css" media="print" onload="this.media='all'"><noscript><link rel="stylesheet" href="/trip-planner/assets/index-rmz2aFj6.css"></noscript>
+<link rel="manifest" href="/trip-planner/manifest.webmanifest"></head>
+
+<body>
+  <div id="root">
+    <main id="app-root"></main>
+  </div>
+  <script>
+    (function () {
+      var theme = localStorage.getItem('theme');
+      var root = document.documentElement;
+      if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        root.classList.add('dark');
+        root.setAttribute('data-theme', 'dark');
+      }
+    })();
+  </script>
+</body>
+
+</html>
