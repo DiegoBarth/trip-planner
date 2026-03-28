@@ -8,6 +8,11 @@ import type { Attraction } from '@/types/Attraction'
 import type { Accommodation } from '@/types/Accommodation'
 import type { Country } from '@/types/Attraction'
 
+/** Stable fallbacks so consumers' useEffects are not retriggered every render when query has no data yet. */
+const EMPTY_ROUTES: Record<number, [number, number][]> = {}
+const EMPTY_DISTANCES: Record<number, number> = {}
+const EMPTY_SEGMENTS_BY_DAY: Record<number, (TimelineSegment | null)[]> = {}
+
 function accommodationToAttraction(acc: Accommodation, first: Attraction): Attraction {
   return {
     id: -999,
@@ -197,9 +202,9 @@ export function useOSRMRoutesQuery(
   const data = query.data;
 
   return {
-    routes: data?.routes ?? {},
-    distances: data?.distances ?? {},
-    segmentsByDay: data?.segmentsByDay ?? {},
+    routes: data?.routes ?? EMPTY_ROUTES,
+    distances: data?.distances ?? EMPTY_DISTANCES,
+    segmentsByDay: data?.segmentsByDay ?? EMPTY_SEGMENTS_BY_DAY,
     isRoutesLoading: query.isLoading,
     refetch: query.refetch,
   };

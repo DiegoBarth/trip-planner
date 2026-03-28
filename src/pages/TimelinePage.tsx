@@ -210,20 +210,41 @@ export default function TimelinePage() {
 
   const [singleTimeline, setSingleTimeline] = useState<TimelineDay | null>(null);
   const [dayTimelines, setDayTimelines] = useState<(TimelineDay | null)[]>([]);
-  const [overrideStartTime, setOverrideStartTime] = useState<string | null>(null);
+  /** Per trip-day start-time overrides (key = day number). */
+  const [overrideStartByDay, setOverrideStartByDay] = useState<Record<number, string>>({});
 
   const displayedTimeline = useMemo(() => {
-    if (!singleTimeline) return null;
-    if (overrideStartTime) return recomputeTimelineWithStartTime(singleTimeline, overrideStartTime);
+    if (!singleTimeline || day === 'all') return null;
+    const d = Number(day);
+    const o = overrideStartByDay[d];
+    if (o) return recomputeTimelineWithStartTime(singleTimeline, o);
     return singleTimeline;
-  }, [singleTimeline, overrideStartTime]);
+  }, [singleTimeline, day, overrideStartByDay]);
+
+  const displayedDayTimelines = useMemo(() => {
+    if (day !== 'all') return [];
+    return dayTimelines.map((t, idx) => {
+      if (!t) return null;
+      const dayNum = dayGroups[idx]?.day;
+      if (dayNum == null) return t;
+      const o = overrideStartByDay[dayNum];
+      return o ? recomputeTimelineWithStartTime(t, o) : t;
+    });
+  }, [day, dayTimelines, dayGroups, overrideStartByDay]);
 
   const suggestedStartTime = useMemo(() => {
     return singleTimeline ? suggestStartTime(singleTimeline.attractions, singleTimeline.segments) : null;
   }, [singleTimeline]);
 
   const handleStartTimeChange = useCallback((newStartTime: string) => {
-    setOverrideStartTime(newStartTime);
+    if (day === 'all') return;
+    const d = Number(day);
+    if (!Number.isInteger(d) || d < 1) return;
+    setOverrideStartByDay((prev) => ({ ...prev, [d]: newStartTime }));
+  }, [day]);
+
+  const handleStartTimeChangeForDay = useCallback((dayNum: number, newStartTime: string) => {
+    setOverrideStartByDay((prev) => ({ ...prev, [dayNum]: newStartTime }));
   }, []);
 
   useEffect(() => {
@@ -233,6 +254,11 @@ export default function TimelinePage() {
     if (day !== 'all') {
       if (timelineAttractions.length === 0) {
         setSingleTimeline(null);
+        setOverrideStartByDay((prev) => {
+          const next = { ...prev };
+          delete next[Number(day)];
+          return next;
+        });
         return;
       }
 
@@ -257,7 +283,11 @@ export default function TimelinePage() {
           if (!cancelled) {
             startTransition(() => {
               setSingleTimeline(t);
-              setOverrideStartTime(null);
+              setOverrideStartByDay((prev) => {
+                const next = { ...prev };
+                delete next[Number(day)];
+                return next;
+              });
             });
           }
         });
@@ -270,6 +300,7 @@ export default function TimelinePage() {
     if (dayGroups.length === 0) {
       setDayTimelines([]);
       setSingleTimeline(null);
+      setOverrideStartByDay({});
       return;
     }
 
@@ -298,6 +329,7 @@ export default function TimelinePage() {
       if (!cancelled) {
         startTransition(() => {
           setDayTimelines(results);
+          setOverrideStartByDay({});
         });
       }
     });
@@ -320,7 +352,7 @@ export default function TimelinePage() {
 
       if (day === 'all') {
 
-        const timelineDays =
+        const baseTimelines =
           dayTimelines.length === dayGroups.length
             ? dayTimelines
             :             await Promise.all(
@@ -338,6 +370,13 @@ export default function TimelinePage() {
                 return buildDayTimeline(g.attractions, precomputed);
               })
             );
+
+        const timelineDays = baseTimelines.map((t, i) => {
+          if (!t) return null;
+          const d = dayGroups[i]?.day;
+          const o = d != null ? overrideStartByDay[d] : undefined;
+          return o ? recomputeTimelineWithStartTime(t, o) : t;
+        });
 
         const valid =
           timelineDays.filter(
@@ -364,6 +403,7 @@ export default function TimelinePage() {
             : undefined;
 
         const single =
+          displayedTimeline ??
           singleTimeline ??
           (await buildDayTimeline(timelineAttractions, precomputed));
 
@@ -447,10 +487,19 @@ export default function TimelinePage() {
                   className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 min-h-[calc(100dvh-160px)]"
                 >
                   <Timeline
-                    timeline={dayTimelines[idx] ?? null}
+                    timeline={displayedDayTimelines[idx] ?? null}
                     city={group.attractions[0]?.city}
                     date={group.date}
                     onToggleVisited={handleToggleVisited}
+                    suggestedStartTime={
+                      dayTimelines[idx]
+                        ? suggestStartTime(
+                            dayTimelines[idx]!.attractions,
+                            dayTimelines[idx]!.segments
+                          )
+                        : null
+                    }
+                    onStartTimeChange={(t) => handleStartTimeChangeForDay(group.day, t)}
                   />
                 </div>
               ))}
