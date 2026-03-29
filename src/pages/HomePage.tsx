@@ -4,11 +4,13 @@ import { useQueryClient } from '@tanstack/react-query';
 import Banknote from 'lucide-react/dist/esm/icons/banknote';
 import Wallet from 'lucide-react/dist/esm/icons/wallet';
 import ChevronRight from 'lucide-react/dist/esm/icons/chevron-right';
+import WifiOff from 'lucide-react/dist/esm/icons/wifi-off';
 import { QuickActions } from '@/components/ui/QuickActions'
 import { LazySection } from '@/components/LazySection'
 import NextDaySummary from '@/components/home/NextDaySummary'
 import { useCountry } from '@/contexts/CountryContext'
 import { useAttraction } from '@/hooks/useAttraction'
+import { useOnlineStatus } from '@/hooks/useOnlineStatus'
 import { getBudgetsQueryOptions, getBudgetSummaryQueryOptions } from '@/services/budgetQueryService';
 import { getAccommodationsQueryOptions } from '@/services/accommodationQueryService';
 import { getExchangeRatesQueryOptions } from '@/services/currencyQueryService';
@@ -22,6 +24,7 @@ const BudgetSummary = lazy(() => import('@/components/home/BudgetSummary'))
 export default function HomePage(_props: { onLogout: () => void }) {
   const { country } = useCountry()
   const { citiesToPrefetch } = useAttraction(country)
+  const isOnline = useOnlineStatus()
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -36,6 +39,15 @@ export default function HomePage(_props: { onLogout: () => void }) {
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 pb-20">
       <main className="max-w-6xl mx-auto px-4 md:px-6 py-6 flex flex-col gap-6">
+        {!isOnline && (
+          <div
+            className="md:hidden flex items-center gap-2 px-3 py-2 rounded-xl bg-red-100 dark:bg-red-900/30 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-200"
+            aria-live="polite"
+          >
+            <WifiOff className="w-4 h-4" />
+            <span className="text-sm font-medium">Modo offline: edição desabilitada</span>
+          </div>
+        )}
         <Link
           to="/converter"
           className="md:hidden flex items-center gap-3 w-full p-4 rounded-2xl bg-amber-100 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-800 text-amber-900 dark:text-amber-100 hover:bg-amber-200/80 dark:hover:bg-amber-800/30 active:scale-[0.98] transition-all focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-gray-50 dark:focus:ring-offset-gray-900 focus:outline-none"

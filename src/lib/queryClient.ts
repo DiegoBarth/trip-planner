@@ -3,7 +3,7 @@ import { OFFLINE_STALE_TIME_MS, OSRM_LOCAL_STORAGE_MAX_AGE_MS } from '@/config/c
 import { shouldRefetchOnFocus } from '@/services/refetchPolicy'
 
 const CACHE_PREFIX = 'rq_v1_'
-const CACHE_MAX_AGE_MS = 120 * 60 * 1000 // 2 hours (sessionStorage / refresh)
+const CACHE_MAX_AGE_MS = 120 * 60 * 1000 // 2 hours
 const OSRM_QUERY_KEY = 'osrm-routes'
 
 function isOSRMQueryKey(queryKey: unknown): boolean {
@@ -32,22 +32,21 @@ export function createQueryClient(): QueryClient {
   })
 }
 
-function loadFromStorage(client: QueryClient, storage: Storage, onlyOSRM: boolean) {
+function loadFromStorage(client: QueryClient, storage: Storage) {
   for (const storageKey of Object.keys(storage)) {
     if (!storageKey.startsWith(CACHE_PREFIX)) continue
     const raw = storage.getItem(storageKey)
     if (!raw) continue
     try {
       const { data, dataUpdatedAt, queryKey } = JSON.parse(raw)
-      if (onlyOSRM !== isOSRMQueryKey(queryKey)) continue
-      const maxAge = onlyOSRM ? OSRM_LOCAL_STORAGE_MAX_AGE_MS : CACHE_MAX_AGE_MS
+      const maxAge = isOSRMQueryKey(queryKey) ? OSRM_LOCAL_STORAGE_MAX_AGE_MS : CACHE_MAX_AGE_MS
       if (Date.now() - dataUpdatedAt > maxAge) {
         storage.removeItem(storageKey)
         continue
       }
       client.setQueryData(queryKey, data, { updatedAt: dataUpdatedAt })
     } catch (parseErr) {
-      console.warn('[queryClient] Cache inválido, removendo:', storageKey, parseErr)
+      console.warn('[queryClient] Invalid cache entry, removing:', storageKey, parseErr)
       storage.removeItem(storageKey)
     }
   }
@@ -55,13 +54,12 @@ function loadFromStorage(client: QueryClient, storage: Storage, onlyOSRM: boolea
 
 function loadCache(client: QueryClient) {
   try {
-    loadFromStorage(client, sessionStorage, false)
     if (typeof localStorage !== 'undefined') {
-      loadFromStorage(client, localStorage, true)
+      loadFromStorage(client, localStorage)
     }
   } catch (err) {
-    if (typeof sessionStorage !== 'undefined') {
-      console.warn('[queryClient] Erro ao carregar cache:', err)
+    if (typeof localStorage !== 'undefined') {
+      console.warn('[queryClient] Error loading cache:', err)
     }
   }
 }
@@ -75,8 +73,8 @@ function persistCache(client: QueryClient) {
     // Persist only when query has data (prefetch and useQuery both set status to 'success')
     if (query.state.status !== 'success' || query.state.data === undefined) return
     const storageKey = CACHE_PREFIX + JSON.stringify(qk)
-    const useLocalForOSRM = isOSRMQueryKey(qk) && typeof localStorage !== 'undefined'
-    const storage = useLocalForOSRM ? localStorage : sessionStorage
+    if (typeof localStorage === 'undefined') return
+    const storage = localStorage
     try {
       storage.setItem(storageKey, JSON.stringify({
         queryKey: qk,
@@ -87,8 +85,8 @@ function persistCache(client: QueryClient) {
       const isQuota = err instanceof DOMException && (err.name === 'QuotaExceededError' || err.code === 22)
       console.warn(
         isQuota
-          ? `[queryClient] ${storage === localStorage ? 'local' : 'session'}Storage cheio; cache não foi salvo. Limpe dados do site se precisar de espaço.`
-          : '[queryClient] Erro ao persistir cache:',
+          ? '[queryClient] localStorage full; cache was not persisted. Clear site data if needed.'
+          : '[queryClient] Error persisting cache:',
         err
       )
     }

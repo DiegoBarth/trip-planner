@@ -3,6 +3,7 @@ import { createExpense, updateExpense, deleteExpense, getExpenses } from '@/api/
 import { updateExpenseCacheOnCreate, updateExpenseCacheOnUpdate, updateExpenseCacheOnDelete } from '@/services/expenseCacheService'
 import { shouldRefetchOnFocus } from '@/services/refetchPolicy'
 import { OFFLINE_STALE_TIME_MS } from '@/config/constants'
+import { assertOnlineForMutation } from '@/utils/offlineMutationGuard'
 import type { CreateExpensePayload, UpdateExpensePayload } from '@/api/expense'
 import type { CountryFilterValue } from '@/types/Attraction'
 import type { Expense } from '@/types/Expense'
@@ -23,8 +24,10 @@ export function useExpense(country: CountryFilterValue) {
   const expenses = country === 'all' ? allExpenses : allExpenses.filter(e => (e.country ?? 'general') === country);
 
   const createMutation = useMutation({
-    mutationFn: (payload: CreateExpensePayload) =>
-      createExpense(payload),
+    mutationFn: (payload: CreateExpensePayload) => {
+      assertOnlineForMutation();
+      return createExpense(payload);
+    },
     onSuccess: newExpense => {
       updateExpenseCacheOnCreate(queryClient, newExpense);
       queryClient.invalidateQueries({ queryKey: BUDGET_SUMMARY_QUERY_KEY });
@@ -32,8 +35,10 @@ export function useExpense(country: CountryFilterValue) {
   });
 
   const updateMutation = useMutation({
-    mutationFn: (payload: UpdateExpensePayload) =>
-      updateExpense(payload),
+    mutationFn: (payload: UpdateExpensePayload) => {
+      assertOnlineForMutation();
+      return updateExpense(payload);
+    },
     onSuccess: updatedExpense => {
       const previousExpenses = queryClient.getQueryData<Expense[]>(EXPENSE_QUERY_KEY);
       const previousExpense = previousExpenses?.find(e => e.id === updatedExpense.id);
@@ -46,7 +51,10 @@ export function useExpense(country: CountryFilterValue) {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: (id: number) => deleteExpense(id),
+    mutationFn: (id: number) => {
+      assertOnlineForMutation();
+      return deleteExpense(id);
+    },
     onSuccess: (_, deletedId) => {
       const previousExpenses = queryClient.getQueryData<Expense[]>(EXPENSE_QUERY_KEY);
       const deletedExpense = previousExpenses?.find(e => e.id === deletedId);

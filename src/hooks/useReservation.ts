@@ -6,6 +6,7 @@ import { updateAttractionCacheOnDelete } from '@/services/attractionCacheService
 import { shouldRefetchOnFocus } from '@/services/refetchPolicy'
 import { dateToInputFormat } from '@/utils/formatters'
 import { OFFLINE_STALE_TIME_MS } from '@/config/constants'
+import { assertOnlineForMutation } from '@/utils/offlineMutationGuard'
 import type { Attraction } from '@/types/Attraction'
 import type { Reservation } from '@/types/Reservation'
 import type { CreateReservationPayload, UpdateReservationPayload } from '@/api/reservation'
@@ -23,8 +24,10 @@ export function useReservation() {
   });
 
   const createMutation = useMutation({
-    mutationFn: (payload: CreateReservationPayload) =>
-      createReservation(payload),
+    mutationFn: (payload: CreateReservationPayload) => {
+      assertOnlineForMutation();
+      return createReservation(payload);
+    },
     onSuccess: newReservation => {
       updateReservationCacheOnCreate(queryClient, newReservation);
     }
@@ -32,6 +35,7 @@ export function useReservation() {
 
   const updateMutation = useMutation({
     mutationFn: async (payload: UpdateReservationPayload) => {
+      assertOnlineForMutation();
       const oldReservation = reservations.find((r: Reservation) => r.id === payload.id)
 
       if (oldReservation?.documentFileId && oldReservation.documentFileId !== payload.documentFileId) {
@@ -109,6 +113,7 @@ export function useReservation() {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: number) => {
+      assertOnlineForMutation();
       const reservation = reservations.find((r: Reservation) => r.id === id);
 
       if (reservation?.documentFileId) {

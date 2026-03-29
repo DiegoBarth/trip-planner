@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { createBudget, updateBudget, deleteBudget } from '@/api/budget'
 import { updateBudgetCacheOnCreate, updateBudgetCacheOnUpdate, updateBudgetCacheOnDelete } from '@/services/budgetCacheService'
 import { getBudgetsQueryOptions, getBudgetSummaryQueryOptions } from '@/services/budgetQueryService'
+import { assertOnlineForMutation } from '@/utils/offlineMutationGuard'
 import type { CreateBudgetPayload, UpdateBudgetPayload } from '@/api/budget'
 import type { Budget, BudgetSummary } from '@/types/Budget'
 
@@ -15,7 +16,10 @@ export function useBudget() {
   const { data: budgetSummary, isPending: isSummaryPending } = useQuery<BudgetSummary>(getBudgetSummaryQueryOptions());
 
   const createMutation = useMutation({
-    mutationFn: (payload: CreateBudgetPayload) => createBudget(payload),
+    mutationFn: (payload: CreateBudgetPayload) => {
+      assertOnlineForMutation();
+      return createBudget(payload);
+    },
     onSuccess: (newBudget) => {
       updateBudgetCacheOnCreate(queryClient, newBudget);
 
@@ -24,7 +28,10 @@ export function useBudget() {
   });
 
   const updateMutation = useMutation({
-    mutationFn: (payload: UpdateBudgetPayload) => updateBudget(payload),
+    mutationFn: (payload: UpdateBudgetPayload) => {
+      assertOnlineForMutation();
+      return updateBudget(payload);
+    },
     onSuccess: (updatedBudget) => {
       const previousBudgets = queryClient.getQueryData<Budget[]>(BUDGET_QUERY_KEY);
 
@@ -39,7 +46,10 @@ export function useBudget() {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: (id: number) => deleteBudget(id),
+    mutationFn: (id: number) => {
+      assertOnlineForMutation();
+      return deleteBudget(id);
+    },
     onSuccess: (_, deletedId) => {
       const oldBudgets = queryClient.getQueryData<Budget[]>(BUDGET_QUERY_KEY);
 

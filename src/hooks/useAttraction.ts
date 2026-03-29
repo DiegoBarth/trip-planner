@@ -8,6 +8,7 @@ import { applyAutoDays, normalizeOrderByDate } from '@/utils/attractionDayUtils'
 import { shouldRefetchOnFocus } from '@/services/refetchPolicy'
 import { dateToInputFormat } from '@/utils/formatters'
 import { OFFLINE_STALE_TIME_MS } from '@/config/constants'
+import { assertOnlineForMutation } from '@/utils/offlineMutationGuard'
 import type { CreateAttractionPayload, UpdateAttractionPayload } from '@/api/attraction'
 import type { Attraction } from '@/types/Attraction'
 import type { CountryFilterValue } from '@/types/Attraction'
@@ -74,7 +75,10 @@ export function useAttraction(country: CountryFilterValue) {
   }, [attractions]);
 
   const createMutation = useMutation({
-    mutationFn: (payload: CreateAttractionPayload) => createAttraction(payload),
+    mutationFn: (payload: CreateAttractionPayload) => {
+      assertOnlineForMutation();
+      return createAttraction(payload);
+    },
     onSuccess: newAttraction => {
       updateAttractionCacheOnCreate(queryClient, newAttraction)
     }
@@ -82,6 +86,7 @@ export function useAttraction(country: CountryFilterValue) {
 
   const updateMutation = useMutation({
     mutationFn: async (payload: UpdateAttractionPayload) => {
+      assertOnlineForMutation();
       const updatedAttraction = await updateAttraction(payload);
 
       if (updatedAttraction.reservationId && updatedAttraction.reservationStatus) {
@@ -135,6 +140,7 @@ export function useAttraction(country: CountryFilterValue) {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: number) => {
+      assertOnlineForMutation();
       const attraction = attractions.find(a => a.id === id);
 
       if (attraction?.reservationId) {
@@ -177,6 +183,7 @@ export function useAttraction(country: CountryFilterValue) {
 
   const bulkUpdate = async (attractionsToUpdate: Attraction[]) => {
     if (attractionsToUpdate.length === 0) return;
+    assertOnlineForMutation();
 
     const payload: UpdateAttractionPayload[] = attractionsToUpdate.map(attr => ({
       ...attr,

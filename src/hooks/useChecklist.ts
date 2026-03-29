@@ -3,6 +3,7 @@ import { createChecklistItem, updateChecklistItem, deleteChecklistItem, getCheck
 import { updateChecklistCacheOnCreate, updateChecklistCacheOnUpdate, updateChecklistCacheOnDelete, updateChecklistCacheOnToggle } from '@/services/checklistCacheService'
 import { shouldRefetchOnFocus } from '@/services/refetchPolicy'
 import { OFFLINE_STALE_TIME_MS } from '@/config/constants'
+import { assertOnlineForMutation } from '@/utils/offlineMutationGuard'
 import type { CreateChecklistItemPayload, UpdateChecklistItemPayload } from '@/api/checklist'
 import type { ChecklistItem } from '@/types/ChecklistItem'
 
@@ -19,23 +20,30 @@ export function useChecklist() {
   });
 
   const createMutation = useMutation({
-    mutationFn: (payload: CreateChecklistItemPayload) =>
-      createChecklistItem(payload),
+    mutationFn: (payload: CreateChecklistItemPayload) => {
+      assertOnlineForMutation();
+      return createChecklistItem(payload);
+    },
     onSuccess: newItem => {
       updateChecklistCacheOnCreate(queryClient, newItem);
     }
   })
 
   const updateMutation = useMutation({
-    mutationFn: (payload: UpdateChecklistItemPayload) =>
-      updateChecklistItem(payload),
+    mutationFn: (payload: UpdateChecklistItemPayload) => {
+      assertOnlineForMutation();
+      return updateChecklistItem(payload);
+    },
     onSuccess: updatedItem => {
       updateChecklistCacheOnUpdate(queryClient, updatedItem);
     }
   })
 
   const deleteMutation = useMutation({
-    mutationFn: (id: number) => deleteChecklistItem(id),
+    mutationFn: (id: number) => {
+      assertOnlineForMutation();
+      return deleteChecklistItem(id);
+    },
     onSuccess: (_, deletedId) => {
       updateChecklistCacheOnDelete(queryClient, deletedId);
     }
@@ -43,6 +51,7 @@ export function useChecklist() {
 
   const toggleMutation = useMutation({
     mutationFn: ({ id, isPacked }: { id: number; isPacked: boolean }) => {
+      assertOnlineForMutation();
       const fallback = queryClient.getQueryData<ChecklistItem[]>(CHECKLIST_QUERY_KEY)?.find(
         item => item.id === id
       )
