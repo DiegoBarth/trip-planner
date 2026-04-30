@@ -72,7 +72,7 @@ export function parseBudgets(data: unknown): z.infer<typeof budgetsResponseSchem
 }
 
 // Expense API response
-const expenseCategorySchema = z.enum(['accommodation', 'transport', 'food', 'attraction', 'shopping', 'other'])
+const expenseCategorySchema = z.enum(['accommodation', 'transport', 'food', 'attraction', 'shopping', 'cosmetics', 'electronics', 'other'])
 const expenseBudgetOriginSchema = z.enum(['Diego', 'Pamela', 'Casal', 'Alimentação', 'Atrações', 'Transporte'])
 export const expenseApiSchema = z.object({
   id: z.number(),
